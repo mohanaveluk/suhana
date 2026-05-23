@@ -1,0 +1,113 @@
+<div class="chat-page">
+  <!-- Conversations Sidebar -->
+  <aside class="chat-sidebar" role="navigation" aria-label="Conversations">
+    <div class="sidebar-header">
+      <h2><mat-icon>chat</mat-icon> Messages</h2>
+    </div>
+    <div class="conversations-list">
+      @for (conv of conversations(); track conv.id) {
+        <div class="conversation-item"
+             [class.active]="chatService.activeConversation() === conv.id"
+             (click)="openChat(conv)"
+             role="button"
+             tabindex="0"
+             (keydown.enter)="openChat(conv)"
+             [attr.aria-label]="'Chat with ' + conv.profile.firstName">
+          <img [src]="conv.profile.photos[0]?.url" [alt]="conv.profile.firstName" class="conv-avatar" />
+          <div class="conv-info">
+            <h4>{{ conv.profile.firstName }} {{ conv.profile.lastName }}</h4>
+            <p class="conv-preview">{{ conv.lastMessage ?? 'Start a conversation...' }}</p>
+          </div>
+          @if (conv.time) {
+            <span class="conv-time">{{ conv.time | date:'shortTime' }}</span>
+          }
+        </div>
+      } @empty {
+        <div class="no-conversations">
+          <mat-icon>chat_bubble_outline</mat-icon>
+          <p>No conversations yet</p>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- Chat Area -->
+  <main class="chat-main">
+    @if (activeChat(); as chat) {
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <img [src]="chat.profile.photos[0]?.url" [alt]="chat.profile.firstName" class="chat-header-avatar" />
+        <div class="chat-header-info">
+          <h3>{{ chat.profile.firstName }} {{ chat.profile.lastName }}</h3>
+          <span>{{ chat.profile.location.city }} &middot; {{ chat.profile.occupation.title }}</span>
+        </div>
+        <div class="chat-header-actions">
+          <button mat-icon-button aria-label="View profile">
+            <mat-icon>person</mat-icon>
+          </button>
+          <button mat-icon-button aria-label="More options">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Area -->
+      <div class="messages-area">
+        @if (chat.messages.length === 0) {
+          <div class="chat-start">
+            <img [src]="chat.profile.photos[0]?.url" [alt]="chat.profile.firstName" class="start-avatar" />
+            <h3>Start chatting with {{ chat.profile.firstName }}</h3>
+            <p>Break the ice with a thoughtful message</p>
+          </div>
+        }
+
+        @for (msg of chat.messages; track msg.id) {
+          <div class="message-bubble" [class.sent]="msg.senderId === 'me'" [class.received]="msg.senderId !== 'me'">
+            <div class="bubble-content">
+              @if (msg.type === 'icebreaker') {
+                <span class="icebreaker-tag"><mat-icon>auto_awesome</mat-icon> Icebreaker</span>
+              }
+              <p>{{ msg.content }}</p>
+              <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+            </div>
+          </div>
+        }
+
+        <!-- Icebreakers -->
+        @if (showIcebreakers() || chat.messages.length === 0) {
+          <div class="icebreakers-section">
+            <p class="icebreakers-label"><mat-icon>lightbulb</mat-icon> Try an icebreaker:</p>
+            <div class="icebreaker-chips">
+              @for (ib of icebreakers; track ib) {
+                <button mat-stroked-button class="icebreaker-chip" (click)="sendIcebreaker(ib)">
+                  {{ ib }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Message Input -->
+      <div class="message-input-area">
+        <button mat-icon-button (click)="showIcebreakers.set(!showIcebreakers())" aria-label="Icebreakers">
+          <mat-icon>lightbulb</mat-icon>
+        </button>
+        <mat-form-field appearance="outline" class="message-input">
+          <input matInput placeholder="Type a message..." [value]="messageText()"
+                 (input)="onMessageInput($event)" (keydown.enter)="sendMessage()" />
+        </mat-form-field>
+        <button mat-icon-button class="send-btn" (click)="sendMessage()" aria-label="Send message"
+                [disabled]="!messageText().trim()">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    } @else {
+      <div class="no-active-chat">
+        <mat-icon>forum</mat-icon>
+        <h3>Select a conversation</h3>
+        <p>Choose a conversation from the sidebar to start chatting</p>
+      </div>
+    }
+  </main>
+</div>

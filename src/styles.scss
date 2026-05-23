@@ -1,0 +1,197 @@
+@use '@angular/material' as mat;
+
+// ─── Suhana Custom Theme: Rose Gold, Maroon, Ivory ───
+$suhana-primary: mat.$rose-palette;
+$suhana-tertiary: mat.$red-palette;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: $suhana-primary,
+        tertiary: $suhana-tertiary,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  color-scheme: light;
+  background-color: #fdf8f4;
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+:root {
+  --suhana-rose-gold: #b76e79;
+  --suhana-rose-gold-light: #d4a0a7;
+  --suhana-rose-gold-lighter: #f0d4d8;
+  --suhana-maroon: #800020;
+  --suhana-maroon-dark: #5c0018;
+  --suhana-ivory: #fffff0;
+  --suhana-ivory-warm: #fdf8f4;
+  --suhana-gold: #c9a84c;
+  --suhana-gold-light: #e8d5a0;
+  --suhana-blush: #fde8e8;
+  --suhana-text-primary: #3d2c2e;
+  --suhana-text-secondary: #6b5557;
+  --suhana-shadow: rgba(183, 110, 121, 0.15);
+  --suhana-gradient: linear-gradient(135deg, #b76e79 0%, #800020 100%);
+  --suhana-gradient-light: linear-gradient(135deg, #f0d4d8 0%, #fde8e8 100%);
+}
+
+:root1 {
+  --suhana-primary: #6b4c8a;           // Deep Plum
+  --suhana-primary-light: #9b7ec4;     // Light Plum
+  --suhana-primary-lighter: #e8dff2;   // Very Light Plum
+  --suhana-accent: #d4af37;            // Rich Gold
+  --suhana-accent-light: #e8d4a0;      // Light Gold
+  --suhana-accent-lighter: #fef9e7;    // Pale Gold
+  --suhana-ivory: #fffff0;
+  --suhana-ivory-warm: #fdf8f4;
+  --suhana-text-primary: #2c2c3e;
+  --suhana-text-secondary: #5a5a6b;
+  --suhana-shadow: rgba(107, 76, 138, 0.15);
+  --suhana-gradient: linear-gradient(135deg, #6b4c8a 0%, #d4af37 100%);
+  --suhana-gradient-light: linear-gradient(135deg, #e8dff2 0%, #fef9e7 100%);
+}
+
+:root2 {
+  --suhana-primary: #1e3a5f;           // Deep Sapphire
+  --suhana-primary-light: #5b7f9e;     // Light Sapphire
+  --suhana-primary-lighter: #d4e4f0;   // Very Light Sapphire
+  --suhana-accent: #e85d7b;            // Rose Red
+  --suhana-accent-light: #f0a6b8;      // Light Rose
+  --suhana-accent-lighter: #fde8ed;    // Pale Rose
+  --suhana-ivory: #fffff0;
+  --suhana-ivory-warm: #fdf8f4;
+  --suhana-text-primary: #1a1a2e;
+  --suhana-text-secondary: #535366;
+  --suhana-shadow: rgba(30, 58, 95, 0.15);
+  --suhana-gradient: linear-gradient(135deg, #1e3a5f 0%, #e85d7b 100%);
+  --suhana-gradient-light: linear-gradient(135deg, #d4e4f0 0%, #fde8ed 100%);
+}
+
+:root3 {
+  --suhana-primary: #704d50;           // Deep Burgundy
+  --suhana-primary-light: #a97c7f;     // Light Burgundy
+  --suhana-primary-lighter: #ead7d7;   // Very Light Burgundy
+  --suhana-accent: #d4a574;            // Champagne Gold
+  --suhana-accent-light: #e8c9a0;      // Light Champagne
+  --suhana-accent-lighter: #f8f0e6;    // Pale Champagne
+  --suhana-ivory: #fffff0;
+  --suhana-ivory-warm: #fdf8f4;
+  --suhana-text-primary: #3d2c2e;
+  --suhana-text-secondary: #6b5557;
+  --suhana-shadow: rgba(112, 77, 80, 0.15);
+  --suhana-gradient: linear-gradient(135deg, #704d50 0%, #d4a574 100%);
+  --suhana-gradient-light: linear-gradient(135deg, #ead7d7 0%, #f8f0e6 100%);
+}
+
+:root4 {
+  --suhana-primary: #0d6b6b;           // Deep Teal
+  --suhana-primary-light: #4a9b9b;     // Light Teal
+  --suhana-primary-lighter: #d0e9e9;   // Very Light Teal
+  --suhana-accent: #b87333;            // Copper
+  --suhana-accent-light: #d4956b;      // Light Copper
+  --suhana-accent-lighter: #f0dfd0;    // Pale Copper
+  --suhana-ivory: #fffff0;
+  --suhana-ivory-warm: #fdf8f4;
+  --suhana-text-primary: #1a3d3e;
+  --suhana-text-secondary: #3d5a5b;
+  --suhana-shadow: rgba(13, 107, 107, 0.15);
+  --suhana-gradient: linear-gradient(135deg, #0d6b6b 0%, #b87333 100%);
+  --suhana-gradient-light: linear-gradient(135deg, #d0e9e9 0%, #f0dfd0 100%);
+}
+
+.suhana-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.suhana-section {
+  padding: 64px 0;
+  @media (max-width: 768px) { padding: 40px 0; }
+}
+
+.suhana-section-title {
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--suhana-maroon);
+  text-align: center;
+  margin-bottom: 8px;
+  @media (max-width: 768px) { font-size: 1.5rem; }
+}
+
+.suhana-section-subtitle {
+  font-size: 1.1rem;
+  color: var(--suhana-text-secondary);
+  text-align: center;
+  margin-bottom: 48px;
+  @media (max-width: 768px) { font-size: 1rem; margin-bottom: 32px; }
+}
+
+.mat-mdc-raised-button.suhana-btn-primary {
+  background: var(--suhana-gradient) !important;
+  color: white !important;
+  border-radius: 28px !important;
+  padding: 0 32px !important;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--suhana-shadow);
+  }
+}
+
+.mat-mdc-outlined-button.suhana-btn-outline {
+  border-color: var(--suhana-rose-gold) !important;
+  color: var(--suhana-maroon) !important;
+  border-radius: 28px !important;
+  padding: 0 32px !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  &:hover { background: var(--suhana-rose-gold-lighter) !important; }
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--suhana-ivory-warm); }
+::-webkit-scrollbar-thumb { background: var(--suhana-rose-gold-light); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--suhana-rose-gold); }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+.animate-fade-in { animation: fadeIn 0.5s ease forwards; }
+
+h1, h2, h3, h4, h5, h6 { color: var(--suhana-text-primary); }
+
+a {
+  color: var(--suhana-maroon);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  &:hover { color: var(--suhana-rose-gold); }
+}

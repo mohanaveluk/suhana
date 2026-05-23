@@ -1,0 +1,235 @@
+<div class="admin-page suhana-container">
+  <div class="admin-header">
+    <h1><mat-icon>admin_panel_settings</mat-icon> Admin Dashboard</h1>
+    <p>Manage users, profiles, and matchmaking settings</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card" appearance="outlined">
+      <mat-card-content>
+        <div class="stat-icon users"><mat-icon>people</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ adminService.stats().totalUsers }}</span>
+          <span class="stat-label">Total Users</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card" appearance="outlined">
+      <mat-card-content>
+        <div class="stat-icon active"><mat-icon>person_check</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ adminService.stats().activeUsers }}</span>
+          <span class="stat-label">Active Users</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card" appearance="outlined">
+      <mat-card-content>
+        <div class="stat-icon matches"><mat-icon>favorite</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ adminService.stats().totalMatches }}</span>
+          <span class="stat-label">Total Matches</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card" appearance="outlined">
+      <mat-card-content>
+        <div class="stat-icon connections"><mat-icon>handshake</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ adminService.stats().successfulConnections }}</span>
+          <span class="stat-label">Connections</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card" appearance="outlined">
+      <mat-card-content>
+        <div class="stat-icon premium"><mat-icon>star</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ adminService.stats().premiumUsers }}</span>
+          <span class="stat-label">Premium Users</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card" appearance="outlined">
+      <mat-card-content>
+        <div class="stat-icon new-reg"><mat-icon>person_add</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ adminService.stats().newRegistrationsToday }}</span>
+          <span class="stat-label">New Today</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tabs: Users & Analytics -->
+  <mat-tab-group class="admin-tabs" animationDuration="300ms">
+    <!-- User Management -->
+    <mat-tab label="Users">
+      <div class="tab-content">
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="adminService.allProfiles()" class="users-table">
+            <!-- Photo Column -->
+            <ng-container matColumnDef="photo">
+              <th mat-header-cell *matHeaderCellDef>Photo</th>
+              <td mat-cell *matCellDef="let profile">
+                <img [src]="profile.photos[0]?.url || '/avatar-default.svg'" [alt]="profile.firstName" class="table-avatar" />
+              </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let profile">{{ profile.firstName }} {{ profile.lastName }}</td>
+            </ng-container>
+
+            <!-- Age Column -->
+            <ng-container matColumnDef="age">
+              <th mat-header-cell *matHeaderCellDef>Age</th>
+              <td mat-cell *matCellDef="let profile">{{ profile.age }}</td>
+            </ng-container>
+
+            <!-- Gender Column -->
+            <ng-container matColumnDef="gender">
+              <th mat-header-cell *matHeaderCellDef>Gender</th>
+              <td mat-cell *matCellDef="let profile">
+                <mat-chip [highlighted]="profile.gender === 'bride'">
+                  {{ profile.gender | titlecase }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Location Column -->
+            <ng-container matColumnDef="location">
+              <th mat-header-cell *matHeaderCellDef>Location</th>
+              <td mat-cell *matCellDef="let profile">{{ profile.location.city }}</td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let profile">
+                <span class="status-badge" [class]="profile.status">{{ profile.status | titlecase }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let profile">
+                <button mat-icon-button [matMenuTriggerFor]="actionMenu" aria-label="Profile actions">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #actionMenu="matMenu">
+                  <button mat-menu-item>
+                    <mat-icon>visibility</mat-icon> View Profile
+                  </button>
+                  <button mat-menu-item>
+                    <mat-icon>edit</mat-icon> Edit Profile
+                  </button>
+                  <button mat-menu-item (click)="adminService.updateProfileStatus(profile.userId, 'blocked')">
+                    <mat-icon>block</mat-icon> Block User
+                  </button>
+                  <button mat-menu-item (click)="adminService.updateProfileStatus(profile.userId, 'active')">
+                    <mat-icon>check_circle</mat-icon> Activate
+                  </button>
+                </mat-menu>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Match Analytics -->
+    <mat-tab label="Analytics">
+      <div class="tab-content">
+        <div class="analytics-grid">
+          <mat-card appearance="outlined" class="chart-card">
+            <mat-card-header>
+              <mat-card-title>Match Analytics (Monthly)</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="bar-chart">
+                @for (label of matchAnalytics.labels; track label; let i = $index) {
+                  <div class="bar-item">
+                    <div class="bar" [style.height.%]="(matchAnalytics.data[i] / 150) * 100">
+                      <span class="bar-value">{{ matchAnalytics.data[i] }}</span>
+                    </div>
+                    <span class="bar-label">{{ label }}</span>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="chart-card">
+            <mat-card-header>
+              <mat-card-title>Registration Trends (Weekly)</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="bar-chart">
+                @for (label of registrationTrends.labels; track label; let i = $index) {
+                  <div class="bar-item">
+                    <div class="bar trend" [style.height.%]="(registrationTrends.data[i] / 30) * 100">
+                      <span class="bar-value">{{ registrationTrends.data[i] }}</span>
+                    </div>
+                    <span class="bar-label">{{ label }}</span>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Match Logic Settings -->
+    <mat-tab label="Match Settings">
+      <div class="tab-content">
+        <mat-card appearance="outlined" class="settings-card">
+          <mat-card-header>
+            <mat-card-title>Matchmaking Weight Configuration</mat-card-title>
+            <mat-card-subtitle>Adjust the weights used in AI match scoring</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="weight-settings">
+              @for (item of [
+                {label: 'Lifestyle', value: 15},
+                {label: 'Education', value: 15},
+                {label: 'Location', value: 10},
+                {label: 'Family Values', value: 20},
+                {label: 'Interests', value: 15},
+                {label: 'Career', value: 10},
+                {label: 'Emotional', value: 10},
+                {label: 'Horoscope', value: 5}
+              ]; track item.label) {
+                <div class="weight-item">
+                  <span class="weight-label">{{ item.label }}</span>
+                  <div class="weight-bar">
+                    <div class="weight-fill" [style.width.%]="item.value * 5"></div>
+                  </div>
+                  <span class="weight-value">{{ item.value }}%</span>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button class="suhana-btn-primary">
+              <mat-icon>save</mat-icon> Save Configuration
+            </button>
+            <button mat-button>Reset to Defaults</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

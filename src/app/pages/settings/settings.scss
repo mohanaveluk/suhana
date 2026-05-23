@@ -1,0 +1,206 @@
+.settings-page {
+  padding-top: 24px;
+  padding-bottom: 64px;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.st-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+
+  &__title {
+    h1 { font-size: 1.5rem; color: var(--suhana-maroon); margin: 0 0 2px; }
+    p  { font-size: 0.875rem; color: var(--suhana-text-secondary); margin: 0; }
+  }
+}
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+.st-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Cards ─────────────────────────────────────────────────────────────────────
+.st-card {
+  border-radius: 16px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+
+  mat-card-header { padding-bottom: 8px; }
+  mat-card-content { padding-top: 8px; }
+
+  &--danger {
+    border-color: #ffcdd2 !important;
+  }
+}
+
+.st-card-icon {
+  color: var(--suhana-rose-gold);
+  background: var(--suhana-blush, #fdf0f5) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  &--danger { color: #c62828; background: #ffebee !important; }
+}
+
+// ── Alerts ────────────────────────────────────────────────────────────────────
+.st-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+
+  mat-icon { flex-shrink: 0; font-size: 20px; width: 20px; height: 20px; }
+  span { flex: 1; }
+
+  &--success {
+    background: var(--mat-sys-primary-container, #e8f5e9);
+    color: var(--mat-sys-on-primary-container, #1b5e20);
+  }
+  &--error {
+    background: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+    mat-icon:first-child { color: var(--mat-sys-error); }
+  }
+}
+
+// ── Section label ──────────────────────────────────────────────────────────────
+.st-section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--suhana-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin: 20px 0 10px;
+}
+
+// ── Info row (account info) ────────────────────────────────────────────────────
+.st-info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+
+  mat-icon { color: var(--suhana-rose-gold); flex-shrink: 0; }
+
+  div {
+    flex: 1;
+    label { display: block; font-size: 0.75rem; color: var(--suhana-text-secondary); }
+    span  { font-size: 0.95rem; color: var(--suhana-text-primary); }
+  }
+}
+
+.st-inline-btn { font-size: 0.8rem; height: 32px; line-height: 32px; }
+
+// ── Form ──────────────────────────────────────────────────────────────────────
+.st-form { padding-top: 8px; }
+
+.st-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  mat-form-field { width: 100%; }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.full-width { width: 100%; }
+
+.st-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+// ── Toggle list ───────────────────────────────────────────────────────────────
+.st-toggle-list { display: flex; flex-direction: column; }
+
+.st-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.st-toggle-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  mat-icon { color: var(--suhana-rose-gold); font-size: 20px; width: 20px; height: 20px; margin-top: 2px; }
+
+  div {
+    strong { display: block; font-size: 0.9rem; color: var(--suhana-text-primary); }
+    span   { font-size: 0.8rem; color: var(--suhana-text-secondary); }
+  }
+}
+
+// ── Message toggle group ──────────────────────────────────────────────────────
+.st-toggle-group {
+  width: 100%;
+  margin-top: 4px;
+
+  mat-button-toggle {
+    flex: 1;
+    font-size: 0.85rem;
+  }
+}
+
+// ── Membership ────────────────────────────────────────────────────────────────
+.st-membership {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &__badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    mat-icon { color: var(--suhana-rose-gold); }
+  }
+
+  &__tier {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--suhana-maroon);
+  }
+
+  &__desc { font-size: 0.875rem; color: var(--suhana-text-secondary); margin: 0; }
+
+  a mat-icon { margin-right: 6px; font-size: 18px; width: 18px; height: 18px; }
+}
+
+// ── Danger zone ───────────────────────────────────────────────────────────────
+.st-danger-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+
+  div {
+    flex: 1;
+    strong { display: block; font-size: 0.9rem; color: var(--suhana-text-primary); margin-bottom: 4px; }
+    p { font-size: 0.8rem; color: var(--suhana-text-secondary); margin: 0; }
+  }
+
+  button mat-icon { font-size: 18px; width: 18px; height: 18px; margin-right: 4px; }
+
+  @media (max-width: 600px) { flex-direction: column; }
+}
+
+.st-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  span { font-size: 0.85rem; font-weight: 500; color: #c62828; }
+}

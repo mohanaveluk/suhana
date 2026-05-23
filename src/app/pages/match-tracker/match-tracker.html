@@ -1,0 +1,86 @@
+<div class="tracker-page suhana-container">
+  <div class="tracker-header">
+    <h1><mat-icon>track_changes</mat-icon> Match Tracker</h1>
+    <p>Track the progress of your connections — from shortlist to meeting</p>
+  </div>
+
+  <div class="tracker-grid">
+    @for (item of trackedMatches(); track item.match.id) {
+      <mat-card class="tracker-card" appearance="outlined">
+        <div class="tracker-profile">
+          <img [src]="item.match.profile.photos[0]?.url" [alt]="item.match.profile.firstName" class="tracker-avatar" />
+          <div class="tracker-info">
+            <h3>{{ item.match.profile.firstName }} {{ item.match.profile.lastName }}</h3>
+            <p>{{ item.match.profile.age }} yrs &middot; {{ item.match.profile.location.city }}</p>
+            <span class="match-tag">{{ item.match.matchPercentage }}% Match</span>
+          </div>
+        </div>
+
+        <div class="tracker-steps">
+          @for (stepLabel of steps; track stepLabel; let si = $index) {
+            <div class="step" [class]="getStepStatus(item.step, si)">
+              <div class="step-circle">
+                @if (getStepStatus(item.step, si) === 'completed') {
+                  <mat-icon>check</mat-icon>
+                } @else {
+                  {{ si + 1 }}
+                }
+              </div>
+              <span class="step-label">{{ stepLabel }}</span>
+              @if (si < steps.length - 1) {
+                <div class="step-line"></div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="tracker-status">
+          @switch (item.step) {
+            @case (0) {
+              <span class="status-text pending">
+                <mat-icon>schedule</mat-icon> Shortlisted — Express interest to proceed
+              </span>
+            }
+            @case (1) {
+              <span class="status-text waiting">
+                <mat-icon>hourglass_empty</mat-icon> Waiting for reply from {{ item.match.profile.firstName }}
+              </span>
+            }
+            @case (2) {
+              <span class="status-text confirmed">
+                <mat-icon>check_circle</mat-icon> Mutual interest confirmed — Start chatting!
+              </span>
+            }
+          }
+        </div>
+
+        <mat-card-actions>
+          @switch (item.step) {
+            @case (0) {
+              <button mat-raised-button class="suhana-btn-primary">
+                <mat-icon>favorite</mat-icon> Express Interest
+              </button>
+            }
+            @case (1) {
+              <button mat-stroked-button class="suhana-btn-outline" disabled>
+                <mat-icon>schedule</mat-icon> Awaiting Response
+              </button>
+            }
+            @case (2) {
+              <a mat-raised-button routerLink="/chat" class="suhana-btn-primary">
+                <mat-icon>chat</mat-icon> Start Chat
+              </a>
+            }
+          }
+        </mat-card-actions>
+      </mat-card>
+    } @empty {
+      <div class="empty-state">
+        <mat-icon>track_changes</mat-icon>
+        <h3>No tracked matches</h3>
+        <p>Shortlist profiles to start tracking your connection progress</p>
+        <a mat-raised-button routerLink="/matchmaking" class="suhana-btn-primary">Find Matches</a>
+      </div>
+    }
+  </div>
+</div>

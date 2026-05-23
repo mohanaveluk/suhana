@@ -1,0 +1,220 @@
+.admin-page {
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+
+.admin-header {
+  margin-bottom: 32px;
+
+  h1 {
+    font-size: 1.8rem;
+    color: var(--suhana-maroon);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    mat-icon { color: var(--suhana-rose-gold); }
+  }
+  p { color: var(--suhana-text-secondary); }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 600px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.stat-card {
+  border-radius: 12px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+  transition: transform 0.2s ease;
+
+  &:hover { transform: translateY(-2px); }
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px !important;
+  }
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon { color: white; }
+
+  &.users { background: linear-gradient(135deg, #5c6bc0, #3949ab); }
+  &.active { background: linear-gradient(135deg, #66bb6a, #43a047); }
+  &.matches { background: linear-gradient(135deg, #ef5350, #e53935); }
+  &.connections { background: linear-gradient(135deg, #ab47bc, #8e24aa); }
+  &.premium { background: linear-gradient(135deg, #ffc107, #ff8f00); }
+  &.new-reg { background: linear-gradient(135deg, #26c6da, #00acc1); }
+}
+
+.stat-data {
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--suhana-text-primary);
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--suhana-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.admin-tabs {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px var(--suhana-shadow);
+  overflow: hidden;
+}
+
+.tab-content { padding: 24px; }
+
+// ─── Users Table ───
+.table-wrapper { overflow-x: auto; }
+
+.users-table {
+  width: 100%;
+
+  .table-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.status-badge {
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &.active { background: #e8f5e9; color: #2e7d32; }
+  &.pending { background: #fff3e0; color: #e65100; }
+  &.reported { background: #ffebee; color: #c62828; }
+  &.blocked { background: #fafafa; color: #757575; }
+  &.inactive { background: #f5f5f5; color: #9e9e9e; }
+}
+
+// ─── Analytics Charts ───
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+
+  @media (max-width: 960px) { grid-template-columns: 1fr; }
+}
+
+.chart-card {
+  border-radius: 12px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 200px;
+  padding: 16px 0;
+}
+
+.bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+
+  .bar {
+    width: 100%;
+    max-width: 40px;
+    background: var(--suhana-gradient);
+    border-radius: 6px 6px 0 0;
+    position: relative;
+    min-height: 8px;
+    transition: height 0.6s ease;
+
+    &.trend { background: linear-gradient(180deg, #66bb6a, #43a047); }
+
+    .bar-value {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--suhana-text-primary);
+    }
+  }
+
+  .bar-label {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: var(--suhana-text-secondary);
+  }
+}
+
+// ─── Match Settings ───
+.settings-card {
+  border-radius: 12px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+  max-width: 600px;
+}
+
+.weight-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.weight-item {
+  display: grid;
+  grid-template-columns: 120px 1fr 50px;
+  align-items: center;
+  gap: 12px;
+
+  .weight-label {
+    font-size: 0.88rem;
+    color: var(--suhana-text-primary);
+    font-weight: 450;
+  }
+
+  .weight-bar {
+    height: 8px;
+    background: var(--suhana-rose-gold-lighter);
+    border-radius: 4px;
+    overflow: hidden;
+
+    .weight-fill {
+      height: 100%;
+      background: var(--suhana-gradient);
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+  }
+
+  .weight-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--suhana-maroon);
+    text-align: right;
+  }
+}

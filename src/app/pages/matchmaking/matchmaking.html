@@ -1,0 +1,135 @@
+<div class="matchmaking-page suhana-container">
+  <div class="matchmaking-header">
+    <div class="header-text">
+      <h1><mat-icon class="ai-icon">psychology</mat-icon> AI-Powered Matches</h1>
+      <p>Our smart algorithm has found these compatible profiles for you</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button class="suhana-btn-primary" (click)="refreshMatches()">
+        <mat-icon>refresh</mat-icon> Find New Matches
+      </button>
+      <a mat-stroked-button class="suhana-btn-outline" routerLink="/compare">
+        <mat-icon>compare</mat-icon> Compare All
+      </a>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="loading-spinner">
+        <mat-icon class="spinning">favorite</mat-icon>
+      </div>
+      <p>Finding your best matches...</p>
+    </div>
+  } @else {
+    <div class="matches-grid">
+      @for (match of currentMatches(); track match.id) {
+        <mat-card class="match-card" appearance="outlined">
+          <!-- Match Score Circle -->
+          <div class="match-score-circle" [style.border-color]="getScoreColor(match.matchPercentage)">
+            <span class="score-value">{{ match.matchPercentage }}%</span>
+            <span class="score-label">Match</span>
+          </div>
+
+          <!-- Profile Image -->
+          <div class="match-image" [style.background-image]="'url(' + match.profile.photos[0]?.url + ')'">
+            <div class="match-image-overlay"></div>
+            @if (match.status === 'shortlisted') {
+              <div class="shortlisted-badge">
+                <mat-icon>bookmark</mat-icon> Shortlisted
+              </div>
+            }
+            @if (match.status === 'interested') {
+              <div class="interested-badge">
+                <mat-icon>favorite</mat-icon> Interest Sent
+              </div>
+            }
+          </div>
+
+          <mat-card-content>
+            <!-- Profile Info -->
+            <h3>{{ match.profile.firstName }} {{ match.profile.lastName }}, {{ match.profile.age }}</h3>
+            <p class="match-location">
+              <mat-icon>location_on</mat-icon> {{ match.profile.location.city }}
+            </p>
+            <p class="match-profession">
+              <mat-icon>work</mat-icon> {{ match.profile.occupation.title }}
+              @if (match.profile.occupation.company) {
+                at {{ match.profile.occupation.company }}
+              }
+            </p>
+
+            <!-- AI Explanation -->
+            <div class="ai-insight">
+              <mat-icon>auto_awesome</mat-icon>
+              <span>{{ match.explanationText }}</span>
+            </div>
+
+            <!-- Compatibility Badges -->
+            @if (match.badges.length) {
+              <div class="badge-list">
+                @for (badge of match.badges; track badge.label) {
+                  <span class="compat-badge" [matTooltip]="badge.score + '% match'">
+                    <mat-icon>{{ badge.icon }}</mat-icon> {{ badge.label }}
+                  </span>
+                }
+              </div>
+            }
+
+            <!-- Compatibility Bars -->
+            <div class="compat-bars">
+              <div class="compat-bar-item">
+                <span>Lifestyle</span>
+                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.lifestyle"></mat-progress-bar>
+                <span class="bar-value">{{ match.compatibilityBreakdown.lifestyle }}%</span>
+              </div>
+              <div class="compat-bar-item">
+                <span>Family Values</span>
+                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.familyValues"></mat-progress-bar>
+                <span class="bar-value">{{ match.compatibilityBreakdown.familyValues }}%</span>
+              </div>
+              <div class="compat-bar-item">
+                <span>Education</span>
+                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.education"></mat-progress-bar>
+                <span class="bar-value">{{ match.compatibilityBreakdown.education }}%</span>
+              </div>
+              <div class="compat-bar-item">
+                <span>Interests</span>
+                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.interests"></mat-progress-bar>
+                <span class="bar-value">{{ match.compatibilityBreakdown.interests }}%</span>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <!-- Actions -->
+          <mat-card-actions>
+            <button mat-icon-button (click)="skip(match)" matTooltip="Skip"
+                    aria-label="Skip this match" class="skip-btn">
+              <mat-icon>close</mat-icon>
+            </button>
+            <button mat-icon-button (click)="shortlist(match)" matTooltip="Shortlist"
+                    aria-label="Shortlist this match" class="shortlist-btn"
+                    [class.active]="match.status === 'shortlisted'">
+              <mat-icon>{{ match.status === 'shortlisted' ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+            </button>
+            <button mat-raised-button class="suhana-btn-primary connect-btn"
+                    (click)="expressInterest(match)"
+                    [disabled]="match.status === 'interested'">
+              <mat-icon>favorite</mat-icon>
+              {{ match.status === 'interested' ? 'Interest Sent' : 'Connect' }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      } @empty {
+        <div class="no-matches">
+          <mat-icon>search</mat-icon>
+          <h3>No matches available</h3>
+          <p>Try refreshing or updating your preferences</p>
+          <button mat-raised-button class="suhana-btn-primary" (click)="refreshMatches()">
+            <mat-icon>refresh</mat-icon> Try Again
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

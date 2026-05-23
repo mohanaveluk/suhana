@@ -1,0 +1,214 @@
+<div class="profile-page suhana-container">
+  @if (profile(); as p) {
+    <!-- Profile Header -->
+    <div class="profile-header-card">
+      <div class="cover-gradient"></div>
+      <div class="profile-header-content">
+        <div class="avatar-section">
+          <img [src]="p.photos[0]?.url || '/avatar-default.svg'" [alt]="p.firstName"
+               class="profile-avatar" (error)="onAvatarError($event)" />
+          @if (p.photos[0]?.isVerified) {
+            <mat-icon class="verified-icon" aria-label="Verified">verified</mat-icon>
+          }
+        </div>
+        <div class="header-info">
+          <h1>{{ p.firstName }} {{ p.lastName }}</h1>
+          <p class="profile-meta">{{ p.age }} yrs &middot; {{ p.height }} &middot; {{ p.location.city }}, {{ p.location.state }}</p>
+          <p class="profile-profession">{{ p.occupation.title }} at {{ p.occupation.company }}</p>
+          <div class="profile-completeness">
+            <span>Profile {{ p.profileCompleteness }}% complete</span>
+            <mat-progress-bar mode="determinate" [value]="p.profileCompleteness"></mat-progress-bar>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button mat-raised-button class="suhana-btn-primary" routerLink="/profile/edit">
+            <mat-icon>edit</mat-icon> Edit Profile
+          </button>
+          <button mat-stroked-button class="suhana-btn-outline" routerLink="/settings">
+            <mat-icon>settings</mat-icon> Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Tabs -->
+    <mat-tab-group class="profile-tabs" animationDuration="300ms">
+      <mat-tab label="About">
+        <div class="tab-content">
+          <mat-card appearance="outlined" class="info-card">
+            <mat-card-header><mat-card-title>About Me</mat-card-title></mat-card-header>
+            <mat-card-content>
+              <p>{{ p.aboutMe }}</p>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="info-card">
+            <mat-card-header><mat-card-title>Personal Details</mat-card-title></mat-card-header>
+            <mat-card-content>
+              <div class="details-grid">
+                <div class="detail-item">
+                  <mat-icon>cake</mat-icon>
+                  <div><label>Age</label><span>{{ p.age }} years</span></div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>height</mat-icon>
+                  <div><label>Height</label><span>{{ p.height }}</span></div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>temple_hindu</mat-icon>
+                  <div><label>Religion</label><span>{{ p.religion }}</span></div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>translate</mat-icon>
+                  <div><label>Mother Tongue</label><span>{{ p.motherTongue }}</span></div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>location_on</mat-icon>
+                  <div><label>Location</label><span>{{ p.location.city }}, {{ p.location.state }}</span></div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>flight</mat-icon>
+                  <div><label>Willing to Relocate</label><span>{{ p.location.willingToRelocate ? 'Yes' : 'No' }}</span></div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Education & Career">
+        <div class="tab-content">
+          <mat-card appearance="outlined" class="info-card">
+            <mat-card-header><mat-card-title>Education</mat-card-title></mat-card-header>
+            <mat-card-content>
+              <div class="details-grid">
+                <div class="detail-item">
+                  <mat-icon>school</mat-icon>
+                  <div><label>Level</label><span>{{ p.education.level }}</span></div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>book</mat-icon>
+                  <div><label>Field</label><span>{{ p.education.field }}</span></div>
+                </div>
+                @if (p.education.institution) {
+                  <div class="detail-item">
+                    <mat-icon>account_balance</mat-icon>
+                    <div><label>Institution</label><span>{{ p.education.institution }}</span></div>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="info-card">
+            <mat-card-header><mat-card-title>Career</mat-card-title></mat-card-header>
+            <mat-card-content>
+              <div class="details-grid">
+                <div class="detail-item">
+                  <mat-icon>work</mat-icon>
+                  <div><label>Occupation</label><span>{{ p.occupation.title }}</span></div>
+                </div>
+                @if (p.occupation.company) {
+                  <div class="detail-item">
+                    <mat-icon>business</mat-icon>
+                    <div><label>Company</label><span>{{ p.occupation.company }}</span></div>
+                  </div>
+                }
+                @if (p.occupation.annualIncome) {
+                  <div class="detail-item">
+                    <mat-icon>currency_rupee</mat-icon>
+                    <div><label>Annual Income</label><span>{{ p.occupation.annualIncome }}</span></div>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Family">
+        <div class="tab-content">
+          <mat-card appearance="outlined" class="info-card">
+            <mat-card-header><mat-card-title>Family Details</mat-card-title></mat-card-header>
+            <mat-card-content>
+              <div class="details-grid">
+                <div class="detail-item">
+                  <mat-icon>family_restroom</mat-icon>
+                  <div><label>Family Type</label><span>{{ p.familyDetails.familyType | titlecase }}</span></div>
+                </div>
+                @if (p.familyDetails.fatherOccupation) {
+                  <div class="detail-item">
+                    <mat-icon>person</mat-icon>
+                    <div><label>Father's Occupation</label><span>{{ p.familyDetails.fatherOccupation }}</span></div>
+                  </div>
+                }
+                @if (p.familyDetails.motherOccupation) {
+                  <div class="detail-item">
+                    <mat-icon>person</mat-icon>
+                    <div><label>Mother's Occupation</label><span>{{ p.familyDetails.motherOccupation }}</span></div>
+                  </div>
+                }
+                @if (p.familyDetails.siblings !== undefined) {
+                  <div class="detail-item">
+                    <mat-icon>group</mat-icon>
+                    <div><label>Siblings</label><span>{{ p.familyDetails.siblings }}</span></div>
+                  </div>
+                }
+              </div>
+              @if (p.familyDetails.familyPreferenceNote) {
+                <p class="family-note">{{ p.familyDetails.familyPreferenceNote }}</p>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Preferences">
+        <div class="tab-content">
+          <mat-card appearance="outlined" class="info-card">
+            <mat-card-header><mat-card-title>Partner Preferences</mat-card-title></mat-card-header>
+            <mat-card-content>
+              <div class="details-grid">
+                <div class="detail-item">
+                  <mat-icon>cake</mat-icon>
+                  <div><label>Age Range</label><span>{{ p.preferences.ageRange.min }} - {{ p.preferences.ageRange.max }} years</span></div>
+                </div>
+                @if (p.preferences.religions?.length) {
+                  <div class="detail-item">
+                    <mat-icon>temple_hindu</mat-icon>
+                    <div><label>Religion</label>
+                      <div class="chip-list">
+                        @for (r of p.preferences.religions; track r) {
+                          <mat-chip-set><mat-chip>{{ r }}</mat-chip></mat-chip-set>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+                @if (p.preferences.locations?.length) {
+                  <div class="detail-item">
+                    <mat-icon>location_on</mat-icon>
+                    <div><label>Locations</label>
+                      <div class="chip-list">
+                        @for (l of p.preferences.locations; track l) {
+                          <mat-chip-set><mat-chip>{{ l }}</mat-chip></mat-chip-set>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  } @else {
+    <div class="no-profile">
+      <mat-icon>person_add</mat-icon>
+      <h2>No Profile Yet</h2>
+      <p>Create your profile to start finding matches</p>
+      <a mat-raised-button routerLink="/register" class="suhana-btn-primary">Create Profile</a>
+    </div>
+  }
+</div>

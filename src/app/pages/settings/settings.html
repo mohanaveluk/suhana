@@ -1,0 +1,311 @@
+<div class="settings-page suhana-container">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────────── -->
+  <div class="st-header">
+    <button mat-icon-button (click)="goBack()" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="st-header__title">
+      <h1>Settings</h1>
+      <p>Manage your account, privacy &amp; notifications</p>
+    </div>
+  </div>
+
+  <div class="st-layout">
+
+    <!-- ══ Account Settings ════════════════════════════════════════════════════ -->
+    <mat-card appearance="outlined" class="st-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="st-card-icon">manage_accounts</mat-icon>
+        <mat-card-title>Account</mat-card-title>
+        <mat-card-subtitle>Email, password &amp; mobile</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <!-- Current account info -->
+        <div class="st-info-row">
+          <mat-icon>email</mat-icon>
+          <div>
+            <label>Email Address</label>
+            <span>{{ user()?.email ?? '—' }}</span>
+          </div>
+          <button mat-stroked-button class="st-inline-btn">Change</button>
+        </div>
+        <mat-divider></mat-divider>
+
+        <!-- Change Password -->
+        <p class="st-section-label">Change Password</p>
+
+        @if (pwdSuccess()) {
+          <div class="st-alert st-alert--success">
+            <mat-icon>check_circle</mat-icon>
+            <span>Password changed successfully!</span>
+          </div>
+        }
+        @if (pwdError()) {
+          <div class="st-alert st-alert--error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ pwdError() }}</span>
+            <button mat-icon-button (click)="pwdError.set(null)"><mat-icon>close</mat-icon></button>
+          </div>
+        }
+
+        <form [formGroup]="passwordForm" class="st-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Current Password</mat-label>
+            <input matInput formControlName="currentPassword"
+                   [type]="hideCurrentPwd() ? 'password' : 'text'" />
+            <mat-icon matPrefix>lock</mat-icon>
+            <button mat-icon-button matSuffix type="button"
+                    (click)="hideCurrentPwd.set(!hideCurrentPwd())">
+              <mat-icon>{{ hideCurrentPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <div class="st-row">
+            <mat-form-field appearance="outline">
+              <mat-label>New Password</mat-label>
+              <input matInput formControlName="newPassword"
+                     [type]="hideNewPwd() ? 'password' : 'text'" />
+              <mat-icon matPrefix>lock_reset</mat-icon>
+              <button mat-icon-button matSuffix type="button"
+                      (click)="hideNewPwd.set(!hideNewPwd())">
+                <mat-icon>{{ hideNewPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (passwordForm.controls.newPassword.hasError('minlength') && passwordForm.controls.newPassword.touched) {
+                <mat-error>Minimum 8 characters</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Confirm New Password</mat-label>
+              <input matInput formControlName="confirmPassword"
+                     [type]="hideConfirmPwd() ? 'password' : 'text'" />
+              <mat-icon matPrefix>lock_reset</mat-icon>
+              <button mat-icon-button matSuffix type="button"
+                      (click)="hideConfirmPwd.set(!hideConfirmPwd())">
+                <mat-icon>{{ hideConfirmPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="st-actions">
+            <button mat-raised-button class="suhana-btn-primary"
+                    [disabled]="isChangingPwd()" (click)="changePassword()">
+              {{ isChangingPwd() ? 'Saving…' : 'Update Password' }}
+            </button>
+          </div>
+        </form>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ══ Notification Preferences ═══════════════════════════════════════════ -->
+    <mat-card appearance="outlined" class="st-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="st-card-icon">notifications</mat-icon>
+        <mat-card-title>Notifications</mat-card-title>
+        <mat-card-subtitle>Control how and when we contact you</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <p class="st-section-label">Email Notifications</p>
+        <div class="st-toggle-list">
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>favorite</mat-icon>
+              <div><strong>New Matches</strong><span>Get notified when new matches are found</span></div>
+            </div>
+            <mat-slide-toggle [checked]="notifications().emailMatches" color="primary"
+                              (change)="toggleNotification('emailMatches')"></mat-slide-toggle>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>chat</mat-icon>
+              <div><strong>Messages</strong><span>Email when you receive a new message</span></div>
+            </div>
+            <mat-slide-toggle [checked]="notifications().emailMessages" color="primary"
+                              (change)="toggleNotification('emailMessages')"></mat-slide-toggle>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>volunteer_activism</mat-icon>
+              <div><strong>Interests</strong><span>Email when someone expresses interest</span></div>
+            </div>
+            <mat-slide-toggle [checked]="notifications().emailInterests" color="primary"
+                              (change)="toggleNotification('emailInterests')"></mat-slide-toggle>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>campaign</mat-icon>
+              <div><strong>Marketing &amp; Tips</strong><span>Product updates &amp; tips</span></div>
+            </div>
+            <mat-slide-toggle [checked]="notifications().emailMarketing" color="primary"
+                              (change)="toggleNotification('emailMarketing')"></mat-slide-toggle>
+          </div>
+        </div>
+
+        <p class="st-section-label">Push &amp; SMS</p>
+        <div class="st-toggle-list">
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>phone_android</mat-icon>
+              <div><strong>SMS Alerts</strong><span>Text messages for important updates</span></div>
+            </div>
+            <mat-slide-toggle [checked]="notifications().smsAlerts" color="primary"
+                              (change)="toggleNotification('smsAlerts')"></mat-slide-toggle>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>notifications_active</mat-icon>
+              <div><strong>Push — Matches</strong><span>Browser/app notifications for matches</span></div>
+            </div>
+            <mat-slide-toggle [checked]="notifications().pushMatches" color="primary"
+                              (change)="toggleNotification('pushMatches')"></mat-slide-toggle>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>mark_chat_unread</mat-icon>
+              <div><strong>Push — Messages</strong><span>Browser/app notifications for chats</span></div>
+            </div>
+            <mat-slide-toggle [checked]="notifications().pushMessages" color="primary"
+                              (change)="toggleNotification('pushMessages')"></mat-slide-toggle>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ══ Privacy & Visibility ════════════════════════════════════════════════ -->
+    <mat-card appearance="outlined" class="st-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="st-card-icon">shield</mat-icon>
+        <mat-card-title>Privacy &amp; Visibility</mat-card-title>
+        <mat-card-subtitle>Control who can see your activity</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <div class="st-toggle-list">
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>circle</mat-icon>
+              <div><strong>Show Online Status</strong><span>Let others see when you're active</span></div>
+            </div>
+            <mat-slide-toggle [checked]="privacy().showOnlineStatus" color="primary"
+                              (change)="togglePrivacy('showOnlineStatus')"></mat-slide-toggle>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>done_all</mat-icon>
+              <div><strong>Read Receipts</strong><span>Show when you've read a message</span></div>
+            </div>
+            <mat-slide-toggle [checked]="privacy().showReadReceipts" color="primary"
+                              (change)="togglePrivacy('showReadReceipts')"></mat-slide-toggle>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="st-toggle-row">
+            <div class="st-toggle-info">
+              <mat-icon>travel_explore</mat-icon>
+              <div><strong>Appear in Search</strong><span>Include profile in search results</span></div>
+            </div>
+            <mat-slide-toggle [checked]="privacy().profileIndexed" color="primary"
+                              (change)="togglePrivacy('profileIndexed')"></mat-slide-toggle>
+          </div>
+        </div>
+
+        <p class="st-section-label">Who Can Message You</p>
+        <mat-button-toggle-group [value]="privacy().allowMessageFrom" class="st-toggle-group"
+                                 (change)="setMessageFrom($event.value)">
+          <mat-button-toggle value="everyone">Everyone</mat-button-toggle>
+          <mat-button-toggle value="matches">Matches Only</mat-button-toggle>
+          <mat-button-toggle value="none">No One</mat-button-toggle>
+        </mat-button-toggle-group>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ══ Membership ══════════════════════════════════════════════════════════ -->
+    <mat-card appearance="outlined" class="st-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="st-card-icon">workspace_premium</mat-icon>
+        <mat-card-title>Membership</mat-card-title>
+        <mat-card-subtitle>Your current plan &amp; benefits</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="st-membership">
+          <div class="st-membership__badge">
+            <mat-icon>star</mat-icon>
+            <!-- <span class="st-membership__tier">{{ user()?.membership | titlecase }} Plan</span> -->
+            <span class="st-membership__tier" style="text-transform: capitalize;">{{ user()?.membership }} Plan</span>
+          </div>
+          <p class="st-membership__desc">
+            @if (user()?.membership === 'free') {
+              Upgrade to unlock unlimited matches, priority listing, and more.
+            } @else {
+              Thank you for being a premium member. Enjoy all exclusive benefits.
+            }
+          </p>
+          <a mat-raised-button routerLink="/premium" class="suhana-btn-primary">
+            <mat-icon>upgrade</mat-icon> View Plans
+          </a>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ══ Danger Zone ═════════════════════════════════════════════════════════ -->
+    <mat-card appearance="outlined" class="st-card st-card--danger">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="st-card-icon st-card-icon--danger">warning</mat-icon>
+        <mat-card-title>Danger Zone</mat-card-title>
+        <mat-card-subtitle>Irreversible account actions</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <div class="st-danger-row">
+          <div>
+            <strong>Deactivate Account</strong>
+            <p>Your profile will be hidden from all searches. You can reactivate at any time.</p>
+          </div>
+          @if (confirmDeactivate()) {
+            <div class="st-confirm">
+              <span>Are you sure?</span>
+              <button mat-raised-button color="warn" (click)="deactivateAccount()">Yes, Deactivate</button>
+              <button mat-stroked-button (click)="confirmDeactivate.set(false)">Cancel</button>
+            </div>
+          } @else {
+            <button mat-stroked-button color="warn" (click)="deactivateAccount()">
+              <mat-icon>pause_circle</mat-icon> Deactivate
+            </button>
+          }
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="st-danger-row">
+          <div>
+            <strong>Delete Account</strong>
+            <p>Permanently delete your account and all data. This cannot be undone.</p>
+          </div>
+          @if (confirmDelete()) {
+            <div class="st-confirm">
+              <span>This is permanent!</span>
+              <button mat-raised-button color="warn">Yes, Delete Forever</button>
+              <button mat-stroked-button (click)="confirmDelete.set(false)">Cancel</button>
+            </div>
+          } @else {
+            <button mat-stroked-button color="warn" (click)="confirmDelete.set(true)">
+              <mat-icon>delete_forever</mat-icon> Delete Account
+            </button>
+          }
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

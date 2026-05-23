@@ -1,0 +1,436 @@
+// ─────────────────────────────────────────────
+//  Layout
+// ─────────────────────────────────────────────
+.verify-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 20px;
+  overflow: hidden;
+  margin-top: -5rem;
+}
+
+.verify-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+
+  .gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.12;
+    animation: float 6s ease-in-out infinite;
+
+    &.orb-1 {
+      width: 280px; height: 280px;
+      background: linear-gradient(45deg, #800020, #c49aae);
+      top: -140px; right: -140px;
+      animation-delay: 0s;
+    }
+    &.orb-2 {
+      width: 220px; height: 220px;
+      background: linear-gradient(45deg, #fdf0f5, #c49aae);
+      bottom: -110px; left: -110px;
+      animation-delay: 2s;
+    }
+    &.orb-3 {
+      width: 200px; height: 200px;
+      background: linear-gradient(45deg, #c49aae, #800020);
+      top: 40%; left: -100px;
+      animation-delay: 4s;
+    }
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%       { transform: translateY(-15px) rotate(120deg); }
+  66%       { transform: translateY(8px) rotate(240deg); }
+}
+
+// ─────────────────────────────────────────────
+//  Card
+// ─────────────────────────────────────────────
+.verify-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow:
+    0 20px 40px rgba(128, 0, 32, 0.1),
+    0 0 0 1px rgba(196, 154, 174, 0.15);
+  padding: 52px 44px 44px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─────────────────────────────────────────────
+//  State icons
+// ─────────────────────────────────────────────
+.state-icon {
+  position: relative;
+  width: 96px; height: 96px;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  animation: iconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  mat-icon {
+    font-size: 2.8rem;
+    width: 2.8rem; height: 2.8rem;
+    color: white;
+    position: relative;
+    z-index: 1;
+  }
+
+  &.verifying-icon {
+    background: linear-gradient(135deg, #800020, #c49aae);
+    box-shadow: 0 12px 32px rgba(128, 0, 32, 0.35);
+
+    mat-icon { opacity: 0.9; }
+
+    .spinner-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 34px;
+      border: 3px solid transparent;
+      border-top-color: rgba(128, 0, 32, 0.5);
+      border-right-color: rgba(196, 154, 174, 0.4);
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &.success-icon {
+    background: linear-gradient(135deg, #43e97b, #38f9d7);
+    box-shadow: 0 12px 32px rgba(67, 233, 123, 0.4);
+
+    .success-burst {
+      position: absolute;
+      inset: -10px;
+      border-radius: 36px;
+      border: 3px solid rgba(67, 233, 123, 0.35);
+      animation: burstPulse 1.6s ease-out infinite;
+    }
+  }
+
+  &.failed-icon {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    box-shadow: 0 12px 32px rgba(255, 107, 107, 0.4);
+  }
+
+  &.expired-icon {
+    background: linear-gradient(135deg, #feca57, #ff9f43);
+    box-shadow: 0 12px 32px rgba(254, 202, 87, 0.45);
+  }
+
+  &.resent-icon {
+    background: linear-gradient(135deg, #800020, #c49aae);
+    box-shadow: 0 12px 32px rgba(128, 0, 32, 0.35);
+
+    .resent-burst {
+      position: absolute;
+      inset: -10px;
+      border-radius: 36px;
+      border: 3px solid rgba(196, 154, 174, 0.4);
+      animation: burstPulse 1.6s ease-out infinite;
+    }
+  }
+}
+
+@keyframes iconPop {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes burstPulse {
+  0%   { opacity: 1; transform: scale(1); }
+  70%  { opacity: 0; transform: scale(1.4); }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+
+// ─────────────────────────────────────────────
+//  Text
+// ─────────────────────────────────────────────
+.state-title {
+  margin: 0 0 12px;
+  font-size: 1.85rem;
+  font-weight: 700;
+  animation: fadeInUp 0.5s 0.3s ease-out both;
+  background: linear-gradient(135deg, #800020, #c49aae);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  height: 35px;
+
+  &.success {
+    background: linear-gradient(135deg, #2e7d32, #43a047);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  &.failed {
+    background: linear-gradient(135deg, #c62828, #ff6b6b);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  &.expired {
+    background: linear-gradient(135deg, #b45309, #feca57);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  // resent reuses the default maroon gradient
+}
+
+.state-sub {
+  margin: 0 0 28px;
+  font-size: 0.95rem;
+  color: var(--suhana-text-secondary, #555);
+  line-height: 1.7;
+  animation: fadeInUp 0.5s 0.4s ease-out both;
+
+  strong { color: var(--suhana-maroon, #800020); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─────────────────────────────────────────────
+//  Info pills
+// ─────────────────────────────────────────────
+.info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 32px;
+  animation: fadeInUp 0.5s 0.5s ease-out both;
+
+  mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; }
+
+  &.success-pill {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+    mat-icon { color: #43a047; }
+  }
+
+  &.failed-pill {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+    mat-icon { color: #e53935; }
+  }
+
+  &.expired-pill {
+    background: #fff8e1;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    mat-icon { color: #f59e0b; }
+  }
+
+  &.resent-pill {
+    background: var(--suhana-blush, #fdf0f5);
+    color: var(--suhana-maroon, #800020);
+    border: 1px solid var(--suhana-rose-gold-lighter, #e8ccd7);
+    mat-icon { color: var(--suhana-rose-gold, #c49aae); }
+  }
+}
+
+// ─────────────────────────────────────────────
+//  Resend error banner
+// ─────────────────────────────────────────────
+.resend-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 12px;
+  color: #c62828;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: fadeInUp 0.3s ease-out both;
+
+  mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; color: #e53935; }
+}
+
+// ─────────────────────────────────────────────
+//  Resent state — 3-step guide
+// ─────────────────────────────────────────────
+.resent-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 28px;
+  animation: fadeInUp 0.5s 0.45s ease-out both;
+
+  .resent-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--suhana-blush, #fdf0f5);
+    border: 1px solid var(--suhana-rose-gold-lighter, #e8ccd7);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: left;
+
+    .step-number {
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #800020, #c49aae);
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    span {
+      font-size: 0.9rem;
+      color: var(--suhana-text-secondary, #555);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+//  "Send again" text link
+// ─────────────────────────────────────────────
+.resend-again {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  font-size: 0.875rem;
+  color: var(--suhana-text-secondary, #888);
+  animation: fadeInUp 0.5s 0.7s ease-out both;
+
+  .resend-text-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--suhana-maroon, #800020);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+
+    &:hover:not(:disabled) { color: var(--suhana-rose-gold, #c49aae); }
+
+    &:disabled {
+      color: #aaa;
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+//  Action buttons
+// ─────────────────────────────────────────────
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  animation: fadeInUp 0.5s 0.6s ease-out both;
+
+  .action-button {
+    width: 100%;
+    height: 52px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.3px;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    mat-icon { font-size: 1.2rem; width: 1.2rem; height: 1.2rem; }
+    mat-spinner ::ng-deep circle { stroke: white; }
+
+    &.primary-button {
+      background: linear-gradient(135deg, #800020, #c49aae);
+      color: white;
+      box-shadow: 0 6px 20px rgba(128, 0, 32, 0.3);
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(128, 0, 32, 0.45);
+      }
+
+      &:disabled { opacity: 0.65; cursor: not-allowed; }
+    }
+
+    &.secondary-button {
+      border: 2px solid var(--suhana-maroon, #800020);
+      color: var(--suhana-maroon, #800020);
+      background: transparent;
+
+      &:hover {
+        background: var(--suhana-blush, #fdf0f5);
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+//  Responsive
+// ─────────────────────────────────────────────
+@media (max-width: 480px) {
+  .verify-container { padding: 16px; }
+
+  .verify-card {
+    padding: 36px 24px 32px;
+    border-radius: 20px;
+  }
+
+  .state-icon {
+    width: 80px; height: 80px;
+    mat-icon { font-size: 2.2rem; width: 2.2rem; height: 2.2rem; }
+  }
+
+  .state-title { font-size: 1.6rem; }
+}

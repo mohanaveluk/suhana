@@ -1,0 +1,126 @@
+<div class="shortlist-page suhana-container">
+  <div class="shortlist-header">
+    <h1><mat-icon>bookmark</mat-icon> My Shortlist</h1>
+    <p>Manage your saved profiles and track your connection journey</p>
+  </div>
+
+  <mat-tab-group class="shortlist-tabs" animationDuration="300ms">
+    <!-- Shortlisted Profiles -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>bookmark</mat-icon> Shortlisted ({{ shortlistedMatches().length }})
+      </ng-template>
+      <div class="tab-content">
+        @if (shortlistedMatches().length > 0) {
+          <div class="shortlist-grid">
+            @for (match of shortlistedMatches(); track match.id) {
+              <mat-card class="shortlist-card" appearance="outlined">
+                <div class="card-row">
+                  <img [src]="match.profile.photos[0]?.url" [alt]="match.profile.firstName" class="card-avatar" />
+                  <div class="card-info">
+                    <h3>{{ match.profile.firstName }} {{ match.profile.lastName }}</h3>
+                    <p>{{ match.profile.age }} yrs &middot; {{ match.profile.location.city }}</p>
+                    <p class="card-profession">{{ match.profile.occupation.title }}</p>
+                    <div class="match-score-tag">{{ match.matchPercentage }}% Match</div>
+                  </div>
+                  <div class="card-actions">
+                    <button mat-raised-button class="suhana-btn-primary" (click)="expressInterest(match.id)">
+                      <mat-icon>favorite</mat-icon> Express Interest
+                    </button>
+                    <button mat-icon-button (click)="removeShortlist(match.id)" aria-label="Remove from shortlist">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </mat-card>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <mat-icon>bookmark_border</mat-icon>
+            <h3>No shortlisted profiles</h3>
+            <p>Browse matches and shortlist profiles you're interested in</p>
+            <a mat-raised-button routerLink="/matchmaking" class="suhana-btn-primary">Find Matches</a>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Interest Sent -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>favorite</mat-icon> Interest Sent ({{ interestedMatches().length }})
+      </ng-template>
+      <div class="tab-content">
+        @if (interestedMatches().length > 0) {
+          <div class="shortlist-grid">
+            @for (match of interestedMatches(); track match.id) {
+              <mat-card class="shortlist-card" appearance="outlined">
+                <div class="card-row">
+                  <img [src]="match.profile.photos[0]?.url" [alt]="match.profile.firstName" class="card-avatar" />
+                  <div class="card-info">
+                    <h3>{{ match.profile.firstName }} {{ match.profile.lastName }}</h3>
+                    <p>{{ match.profile.age }} yrs &middot; {{ match.profile.location.city }}</p>
+                    <p class="card-profession">{{ match.profile.occupation.title }}</p>
+                    <div class="status-tag pending">
+                      <mat-icon>schedule</mat-icon> Waiting for reply
+                    </div>
+                  </div>
+                  <div class="card-actions">
+                    <button mat-raised-button class="suhana-btn-primary" (click)="connect(match.id)">
+                      <mat-icon>chat</mat-icon> Chat
+                    </button>
+                  </div>
+                </div>
+              </mat-card>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <mat-icon>favorite_border</mat-icon>
+            <h3>No interests sent</h3>
+            <p>Express interest in profiles you like to start connecting</p>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Connected -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>people</mat-icon> Connected ({{ connectedMatches().length }})
+      </ng-template>
+      <div class="tab-content">
+        @if (connectedMatches().length > 0) {
+          <div class="shortlist-grid">
+            @for (match of connectedMatches(); track match.id) {
+              <mat-card class="shortlist-card connected" appearance="outlined">
+                <div class="card-row">
+                  <img [src]="match.profile.photos[0]?.url" [alt]="match.profile.firstName" class="card-avatar" />
+                  <div class="card-info">
+                    <h3>{{ match.profile.firstName }} {{ match.profile.lastName }}</h3>
+                    <p>{{ match.profile.age }} yrs &middot; {{ match.profile.location.city }}</p>
+                    <div class="status-tag confirmed">
+                      <mat-icon>check_circle</mat-icon> Mutual interest confirmed
+                    </div>
+                  </div>
+                  <div class="card-actions">
+                    <a mat-raised-button routerLink="/chat" class="suhana-btn-primary">
+                      <mat-icon>chat</mat-icon> Start Chat
+                    </a>
+                  </div>
+                </div>
+              </mat-card>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <mat-icon>people_outline</mat-icon>
+            <h3>No connections yet</h3>
+            <p>When someone accepts your interest, they'll appear here</p>
+          </div>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

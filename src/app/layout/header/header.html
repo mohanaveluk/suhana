@@ -1,0 +1,108 @@
+<mat-toolbar class="header-toolbar">
+  <div class="header-container">
+    <!-- Logo -->
+    <a routerLink="/" class="logo" aria-label="Suhana Home">
+      <mat-icon class="logo-icon">favorite</mat-icon>
+      <span class="logo-text">Suhana</span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a mat-button routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a mat-button routerLink="/search" routerLinkActive="active-link">Search</a>
+      <a mat-button routerLink="/matchmaking" routerLinkActive="active-link">Matches</a>
+      @if (auth.authenticated()) {
+        <a mat-button routerLink="/shortlist" routerLinkActive="active-link">Shortlist</a>
+        <a mat-button routerLink="/chat" routerLinkActive="active-link">
+          <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small">chat</mat-icon>
+          Messages
+        </a>
+      }
+      @if (auth.isAdmin() || auth.isTester()) {
+        <a mat-button routerLink="/admin" routerLinkActive="active-link">
+          <mat-icon>admin_panel_settings</mat-icon>
+          Admin
+        </a>
+      }
+    </nav>
+
+    <!-- Auth Buttons -->
+    <div class="auth-actions">
+      @if (!auth.authenticated()) {
+        <a mat-button routerLink="/login" class="login-btn">Login</a>
+        <a mat-raised-button routerLink="/register" class="register-btn suhana-btn-primary">Register Free</a>
+      } @else {
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <a mat-menu-item routerLink="/profile">
+            <mat-icon>person</mat-icon>
+            <span>My Profile</span>
+          </a>
+          <a mat-menu-item routerLink="/shortlist">
+            <mat-icon>bookmark</mat-icon>
+            <span>Shortlisted</span>
+          </a>
+          <a mat-menu-item routerLink="/premium">
+            <mat-icon>star</mat-icon>
+            <span>Premium Plans</span>
+          </a>
+          <a mat-menu-item routerLink="/match-tracker">
+            <mat-icon>track_changes</mat-icon>
+            <span>Match Tracker</span>
+          </a>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      }
+
+      <!-- Mobile menu toggle -->
+      <button mat-icon-button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <mat-icon>{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<!-- Mobile Navigation Drawer -->
+@if (mobileMenuOpen()) {
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <a routerLink="/" (click)="toggleMobileMenu()">
+      <mat-icon>home</mat-icon> Home
+    </a>
+    <a routerLink="/search" (click)="toggleMobileMenu()">
+      <mat-icon>search</mat-icon> Search
+    </a>
+    <a routerLink="/matchmaking" (click)="toggleMobileMenu()">
+      <mat-icon>favorite</mat-icon> Matches
+    </a>
+    @if (auth.authenticated()) {
+      <a routerLink="/shortlist" (click)="toggleMobileMenu()">
+        <mat-icon>bookmark</mat-icon> Shortlist
+      </a>
+      <a routerLink="/chat" (click)="toggleMobileMenu()">
+        <mat-icon>chat</mat-icon> Messages
+      </a>
+      <a routerLink="/profile" (click)="toggleMobileMenu()">
+        <mat-icon>person</mat-icon> Profile
+      </a>
+    }
+    @if (auth.isAdmin() || auth.isTester()) {
+      <a routerLink="/admin" (click)="toggleMobileMenu()">
+        <mat-icon>admin_panel_settings</mat-icon> Admin
+      </a>
+    }
+    @if (!auth.authenticated()) {
+      <a routerLink="/login" (click)="toggleMobileMenu()" class="mobile-login">Login</a>
+      <a routerLink="/register" (click)="toggleMobileMenu()" class="mobile-register">Register Free</a>
+    } @else {
+      <a (click)="logout()" class="mobile-logout">
+        <mat-icon>logout</mat-icon> Logout
+      </a>
+    }
+  </nav>
+}

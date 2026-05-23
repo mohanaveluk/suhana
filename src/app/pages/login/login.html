@@ -1,0 +1,95 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <mat-icon class="heart-icon">favorite</mat-icon>
+      <h1>Welcome Back</h1>
+      <p>Login to your Suhana account</p>
+    </div>
+
+    @if (verificationSent()) {
+      <div class="verify-sent" role="status">
+        <mat-icon>mark_email_read</mat-icon>
+        <span>Verification email sent! Please check your inbox.</span>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-banner" role="alert">
+        <mat-icon class="error-banner__icon">error_outline</mat-icon>
+        <span class="error-banner__message">{{ errorMessage() }}</span>
+        <button mat-icon-button class="error-banner__close" aria-label="Close error"
+                (click)="errorMessage.set(null); showVerifyOption.set(false)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      @if (showVerifyOption()) {
+        <button mat-stroked-button class="verify-btn full-width"
+                [disabled]="isSendingVerification()"
+                (click)="sendVerificationEmail()">
+          <mat-icon>mark_email_unread</mat-icon>
+          {{ isSendingVerification() ? 'Sending...' : 'Resend Verification Email' }}
+        </button>
+      }
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" />
+        <mat-icon matPrefix>email</mat-icon>
+        @if (loginForm.controls.email.hasError('required') && loginForm.controls.email.touched) {
+          <mat-error>Email is required</mat-error>
+        } @else if (loginForm.controls.email.hasError('email') && loginForm.controls.email.touched) {
+          <mat-error>Please enter a valid email</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" [type]="hidePassword() ? 'password' : 'text'" />
+        <mat-icon matPrefix>lock</mat-icon>
+        <button mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())" type="button"
+                [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'">
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (loginForm.controls.password.hasError('required') && loginForm.controls.password.touched) {
+          <mat-error>Password is required</mat-error>
+        } @else if (loginForm.controls.password.hasError('minlength') && loginForm.controls.password.touched) {
+          <mat-error>Minimum 6 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="forgot-link">
+        <a routerLink="/forgot-password">Forgot password?</a>
+      </div>
+
+      <button mat-raised-button type="submit" class="suhana-btn-primary full-width login-btn"
+              [disabled]="isLoggingIn()">
+        @if (isLoggingIn()) {
+          Logging in...
+        } @else {
+          <ng-container>Login <mat-icon>arrow_forward</mat-icon></ng-container>
+        }
+      </button>
+    </form>
+
+    <mat-divider></mat-divider>
+
+    <div class="demo-section">
+      <p class="demo-label">Quick Demo Access</p>
+      <div class="demo-buttons">
+        <button mat-stroked-button (click)="loginAsDemo('registered')" class="demo-btn">
+          <mat-icon>person</mat-icon> User Demo
+        </button>
+        <button mat-stroked-button (click)="loginAsDemo('admin')" class="demo-btn">
+          <mat-icon>admin_panel_settings</mat-icon> Admin Demo
+        </button>
+        <button mat-stroked-button (click)="loginAsDemo('tester')" class="demo-btn">
+          <mat-icon>bug_report</mat-icon> Tester Demo
+        </button>
+      </div>
+    </div>
+
+    <p class="register-link">
+      Don't have an account? <a routerLink="/register">Register Free</a>
+    </p>
+  </div>
+</div>

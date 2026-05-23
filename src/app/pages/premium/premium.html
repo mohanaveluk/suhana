@@ -1,0 +1,85 @@
+<div class="premium-page suhana-container">
+  <div class="premium-header">
+    <mat-icon class="crown-icon">star</mat-icon>
+    <h1>Premium Membership</h1>
+    <p>Unlock premium features and find your perfect match faster</p>
+  </div>
+
+  <div class="plans-grid">
+    @for (plan of plans(); track plan.id) {
+      <mat-card class="plan-card" appearance="outlined"
+                [class.popular]="plan.isPopular"
+                [class.selected]="selectedPlan() === plan.id">
+        @if (plan.isPopular) {
+          <div class="popular-badge">Most Popular</div>
+        }
+
+        <mat-card-header>
+          <mat-card-title>{{ plan.name }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="price-section">
+            @if (plan.price === 0) {
+              <span class="price">Free</span>
+            } @else {
+              <span class="price-currency">&#8377;</span>
+              <span class="price">{{ plan.price }}</span>
+              <span class="price-duration">/ {{ plan.duration }}</span>
+            }
+          </div>
+
+          <ul class="feature-list">
+            @for (feature of plan.features; track feature) {
+              <li>
+                <mat-icon class="check-icon">check_circle</mat-icon>
+                {{ feature }}
+              </li>
+            }
+          </ul>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-raised-button
+                  [class.suhana-btn-primary]="plan.isPopular"
+                  [class.suhana-btn-outline]="!plan.isPopular"
+                  (click)="selectPlan(plan.id)"
+                  class="plan-btn">
+            @if (plan.price === 0) {
+              Current Plan
+            } @else {
+              Choose {{ plan.name }}
+            }
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+
+  <!-- Benefits Section -->
+  <div class="benefits-section">
+    <h2 class="suhana-section-title">Premium Benefits</h2>
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <mat-icon>visibility</mat-icon>
+        <h3>Profile Boost</h3>
+        <p>Get 3x more visibility and appear at the top of search results</p>
+      </div>
+      <div class="benefit-item">
+        <mat-icon>auto_awesome</mat-icon>
+        <h3>Top Match Picks</h3>
+        <p>Receive handpicked compatible profiles every week</p>
+      </div>
+      <div class="benefit-item">
+        <mat-icon>priority_high</mat-icon>
+        <h3>Priority Requests</h3>
+        <p>Your connection requests are highlighted and prioritized</p>
+      </div>
+      <div class="benefit-item">
+        <mat-icon>remove_red_eye</mat-icon>
+        <h3>See Profile Views</h3>
+        <p>Know exactly who's been looking at your profile</p>
+      </div>
+    </div>
+  </div>
+</div>

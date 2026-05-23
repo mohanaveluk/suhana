@@ -1,0 +1,159 @@
+.suhana-footer {
+  background: linear-gradient(180deg, #3d2c2e 0%, #2a1a1c 100%);
+  color: #e8d5d8;
+  padding: 64px 0 0;
+  margin-top: 80px;
+}
+
+.footer-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 48px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.footer-brand {
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+
+    mat-icon {
+      color: var(--suhana-rose-gold);
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
+
+    span {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: white;
+      letter-spacing: 1px;
+    }
+  }
+
+  .brand-tagline {
+    color: #baa0a3;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+}
+
+.social-links {
+  display: flex;
+  gap: 12px;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e8d5d8;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: var(--suhana-rose-gold);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    mat-icon {
+      font-size: 20px;
+      height: 20px;
+      width: 20px;
+    }
+  }
+}
+
+.footer-links {
+  h4 {
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  a {
+    color: #baa0a3;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    padding: 2px 0;
+
+    &:hover {
+      color: var(--suhana-rose-gold-light);
+      padding-left: 4px;
+    }
+  }
+}
+
+mat-divider {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0;
+
+  p {
+    color: #8a7073;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  .footer-note {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .heart-icon {
+    color: var(--suhana-rose-gold);
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    animation: pulse 2s infinite;
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}

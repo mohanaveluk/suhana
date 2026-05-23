@@ -1,0 +1,154 @@
+<div class="verify-container">
+  <div class="verify-background">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+  </div>
+
+  <div class="verify-card">
+
+    @if (state() === 'verifying') {
+      <div class="state-icon verifying-icon">
+        <div class="spinner-ring"></div>
+        <mat-icon>mark_email_read</mat-icon>
+      </div>
+      <h2 class="state-title">Verifying your email…</h2>
+      <p class="state-sub">Please wait while we confirm your address.</p>
+    }
+
+    @else if (state() === 'success') {
+      <div class="state-icon success-icon">
+        <mat-icon>verified</mat-icon>
+        <div class="success-burst"></div>
+      </div>
+      <h2 class="state-title success">{{ responseMessage() }}</h2>
+      <p class="state-sub">
+        Your email address has been confirmed successfully.<br>
+        Your account is now active and ready to use.
+      </p>
+      <div class="info-pill success-pill">
+        <mat-icon>check_circle</mat-icon>
+        <span>Account activated</span>
+      </div>
+      <div class="actions">
+        <button mat-raised-button routerLink="/login" class="action-button primary-button">
+          <mat-icon>login</mat-icon>
+          Go to Login
+        </button>
+      </div>
+    }
+
+    @else if (state() === 'failed') {
+      <div class="state-icon failed-icon">
+        <mat-icon>cancel</mat-icon>
+      </div>
+      <h2 class="state-title failed">Verification Failed</h2>
+      <p class="state-sub">{{ errorMessage() }}</p>
+      <div class="info-pill failed-pill">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorDetail() }}</span>
+      </div>
+      <div class="actions">
+        @if (canRetry()) {
+          <button mat-raised-button (click)="retryVerification()" class="action-button primary-button">
+            <mat-icon>refresh</mat-icon>
+            Try Again
+          </button>
+        }
+        <button mat-stroked-button routerLink="/register" class="action-button secondary-button">
+          <mat-icon>person_add</mat-icon>
+          Back to Register
+        </button>
+      </div>
+    }
+
+    @else if (state() === 'expired') {
+      <div class="state-icon expired-icon">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <h2 class="state-title expired">Link Expired</h2>
+      <p class="state-sub">
+        This verification link has expired.<br>
+        Verification links are valid for <strong>15 minutes</strong> only.
+      </p>
+      <div class="info-pill expired-pill">
+        <mat-icon>timer_off</mat-icon>
+        <span>Please request a new verification email</span>
+      </div>
+      @if (resendError()) {
+        <div class="resend-error">
+          <mat-icon>error_outline</mat-icon>
+          {{ resendError() }}
+        </div>
+      }
+      <div class="actions">
+        <button mat-raised-button
+                class="action-button primary-button"
+                (click)="resendVerification()"
+                [disabled]="isResending() || resendCooldown() > 0">
+          @if (isResending()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            <mat-icon>forward_to_inbox</mat-icon>
+          }
+          @if (!isResending() && resendCooldown() === 0) {
+            <span>Resend Verification Email</span>
+          } @else if (!isResending()) {
+            <span>Resend in {{ resendCooldown() }}s</span>
+          }
+        </button>
+        <button mat-stroked-button routerLink="/register" class="action-button secondary-button">
+          <mat-icon>person_add</mat-icon>
+          Register Again
+        </button>
+      </div>
+    }
+
+    @else if (state() === 'resent') {
+      <div class="state-icon resent-icon">
+        <mat-icon>forward_to_inbox</mat-icon>
+        <div class="resent-burst"></div>
+      </div>
+      <h2 class="state-title resent">New Link Sent!</h2>
+      <p class="state-sub">
+        We've sent a fresh verification link to<br>
+        @if (registeredEmail()) {
+          <strong>{{ registeredEmail() }}</strong>
+        } @else {
+          your registered email address.
+        }
+      </p>
+      <div class="resent-steps">
+        <div class="resent-step">
+          <div class="step-number">1</div>
+          <span>Open your inbox (or spam folder)</span>
+        </div>
+        <div class="resent-step">
+          <div class="step-number">2</div>
+          <span>Click the new verification link</span>
+        </div>
+        <div class="resent-step">
+          <div class="step-number">3</div>
+          <span>You'll be verified instantly</span>
+        </div>
+      </div>
+      <div class="info-pill resent-pill">
+        <mat-icon>access_time</mat-icon>
+        <span>This new link expires in 30 minutes</span>
+      </div>
+      <div class="resend-again">
+        <span>Didn't receive it?</span>
+        <button class="resend-text-btn"
+                (click)="resendVerification()"
+                [disabled]="isResending() || resendCooldown() > 0">
+          @if (resendCooldown() === 0) {
+            <span>Send again</span>
+          } @else {
+            <span>Send again in {{ resendCooldown() }}s</span>
+          }
+        </button>
+      </div>
+    }
+
+  </div>
+</div>

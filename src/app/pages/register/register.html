@@ -1,0 +1,343 @@
+<div class="register-page">
+  <div class="register-container">
+    <div class="register-header">
+      <mat-icon class="heart-icon">favorite</mat-icon>
+      <h1>Begin Your Journey</h1>
+      <p>Create your profile on Suhana and find your perfect match</p>
+    </div>
+
+    <mat-stepper linear #stepper class="register-stepper">
+      <!-- STEP 1: Account -->
+      <mat-step [stepControl]="accountForm" label="Account">
+        <form [formGroup]="accountForm">
+          <div class="step-content">
+            @if (registrationError()) {
+              <div class="registration-error" role="alert">
+                <mat-icon class="registration-error__icon">error_outline</mat-icon>
+                <span class="registration-error__message">{{ registrationError() }}</span>
+                <button mat-icon-button class="registration-error__close"
+                        aria-label="Close error"
+                        (click)="registrationError.set(null)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+            <h2>Create Your Account</h2>
+
+            <div class="gender-select">
+              <label id="gender-label">I am registering as</label>
+              <mat-radio-group formControlName="gender" aria-labelledby="gender-label">
+                <mat-radio-button value="bride">
+                  <mat-icon>female</mat-icon> Bride
+                </mat-radio-button>
+                <mat-radio-button value="groom">
+                  <mat-icon>male</mat-icon> Groom
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <input matInput formControlName="email" type="email" placeholder="you@example.com" />
+              <mat-icon matPrefix>email</mat-icon>
+              @if (accountForm.controls.email.hasError('email')) {
+                <mat-error>Please enter a valid email</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <input matInput formControlName="password" [type]="hidePassword() ? 'password' : 'text'" />
+              <mat-icon matPrefix>lock</mat-icon>
+              <button mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())" type="button"
+                      [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'">
+                <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (accountForm.controls.password.hasError('minlength')) {
+                <mat-error>Minimum 8 characters</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput formControlName="confirmPassword" type="password" />
+              <mat-icon matPrefix>lock</mat-icon>
+              @if (accountForm.controls.confirmPassword.hasError('required')) {
+                <mat-error>Please confirm your password</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-checkbox formControlName="agreeTerms" color="primary">
+              I agree to the <a routerLink="/terms">Terms of Service</a> and <a routerLink="/privacy">Privacy Policy</a>
+            </mat-checkbox>
+
+            <div class="step-actions">
+              <button mat-raised-button class="suhana-btn-primary"
+                      [disabled]="isSubmitting()"
+                      (click)="onStep1Next()">
+                @if (isSubmitting()) {
+                  Processing...
+                } @else {
+                  <ng-container>Next <mat-icon>arrow_forward</mat-icon></ng-container>
+                }
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- STEP 2: Personal Details -->
+      <mat-step [stepControl]="personalForm" label="Personal">
+        <form [formGroup]="personalForm">
+          <div class="step-content">
+            <h2>Personal Details</h2>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName" />
+                @if (personalForm.controls.firstName.invalid && personalForm.controls.firstName.touched) {
+                  <mat-error>Required (min 2 characters)</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName" />
+                @if (personalForm.controls.lastName.invalid && personalForm.controls.lastName.touched) {
+                  <mat-error>Required (min 2 characters)</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Date of Birth</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" />
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                @if (personalForm.controls.dateOfBirth.hasError('required') && personalForm.controls.dateOfBirth.touched) {
+                  <mat-error>Date of birth is required</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Height</mat-label>
+                <mat-select formControlName="height">
+                  @for (h of ['5\'0"','5\'1"','5\'2"','5\'3"','5\'4"','5\'5"','5\'6"','5\'7"','5\'8"','5\'9"','5\'10"','5\'11"','6\'0"','6\'1"','6\'2"']; track h) {
+                    <mat-option [value]="h">{{ h }}</mat-option>
+                  }
+                </mat-select>
+                @if (personalForm.controls.height.hasError('required') && personalForm.controls.height.touched) {
+                  <mat-error>Height is required</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Religion</mat-label>
+                <mat-select formControlName="religion">
+                  @for (r of religions; track r) {
+                    <mat-option [value]="r">{{ r }}</mat-option>
+                  }
+                </mat-select>
+                @if (personalForm.controls.religion.hasError('required') && personalForm.controls.religion.touched) {
+                  <mat-error>Religion is required</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Caste (Optional)</mat-label>
+                <input matInput formControlName="caste" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Mother Tongue</mat-label>
+                <input matInput formControlName="motherTongue" />
+                @if (personalForm.controls.motherTongue.hasError('required') && personalForm.controls.motherTongue.touched) {
+                  <mat-error>Mother tongue is required</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>City</mat-label>
+                <input matInput formControlName="city" />
+                @if (personalForm.controls.city.hasError('required') && personalForm.controls.city.touched) {
+                  <mat-error>City is required</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>State</mat-label>
+                <input matInput formControlName="state" />
+                @if (personalForm.controls.state.hasError('required') && personalForm.controls.state.touched) {
+                  <mat-error>State is required</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Country</mat-label>
+                <input matInput formControlName="country" />
+                @if (personalForm.controls.country.hasError('required') && personalForm.controls.country.touched) {
+                  <mat-error>Country is required</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-raised-button matStepperNext class="suhana-btn-primary"
+                      (click)="personalForm.markAllAsTouched()">
+                Next <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- STEP 3: Professional -->
+      <mat-step [stepControl]="professionalForm" label="Professional">
+        <form [formGroup]="professionalForm">
+          <div class="step-content">
+            <h2>Education & Career</h2>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Education Level</mat-label>
+                <mat-select formControlName="educationLevel">
+                  @for (e of educationLevels; track e) {
+                    <mat-option [value]="e">{{ e }}</mat-option>
+                  }
+                </mat-select>
+                @if (professionalForm.controls.educationLevel.hasError('required') && professionalForm.controls.educationLevel.touched) {
+                  <mat-error>Education level is required</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Field of Study</mat-label>
+                <input matInput formControlName="educationField" />
+                @if (professionalForm.controls.educationField.hasError('required') && professionalForm.controls.educationField.touched) {
+                  <mat-error>Field of study is required</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Institution (Optional)</mat-label>
+              <input matInput formControlName="institution" />
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Occupation</mat-label>
+                <mat-select formControlName="occupation">
+                  @for (o of occupations; track o) {
+                    <mat-option [value]="o">{{ o }}</mat-option>
+                  }
+                </mat-select>
+                @if (professionalForm.controls.occupation.hasError('required') && professionalForm.controls.occupation.touched) {
+                  <mat-error>Occupation is required</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Company (Optional)</mat-label>
+                <input matInput formControlName="company" />
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Annual Income (Optional)</mat-label>
+              <input matInput formControlName="annualIncome" placeholder="e.g., 10 LPA" />
+            </mat-form-field>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-raised-button matStepperNext class="suhana-btn-primary"
+                      (click)="professionalForm.markAllAsTouched()">
+                Next <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- STEP 4: Preferences -->
+      <mat-step [stepControl]="preferencesForm" label="Preferences">
+        <form [formGroup]="preferencesForm">
+          <div class="step-content">
+            @if (profileError()) {
+              <div class="registration-error" role="alert">
+                <mat-icon class="registration-error__icon">error_outline</mat-icon>
+                <span class="registration-error__message">{{ profileError() }}</span>
+                <button mat-icon-button class="registration-error__close"
+                        aria-label="Close error"
+                        (click)="profileError.set(null)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+            <h2>Partner Preferences</h2>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Preferred Age (Min)</mat-label>
+                <input matInput type="number" formControlName="ageMin" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Preferred Age (Max)</mat-label>
+                <input matInput type="number" formControlName="ageMax" />
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Preferred Religions</mat-label>
+              <mat-select formControlName="preferredReligions" multiple>
+                @for (r of religions; track r) {
+                  <mat-option [value]="r">{{ r }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Preferred Education</mat-label>
+              <mat-select formControlName="preferredEducation" multiple>
+                @for (e of educationLevels; track e) {
+                  <mat-option [value]="e">{{ e }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>About Me</mat-label>
+              <textarea matInput formControlName="aboutMe" rows="4"
+                        placeholder="Tell us about yourself, your interests, and what you're looking for..."></textarea>
+              <mat-hint>Minimum 50 characters</mat-hint>
+              @if (preferencesForm.controls.aboutMe.hasError('required') && preferencesForm.controls.aboutMe.touched) {
+                <mat-error>About Me is required</mat-error>
+              } @else if (preferencesForm.controls.aboutMe.hasError('minlength') && preferencesForm.controls.aboutMe.touched) {
+                <mat-error>Minimum 50 characters required</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-raised-button class="suhana-btn-primary"
+                      [disabled]="isSubmitting()"
+                      (click)="preferencesForm.markAllAsTouched(); onSubmit()">
+                @if (isSubmitting()) {
+                  Creating Profile...
+                } @else {
+                  <ng-container>Complete Registration <mat-icon>check</mat-icon></ng-container>
+                }
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+    </mat-stepper>
+
+    <p class="login-link">
+      Already have an account? <a routerLink="/login">Login here</a>
+    </p>
+  </div>
+</div>

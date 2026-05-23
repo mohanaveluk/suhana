@@ -1,0 +1,147 @@
+<div class="compare-page suhana-container">
+  <div class="compare-header">
+    <h1><mat-icon>compare</mat-icon> Compare Matches</h1>
+    <p>Side-by-side comparison of your potential matches</p>
+  </div>
+
+  @if (compareList().length > 0) {
+    <div class="compare-table-wrapper">
+      <table class="compare-table" role="table" aria-label="Match comparison table">
+        <!-- Header Row: Photos and Names -->
+        <thead>
+          <tr>
+            <th class="label-col" scope="col">Criteria</th>
+            @for (match of compareList(); track match.id) {
+              <th class="match-col" scope="col">
+                <div class="match-header-cell">
+                  <button mat-icon-button class="remove-btn" (click)="removeFromCompare(match.id)"
+                          aria-label="Remove from comparison">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                  <img [src]="match.profile.photos[0]?.url" [alt]="match.profile.firstName" class="compare-avatar" />
+                  <h3>{{ match.profile.firstName }}</h3>
+                  <span class="compare-age">{{ match.profile.age }} yrs</span>
+                  <div class="compare-score" [class]="getScoreClass(match.matchPercentage)">
+                    {{ match.matchPercentage }}% Match
+                  </div>
+                </div>
+              </th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- Location -->
+          <tr>
+            <td class="label-col"><mat-icon>location_on</mat-icon> Location</td>
+            @for (match of compareList(); track match.id) {
+              <td>{{ match.profile.location.city }}</td>
+            }
+          </tr>
+
+          <!-- Education -->
+          <tr>
+            <td class="label-col"><mat-icon>school</mat-icon> Education</td>
+            @for (match of compareList(); track match.id) {
+              <td>{{ match.profile.education.level }}<br /><small>{{ match.profile.education.field }}</small></td>
+            }
+          </tr>
+
+          <!-- Occupation -->
+          <tr>
+            <td class="label-col"><mat-icon>work</mat-icon> Occupation</td>
+            @for (match of compareList(); track match.id) {
+              <td>{{ match.profile.occupation.title }}<br /><small>{{ match.profile.occupation.company }}</small></td>
+            }
+          </tr>
+
+          <!-- Religion -->
+          <tr>
+            <td class="label-col"><mat-icon>temple_hindu</mat-icon> Religion</td>
+            @for (match of compareList(); track match.id) {
+              <td>{{ match.profile.religion }}</td>
+            }
+          </tr>
+
+          <!-- Family -->
+          <tr>
+            <td class="label-col"><mat-icon>family_restroom</mat-icon> Family Type</td>
+            @for (match of compareList(); track match.id) {
+              <td>{{ match.profile.familyDetails.familyType | titlecase }}</td>
+            }
+          </tr>
+
+          <!-- Height -->
+          <tr>
+            <td class="label-col"><mat-icon>height</mat-icon> Height</td>
+            @for (match of compareList(); track match.id) {
+              <td>{{ match.profile.height }}</td>
+            }
+          </tr>
+
+          <!-- Mother Tongue -->
+          <tr>
+            <td class="label-col"><mat-icon>translate</mat-icon> Language</td>
+            @for (match of compareList(); track match.id) {
+              <td>{{ match.profile.motherTongue }}</td>
+            }
+          </tr>
+
+          <!-- Compatibility Scores -->
+          @for (cat of categories; track cat) {
+            <tr class="score-row">
+              <td class="label-col">
+                <mat-icon>{{ cat === 'lifestyle' ? 'spa' : cat === 'education' ? 'school' : cat === 'location' ? 'location_on' : cat === 'familyValues' ? 'family_restroom' : cat === 'interests' ? 'interests' : cat === 'career' ? 'work' : 'psychology' }}</mat-icon>
+                {{ categoryLabels[cat] }}
+              </td>
+              @for (match of compareList(); track match.id) {
+                <td>
+                  <div class="score-bar-container">
+                    <div class="score-bar" [style.width]="getBarWidth(match.compatibilityBreakdown[cat])"
+                         [class]="getScoreClass(match.compatibilityBreakdown[cat])">
+                    </div>
+                    <span class="score-num">{{ match.compatibilityBreakdown[cat] }}%</span>
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+
+          <!-- AI Insight -->
+          <tr class="insight-row">
+            <td class="label-col"><mat-icon>auto_awesome</mat-icon> AI Insight</td>
+            @for (match of compareList(); track match.id) {
+              <td><em>{{ match.explanationText }}</em></td>
+            }
+          </tr>
+        </tbody>
+
+        <!-- Action Row -->
+        <tfoot>
+          <tr>
+            <td class="label-col">Actions</td>
+            @for (match of compareList(); track match.id) {
+              <td>
+                <div class="action-cell">
+                  <button mat-stroked-button (click)="shortlist(match)" matTooltip="Shortlist">
+                    <mat-icon>bookmark</mat-icon> Shortlist
+                  </button>
+                  <button mat-raised-button class="suhana-btn-primary" (click)="connect(match)">
+                    <mat-icon>favorite</mat-icon> Connect
+                  </button>
+                </div>
+              </td>
+            }
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <mat-icon>compare_arrows</mat-icon>
+      <h3>No matches to compare</h3>
+      <p>Go to the Matches page to find compatible profiles first.</p>
+      <a mat-raised-button routerLink="/matchmaking" class="suhana-btn-primary">Find Matches</a>
+    </div>
+  }
+</div>

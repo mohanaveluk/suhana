@@ -1,0 +1,228 @@
+<!-- ═══════════════ ROTATING BANNER ═══════════════ -->
+<section class="hero-banner" aria-label="Featured highlights">
+  <div class="banner-slides">
+    @for (slide of bannerSlides; track slide.id; let i = $index) {
+      <div
+        class="banner-slide"
+        [class.active]="currentSlide() === i"
+        [style.background-image]="'url(' + slide.imageUrl + ')'"
+        [attr.aria-hidden]="currentSlide() !== i">
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+          <h1>{{ slide.title }}</h1>
+          <p>{{ slide.subtitle }}</p>
+          <a mat-raised-button [routerLink]="slide.ctaLink" class="suhana-btn-primary banner-cta">
+            {{ slide.ctaText }}
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+  <div class="banner-dots" role="tablist" aria-label="Banner slides">
+    @for (slide of bannerSlides; track slide.id; let i = $index) {
+      <button
+        class="dot"
+        [class.active]="currentSlide() === i"
+        (click)="goToSlide(i)"
+        role="tab"
+        [attr.aria-selected]="currentSlide() === i"
+        [attr.aria-label]="'Go to slide ' + (i + 1)">
+      </button>
+    }
+  </div>
+</section>
+
+<!-- ═══════════════ STATS BAR ═══════════════ -->
+<section class="stats-bar" aria-label="Platform statistics">
+  <div class="suhana-container stats-grid">
+    @for (stat of stats; track stat.label) {
+      <div class="stat-item">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURED PROFILES (FLIP CARDS) ═══════════════ -->
+<section class="suhana-section featured-section" aria-label="Featured profiles">
+  <div class="suhana-container">
+    <h2 class="suhana-section-title">Featured Profiles</h2>
+    <p class="suhana-section-subtitle">Meet our verified members looking for their perfect match</p>
+
+    <div class="profiles-grid">
+      @for (profile of featuredProfiles(); track profile.userId) {
+        <div
+          class="flip-card"
+          [class.flipped]="hoveredCard() === profile.userId"
+          (mouseenter)="setHoveredCard(profile.userId)"
+          (mouseleave)="setHoveredCard(null)"
+          (focus)="setHoveredCard(profile.userId)"
+          (blur)="setHoveredCard(null)"
+          tabindex="0"
+          role="article"
+          [attr.aria-label]="profile.firstName + ' ' + profile.lastName + ', ' + profile.age + ' years'">
+
+          <!-- FRONT -->
+          <div class="flip-card-front">
+            <div class="card-image" [style.background-image]="'url(' + (profile.photos[0]?.url || '/avatar-default.svg') + ')'">
+              <div class="card-image-overlay"></div>
+              @if (profile.photos[0]?.isVerified) {
+                <div class="verified-badge" aria-label="Verified profile">
+                  <mat-icon>verified</mat-icon>
+                </div>
+              }
+              <div class="card-front-info">
+                <h3>{{ profile.firstName }}, {{ profile.age }}</h3>
+                <p><mat-icon>location_on</mat-icon> {{ profile.location.city }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- BACK -->
+          <div class="flip-card-back">
+            <div class="card-back-content">
+              <div class="back-header">
+                <img [src]="profile.photos[0]?.url || '/avatar-default.svg'" [alt]="profile.firstName" class="back-avatar" />
+                <div>
+                  <h3>{{ profile.firstName }} {{ profile.lastName }}</h3>
+                  <span class="back-age">{{ profile.age }} yrs &middot; {{ profile.height }}</span>
+                </div>
+              </div>
+              <div class="back-details">
+                <div class="detail-row">
+                  <mat-icon>school</mat-icon>
+                  <span>{{ profile.education.level }} in {{ profile.education.field }}</span>
+                </div>
+                <div class="detail-row">
+                  <mat-icon>work</mat-icon>
+                  <span>{{ profile.occupation.title }} at {{ profile.occupation.company }}</span>
+                </div>
+                <div class="detail-row">
+                  <mat-icon>temple_hindu</mat-icon>
+                  <span>{{ profile.religion }} &middot; {{ profile.motherTongue }}</span>
+                </div>
+                <div class="detail-row">
+                  <mat-icon>family_restroom</mat-icon>
+                  <span>{{ profile.familyDetails.familyType | titlecase }} Family</span>
+                </div>
+              </div>
+              <a mat-raised-button routerLink="/search" class="suhana-btn-primary back-cta">
+                View Profile
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="section-cta">
+      <a mat-raised-button routerLink="/search" class="suhana-btn-primary">
+        Browse All Profiles <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section class="suhana-section how-it-works" aria-label="How Suhana works">
+  <div class="suhana-container">
+    <h2 class="suhana-section-title">How Suhana Works</h2>
+    <p class="suhana-section-subtitle">Your journey to finding the perfect partner in 4 simple steps</p>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <mat-icon class="step-icon">person_add</mat-icon>
+        <h3>Create Profile</h3>
+        <p>Register as a bride or groom and complete your profile with preferences, photos, and family details.</p>
+      </div>
+      <div class="step-connector"><mat-icon>arrow_forward</mat-icon></div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <mat-icon class="step-icon">search</mat-icon>
+        <h3>Discover Matches</h3>
+        <p>Our AI analyzes 50+ parameters to suggest up to 4 highly compatible matches at a time.</p>
+      </div>
+      <div class="step-connector"><mat-icon>arrow_forward</mat-icon></div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <mat-icon class="step-icon">compare</mat-icon>
+        <h3>Compare & Connect</h3>
+        <p>View detailed compatibility scores, compare side-by-side, and express interest.</p>
+      </div>
+      <div class="step-connector"><mat-icon>arrow_forward</mat-icon></div>
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <mat-icon class="step-icon">favorite</mat-icon>
+        <h3>Begin Your Story</h3>
+        <p>Chat with smart icebreakers, share video intros, and start your beautiful journey together.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section class="suhana-section features-section" aria-label="Platform features">
+  <div class="suhana-container">
+    <h2 class="suhana-section-title">Why Choose Suhana?</h2>
+    <p class="suhana-section-subtitle">Smart features that make finding your life partner a delightful experience</p>
+
+    <div class="features-grid">
+      @for (feature of features; track feature.title) {
+        <div class="feature-card">
+          <div class="feature-icon-wrap">
+            <mat-icon>{{ feature.icon }}</mat-icon>
+          </div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ TESTIMONIALS ═══════════════ -->
+<section class="suhana-section testimonials-section" aria-label="Success stories">
+  <div class="suhana-container">
+    <h2 class="suhana-section-title">Love Stories That Started Here</h2>
+    <p class="suhana-section-subtitle">Real couples who found their happily ever after on Suhana</p>
+
+    <div class="testimonials-grid">
+      @for (testimonial of testimonials; track testimonial.id) {
+        <mat-card class="testimonial-card" appearance="outlined">
+          <mat-card-content>
+            <div class="quote-icon">
+              <mat-icon>format_quote</mat-icon>
+            </div>
+            <p class="quote-text">{{ testimonial.quote }}</p>
+            <div class="testimonial-author">
+              <img [src]="testimonial.photo" [alt]="testimonial.name" class="author-photo" />
+              <div>
+                <strong>{{ testimonial.name }}</strong>
+                <span>Matched {{ testimonial.matchDate }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA SECTION ═══════════════ -->
+<section class="cta-section" aria-label="Call to action">
+  <div class="suhana-container cta-content">
+    <h2>Ready to Find Your Perfect Match?</h2>
+    <p>Join over 2 million verified profiles and let Suhana's AI find your ideal life partner</p>
+    <div class="cta-buttons">
+      <a mat-raised-button routerLink="/register" class="suhana-btn-primary cta-btn">
+        Register as Bride <mat-icon>arrow_forward</mat-icon>
+      </a>
+      <a mat-raised-button routerLink="/register" class="suhana-btn-primary cta-btn groom-btn">
+        Register as Groom <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+  </div>
+</section>
