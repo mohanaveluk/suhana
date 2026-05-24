@@ -60,6 +60,12 @@
                     (click)="hideCurrentPwd.set(!hideCurrentPwd())">
               <mat-icon>{{ hideCurrentPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
+            @if (passwordForm.controls.currentPassword.hasError('required') && passwordForm.controls.currentPassword.touched) {
+              <mat-error>Current password is required</mat-error>
+            }
+            @else if (passwordForm.controls.currentPassword.hasError('minlength') && passwordForm.controls.currentPassword.touched) {
+              <mat-error>Minimum 8 characters</mat-error>
+            }
           </mat-form-field>
 
           <div class="st-row">
@@ -72,7 +78,10 @@
                       (click)="hideNewPwd.set(!hideNewPwd())">
                 <mat-icon>{{ hideNewPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
-              @if (passwordForm.controls.newPassword.hasError('minlength') && passwordForm.controls.newPassword.touched) {
+              @if (passwordForm.controls.newPassword.hasError('required') && passwordForm.controls.newPassword.touched) {
+                <mat-error>New password is required</mat-error>
+              }
+              @else if (passwordForm.controls.newPassword.hasError('minlength') && passwordForm.controls.newPassword.touched) {
                 <mat-error>Minimum 8 characters</mat-error>
               }
             </mat-form-field>
@@ -85,6 +94,12 @@
                       (click)="hideConfirmPwd.set(!hideConfirmPwd())">
                 <mat-icon>{{ hideConfirmPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
+              @if (passwordForm.controls.confirmPassword.hasError('required') && passwordForm.controls.confirmPassword.touched) {
+                <mat-error>Confirmation is required</mat-error>
+              }
+              @else if (passwordForm.hasError('mismatch') && passwordForm.controls.confirmPassword.touched) {
+                <mat-error>Passwords do not match</mat-error>
+              }
             </mat-form-field>
           </div>
 
@@ -107,6 +122,14 @@
         <mat-card-subtitle>Control how and when we contact you</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
+
+        @if (notifError()) {
+          <div class="st-alert st-alert--error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ notifError() }}</span>
+            <button mat-icon-button (click)="notifError.set(null)"><mat-icon>close</mat-icon></button>
+          </div>
+        }
 
         <p class="st-section-label">Email Notifications</p>
         <div class="st-toggle-list">
@@ -188,6 +211,14 @@
         <mat-card-subtitle>Control who can see your activity</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
+
+        @if (privacyError()) {
+          <div class="st-alert st-alert--error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ privacyError() }}</span>
+            <button mat-icon-button (click)="privacyError.set(null)"><mat-icon>close</mat-icon></button>
+          </div>
+        }
 
         <div class="st-toggle-list">
           <div class="st-toggle-row">
@@ -294,7 +325,7 @@
           @if (confirmDelete()) {
             <div class="st-confirm">
               <span>This is permanent!</span>
-              <button mat-raised-button color="warn">Yes, Delete Forever</button>
+              <button mat-raised-button color="warn" (click)="deleteAccount()">Yes, Delete Forever</button>
               <button mat-stroked-button (click)="confirmDelete.set(false)">Cancel</button>
             </div>
           } @else {

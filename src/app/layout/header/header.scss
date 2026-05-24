@@ -110,6 +110,17 @@
   }
 }
 
+.mat-mdc-icon-button {
+      padding: calc(calc(var(--mat-icon-button-state-layer-size, 40px) - var(--mat-icon-button-icon-size, 40px)) / 2) !important;
+
+  .mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    /*color: var(--suhana-maroon);*/
+  }    
+}
+
 // Mobile nav
 .mobile-nav {
   display: none;

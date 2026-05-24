@@ -61,13 +61,15 @@
   span { flex: 1; }
 
   &--success {
-    background: var(--mat-sys-primary-container, #e8f5e9);
-    color: var(--mat-sys-on-primary-container, #1b5e20);
+    background-color:  #e8f5e9;
+    color: #1b5e20;
+    border-left: 4px solid #4caf50;
   }
   &--error {
     background: var(--mat-sys-error-container);
     color: var(--mat-sys-on-error-container);
     mat-icon:first-child { color: var(--mat-sys-error); }
+    border-left: 4px solid var(--mat-sys-error);
   }
 }
 

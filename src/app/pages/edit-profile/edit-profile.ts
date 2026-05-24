@@ -24,7 +24,6 @@ export class EditProfileComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
-
   protected readonly isLoading = signal(true);
   protected readonly isSaving = signal(false);
   protected readonly saveError = signal<string | null>(null);

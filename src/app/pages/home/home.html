@@ -65,8 +65,9 @@
           [attr.aria-label]="profile.firstName + ' ' + profile.lastName + ', ' + profile.age + ' years'">
 
           <!-- FRONT -->
+           {{profile.photos[0]?.url}}
           <div class="flip-card-front">
-            <div class="card-image" [style.background-image]="'url(' + (profile.photos[0]?.url || '/avatar-default.svg') + ')'">
+            <div class="card-image" [style.background-image]="cardBg(profile.photos[0]?.url)">
               <div class="card-image-overlay"></div>
               @if (profile.photos[0]?.isVerified) {
                 <div class="verified-badge" aria-label="Verified profile">

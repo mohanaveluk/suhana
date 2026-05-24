@@ -33,6 +33,8 @@
 
     <!-- Profile Tabs -->
     <mat-tab-group class="profile-tabs" animationDuration="300ms">
+
+      <!-- ══ TAB 1: About ══════════════════════════════════════════════════════ -->
       <mat-tab label="About">
         <div class="tab-content">
           <mat-card appearance="outlined" class="info-card">
@@ -54,10 +56,28 @@
                   <mat-icon>height</mat-icon>
                   <div><label>Height</label><span>{{ p.height }}</span></div>
                 </div>
+                @if (p.weight) {
+                  <div class="detail-item">
+                    <mat-icon>monitor_weight</mat-icon>
+                    <div><label>Weight</label><span>{{ p.weight }} kg</span></div>
+                  </div>
+                }
+                @if (p.complexion) {
+                  <div class="detail-item">
+                    <mat-icon>palette</mat-icon>
+                    <div><label>Complexion</label><span>{{ p.complexion }}</span></div>
+                  </div>
+                }
                 <div class="detail-item">
                   <mat-icon>temple_hindu</mat-icon>
                   <div><label>Religion</label><span>{{ p.religion }}</span></div>
                 </div>
+                @if (p.caste) {
+                  <div class="detail-item">
+                    <mat-icon>group</mat-icon>
+                    <div><label>Caste</label><span>{{ p.caste }}</span></div>
+                  </div>
+                }
                 <div class="detail-item">
                   <mat-icon>translate</mat-icon>
                   <div><label>Mother Tongue</label><span>{{ p.motherTongue }}</span></div>
@@ -76,6 +96,7 @@
         </div>
       </mat-tab>
 
+      <!-- ══ TAB 2: Education & Career ════════════════════════════════════════ -->
       <mat-tab label="Education & Career">
         <div class="tab-content">
           <mat-card appearance="outlined" class="info-card">
@@ -120,12 +141,17 @@
                     <div><label>Annual Income</label><span>{{ p.occupation.annualIncome }}</span></div>
                   </div>
                 }
+                <div class="detail-item">
+                  <mat-icon>badge</mat-icon>
+                  <div><label>Working Status</label><span>{{ p.occupation.workingStatus }}</span></div>
+                </div>
               </div>
             </mat-card-content>
           </mat-card>
         </div>
       </mat-tab>
 
+      <!-- ══ TAB 3: Family ═════════════════════════════════════════════════════ -->
       <mat-tab label="Family">
         <div class="tab-content">
           <mat-card appearance="outlined" class="info-card">
@@ -154,6 +180,12 @@
                     <div><label>Siblings</label><span>{{ p.familyDetails.siblings }}</span></div>
                   </div>
                 }
+                @if (p.familyDetails.familyValues) {
+                  <div class="detail-item">
+                    <mat-icon>family_star</mat-icon>
+                    <div><label>Family Values</label><span>{{ p.familyDetails.familyValues }}</span></div>
+                  </div>
+                }
               </div>
               @if (p.familyDetails.familyPreferenceNote) {
                 <p class="family-note">{{ p.familyDetails.familyPreferenceNote }}</p>
@@ -163,46 +195,393 @@
         </div>
       </mat-tab>
 
+      <!-- ══ TAB 4: Match Preferences (MatchPreferences) ═══════════════════════ -->
       <mat-tab label="Preferences">
         <div class="tab-content">
           <mat-card appearance="outlined" class="info-card">
-            <mat-card-header><mat-card-title>Partner Preferences</mat-card-title></mat-card-header>
+            <mat-card-header>
+              <mat-card-title>Partner Preferences</mat-card-title>
+              <mat-card-subtitle>What you're looking for in a life partner</mat-card-subtitle>
+            </mat-card-header>
             <mat-card-content>
               <div class="details-grid">
                 <div class="detail-item">
                   <mat-icon>cake</mat-icon>
-                  <div><label>Age Range</label><span>{{ p.preferences.ageRange.min }} - {{ p.preferences.ageRange.max }} years</span></div>
+                  <div><label>Age Range</label><span>{{ p.preferences.ageRange.min }} – {{ p.preferences.ageRange.max }}
+                      years</span></div>
                 </div>
+                @if (p.preferences.heightRange) {
+                <div class="detail-item">
+                  <mat-icon>height</mat-icon>
+                  <div><label>Height Range</label><span>{{ p.preferences.heightRange.min }} – {{ p.preferences.heightRange.max
+                      }}</span></div>
+                </div>
+                }
+                @if (p.preferences.foodPreference) {
+                <div class="detail-item">
+                  <mat-icon>restaurant</mat-icon>
+                  <div><label>Food Preference</label><span>{{ p.preferences.foodPreference | titlecase }}</span></div>
+                </div>
+                }
+               
                 @if (p.preferences.religions?.length) {
-                  <div class="detail-item">
-                    <mat-icon>temple_hindu</mat-icon>
-                    <div><label>Religion</label>
-                      <div class="chip-list">
-                        @for (r of p.preferences.religions; track r) {
-                          <mat-chip-set><mat-chip>{{ r }}</mat-chip></mat-chip-set>
-                        }
-                      </div>
-                    </div>
+                <div class="detail-item">
+                  <mat-icon>temple_hindu</mat-icon>
+                  <div>
+                    <label>Preferred Religions</label>
+                    <mat-chip-set>
+                      @for (r of p.preferences.religions; track r) { <mat-chip>{{ r }}</mat-chip> }
+                    </mat-chip-set>
                   </div>
+                </div>
+                }
+                @if (p.preferences.castes?.length) {
+                <div class="detail-item">
+                  <mat-icon>group</mat-icon>
+                  <div>
+                    <label>Preferred Castes</label>
+                    <mat-chip-set>
+                      @for (c of p.preferences.castes; track c) { <mat-chip>{{ c }}</mat-chip> }
+                    </mat-chip-set>
+                  </div>
+                </div>
+                }
+                @if (p.preferences.education?.length) {
+                <div class="detail-item">
+                  <mat-icon>school</mat-icon>
+                  <div>
+                    <label>Preferred Education</label>
+                    <mat-chip-set>
+                      @for (e of p.preferences.education; track e) { <mat-chip>{{ e }}</mat-chip> }
+                    </mat-chip-set>
+                  </div>
+                </div>
+                }
+                @if (p.preferences.occupations?.length) {
+                <div class="detail-item">
+                  <mat-icon>work</mat-icon>
+                  <div>
+                    <label>Preferred Occupations</label>
+                    <mat-chip-set>
+                      @for (o of p.preferences.occupations; track o) { <mat-chip>{{ o }}</mat-chip> }
+                    </mat-chip-set>
+                  </div>
+                </div>
                 }
                 @if (p.preferences.locations?.length) {
-                  <div class="detail-item">
-                    <mat-icon>location_on</mat-icon>
-                    <div><label>Locations</label>
-                      <div class="chip-list">
-                        @for (l of p.preferences.locations; track l) {
-                          <mat-chip-set><mat-chip>{{ l }}</mat-chip></mat-chip-set>
-                        }
-                      </div>
-                    </div>
+                <div class="detail-item">
+                  <mat-icon>location_on</mat-icon>
+                  <div>
+                    <label>Preferred Locations</label>
+                    <mat-chip-set>
+                      @for (l of p.preferences.locations; track l) { <mat-chip>{{ l }}</mat-chip> }
+                    </mat-chip-set>
                   </div>
+                </div>
                 }
               </div>
+            
+              @if (p.preferences.religions?.length && false) {
+              <div class="pref-chips-row">
+                <mat-icon>temple_hindu</mat-icon>
+                <div>
+                  <label>Preferred Religions</label>
+                  <mat-chip-set>
+                    @for (r of p.preferences.religions; track r) { <mat-chip>{{ r }}</mat-chip> }
+                  </mat-chip-set>
+                </div>
+              </div>
+              }
+              
             </mat-card-content>
           </mat-card>
         </div>
       </mat-tab>
+
+      <!-- ══ TAB 5: Horoscope (HoroscopeDetails) ══════════════════════════════ -->
+      <mat-tab label="Horoscope">
+        <div class="tab-content">
+          @if (p.horoscope) {
+            <mat-card appearance="outlined" class="info-card">
+              <mat-card-header>
+                <mat-card-title>Horoscope Details</mat-card-title>
+                <mat-card-subtitle>Vedic astrology &amp; birth details</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="details-grid">
+                  <div class="detail-item">
+                    <mat-icon>event</mat-icon>
+                    <div><label>Date of Birth</label><span>{{ p.dateOfBirth | date:'mediumDate' }}</span></div>
+                  </div>
+                  @if (p.horoscope.timeOfBirth) {
+                    <div class="detail-item">
+                      <mat-icon>schedule</mat-icon>
+                      <div><label>Time of Birth</label><span>{{ p.horoscope.timeOfBirth }}</span></div>
+                    </div>
+                  }
+                  @if (p.horoscope.placeOfBirth) {
+                    <div class="detail-item">
+                      <mat-icon>place</mat-icon>
+                      <div><label>Place of Birth</label><span>{{ p.horoscope.placeOfBirth }}</span></div>
+                    </div>
+                  }
+                  @if (p.horoscope.rashi) {
+                    <div class="detail-item">
+                      <mat-icon>brightness_5</mat-icon>
+                      <div><label>Rashi (Moon Sign)</label><span>{{ p.horoscope.rashi }}</span></div>
+                    </div>
+                  }
+                  @if (p.horoscope.nakshatra) {
+                    <div class="detail-item">
+                      <mat-icon>auto_awesome</mat-icon>
+                      <div><label>Nakshatra (Birth Star)</label><span>{{ p.horoscope.nakshatra }}</span></div>
+                    </div>
+                  }
+                  @if (p.horoscope.manglikStatus) {
+                    <div class="detail-item">
+                      <mat-icon>radio_button_checked</mat-icon>
+                      <div><label>Manglik Status</label><span>{{ p.horoscope.manglikStatus }}</span></div>
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <div class="tab-empty-state">
+              <mat-icon>auto_awesome</mat-icon>
+              <p>No horoscope details added yet.</p>
+              <a mat-stroked-button routerLink="/profile/edit">Add Horoscope Details</a>
+            </div>
+          }
+        </div>
+      </mat-tab>
+
+      <!-- ══ TAB 6: Match Result (MatchResult) ════════════════════════════════ -->
+      <mat-tab label="Match Result">
+        <div class="tab-content">
+          @if (topMatch(); as m) {
+            <!-- Matched Profile Card -->
+            <mat-card appearance="outlined" class="info-card">
+              <mat-card-header>
+                <mat-card-title>Top Match</mat-card-title>
+                <mat-card-subtitle>Best compatibility match for your profile</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="match-result-header">
+                  <div class="match-pct-ring">
+                    <span class="pct-number">{{ m.matchPercentage }}%</span>
+                    <span class="pct-label">Match</span>
+                  </div>
+                  <div class="match-profile-preview">
+                    <img [src]="m.profile.photos[0]?.url || '/avatar-default.svg'"
+                         [alt]="m.profile.firstName" class="match-avatar"
+                         (error)="onAvatarError($event)" />
+                    <div class="match-profile-text">
+                      <h3>{{ m.profile.firstName }} {{ m.profile.lastName }}</h3>
+                      <p><mat-icon>cake</mat-icon> {{ m.profile.age }} yrs · {{ m.profile.height }}</p>
+                      <p><mat-icon>work</mat-icon> {{ m.profile.occupation.title }}@if (m.profile.occupation.company) { at {{ m.profile.occupation.company }}}</p>
+                      <p><mat-icon>location_on</mat-icon> {{ m.profile.location.city }}, {{ m.profile.location.state }}</p>
+                      <p><mat-icon>school</mat-icon> {{ m.profile.education.level }} · {{ m.profile.education.field }}</p>
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Match Metadata -->
+            <mat-card appearance="outlined" class="info-card">
+              <mat-card-header><mat-card-title>Match Details</mat-card-title></mat-card-header>
+              <mat-card-content>
+                <div class="details-grid">
+                  <div class="detail-item">
+                    <mat-icon>tag</mat-icon>
+                    <div><label>Match ID</label><span class="mono">{{ m.id }}</span></div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>calendar_today</mat-icon>
+                    <div><label>Suggested On</label><span>{{ m.suggestedAt | date:'mediumDate' }}</span></div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>flag</mat-icon>
+                    <div><label>Status</label>
+                      <span class="status-chip status-chip--{{ m.status }}">{{ m.status | titlecase }}</span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>percent</mat-icon>
+                    <div><label>Overall Score</label><span class="score-highlight">{{ m.matchPercentage }}%</span></div>
+                  </div>
+                </div>
+
+                <div class="explanation-box">
+                  <mat-icon>info_outline</mat-icon>
+                  <p>{{ m.explanationText }}</p>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Badges -->
+            @if (m.badges.length) {
+              <mat-card appearance="outlined" class="info-card">
+                <mat-card-header><mat-card-title>Compatibility Badges</mat-card-title></mat-card-header>
+                <mat-card-content>
+                  <div class="match-badges">
+                    @for (badge of m.badges; track badge.label) {
+                      <div class="match-badge">
+                        <mat-icon>{{ badge.icon }}</mat-icon>
+                        <div class="badge-body">
+                          <span class="badge-label">{{ badge.label }}</span>
+                          <span class="badge-score">{{ badge.score }}%</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+          } @else {
+            <div class="tab-empty-state">
+              <mat-icon>favorite_border</mat-icon>
+              <p>No match results yet. Generate matches to see compatibility.</p>
+            </div>
+          }
+        </div>
+      </mat-tab>
+
+      <!-- ══ TAB 7: Compatibility (CompatibilityBreakdown) ════════════════════ -->
+      <mat-tab label="Compatibility">
+        <div class="tab-content">
+          @if (topMatch(); as m) {
+            <mat-card appearance="outlined" class="info-card">
+              <mat-card-header>
+                <mat-card-title>Compatibility Breakdown</mat-card-title>
+                <mat-card-subtitle>with {{ m.profile.firstName }} {{ m.profile.lastName }} · {{ m.matchPercentage }}% overall</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="compat-bars">
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>favorite</mat-icon><span>Lifestyle</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.lifestyle) }}"
+                           [style.width.%]="m.compatibilityBreakdown.lifestyle"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.lifestyle) }}">
+                      {{ m.compatibilityBreakdown.lifestyle }}%
+                    </span>
+                  </div>
+
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>school</mat-icon><span>Education</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.education) }}"
+                           [style.width.%]="m.compatibilityBreakdown.education"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.education) }}">
+                      {{ m.compatibilityBreakdown.education }}%
+                    </span>
+                  </div>
+
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>location_on</mat-icon><span>Location</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.location) }}"
+                           [style.width.%]="m.compatibilityBreakdown.location"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.location) }}">
+                      {{ m.compatibilityBreakdown.location }}%
+                    </span>
+                  </div>
+
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>family_restroom</mat-icon><span>Family Values</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.familyValues) }}"
+                           [style.width.%]="m.compatibilityBreakdown.familyValues"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.familyValues) }}">
+                      {{ m.compatibilityBreakdown.familyValues }}%
+                    </span>
+                  </div>
+
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>interests</mat-icon><span>Interests</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.interests) }}"
+                           [style.width.%]="m.compatibilityBreakdown.interests"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.interests) }}">
+                      {{ m.compatibilityBreakdown.interests }}%
+                    </span>
+                  </div>
+
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>work</mat-icon><span>Career</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.career) }}"
+                           [style.width.%]="m.compatibilityBreakdown.career"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.career) }}">
+                      {{ m.compatibilityBreakdown.career }}%
+                    </span>
+                  </div>
+
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>psychology</mat-icon><span>Emotional</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.emotional) }}"
+                           [style.width.%]="m.compatibilityBreakdown.emotional"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.emotional) }}">
+                      {{ m.compatibilityBreakdown.emotional }}%
+                    </span>
+                  </div>
+
+                  @if (m.compatibilityBreakdown.horoscope !== undefined) {
+                    <div class="compat-bar-row">
+                      <div class="compat-bar-label">
+                        <mat-icon>auto_awesome</mat-icon><span>Horoscope</span>
+                      </div>
+                      <div class="compat-bar-track">
+                        <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.horoscope) }}"
+                             [style.width.%]="m.compatibilityBreakdown.horoscope"></div>
+                      </div>
+                      <span class="compat-score {{ compatClass(m.compatibilityBreakdown.horoscope) }}">
+                        {{ m.compatibilityBreakdown.horoscope }}%
+                      </span>
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <div class="tab-empty-state">
+              <mat-icon>bar_chart</mat-icon>
+              <p>Generate matches first to view compatibility breakdown.</p>
+            </div>
+          }
+        </div>
+      </mat-tab>
+
     </mat-tab-group>
+  } @else if (isLoading()) {
+    <div class="profile-loading">
+      <mat-spinner diameter="56"></mat-spinner>
+      <p>Loading your profile…</p>
+    </div>
   } @else {
     <div class="no-profile">
       <mat-icon>person_add</mat-icon>
