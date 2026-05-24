@@ -203,3 +203,17 @@ export interface PremiumPlan {
   features: string[];
   isPopular: boolean;
 }
+
+export interface UserToken {
+  access_token: string;
+  refresh_token: string;
+  user: User;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponse {
+  access_token: string;
+}

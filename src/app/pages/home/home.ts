@@ -1,10 +1,10 @@
-import { Component, ChangeDetectionStrategy, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { BannerSlide, Testimonial, UserProfile } from '../../models/user.model';
 import { ProfileService } from '../../services';
-import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +17,7 @@ import { inject } from '@angular/core';
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private readonly profileService = inject(ProfileService);
+  private readonly sanitizer = inject(DomSanitizer);
   private bannerInterval: ReturnType<typeof setInterval> | null = null;
 
   protected readonly currentSlide = signal(0);
@@ -95,5 +96,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   setHoveredCard(id: string | null): void {
     this.hoveredCard.set(id);
+  }
+
+  protected cardBg(url: string | undefined): SafeStyle {
+    return this.sanitizer.bypassSecurityTrustStyle(`url('${url || '/avatar-default.svg'}')`);
   }
 }

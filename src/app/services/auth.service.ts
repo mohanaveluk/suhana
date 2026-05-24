@@ -102,6 +102,10 @@ export class AuthService {
     await firstValueFrom(this.api.updatePassword(data));
   }
 
+  async updatePasswordLegacy(data: { currentPassword: string; newPassword: string }): Promise<void> {
+    await firstValueFrom(this.api.updatePasswordLegacy(data));
+  }
+
   verifyEmail(userGuid: string, verificationCode: string): Observable<any> {
     return this.api.verifyEmail(userGuid, verificationCode);
   }

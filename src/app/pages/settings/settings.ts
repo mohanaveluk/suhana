@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MaterialModule } from '../../shared/modules/material.module';
-import { AuthService } from '../../services';
+import { AuthService, ApiService } from '../../services';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 
 @Component({
@@ -15,6 +15,7 @@ import { CommonModule, TitleCasePipe } from '@angular/common';
 export class SettingsComponent {
   private readonly fb     = inject(FormBuilder);
   private readonly auth   = inject(AuthService);
+  private readonly api    = inject(ApiService);
   private readonly router = inject(Router);
 
   protected readonly user = this.auth.user;
@@ -52,6 +53,10 @@ export class SettingsComponent {
     profileIndexed:    true,
   });
 
+  // Inline save-error banners
+  protected readonly notifError   = signal<string | null>(null);
+  protected readonly privacyError = signal<string | null>(null);
+
   // Danger zone confirmation
   protected readonly confirmDeactivate = signal(false);
   protected readonly confirmDelete     = signal(false);
@@ -72,6 +77,11 @@ export class SettingsComponent {
 
     try {
       // TODO: wire to API when endpoint is available
+      await this.auth.updatePasswordLegacy({
+        currentPassword: this.passwordForm.get('currentPassword')?.value || '',
+        newPassword: this.passwordForm.get('newPassword')?.value || '',
+      });
+      
       await new Promise(resolve => setTimeout(resolve, 800));
       this.pwdSuccess.set(true);
       this.passwordForm.reset();
@@ -83,23 +93,76 @@ export class SettingsComponent {
   }
 
   protected toggleNotification(key: keyof ReturnType<typeof this.notifications>): void {
+    const prev = this.notifications();
     this.notifications.update(s => ({ ...s, [key]: !s[key] }));
+    this.notifError.set(null);
+    this.api.updateNotificationSettings({ [key]: this.notifications()[key] }).subscribe({
+      error: (err) => {
+        this.notifications.set(prev);
+        this.notifError.set(err?.error?.message ?? 'Failed to save notification settings. Please try again.');
+        setTimeout(() => this.notifError.set(null), 4000);
+      },
+    });
   }
 
   protected togglePrivacy(key: keyof ReturnType<typeof this.privacy>): void {
+    const prev = this.privacy();
     this.privacy.update(s => ({ ...s, [key]: !(s as any)[key] }));
+    this.privacyError.set(null);
+    this.api.updatePrivacySettings({ [key]: (this.privacy() as any)[key] }).subscribe({
+      error: (err) => {
+        this.privacy.set(prev);
+        this.privacyError.set(err?.error?.message ?? 'Failed to save privacy settings. Please try again.');
+        setTimeout(() => this.privacyError.set(null), 4000);
+      },
+    });
   }
 
   protected setMessageFrom(value: 'everyone' | 'matches' | 'none'): void {
+    const prev = this.privacy();
     this.privacy.update(s => ({ ...s, allowMessageFrom: value }));
+    this.privacyError.set(null);
+    this.api.updatePrivacySettings({ allowMessageFrom: value }).subscribe({
+      error: (err) => {
+        this.privacy.set(prev);
+        this.privacyError.set(err?.error?.message ?? 'Failed to save privacy settings. Please try again.');
+        setTimeout(() => this.privacyError.set(null), 4000);
+      },
+    });
   }
 
   protected deactivateAccount(): void {
     if (!this.confirmDeactivate()) { this.confirmDeactivate.set(true); return; }
     // TODO: call API
-    this.auth.logout();
-    this.router.navigate(['/']);
+    this.api.deactivateAccount().subscribe({
+      next: () => {
+        this.auth.logout();
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        alert(err?.error?.message ?? 'Failed to deactivate account. Please try again.');
+        this.confirmDeactivate.set(false);
+      },
+    });
+
   }
+
+  deleteAccount(): void {
+    if (!this.confirmDelete()) { this.confirmDelete.set(true); return; }
+    // TODO: call API
+    this.api.deleteAccount().subscribe({
+      next: () => {
+        this.auth.logout();
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        alert(err?.error?.message ?? 'Failed to delete account. Please try again.');
+        this.confirmDelete.set(false);
+      },
+    });
+
+  } 
+
 
   protected goBack(): void { this.router.navigate(['/profile']); }
 }
