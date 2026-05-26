@@ -35,7 +35,17 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/search/search').then(m => m.SearchComponent),
   },
   {
+    // Detailed profile view for any profile by ID (distinct from the user's own /profile)
+    path: 'profile-view/:id',
+    loadComponent: () =>
+      import('./pages/profile-view/profile-view.component').then(m => m.ProfileViewComponent),
+  },
+  {
     path: 'matchmaking',
+    loadComponent: () => import('./pages/matchmaking/matchmaking').then(m => m.MatchmakingComponent),
+  },
+  {
+    path: 'matchmaking/:profileId',
     loadComponent: () => import('./pages/matchmaking/matchmaking').then(m => m.MatchmakingComponent),
   },
   {
@@ -61,6 +71,16 @@ export const routes: Routes = [
   {
     path: 'match-tracker',
     loadComponent: () => import('./pages/match-tracker/match-tracker').then(m => m.MatchTrackerComponent),
+  },
+  {
+    path: 'gallery',
+    loadComponent: () =>
+      import('./pages/gallery/gallery-management.component').then(m => m.GalleryManagementComponent),
+  },
+  {
+    path: 'gallery/:profileId',
+    loadComponent: () =>
+      import('./pages/gallery/gallery-management.component').then(m => m.GalleryManagementComponent),
   },
   { path: 'auth/verifyemail/:userGuid/:verificationCode', component: VerifyEmailComponent },
   {

@@ -1,8 +1,22 @@
 <div class="matchmaking-page suhana-container">
   <div class="matchmaking-header">
     <div class="header-text">
+      @if (selectedProfile()) {
+        <div class="profile-context-badge">
+          <mat-icon>person</mat-icon>
+          Viewing matches for
+          <strong>{{ selectedProfile()!.firstName }} {{ selectedProfile()!.lastName }}</strong>
+        </div>
+      }
       <h1><mat-icon class="ai-icon">psychology</mat-icon> AI-Powered Matches</h1>
-      <p>Our smart algorithm has found these compatible profiles for you</p>
+      <p>
+        @if (selectedProfile()) {
+          Compatible profiles matched against
+          <strong>{{ selectedProfile()!.firstName }}'s</strong> preferences
+        } @else {
+          Our smart algorithm has found these compatible profiles for you
+        }
+      </p>
     </div>
     <div class="header-actions">
       <button mat-raised-button class="suhana-btn-primary" (click)="refreshMatches()">

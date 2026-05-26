@@ -2,11 +2,13 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { ProfileService } from './profile.service';
 import { ApiService } from './api.service';
 import { UserProfile, MatchPreferences } from '../models/user.model';
+import { CommonService } from './common.service';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   private readonly profileService = inject(ProfileService);
   private readonly api = inject(ApiService);
+  
 
   private readonly searchQuery = signal('');
   private readonly activeFilters = signal<Partial<MatchPreferences>>({});

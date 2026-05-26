@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 export interface ErrorMessage {
   [key: number]: string;
@@ -11,6 +12,8 @@ export interface ErrorMessage {
   providedIn: 'root'
 })
 export class CommonService {
+  private readonly sanitizer = inject(DomSanitizer);
+
   private defaultErrorMessages: ErrorMessage = {
     400: 'Bad Request: Please check your input',
     401: 'Unauthorized: Please login again',
@@ -89,5 +92,9 @@ export class CommonService {
 
   isNullOrEmpty(value: any) {
     return value === null || value === undefined || value === '';
+  }
+
+  public cardBg(url: string | undefined): SafeStyle {
+    return this.sanitizer.bypassSecurityTrustStyle(`url('${url || '/avatar-default.svg'}')`);
   }
 }

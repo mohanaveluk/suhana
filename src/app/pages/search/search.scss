@@ -106,7 +106,7 @@
         grid-template-columns: 1fr;
       }
 
-      .result-image { height: 100%; min-height: 180px; }
+      .result-image { height: 100%; min-height: 180px; cursor: pointer; }
     }
   }
 }
@@ -131,6 +131,7 @@ mat-button-toggle-group{
     background-size: cover;
     background-position: center top;
     position: relative;
+    cursor: pointer;
   }
 
   .verified-tag {
@@ -196,6 +197,7 @@ mat-button-toggle-group{
     gap: 8px;
     padding: 8px 16px 16px;
     flex-wrap: wrap;
+    justify-content: center;
   }
 }
 

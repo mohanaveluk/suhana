@@ -12,6 +12,24 @@
   gap: 16px;
 
   .header-text {
+    .profile-context-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--suhana-rose-gold, #c8956c);
+      color: #fff;
+      font-size: 0.82rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+
     h1 {
       font-size: 1.8rem;
       color: var(--suhana-maroon);
@@ -261,7 +279,7 @@ mat-card-actions {
   text-align: center;
   padding: 60px 24px;
 
-  mat-icon { font-size: 56px; width: 56px; height: 56px; color: var(--suhana-rose-gold-light); margin-bottom: 12px; }
+  mat-icon { font-size: 32px; width: 56px; height: 72px; color: var(--suhana-rose-gold-light); margin-bottom: -40px; }
   h3 { color: var(--suhana-maroon); margin-bottom: 4px; }
   p { color: var(--suhana-text-secondary); margin-bottom: 24px; }
 }

@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ProfileService } from '../../services';
@@ -16,7 +16,7 @@ const MAX_PHOTO_MB = 2;
 @Component({
   selector: 'app-edit-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MaterialModule],
+  imports: [ReactiveFormsModule, RouterLink, MaterialModule],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.scss',
 })
@@ -35,6 +35,7 @@ export class EditProfileComponent implements OnInit {
   protected readonly avatarError = signal<string | null>(null);
 
   protected readonly user = signal<User | null>(null);
+  protected readonly profileId = signal<string | null>(null);
 
   protected get initials(): string {
     const first = this.basicForm.value.firstName?.[0] ?? '';
@@ -93,6 +94,7 @@ export class EditProfileComponent implements OnInit {
 
   // ── Section 1: Basic ────────────────────────────────────────────────────────
   protected readonly basicForm = this.fb.group({
+    userId:      [''],
     firstName:    ['', [Validators.required, Validators.minLength(2)]],
     lastName:     ['', [Validators.required, Validators.minLength(2)]],
     dateOfBirth:  [null as Date | null, Validators.required],
@@ -213,7 +215,9 @@ export class EditProfileComponent implements OnInit {
 
   private patchForms(p: UserProfile): void {
     this.currentAvatarUrl.set(p.photos?.find(ph => ph.isPrimary)?.url ?? p.photos?.[0]?.url ?? null);
+    this.profileId.set(p.userId);
     this.basicForm.patchValue({
+      userId: p.userId ?? '',
       firstName: p.firstName, lastName: p.lastName,
       dateOfBirth: p.dateOfBirth ? new Date(this.parseBackDateOnly(p.dateOfBirth.toString())) : null,
       height: p.height, weight: p.weight ?? '', complexion: p.complexion ?? '',
@@ -291,6 +295,7 @@ export class EditProfileComponent implements OnInit {
     const dob    = basic.dateOfBirth ?? new Date();
 
     const updated: Partial<UserProfile> = {
+      userId: basic.userId ?? '',
       firstName: basic.firstName ?? '',
       lastName:  basic.lastName ?? '',
       dateOfBirth: dob,

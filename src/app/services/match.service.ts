@@ -22,12 +22,17 @@ export class MatchService {
     this.matchResults().filter(m => m.status === 'suggested' || m.status === 'shortlisted')
   );
 
-  async generateMatchesFromApi(count = 4): Promise<MatchResult[]> {
+  async generateMatchesFromApi(count = 4, profileId?: string): Promise<MatchResult[]> {
     try {
-      const results = await firstValueFrom(this.api.generateMatches(count));
+      const results = await firstValueFrom(this.api.generateMatches(count, profileId));
       this.matchResults.set(Array.isArray(results) ? results : []);
       return this.matchResults();
     } catch {
+      if (profileId) {
+        const profile = this.profileService.getProfile(profileId);
+        const gender = profile?.gender ?? 'bride';
+        return this.generateMatches(gender, count);
+      }
       return this.generateMatches('bride', count);
     }
   }

@@ -90,7 +90,7 @@
   <div class="results-grid" [class.list-view]="searchService.currentViewMode() === 'list'">
     @for (profile of filteredResults(); track profile.userId) {
       <mat-card class="profile-result-card" appearance="outlined">
-        <div class="result-image" [style.background-image]="'url(' + profile.photos[0]?.url + ')'">
+        <div class="result-image" [style.background-image]="commonService.cardBg(profile.photos[0]?.url)" (click)="navigateToProfile(profile.userId)" [matTooltip]="'View ' + profile.firstName + '\'s profile'" matTooltipPosition="above">
           @if (profile.photos[0]?.isVerified) {
             <div class="verified-tag">
               <mat-icon>verified</mat-icon> Verified
@@ -111,7 +111,7 @@
           <button mat-button color="primary">
             <mat-icon>favorite_border</mat-icon> Shortlist
           </button>
-          <button mat-raised-button class="suhana-btn-primary" routerLink="/matchmaking">
+          <button mat-raised-button class="suhana-btn-primary" [routerLink]="['/matchmaking', profile.userId]">
             <mat-icon>compare_arrows</mat-icon> View Match
           </button>
         </mat-card-actions>

@@ -1,0 +1,378 @@
+<!-- Hidden native file input -->
+<input
+  #fileInput
+  type="file"
+  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+  multiple
+  hidden
+  (change)="onFilesSelected($event)"
+  aria-hidden="true" />
+
+<!-- ═══════════════ PAGE WRAPPER ═══════════════ -->
+<div class="gallery-page">
+
+  <!-- ── Page Header ──────────────────────────────────────────────────── -->
+  <header class="gallery-header">
+    <div class="header-content">
+      <div class="header-title-group">
+        <div class="header-icon">
+          <mat-icon>photo_library</mat-icon>
+        </div>
+        <div>
+          <h1 class="page-title">Photo Gallery</h1>
+          <p class="page-subtitle">Manage your profile photos — first impressions matter!</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="photo-count-chip">
+          <mat-icon>collections</mat-icon>
+          <span>{{ totalPhotos() }} / 20 photos</span>
+        </div>
+        @if (totalPhotos() > 0) {
+          <div class="progress-ring-wrap" [attr.title]="totalPhotos() + ' of 20 slots used'">
+            <svg width="44" height="44" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="18" fill="none" stroke="#e8e0f0" stroke-width="4"/>
+              <circle cx="22" cy="22" r="18" fill="none" stroke="#c8935a" stroke-width="4"
+                stroke-dasharray="113.1"
+                [attr.stroke-dashoffset]="113.1 - (113.1 * totalPhotos() / 20)"
+                stroke-linecap="round"
+                transform="rotate(-90 22 22)"/>
+            </svg>
+            <span class="ring-pct">{{ (totalPhotos() / 20 * 100) | number:'1.0-0' }}%</span>
+          </div>
+        }
+      </div>
+    </div>
+    <!-- Capacity bar -->
+    <div class="capacity-bar-wrap">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="totalPhotos() / 20 * 100"
+        class="capacity-bar">
+      </mat-progress-bar>
+      <span class="capacity-label">
+        @if (remainingSlots() > 0) {
+          {{ remainingSlots() }} slot{{ remainingSlots() === 1 ? '' : 's' }} remaining
+        } @else {
+          Gallery full — delete a photo to add new ones
+        }
+      </span>
+    </div>
+  </header>
+
+  <!-- ── Upload Zone ───────────────────────────────────────────────────── -->
+  @if (canUpload() && !error()) {
+    <section
+      class="upload-zone"
+      [class.drag-over]="isDragOver()"
+      (dragenter)="onDragEnter($event)"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="openFilePicker()"
+      role="button"
+      tabindex="0"
+      (keydown.enter)="openFilePicker()"
+      (keydown.space)="openFilePicker()"
+      aria-label="Upload photos — click or drag and drop">
+
+      <div class="upload-zone-inner">
+        <div class="upload-icon-wrap" [class.bouncing]="isDragOver()">
+          <mat-icon class="upload-cloud-icon">cloud_upload</mat-icon>
+        </div>
+        <div class="upload-text">
+          @if (isDragOver()) {
+            <h3 class="drop-hint">Drop photos here!</h3>
+          } @else {
+            <h3>Drag & Drop Photos</h3>
+            <p>or <span class="browse-link">browse files</span> to upload</p>
+          }
+        </div>
+        <div class="upload-constraints">
+          <span class="constraint-chip">
+            <mat-icon>image</mat-icon> JPG, PNG, WEBP
+          </span>
+          <span class="constraint-chip">
+            <mat-icon>data_usage</mat-icon> Max 2 MB each
+          </span>
+          <span class="constraint-chip">
+            <mat-icon>photo_library</mat-icon> Up to {{ remainingSlots() }} more
+          </span>
+        </div>
+      </div>
+    </section>
+  } @else if(!canUpload()){
+    <div class="gallery-full-banner">
+      <mat-icon>info</mat-icon>
+      <span>Your gallery is full (20/20). Remove existing photos to add new ones.</span>
+    </div>
+  }
+
+  <!-- ── Pending / Staged Items ─────────────────────────────────────────── -->
+  @if (hasUploads()) {
+    <section class="pending-section">
+      <div class="section-header">
+        <div class="section-title-row">
+          <mat-icon>pending</mat-icon>
+          <h2 class="section-title">
+            Staged for Upload
+            <span class="count-badge">{{ pendingCount() }}</span>
+          </h2>
+        </div>
+        <div class="section-actions">
+          @if (failedItems().length > 0 || successItems().length > 0) {
+            <button mat-button class="clear-btn" (click)="clearCompleted()">
+              <mat-icon>clear_all</mat-icon> Clear Completed
+            </button>
+          }
+          <button
+            mat-raised-button
+            class="upload-all-btn"
+            (click)="uploadAll()"
+            [disabled]="isSaving() || pendingItems().length === 0">
+            @if (isSaving()) {
+              <ng-container>
+                <mat-spinner diameter="18"></mat-spinner>
+                <span>Uploading…</span>
+              </ng-container>
+            } @else {
+              <ng-container>
+                <mat-icon>cloud_upload</mat-icon>
+                <span>Upload All</span>
+              </ng-container>
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Overall progress bar (visible only during upload) -->
+      @if (uploadingItems().length > 0) {
+        <div class="overall-progress">
+          <span class="overall-label">Overall progress</span>
+          <mat-progress-bar
+            mode="determinate"
+            [value]="overallProgress()"
+            class="overall-bar">
+          </mat-progress-bar>
+          <span class="overall-pct">{{ overallProgress() }}%</span>
+        </div>
+      }
+
+      <!-- Pending grid -->
+      <div class="pending-grid">
+        @for (item of pendingItems(); track item.id) {
+          <div class="pending-card" [class]="'status-' + item.status">
+            <!-- Preview image -->
+            <div class="pending-thumb">
+              <img [src]="item.previewUrl" [alt]="item.file.name" loading="lazy" />
+              <!-- Status overlay -->
+              <div class="pending-overlay" [class]="'overlay-' + item.status">
+                @if (item.status === 'uploading') {
+                  <mat-spinner diameter="32" class="spin-white"></mat-spinner>
+                } @else if (item.status === 'success') {
+                  <mat-icon class="overlay-icon success-icon">check_circle</mat-icon>
+                } @else if (item.status === 'error') {
+                  <mat-icon class="overlay-icon error-icon">error</mat-icon>
+                }
+              </div>
+            </div>
+
+            <!-- Card body -->
+            <div class="pending-body">
+              <p class="pending-name" [title]="item.file.name">{{ item.file.name }}</p>
+              <p class="pending-size">{{ fileSizeLabel(item.file.size) }}</p>
+
+              <!-- Per-file progress bar -->
+              @if (item.status === 'uploading') {
+                <mat-progress-bar
+                  mode="determinate"
+                  [value]="item.progress"
+                  class="item-progress-bar uploading-bar">
+                </mat-progress-bar>
+                <p class="progress-pct">{{ item.progress }}%</p>
+              } @else if (item.status === 'error') {
+                <p class="error-msg">{{ item.errorMessage ?? 'Upload failed' }}</p>
+              } @else if (item.status === 'success') {
+                <p class="success-msg">Uploaded successfully!</p>
+              }
+            </div>
+
+            <!-- Card actions -->
+            <div class="pending-actions">
+              @if (item.status === 'error') {
+                <button
+                  mat-icon-button
+                  class="retry-btn"
+                  (click)="retryItem(item)"
+                  [disabled]="isSaving()"
+                  matTooltip="Retry upload">
+                  <mat-icon>refresh</mat-icon>
+                </button>
+              }
+              @if (item.status !== 'uploading') {
+                <button
+                  mat-icon-button
+                  class="remove-btn"
+                  (click)="removePending(item)"
+                  matTooltip="Remove">
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- ── Existing Gallery ───────────────────────────────────────────────── -->
+  <section class="gallery-section">
+    <div class="section-header">
+      <div class="section-title-row">
+        <mat-icon>photo_album</mat-icon>
+        <h2 class="section-title">
+          Your Gallery
+          @if (totalPhotos() > 0) {
+            <span class="count-badge">{{ totalPhotos() }}</span>
+          }
+        </h2>
+      </div>
+      @if (!isLoading() && totalPhotos() > 0) {
+        <button mat-button class="add-more-btn" (click)="openFilePicker()" [disabled]="!canUpload()">
+          <mat-icon>add_photo_alternate</mat-icon> Add More
+        </button>
+      }
+    </div>
+
+    <!-- Loading skeleton -->
+    @if (isLoading()) {
+      <div class="gallery-grid skeleton-grid">
+        @for (n of [1,2,3,4,5,6]; track n) {
+          <div class="skeleton-card">
+            <div class="sk-image shimmer"></div>
+            <div class="sk-body">
+              <div class="sk-line short shimmer"></div>
+              <div class="sk-line shimmer"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Error state -->
+    @else if (error()) {
+      <div class="error-state">
+        <mat-icon class="error-icon-large">broken_image</mat-icon>
+        <h3>Unable to Load Gallery</h3>
+        <p>{{ error() }}</p>
+        <button mat-raised-button class="retry-primary-btn" (click)="loadGallery(profileId()!)">
+          <mat-icon>refresh</mat-icon> Try Again
+        </button>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @else if (gallery().length === 0) {
+      <div class="empty-state">
+        <div class="empty-illustration">
+          <div class="empty-circles">
+            <div class="ec ec-1"></div>
+            <div class="ec ec-2"></div>
+            <div class="ec ec-3"></div>
+          </div>
+          <mat-icon class="empty-icon">add_photo_alternate</mat-icon>
+        </div>
+        <h3>No Photos Yet</h3>
+        <p>Add your best photos to make a great first impression. Profiles with photos get 5× more interest!</p>
+        <button mat-raised-button class="empty-upload-btn" (click)="openFilePicker()">
+          <mat-icon>cloud_upload</mat-icon> Upload Your First Photo
+        </button>
+      </div>
+    }
+
+    <!-- Gallery grid -->
+    @else {
+      <div class="gallery-grid">
+        @for (image of gallery(); track image.id; let i = $index) {
+          <div class="gallery-card" [class.primary-card]="image.isPrimary">
+            <!-- Image area -->
+            <div class="gallery-thumb" (click)="openLightbox(gallery(), i)">
+              <img
+                [src]="image.imageUrl"
+                [alt]="'Gallery photo ' + (i + 1)"
+                loading="lazy"
+                class="gallery-img" />
+
+              <!-- Hover overlay -->
+              <div class="gallery-overlay">
+                <button mat-icon-button class="overlay-view-btn" aria-label="View photo">
+                  <mat-icon>fullscreen</mat-icon>
+                </button>
+              </div>
+
+              <!-- Badges -->
+              @if (image.isPrimary) {
+                <div class="badge primary-badge" matTooltip="Primary profile photo">
+                  <mat-icon>star</mat-icon>
+                  <span>Primary</span>
+                </div>
+              }
+              @if (image.isVerified) {
+                <div class="badge verified-badge" matTooltip="Verified by Suhana">
+                  <mat-icon>verified</mat-icon>
+                </div>
+              }
+            </div>
+
+            <!-- Card footer -->
+            <div class="gallery-footer">
+              <div class="footer-info">
+                @if (image.caption) {
+                  <p class="img-caption" [title]="image.caption">{{ image.caption }}</p>
+                } @else {
+                  <p class="img-date">{{ image.createdAt | date:'mediumDate' }}</p>
+                }
+                @if (image.imageSize) {
+                  <span class="img-size">{{ fileSizeLabel(image.imageSize) }}</span>
+                }
+              </div>
+              <div class="footer-actions">
+                @if (!image.isPrimary) {
+                  <button
+                    mat-icon-button
+                    class="action-star"
+                    (click)="setPrimary(image)"
+                    matTooltip="Set as primary photo">
+                    <mat-icon>star_border</mat-icon>
+                  </button>
+                }
+                <button
+                  mat-icon-button
+                  class="action-delete"
+                  (click)="confirmDelete(image)"
+                  [matTooltip]="image.isPrimary ? 'Delete primary photo' : 'Delete photo'">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- ── Tips Banner ────────────────────────────────────────────────────── -->
+  <aside class="tips-banner" aria-label="Photo tips">
+    <h3 class="tips-title">
+      <mat-icon>lightbulb</mat-icon> Photo Tips for Better Matches
+    </h3>
+    <ul class="tips-list">
+      <li><mat-icon>check</mat-icon> Use a clear, recent face photo as your primary</li>
+      <li><mat-icon>check</mat-icon> Include full-body and candid photos for authenticity</li>
+      <li><mat-icon>check</mat-icon> Good lighting dramatically improves first impressions</li>
+      <li><mat-icon>check</mat-icon> Profiles with 5+ photos get 3× more responses</li>
+      <li><mat-icon>check</mat-icon> Avoid group photos — you should be clearly identifiable</li>
+    </ul>
+  </aside>
+
+</div>

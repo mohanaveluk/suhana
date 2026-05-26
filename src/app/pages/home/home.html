@@ -109,7 +109,7 @@
                   <span>{{ profile.familyDetails.familyType | titlecase }} Family</span>
                 </div>
               </div>
-              <a mat-raised-button routerLink="/search" class="suhana-btn-primary back-cta">
+              <a mat-raised-button [routerLink]="['/profile-view', profile.userId]" class="suhana-btn-primary back-cta">
                 View Profile
               </a>
             </div>

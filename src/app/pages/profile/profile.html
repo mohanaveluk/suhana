@@ -24,6 +24,9 @@
           <button mat-raised-button class="suhana-btn-primary" routerLink="/profile/edit">
             <mat-icon>edit</mat-icon> Edit Profile
           </button>
+          <button mat-stroked-button class="suhana-btn-outline" [routerLink]="['/gallery', p.userId]">
+            <mat-icon>photo_library</mat-icon> Gallery
+          </button>
           <button mat-stroked-button class="suhana-btn-outline" routerLink="/settings">
             <mat-icon>settings</mat-icon> Settings
           </button>
