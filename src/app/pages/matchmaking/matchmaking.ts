@@ -1,8 +1,9 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { MatchService } from '../../services';
-import { MatchResult } from '../../models/user.model';
+import { ProfileService } from '../../services';
+import { MatchResult, UserProfile } from '../../models/user.model';
 
 @Component({
   selector: 'app-matchmaking',
@@ -15,20 +16,35 @@ import { MatchResult } from '../../models/user.model';
 })
 export class MatchmakingComponent implements OnInit {
   protected readonly matchService = inject(MatchService);
+  private readonly profileService = inject(ProfileService);
+  private readonly route = inject(ActivatedRoute);
+
   protected readonly currentMatches = signal<MatchResult[]>([]);
   protected readonly isLoading = signal(false);
+  protected readonly selectedProfile = signal<UserProfile | null>(null);
+
+  /** Profile ID passed via /matchmaking/:profileId – null means "my own matches" */
+  private profileId: string | null = null;
 
   ngOnInit(): void {
+    this.profileId = this.route.snapshot.paramMap.get('profileId');
+
+    if (this.profileId) {
+      const profile = this.profileService.getProfile(this.profileId);
+      this.selectedProfile.set(profile ?? null);
+    }
+
     void this.loadMatches();
   }
 
   async loadMatches(): Promise<void> {
     this.isLoading.set(true);
     try {
-      const matches = await this.matchService.generateMatchesFromApi(4);
+      const matches = await this.matchService.generateMatchesFromApi(4, this.profileId ?? undefined);
       this.currentMatches.set(matches);
     } catch {
-      const matches = this.matchService.generateMatches('bride', 4);
+      const gender = this.selectedProfile()?.gender ?? 'bride';
+      const matches = this.matchService.generateMatches(gender, 4);
       this.currentMatches.set(matches);
     }
     this.isLoading.set(false);

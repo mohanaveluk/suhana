@@ -24,6 +24,9 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatRippleModule } from '@angular/material/core';
 
 
 const MATERIAL_MODULES = [
@@ -52,6 +55,9 @@ const MATERIAL_MODULES = [
   MatExpansionModule,
   MatSlideToggleModule,
   MatProgressSpinnerModule,
+  MatDialogModule,
+  MatSnackBarModule,
+  MatRippleModule,
 ];
 
 @NgModule({

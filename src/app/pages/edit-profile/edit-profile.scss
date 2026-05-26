@@ -300,7 +300,7 @@
 }
 
 .ep-chip {
-  font-size: 0.78rem !important;
+  font-size: 0.80rem !important;
   height: 32px !important;
   border-radius: 20px !important;
   padding: 17px 20px !important;
@@ -311,7 +311,7 @@
   transition: all .18s ease;
   background: none;
 
-  mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+  mat-icon { font-size: 1.15rem; width: 1.15rem; height: 1.15rem; }
 
   &--upload {
     border-color: var(--suhana-rose-gold) !important;

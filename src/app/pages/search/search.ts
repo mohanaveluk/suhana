@@ -5,6 +5,7 @@ import { MaterialModule } from '../../shared/modules/material.module';
 import { SearchService } from '../../services';
 import { ProfileService } from '../../services';
 import { UserProfile } from '../../models/user.model';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-search',
@@ -18,6 +19,8 @@ import { UserProfile } from '../../models/user.model';
 export class SearchComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   protected readonly searchService = inject(SearchService);
+  protected readonly commonService = inject(CommonService);
+
   protected readonly genderFilter = signal<'bride' | 'groom' | 'all'>('all');
 
   protected readonly filteredResults = () => {
@@ -37,5 +40,9 @@ export class SearchComponent implements OnInit {
 
   onSearchInput(event: Event): void {
     this.searchService.setSearchQuery((event.target as HTMLInputElement).value);
+  }
+
+  navigateToProfile(profileId: string): void {
+    window.location.href = `/profile-view/${profileId}`;
   }
 }

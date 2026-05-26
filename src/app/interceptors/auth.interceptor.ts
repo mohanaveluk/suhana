@@ -59,6 +59,7 @@ function handle401(
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_KEY);
       localStorage.removeItem('suhana_user');
+      localStorage.removeItem('refresh_token');
       router.navigate(['/login']);
       return throwError(() => err);
     }),

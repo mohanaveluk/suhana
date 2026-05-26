@@ -2,10 +2,12 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { User, UserRole, MembershipTier } from '../models/user.model';
 import { ApiService } from './api.service';
 import { firstValueFrom, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
   private readonly currentUser = signal<User | null>(null);
   private readonly isAuthenticated = signal(false);
 
@@ -80,6 +82,8 @@ export class AuthService {
     this.isAuthenticated.set(false);
     localStorage.removeItem('suhana_token');
     localStorage.removeItem('suhana_user');
+    localStorage.removeItem('refresh_token');
+    this.router.navigate(['/']);
   }
 
   updateMembership(tier: MembershipTier): void {

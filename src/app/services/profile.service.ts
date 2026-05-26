@@ -35,13 +35,45 @@ export class ProfileService {
     } catch { /* fallback: keep current */ }
   }
 
+  /**
+   * Fetch a single profile by ID.
+   * Checks the in-memory cache first (instant). Falls back to the API.
+   * The API result is merged into the cache for subsequent lookups.
+   */
+  async getProfileById(id: string): Promise<UserProfile> {
+    // 1 — local cache hit
+    const cached = this.getProfile(id);
+    if (cached) return cached;
+
+    // 2 — API fetch with fallback to mock
+    try {
+      const result = await firstValueFrom(this.api.getProfileById(id));
+      const profile: UserProfile = result?.data ?? result;
+      // Store in cache
+      this.profiles.update(list => {
+        const exists = list.some(p => p.userId === profile.userId);
+        return exists ? list : [...list, profile];
+      });
+      return profile;
+    } catch {
+      // If profiles haven't been loaded yet, load mocks and retry
+      if (!this.initialized) {
+        this.profiles.set(this.generateMockProfiles());
+        this.initialized = true;
+        const mock = this.getProfile(id);
+        if (mock) return mock;
+      }
+      throw new Error(`Profile not found: ${id}`);
+    }
+  }
+
   getProfile(userId: string): UserProfile | undefined {
     return this.profiles().find(p => p.userId === userId);
   }
 
   getProfiles(filters?: Partial<MatchPreferences>): UserProfile[] {
     if (!this.initialized) {
-      this.profiles.set(this.generateMockProfiles());
+      //this.profiles.set(this.generateMockProfiles());
       this.initialized = true;
     }
     let results = this.profiles();

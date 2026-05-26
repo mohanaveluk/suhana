@@ -1,0 +1,994 @@
+<div class="profile-view-page">
+
+  <!-- ══════════════════════════════════════════════════════
+       BACK NAVIGATION (sticky breadcrumb)
+  ═══════════════════════════════════════════════════════ -->
+  <nav class="back-nav" aria-label="Page navigation">
+    <div class="suhana-container back-nav-inner">
+      <button mat-button class="back-btn" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back to Search</span>
+      </button>
+      @if (profile(); as p) {
+        <span class="breadcrumb-sep"><mat-icon>chevron_right</mat-icon></span>
+        <span class="breadcrumb-current">{{ p.firstName }} {{ p.lastName }}</span>
+      }
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════
+       LOADING SKELETON
+  ═══════════════════════════════════════════════════════ -->
+  @if (isLoading()) {
+    <div class="skeleton-wrapper" aria-busy="true" aria-label="Loading profile…">
+      <div class="skeleton-hero">
+        <div class="suhana-container skeleton-hero-inner">
+          <div class="sk-photo-col">
+            <div class="sk sk-circle"></div>
+            <div class="sk sk-pill"></div>
+          </div>
+          <div class="sk-info-col">
+            <div class="sk sk-h1"></div>
+            <div class="sk sk-line w60"></div>
+            <div class="sk-tag-row">
+              <div class="sk sk-chip"></div>
+              <div class="sk sk-chip"></div>
+              <div class="sk sk-chip"></div>
+            </div>
+            <div class="sk-stats-row">
+              <div class="sk sk-stat"></div>
+              <div class="sk sk-stat"></div>
+              <div class="sk sk-stat"></div>
+              <div class="sk sk-stat"></div>
+            </div>
+            <div class="sk-btn-row">
+              <div class="sk sk-btn-lg"></div>
+              <div class="sk sk-btn-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="suhana-container skeleton-body">
+        <div class="sk-left">
+          <div class="sk sk-card"></div>
+          <div class="sk sk-card short"></div>
+        </div>
+        <div class="sk-right">
+          <div class="sk sk-card"></div>
+          <div class="sk sk-card short"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════
+       ERROR STATE
+  ═══════════════════════════════════════════════════════ -->
+  @else if (error()) {
+    <div class="error-state animate-fade-in-up" role="alert">
+      <div class="error-icon-wrap">
+        <mat-icon>person_off</mat-icon>
+      </div>
+      <h2>Profile Unavailable</h2>
+      <p>{{ error() }}</p>
+      <div class="error-actions">
+        <button mat-raised-button class="suhana-btn-primary" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon> Go Back
+        </button>
+        <a mat-stroked-button class="suhana-btn-outline" routerLink="/search">
+          <mat-icon>search</mat-icon> Browse Profiles
+        </a>
+      </div>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════
+       MAIN PROFILE CONTENT
+  ═══════════════════════════════════════════════════════ -->
+  @else if (profile(); as p) {
+
+    <!-- ── HERO BANNER ─────────────────────────────────── -->
+    <section class="profile-hero" aria-label="Profile summary">
+      <!-- Decorative background elements -->
+      <div class="hero-deco hero-deco-1" aria-hidden="true"></div>
+      <div class="hero-deco hero-deco-2" aria-hidden="true"></div>
+      <div class="hero-deco hero-deco-3" aria-hidden="true"></div>
+
+      <div class="suhana-container hero-layout">
+
+        <!-- Photo column -->
+        <div class="hero-photo-col">
+          <div class="photo-ring-wrap">
+            <!-- Outer glow ring -->
+            <div class="photo-ring">
+              <img
+                [src]="primaryPhoto()"
+                [alt]="p.firstName + ' ' + p.lastName"
+                class="primary-photo"
+                (error)="onImageError($event)" />
+            </div>
+            @if (hasVerifiedPhoto()) {
+              <div class="verified-seal" matTooltip="This profile has verified photos">
+                <mat-icon>verified</mat-icon>
+              </div>
+            }
+          </div>
+
+          <!-- Completeness badge -->
+          <div class="completeness-badge" [matTooltip]="p.profileCompleteness + '% profile complete'">
+            <mat-progress-spinner
+              mode="determinate"
+              [value]="p.profileCompleteness"
+              diameter="56"
+              strokeWidth="5">
+            </mat-progress-spinner>
+            <span class="completeness-pct">{{ p.profileCompleteness }}%</span>
+          </div>
+        </div>
+
+        <!-- Info column -->
+        <div class="hero-info-col">
+
+          <!-- Name + age -->
+          <div class="hero-name-row">
+            <h1 class="hero-name">{{ p.firstName }} {{ p.lastName }}</h1>
+            <span class="hero-age">{{ formatAge(p.age) }}</span>
+          </div>
+
+          <!-- Location -->
+          <p class="hero-location">
+            <mat-icon>location_on</mat-icon>
+            {{ p.location.city }}, {{ p.location.state }}
+            @if (p.location.willingToRelocate) {
+              <span class="relocate-tag" matTooltip="Open to relocating">
+                <mat-icon>flight_takeoff</mat-icon> Open to relocate
+              </span>
+            }
+          </p>
+
+          <!-- Attribute chips -->
+          <div class="hero-chips" role="list" aria-label="Key attributes">
+            <span class="hero-chip" role="listitem">
+              <mat-icon>temple_hindu</mat-icon>{{ p.religion }}
+            </span>
+            <span class="hero-chip" role="listitem">
+              <mat-icon>translate</mat-icon>{{ p.motherTongue }}
+            </span>
+            <span class="hero-chip" role="listitem">
+              <mat-icon>straighten</mat-icon>{{ p.height }}
+            </span>
+            @if (p.caste) {
+              <span class="hero-chip" role="listitem">{{ p.caste }}</span>
+            }
+          </div>
+
+          <!-- Quick stats grid -->
+          <div class="hero-stats-grid">
+            <div class="hstat">
+              <mat-icon>school</mat-icon>
+              <div>
+                <span class="hstat-label">Education</span>
+                <span class="hstat-value">{{ p.education.level }}</span>
+              </div>
+            </div>
+            <div class="hstat">
+              <mat-icon>work</mat-icon>
+              <div>
+                <span class="hstat-label">Occupation</span>
+                <span class="hstat-value">{{ p.occupation.title }}</span>
+              </div>
+            </div>
+            @if (p.occupation.annualIncome) {
+              <div class="hstat">
+                <mat-icon>currency_rupee</mat-icon>
+                <div>
+                  <span class="hstat-label">Annual Income</span>
+                  <span class="hstat-value">{{ p.occupation.annualIncome }}</span>
+                </div>
+              </div>
+            }
+            <div class="hstat">
+              <mat-icon>family_restroom</mat-icon>
+              <div>
+                <span class="hstat-label">Family</span>
+                <span class="hstat-value">{{ p.familyDetails.familyType | titlecase }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA actions -->
+          <div class="hero-actions">
+            <button
+              mat-raised-button
+              class="suhana-btn-primary action-interest"
+              (click)="sendInterest()"
+              [disabled]="interestSent()"
+              [attr.aria-label]="interestSent() ? 'Interest already sent' : 'Send interest to ' + p.firstName">
+              <mat-icon>{{ interestSent() ? 'check_circle' : 'favorite' }}</mat-icon>
+              {{ interestSent() ? 'Interest Sent!' : 'Send Interest' }}
+            </button>
+
+            <button
+              mat-stroked-button
+              class="action-chat"
+              (click)="startChat()"
+              [attr.aria-label]="'Start chat with ' + p.firstName">
+              <mat-icon>chat_bubble_outline</mat-icon> Chat
+            </button>
+
+            <button
+              mat-icon-button
+              class="action-shortlist"
+              [class.shortlisted]="isShortlisted()"
+              (click)="toggleShortlist()"
+              [matTooltip]="isShortlisted() ? 'Remove from shortlist' : 'Add to shortlist'"
+              [attr.aria-label]="isShortlisted() ? 'Remove from shortlist' : 'Shortlist profile'">
+              <mat-icon>{{ isShortlisted() ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              class="action-more"
+              [matMenuTriggerFor]="moreMenu"
+              matTooltip="More options"
+              aria-label="More options">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #moreMenu="matMenu" class="more-menu">
+              <button mat-menu-item (click)="reportProfile()">
+                <mat-icon color="warn">flag</mat-icon>
+                <span>Report Profile</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MAIN BODY ────────────────────────────────────── -->
+    <div class="suhana-container profile-body">
+      <div class="profile-main-layout">
+
+        <!-- ══════ LEFT: Tabbed details ══════════════════ -->
+        <div class="profile-tabs-wrapper animate-fade-in-up">
+          <mat-tab-group
+            class="profile-tabs"
+            animationDuration="200ms"
+            [(selectedIndex)]="activeTabIdx"
+            aria-label="Profile detail tabs">
+
+            <!-- ── Tab 1: About ────────────────────────── -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon class="tab-icon">person</mat-icon>
+                <span class="tab-text">About</span>
+              </ng-template>
+
+              <div class="tab-content">
+
+                <!-- About Me -->
+                <mat-card class="info-card" appearance="outlined">
+                  <mat-card-header>
+                    <div class="card-header-inner">
+                      <div class="card-header-icon"><mat-icon>format_quote</mat-icon></div>
+                      <mat-card-title>About Me</mat-card-title>
+                    </div>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <p class="about-text">{{ p.aboutMe }}</p>
+                  </mat-card-content>
+                </mat-card>
+
+                <!-- Personal Details -->
+                <mat-card class="info-card" appearance="outlined">
+                  <mat-card-header>
+                    <div class="card-header-inner">
+                      <div class="card-header-icon"><mat-icon>badge</mat-icon></div>
+                      <mat-card-title>Personal Details</mat-card-title>
+                    </div>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="info-icon-grid">
+
+                      <div class="info-item">
+                        <div class="info-icon"><mat-icon>cake</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">Date of Birth</span>
+                          <span class="info-value">{{ p.dateOfBirth | date:'dd MMM yyyy' }}</span>
+                        </div>
+                      </div>
+
+                      <div class="info-item">
+                        <div class="info-icon"><mat-icon>person</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">Age</span>
+                          <span class="info-value">{{ p.age }} Years</span>
+                        </div>
+                      </div>
+
+                      <div class="info-item">
+                        <div class="info-icon"><mat-icon>height</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">Height</span>
+                          <span class="info-value">{{ p.height }}</span>
+                        </div>
+                      </div>
+
+                      @if (p.weight) {
+                        <div class="info-item">
+                          <div class="info-icon"><mat-icon>monitor_weight</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Weight</span>
+                            <span class="info-value">{{ p.weight }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.complexion) {
+                        <div class="info-item">
+                          <div class="info-icon"><mat-icon>face_retouching_natural</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Complexion</span>
+                            <span class="info-value">{{ p.complexion }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      <div class="info-item">
+                        <div class="info-icon"><mat-icon>temple_hindu</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">Religion</span>
+                          <span class="info-value">{{ p.religion }}</span>
+                        </div>
+                      </div>
+
+                      @if (p.caste) {
+                        <div class="info-item">
+                          <div class="info-icon"><mat-icon>diversity_3</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Caste</span>
+                            <span class="info-value">{{ p.caste }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      <div class="info-item">
+                        <div class="info-icon"><mat-icon>translate</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">Mother Tongue</span>
+                          <span class="info-value">{{ p.motherTongue }}</span>
+                        </div>
+                      </div>
+
+                      <div class="info-item">
+                        <div class="info-icon"><mat-icon>location_city</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">City</span>
+                          <span class="info-value">{{ p.location.city }}, {{ p.location.state }}</span>
+                        </div>
+                      </div>
+
+                      <div class="info-item">
+                        <div class="info-icon"><mat-icon>public</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">Country</span>
+                          <span class="info-value">{{ p.location.country }}</span>
+                        </div>
+                      </div>
+
+                      <div class="info-item">
+                        <div class="info-icon"><mat-icon>flight_takeoff</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">Willing to Relocate</span>
+                          <span class="info-value"
+                            [class.yes-badge]="p.location.willingToRelocate"
+                            [class.no-badge]="!p.location.willingToRelocate">
+                            {{ p.location.willingToRelocate ? 'Yes' : 'No' }}
+                          </span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-tab>
+
+            <!-- ── Tab 2: Career & Education ─────────── -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon class="tab-icon">school</mat-icon>
+                <span class="tab-text">Career</span>
+              </ng-template>
+
+              <div class="tab-content">
+
+                <!-- Education -->
+                <mat-card class="info-card" appearance="outlined">
+                  <mat-card-header>
+                    <div class="card-header-inner">
+                      <div class="card-header-icon"><mat-icon>school</mat-icon></div>
+                      <mat-card-title>Education</mat-card-title>
+                    </div>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="showcase-row">
+                      <div class="showcase-icon-wrap edu-icon">
+                        <mat-icon>menu_book</mat-icon>
+                      </div>
+                      <div class="showcase-info">
+                        <h3 class="showcase-title">{{ p.education.level }}</h3>
+                        <p class="showcase-sub">{{ p.education.field }}</p>
+                        @if (p.education.institution) {
+                          <p class="showcase-meta">
+                            <mat-icon>location_city</mat-icon>
+                            {{ p.education.institution }}
+                          </p>
+                        }
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <!-- Career -->
+                <mat-card class="info-card" appearance="outlined">
+                  <mat-card-header>
+                    <div class="card-header-inner">
+                      <div class="card-header-icon"><mat-icon>work</mat-icon></div>
+                      <mat-card-title>Career</mat-card-title>
+                    </div>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="showcase-row">
+                      <div class="showcase-icon-wrap career-icon">
+                        <mat-icon>business_center</mat-icon>
+                      </div>
+                      <div class="showcase-info">
+                        <h3 class="showcase-title">{{ p.occupation.title }}</h3>
+                        @if (p.occupation.company) {
+                          <p class="showcase-sub">{{ p.occupation.company }}</p>
+                        }
+                        <div class="career-badges">
+                          @if (p.occupation.annualIncome) {
+                            <span class="badge income-badge">
+                              <mat-icon>currency_rupee</mat-icon>
+                              {{ p.occupation.annualIncome }}
+                            </span>
+                          }
+                          <span class="badge status-badge">
+                            <mat-icon>work_history</mat-icon>
+                            {{ p.occupation.workingStatus }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-tab>
+
+            <!-- ── Tab 3: Family ──────────────────────── -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon class="tab-icon">family_restroom</mat-icon>
+                <span class="tab-text">Family</span>
+              </ng-template>
+
+              <div class="tab-content">
+                <mat-card class="info-card" appearance="outlined">
+                  <mat-card-header>
+                    <div class="card-header-inner">
+                      <div class="card-header-icon"><mat-icon>family_restroom</mat-icon></div>
+                      <mat-card-title>Family Background</mat-card-title>
+                    </div>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="info-icon-grid">
+
+                      <div class="info-item">
+                        <div class="info-icon family-icon"><mat-icon>home</mat-icon></div>
+                        <div class="info-body">
+                          <span class="info-label">Family Type</span>
+                          <span class="info-value family-type-badge">
+                            {{ p.familyDetails.familyType | titlecase }} Family
+                          </span>
+                        </div>
+                      </div>
+
+                      @if (p.familyDetails.fatherOccupation) {
+                        <div class="info-item">
+                          <div class="info-icon family-icon"><mat-icon>man</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Father's Occupation</span>
+                            <span class="info-value">{{ p.familyDetails.fatherOccupation }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.familyDetails.motherOccupation) {
+                        <div class="info-item">
+                          <div class="info-icon family-icon"><mat-icon>woman</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Mother's Occupation</span>
+                            <span class="info-value">{{ p.familyDetails.motherOccupation }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.familyDetails.siblings !== undefined && p.familyDetails.siblings !== null) {
+                        <div class="info-item">
+                          <div class="info-icon family-icon"><mat-icon>group</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Siblings</span>
+                            <span class="info-value">{{ p.familyDetails.siblings }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.familyDetails.familyValues) {
+                        <div class="info-item info-item-full">
+                          <div class="info-icon family-icon"><mat-icon>volunteer_activism</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Family Values</span>
+                            <span class="info-value">{{ p.familyDetails.familyValues }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.familyDetails.familyPreferenceNote) {
+                        <div class="info-item info-item-full">
+                          <div class="info-icon family-icon"><mat-icon>notes</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Family Preference Note</span>
+                            <span class="info-value note-text">{{ p.familyDetails.familyPreferenceNote }}</span>
+                          </div>
+                        </div>
+                      }
+
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-tab>
+
+            <!-- ── Tab 4: Preferences ─────────────────── -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon class="tab-icon">tune</mat-icon>
+                <span class="tab-text">Preferences</span>
+              </ng-template>
+
+              <div class="tab-content">
+                <mat-card class="info-card" appearance="outlined">
+                  <mat-card-header>
+                    <div class="card-header-inner">
+                      <div class="card-header-icon"><mat-icon>favorite_border</mat-icon></div>
+                      <mat-card-title>Partner Preferences</mat-card-title>
+                    </div>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="prefs-grid">
+
+                      <div class="pref-item">
+                        <div class="pref-icon"><mat-icon>cake</mat-icon></div>
+                        <div class="pref-body">
+                          <span class="pref-label">Age Range</span>
+                          <span class="pref-value">
+                            {{ p.preferences.ageRange.min }} – {{ p.preferences.ageRange.max }} years
+                          </span>
+                        </div>
+                      </div>
+
+                      @if (p.preferences.heightRange) {
+                        <div class="pref-item">
+                          <div class="pref-icon"><mat-icon>height</mat-icon></div>
+                          <div class="pref-body">
+                            <span class="pref-label">Height Range</span>
+                            <span class="pref-value">
+                              {{ p.preferences.heightRange.min }} – {{ p.preferences.heightRange.max }}
+                            </span>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.preferences.familyType) {
+                        <div class="pref-item">
+                          <div class="pref-icon"><mat-icon>family_restroom</mat-icon></div>
+                          <div class="pref-body">
+                            <span class="pref-label">Family Type</span>
+                            <span class="pref-value">{{ p.preferences.familyType | titlecase }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.preferences.foodPreference) {
+                        <div class="pref-item">
+                          <div class="pref-icon"><mat-icon>restaurant</mat-icon></div>
+                          <div class="pref-body">
+                            <span class="pref-label">Food Preference</span>
+                            <span class="pref-value">{{ p.preferences.foodPreference | titlecase }}</span>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.preferences.religions?.length) {
+                        <div class="pref-item pref-wide">
+                          <div class="pref-icon"><mat-icon>temple_hindu</mat-icon></div>
+                          <div class="pref-body">
+                            <span class="pref-label">Religion</span>
+                            <div class="chip-row">
+                              @for (r of p.preferences.religions; track r) {
+                                <span class="pref-chip">{{ r }}</span>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.preferences.education?.length) {
+                        <div class="pref-item pref-wide">
+                          <div class="pref-icon"><mat-icon>school</mat-icon></div>
+                          <div class="pref-body">
+                            <span class="pref-label">Education</span>
+                            <div class="chip-row">
+                              @for (e of p.preferences.education; track e) {
+                                <span class="pref-chip">{{ e }}</span>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.preferences.locations?.length) {
+                        <div class="pref-item pref-wide">
+                          <div class="pref-icon"><mat-icon>location_on</mat-icon></div>
+                          <div class="pref-body">
+                            <span class="pref-label">Preferred Locations</span>
+                            <div class="chip-row">
+                              @for (loc of p.preferences.locations; track loc) {
+                                <span class="pref-chip">{{ loc }}</span>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      }
+
+                      @if (p.preferences.occupations?.length) {
+                        <div class="pref-item pref-wide">
+                          <div class="pref-icon"><mat-icon>work</mat-icon></div>
+                          <div class="pref-body">
+                            <span class="pref-label">Occupations</span>
+                            <div class="chip-row">
+                              @for (o of p.preferences.occupations; track o) {
+                                <span class="pref-chip">{{ o }}</span>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-tab>
+
+            <!-- ── Tab 5: Horoscope (conditional) ────── -->
+            @if (showHoroscopeTab() && p.horoscope) {
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="tab-icon">auto_awesome</mat-icon>
+                  <span class="tab-text">Horoscope</span>
+                </ng-template>
+
+                <div class="tab-content">
+                  <mat-card class="info-card horoscope-card" appearance="outlined">
+                    <mat-card-header>
+                      <div class="card-header-inner">
+                        <div class="card-header-icon horoscope-icon"><mat-icon>auto_awesome</mat-icon></div>
+                        <mat-card-title>Horoscope Details</mat-card-title>
+                      </div>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <div class="horoscope-banner">
+                        <mat-icon>star</mat-icon>
+                        <p>Horoscope matching plays an important role in matrimonial compatibility.</p>
+                      </div>
+                      <div class="horoscope-grid">
+
+                        @if (p.horoscope.rashi) {
+                          <div class="horo-item">
+                            <div class="horo-icon rashi-icon">
+                              <mat-icon>nightlight</mat-icon>
+                            </div>
+                            <div class="horo-body">
+                              <span class="horo-label">Rashi (Moon Sign)</span>
+                              <span class="horo-value">{{ p.horoscope.rashi }}</span>
+                            </div>
+                          </div>
+                        }
+
+                        @if (p.horoscope.nakshatra) {
+                          <div class="horo-item">
+                            <div class="horo-icon nakshatra-icon">
+                              <mat-icon>auto_awesome</mat-icon>
+                            </div>
+                            <div class="horo-body">
+                              <span class="horo-label">Nakshatra</span>
+                              <span class="horo-value">{{ p.horoscope.nakshatra }}</span>
+                            </div>
+                          </div>
+                        }
+
+                        @if (p.horoscope.manglikStatus) {
+                          <div class="horo-item">
+                            <div class="horo-icon manglik-icon">
+                              <mat-icon>flare</mat-icon>
+                            </div>
+                            <div class="horo-body">
+                              <span class="horo-label">Manglik Status</span>
+                              <span
+                                class="horo-value"
+                                [class.manglik-yes]="p.horoscope.manglikStatus.toLowerCase() === 'yes'">
+                                {{ p.horoscope.manglikStatus }}
+                              </span>
+                            </div>
+                          </div>
+                        }
+
+                        @if (p.horoscope.timeOfBirth) {
+                          <div class="horo-item">
+                            <div class="horo-icon time-icon">
+                              <mat-icon>schedule</mat-icon>
+                            </div>
+                            <div class="horo-body">
+                              <span class="horo-label">Time of Birth</span>
+                              <span class="horo-value">{{ p.horoscope.timeOfBirth }}</span>
+                            </div>
+                          </div>
+                        }
+
+                        @if (p.horoscope.placeOfBirth) {
+                          <div class="horo-item">
+                            <div class="horo-icon place-icon">
+                              <mat-icon>location_on</mat-icon>
+                            </div>
+                            <div class="horo-body">
+                              <span class="horo-label">Place of Birth</span>
+                              <span class="horo-value">{{ p.horoscope.placeOfBirth }}</span>
+                            </div>
+                          </div>
+                        }
+
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </mat-tab>
+            }
+
+          </mat-tab-group>
+        </div>
+
+        <!-- ══════ RIGHT: Sticky Sidebar ══════════════════ -->
+        <aside class="profile-sidebar animate-fade-in-up" aria-label="Profile actions and quick facts">
+
+          <!-- Action card -->
+          <mat-card class="sidebar-card action-card" appearance="outlined">
+            <mat-card-content>
+              <div class="sidebar-actions">
+                <button
+                  mat-raised-button
+                  class="suhana-btn-primary sb-btn"
+                  (click)="sendInterest()"
+                  [disabled]="interestSent()">
+                  <mat-icon>{{ interestSent() ? 'check_circle' : 'favorite' }}</mat-icon>
+                  {{ interestSent() ? 'Interest Sent!' : 'Send Interest' }}
+                </button>
+                <button mat-stroked-button class="suhana-btn-outline sb-btn" (click)="startChat()">
+                  <mat-icon>chat_bubble_outline</mat-icon> Start Chat
+                </button>
+                <button
+                  mat-stroked-button
+                  class="sb-btn shortlist-sb-btn"
+                  [class.shortlisted]="isShortlisted()"
+                  (click)="toggleShortlist()">
+                  <mat-icon>{{ isShortlisted() ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+                  {{ isShortlisted() ? 'Shortlisted ✓' : 'Shortlist Profile' }}
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Profile completeness card -->
+          <mat-card class="sidebar-card" appearance="outlined">
+            <mat-card-header>
+              <mat-card-title class="sidebar-card-title">
+                <mat-icon>insights</mat-icon> Profile Score
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="completeness-display">
+                <div class="completeness-ring">
+                  <mat-progress-spinner
+                    mode="determinate"
+                    [value]="p.profileCompleteness"
+                    diameter="88"
+                    strokeWidth="7">
+                  </mat-progress-spinner>
+                  <span class="completeness-pct-large">{{ p.profileCompleteness }}%</span>
+                </div>
+                <div class="completeness-meta">
+                  <p class="completeness-label">Profile Completeness</p>
+                  @if (p.profileCompleteness >= 80) {
+                    <span class="completeness-tag green">Highly Complete</span>
+                  } @else if (p.profileCompleteness >= 50) {
+                    <span class="completeness-tag amber">Moderately Complete</span>
+                  } @else {
+                    <span class="completeness-tag red">Partially Complete</span>
+                  }
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Quick facts card -->
+          <mat-card class="sidebar-card" appearance="outlined">
+            <mat-card-header>
+              <mat-card-title class="sidebar-card-title">
+                <mat-icon>info_outline</mat-icon> Quick Facts
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="qf-card-content">
+              <div class="qf-list">
+
+                <div class="qf-item">
+                  <mat-icon>cake</mat-icon>
+                  <div><span class="qfl">Age</span><span class="qfv">{{ p.age }} Years</span></div>
+                </div>
+                <mat-divider></mat-divider>
+
+                <div class="qf-item">
+                  <mat-icon>straighten</mat-icon>
+                  <div><span class="qfl">Height</span><span class="qfv">{{ p.height }}</span></div>
+                </div>
+                <mat-divider></mat-divider>
+
+                <div class="qf-item">
+                  <mat-icon>temple_hindu</mat-icon>
+                  <div><span class="qfl">Religion</span><span class="qfv">{{ p.religion }}</span></div>
+                </div>
+                <mat-divider></mat-divider>
+
+                <div class="qf-item">
+                  <mat-icon>translate</mat-icon>
+                  <div><span class="qfl">Mother Tongue</span><span class="qfv">{{ p.motherTongue }}</span></div>
+                </div>
+                <mat-divider></mat-divider>
+
+                <div class="qf-item">
+                  <mat-icon>school</mat-icon>
+                  <div><span class="qfl">Education</span><span class="qfv">{{ p.education.level }}</span></div>
+                </div>
+                <mat-divider></mat-divider>
+
+                <div class="qf-item">
+                  <mat-icon>work</mat-icon>
+                  <div><span class="qfl">Occupation</span><span class="qfv">{{ p.occupation.title }}</span></div>
+                </div>
+
+                @if (p.occupation.annualIncome) {
+                  <mat-divider></mat-divider>
+                  <div class="qf-item">
+                    <mat-icon>currency_rupee</mat-icon>
+                    <div><span class="qfl">Annual Income</span><span class="qfv">{{ p.occupation.annualIncome }}</span></div>
+                  </div>
+                }
+
+                <mat-divider></mat-divider>
+                <div class="qf-item">
+                  <mat-icon>location_on</mat-icon>
+                  <div><span class="qfl">Location</span><span class="qfv">{{ p.location.city }}, {{ p.location.state }}</span></div>
+                </div>
+
+                <mat-divider></mat-divider>
+                <div class="qf-item">
+                  <mat-icon>family_restroom</mat-icon>
+                  <div><span class="qfl">Family Type</span><span class="qfv">{{ p.familyDetails.familyType | titlecase }}</span></div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Report link -->
+          <div class="report-row">
+            <button mat-button color="warn" (click)="reportProfile()" class="report-btn">
+              <mat-icon>flag</mat-icon> Report this Profile
+            </button>
+          </div>
+        </aside>
+
+      </div><!-- /profile-main-layout -->
+
+      <!-- ── PHOTO GALLERY ──────────────────────────────── -->
+      @if (galleryPhotos().length > 0) {
+        <section class="gallery-section animate-fade-in-up" aria-label="Photo gallery">
+          <div class="section-heading">
+            <mat-icon>photo_library</mat-icon>
+            <h2>Photo Gallery</h2>
+            <span class="photo-count">{{ galleryPhotos().length }} Photos</span>
+          </div>
+
+          <div class="gallery-grid">
+            @for (photo of galleryPhotos(); track photo.id; let i = $index) {
+              <div
+                class="gallery-item"
+                [class.primary-item]="photo.isPrimary"
+                (click)="openPhotoDialog(galleryPhotos(), i)"
+                matRipple
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'View photo ' + (i + 1)"
+                (keydown.enter)="openPhotoDialog(galleryPhotos(), i)"
+                (keydown.space)="openPhotoDialog(galleryPhotos(), i)">
+
+                <img
+                  [src]="photo.url"
+                  [alt]="p.firstName + ' photo ' + (i + 1)"
+                  loading="lazy"
+                  (error)="onImageError($event)" />
+
+                <div class="gallery-overlay">
+                  <mat-icon class="zoom-icon">zoom_in</mat-icon>
+                </div>
+
+                @if (photo.isPrimary) {
+                  <span class="gallery-primary-label">
+                    <mat-icon>star</mat-icon> Primary
+                  </span>
+                }
+                @if (photo.isVerified) {
+                  <span class="gallery-verified-label">
+                    <mat-icon>verified</mat-icon>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+    </div><!-- /suhana-container profile-body -->
+
+    <!-- ── BOTTOM CTA BANNER ──────────────────────────── -->
+    <section class="interest-cta-banner" aria-label="Connect with this profile">
+      <div class="suhana-container cta-banner-inner">
+        <div class="cta-banner-text">
+          <h3>Interested in {{ p.firstName }}?</h3>
+          <p>Send an interest and take the first step towards your perfect match</p>
+        </div>
+        <div class="cta-banner-actions">
+          <button
+            mat-raised-button
+            class="cta-interest-btn"
+            (click)="sendInterest()"
+            [disabled]="interestSent()">
+            <mat-icon>{{ interestSent() ? 'check_circle' : 'favorite' }}</mat-icon>
+            {{ interestSent() ? 'Interest Sent!' : 'Send Interest' }}
+          </button>
+          <button mat-stroked-button class="cta-chat-btn" (click)="startChat()">
+            <mat-icon>chat_bubble_outline</mat-icon> Chat Now
+          </button>
+          <button
+            mat-icon-button
+            class="cta-shortlist-btn"
+            (click)="toggleShortlist()"
+            [class.active]="isShortlisted()"
+            matTooltip="Shortlist">
+            <mat-icon>{{ isShortlisted() ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  } <!-- /profile content -->
+</div>

@@ -101,8 +101,10 @@ export class ApiService {
   }
 
   // Matches
-  generateMatches(count = 4): Observable<any> {
-    return this.http.post(`${this.baseUrl}/v1/matches/generate`, { count });
+  generateMatches(count = 4, profileId?: string): Observable<any> {
+    const body: Record<string, unknown> = { count };
+    if (profileId) body['profileId'] = profileId;
+    return this.http.post(`${this.baseUrl}/v1/matches/generate`, body);
   }
 
   getMatches(): Observable<any> {

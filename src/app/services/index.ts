@@ -5,3 +5,4 @@ export { MatchService } from './match.service';
 export { ChatService } from './chat.service';
 export { SearchService } from './search.service';
 export { AdminService } from './admin.service';
+export { GalleryService } from './gallery.service';
