@@ -76,6 +76,16 @@ export class MatchService {
     this.updateMatchStatus(matchId, 'suggested');
   }
 
+  /** Shortlist a profile directly by userId (no matchId required). */
+  async shortlistUser(userId: string): Promise<void> {
+    await firstValueFrom(this.api.shortlistUser(userId));
+  }
+
+  /** Remove a profile from shortlist directly by userId. */
+  async removeShortlistUser(userId: string): Promise<void> {
+    await firstValueFrom(this.api.removeShortlistUser(userId));
+  }
+
   expressInterest(matchId: string): void {
     this.updateMatchStatus(matchId, 'interested');
     this.api.updateMatchStatus(matchId, 'interested').subscribe({ error: () => {} });
@@ -100,6 +110,18 @@ export class MatchService {
     return this.shortlistedIds().has(matchId);
   }
 
+  async getMatchByUserId(id: string): Promise<MatchResult | undefined> {
+    const match = this.matchResults().find(m => m.userId === id);
+    if (match) return match;
+
+    try {
+      const apiMatch = await firstValueFrom(this.api.getMatchByUserId(id));
+      return apiMatch ? { ...apiMatch, userId: id } : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
   private updateMatchStatus(matchId: string, status: MatchStatus): void {
     this.matchResults.update(matches =>
       matches.map(m => m.id === matchId ? { ...m, status } : m)
@@ -112,7 +134,7 @@ export class MatchService {
     const badges = this.generateBadges(breakdown);
     const explanation = this.generateExplanation(profile, breakdown);
     return {
-      id: `match_${profile.userId}`, profile, matchPercentage: totalScore,
+      id: `match_${profile.userId}`, userId: profile.user?.id!, profile, matchPercentage: totalScore,
       compatibilityBreakdown: breakdown, explanationText: explanation,
       badges, status: 'suggested', suggestedAt: new Date(),
     };

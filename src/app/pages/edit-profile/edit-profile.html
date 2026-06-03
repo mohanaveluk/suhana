@@ -134,6 +134,19 @@
 
       <mat-divider class="ep-sidebar__divider"></mat-divider>
 
+      <!-- Membership (read-only) -->
+      <div class="ep-membership">
+        <div class="ep-membership__pill ep-membership__pill--{{ user()?.membership || 'free' }}">
+          <mat-icon class="ep-membership__icon">{{ membershipIcon(user()?.membership || 'free') }}</mat-icon>
+          <span>{{ (user()?.membership || 'free') | titlecase }} Member</span>
+        </div>
+        <a class="ep-membership__link" routerLink="/premium">
+          Manage Plan <mat-icon>chevron_right</mat-icon>
+        </a>
+      </div>
+
+      <mat-divider class="ep-sidebar__divider"></mat-divider>
+
       <!-- Sidebar save -->
       <button mat-raised-button class="suhana-btn-primary ep-sidebar__save"
               [disabled]="isSaving()" (click)="saveAll()">
@@ -450,6 +463,100 @@
                 </mat-select>
               </mat-form-field>
             </div>
+
+            <!-- Horoscope document upload -->
+            <div class="ep-horo-upload__label">
+              <mat-icon>description</mat-icon>
+              <span>Horoscope Document <span class="ep-horo-upload__optional">(Optional)</span></span>
+            </div>
+
+            @if (horoscopeDocName() || horoscopeDocUrl()) {
+              <!-- File attached state — viewable card -->
+              @if (!showRemoveHoroscopeConfirm()) {
+                <div class="ep-horo-doc-card">
+                  <!-- Top: icon + info + view link -->
+                  <div class="ep-horo-doc-card__top">
+                    <div class="ep-horo-doc-card__icon-wrap">
+                      <mat-icon class="ep-horo-doc-card__icon">
+                        {{ horoscopeDocUrl() ? horoscopeDocIcon(horoscopeDocUrl()!) : (horoscopeDocName()?.endsWith('.pdf') ? 'picture_as_pdf' : 'image') }}
+                      </mat-icon>
+                    </div>
+                    <div class="ep-horo-doc-card__info">
+                      <span class="ep-horo-doc-card__title">Horoscope Document</span>
+                      <span class="ep-horo-doc-card__meta">
+                        @if (horoscopeDocUrl()) {
+                          <span class="ep-horo-doc-card__badge">{{ horoscopeDocBadge(horoscopeDocUrl()!) }}</span>
+                        }
+                        <span class="ep-horo-doc-card__name">{{ horoscopeDocName() }}</span>
+                        @if (isUploadingHoroscopeDoc()) {
+                          <mat-spinner diameter="14"></mat-spinner>
+                        } @else if (horoscopeDocUrl()) {
+                          <mat-icon class="ep-horo-doc-card__check">check_circle</mat-icon>
+                        }
+                      </span>
+                    </div>
+                    @if (horoscopeDocUrl()) {
+                      <a class="ep-horo-doc-card__view-btn"
+                         [href]="horoscopeDocUrl()" target="_blank" rel="noopener noreferrer"
+                         matTooltip="Open document in new tab">
+                        <mat-icon>open_in_new</mat-icon> View
+                      </a>
+                    }
+                  </div>
+                  <!-- Divider -->
+                  <mat-divider class="ep-horo-doc-card__divider"></mat-divider>
+                  <!-- Bottom: actions -->
+                  <div class="ep-horo-doc-card__actions">
+                    <label class="ep-horo-doc-card__replace-link" matTooltip="Choose a different file">
+                      <mat-icon>swap_horiz</mat-icon> Replace
+                      <input type="file" hidden accept="application/pdf,image/jpeg,image/png,image/webp"
+                        (change)="onHoroscopeDocSelected($event)" />
+                    </label>
+                    <button class="ep-horo-doc-card__remove-btn" (click)="removeHoroscopeDoc()"
+                      matTooltip="Remove this document">
+                      <mat-icon>delete_outline</mat-icon> Remove
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <!-- Inline remove confirmation -->
+                <div class="ep-horo-remove-confirm">
+                  <mat-icon class="ep-horo-remove-confirm__icon">warning_amber</mat-icon>
+                  <div class="ep-horo-remove-confirm__body">
+                    <p class="ep-horo-remove-confirm__question">Remove horoscope document?</p>
+                    <p class="ep-horo-remove-confirm__sub">The document will be permanently unlinked from your profile.</p>
+                  </div>
+                  <div class="ep-horo-remove-confirm__btns">
+                    <button mat-stroked-button (click)="cancelRemoveHoroscopeDoc()">Cancel</button>
+                    <button mat-flat-button color="warn" (click)="confirmRemoveHoroscopeDoc()">
+                      <mat-icon>delete</mat-icon> Yes, Remove
+                    </button>
+                  </div>
+                </div>
+              }
+            } @else {
+              <!-- Drop zone -->
+              <div class="ep-horo-upload__zone"
+                [class.ep-horo-upload__zone--active]="isDragOverHoroscope()"
+                (dragover)="onHoroscopeDragOver($event)"
+                (dragleave)="onHoroscopeDragLeave()"
+                (drop)="onHoroscopeDrop($event)">
+                <mat-icon class="ep-horo-upload__zone-icon">cloud_upload</mat-icon>
+                <p class="ep-horo-upload__zone-text">Drag &amp; drop your horoscope here</p>
+                <p class="ep-horo-upload__zone-sub">PDF, JPG, PNG or WebP &bull; Max 10 MB</p>
+                <label mat-stroked-button class="ep-chip ep-chip--upload">
+                  <mat-icon>attach_file</mat-icon> Choose File
+                  <input type="file" hidden [accept]="'application/pdf,image/jpeg,image/png,image/webp'"
+                    (change)="onHoroscopeDocSelected($event)" />
+                </label>
+              </div>
+            }
+
+            @if (horoscopeDocError()) {
+              <p class="ep-horo-upload__error">
+                <mat-icon>error_outline</mat-icon> {{ horoscopeDocError() }}
+              </p>
+            }
           </form>
         </mat-expansion-panel>
 

@@ -32,10 +32,15 @@
         <a mat-button routerLink="/login" class="login-btn">Login</a>
         <a mat-raised-button routerLink="/register" class="register-btn suhana-btn-primary">Register Free</a>
       } @else {
-        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu" [matTooltip]="displayName()" placement="below">
           <mat-icon>account_circle</mat-icon>
         </button>
         <mat-menu #userMenu="matMenu">
+          <a mat-menu-item routerLink="/profile" class="user-name-item" style="margin-right: 2rem;">
+            <mat-icon>account_circle</mat-icon>
+            <span>{{ displayName() }}</span>
+          </a>
+          <mat-divider></mat-divider>
           <a mat-menu-item routerLink="/profile">
             <mat-icon>person</mat-icon>
             <span>My Profile</span>

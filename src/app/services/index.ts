@@ -6,3 +6,6 @@ export { ChatService } from './chat.service';
 export { SearchService } from './search.service';
 export { AdminService } from './admin.service';
 export { GalleryService } from './gallery.service';
+export { WebSocketService } from './websocket.service';
+export { InterestService } from './interest.service';
+export { HeartbeatService } from './heartbeat.service';

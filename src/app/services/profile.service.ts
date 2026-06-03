@@ -154,7 +154,7 @@ export class ProfileService {
     ];
     const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Jaipur'];
     const religions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist'];
-    const educationLevels = ["Bachelor's", "Master's", 'PhD', 'MBA', 'Medical', 'Engineering'];
+    const educationLevels = ["Bachelor", "Master", 'PhD', 'MBA', 'Medical', 'Engineering'];
     const occupations = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA'];
     const companies = ['Google', 'TCS', 'Infosys', 'Wipro', 'Amazon', 'Microsoft', 'Apple', 'Deloitte'];
     const profiles: UserProfile[] = [];

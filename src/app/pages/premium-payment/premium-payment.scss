@@ -1,0 +1,745 @@
+// ── Page shell ────────────────────────────────────────────────────────────────
+.pp-page {
+  padding-top: 24px;
+  padding-bottom: 64px;
+  min-height: 100vh;
+}
+
+// ── Page header ───────────────────────────────────────────────────────────────
+.pp-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+
+  &__icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--suhana-gradient, linear-gradient(135deg, #6b1a1a, #c08080));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    color: #fff;
+    font-size: 1.6rem;
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  &__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--suhana-maroon, #6b1a1a);
+    margin: 0 0 2px;
+  }
+
+  &__sub {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: #2e7d32;
+    margin: 0;
+  }
+
+  &__lock {
+    font-size: 0.9rem;
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  &__back {
+    margin-left: auto;
+  }
+
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+    &__back { width: 100%; }
+  }
+}
+
+// ── Two-column layout ─────────────────────────────────────────────────────────
+.pp-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Left: Plan Summary Card ───────────────────────────────────────────────────
+.pp-aside {
+  position: sticky;
+  top: 80px;
+
+  @media (max-width: 900px) { position: static; }
+}
+
+.pp-plan-card {
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+
+  // Tier-specific gradients
+  &--silver {
+    background: linear-gradient(145deg, #616161, #9e9e9e);
+  }
+  &--gold {
+    background: linear-gradient(145deg, #b8860b, #d4ac0d);
+  }
+  &--platinum {
+    background: linear-gradient(145deg, #4a0e0e, #6b1a1a);
+  }
+
+  // Decorative circle
+  &::after {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-bottom: 20px;
+
+    mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+  }
+
+  &__price-block {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+
+  &__currency {
+    font-size: 1.4rem;
+    font-weight: 700;
+    opacity: 0.85;
+    margin-bottom: 4px;
+  }
+
+  &__price {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  &__duration {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin-bottom: 6px;
+  }
+
+  &__features {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+      color: rgba(255,255,255,0.9);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+  }
+
+  &__divider {
+    border-color: rgba(255,255,255,0.2) !important;
+    margin: 12px 0 !important;
+  }
+
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    opacity: 0.85;
+
+    &--total {
+      font-size: 1rem;
+      font-weight: 700;
+      opacity: 1;
+      margin-top: 4px;
+    }
+  }
+}
+
+// ── Trust badges ──────────────────────────────────────────────────────────────
+.pp-trust-badges {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 16px;
+}
+
+.pp-trust-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--suhana-text-secondary, #666);
+  text-align: center;
+
+  mat-icon {
+    font-size: 1.3rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    color: var(--suhana-rose-gold, #c08080);
+  }
+}
+
+// ── Right: Stepper ────────────────────────────────────────────────────────────
+.pp-main {
+  min-width: 0;
+}
+
+.pp-stepper {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px var(--suhana-shadow, rgba(0,0,0,0.1)) !important;
+  overflow: visible !important;
+}
+
+.pp-step-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+// ── Step content ──────────────────────────────────────────────────────────────
+.pp-step-content {
+  padding: 24px 16px 12px;
+
+  &--center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 320px;
+    padding: 32px 16px;
+  }
+}
+
+.pp-step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+
+  mat-icon {
+    color: var(--suhana-rose-gold, #c08080);
+    font-size: 1.4rem;
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--suhana-maroon, #6b1a1a);
+    margin: 0;
+  }
+}
+
+.pp-step-intro {
+  font-size: 0.9rem;
+  color: var(--suhana-text-secondary, #666);
+  margin: 0 0 16px;
+}
+
+// ── Mobile plan summary (step 1, visible on mobile only) ─────────────────────
+.pp-mobile-summary {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(107, 26, 26, 0.05);
+  margin-bottom: 16px;
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+
+    mat-icon { font-size: 0.9rem; width: 0.9rem; height: 0.9rem; }
+
+    &--silver { background: #757575; }
+    &--gold   { background: #b8860b; }
+    &--platinum { background: var(--suhana-maroon, #6b1a1a); }
+  }
+
+  &__price {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--suhana-maroon, #6b1a1a);
+  }
+
+  @media (max-width: 900px) { display: flex; }
+}
+
+// ── Confirm info items ────────────────────────────────────────────────────────
+.pp-confirm-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(107, 26, 26, 0.04);
+  border: 1px solid rgba(192, 128, 128, 0.25);
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    mat-icon {
+      font-size: 1.1rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      color: var(--suhana-rose-gold, #c08080);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--suhana-text-secondary, #666);
+      margin-bottom: 2px;
+    }
+
+    span {
+      font-size: 0.88rem;
+      color: var(--suhana-text-primary, #1a1a1a);
+    }
+  }
+}
+
+// ── Step actions ──────────────────────────────────────────────────────────────
+.pp-step-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(192, 128, 128, 0.2);
+
+  button { mat-icon { vertical-align: middle; font-size: 1rem; width: 1rem; height: 1rem; } }
+
+  &--center { justify-content: center; border-top: none; padding-top: 0; }
+
+  @media (max-width: 500px) {
+    flex-wrap: wrap;
+    button { flex: 1; }
+  }
+}
+
+// Primary action button
+.pp-btn-primary {
+  background: var(--suhana-maroon, #6b1a1a) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 0 24px !important;
+  height: 44px !important;
+  margin-left: auto;
+  gap: 8px;
+
+  &:not([disabled]):hover {
+    background: #8a2222 !important;
+  }
+
+  mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; margin: 0 -4px 0 4px; }
+}
+
+.pp-btn-pay {
+  min-width: 160px;
+  font-size: 1rem !important;
+  letter-spacing: 0.3px;
+
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ── Payment method grid ───────────────────────────────────────────────────────
+.pp-method-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 8px;
+
+  @media (max-width: 700px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 480px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.pp-method-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px 12px;
+  border: 1.5px solid rgba(192, 128, 128, 0.3);
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  position: relative;
+  min-height: 96px;
+
+  &:hover {
+    border-color: var(--suhana-rose-gold, #c08080);
+    background: rgba(192, 128, 128, 0.05);
+  }
+
+  &--selected {
+    border-color: var(--suhana-maroon, #6b1a1a) !important;
+    background: rgba(107, 26, 26, 0.06) !important;
+    box-shadow: 0 0 0 2px rgba(107, 26, 26, 0.12);
+  }
+
+  &__logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+
+    mat-icon { font-size: 1.4rem; width: 1.4rem; height: 1.4rem; }
+  }
+
+  &__name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--suhana-text-primary, #1a1a1a);
+    text-align: center;
+  }
+
+  &__desc {
+    font-size: 0.68rem;
+    color: var(--suhana-text-secondary, #666);
+    text-align: center;
+  }
+
+  &__check {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    color: var(--suhana-maroon, #6b1a1a);
+  }
+}
+
+// ── Payment method logos (CSS-branded) ────────────────────────────────────────
+.logo--visa      { background: #1a1f71; color: #fff; font-style: italic; letter-spacing: -1px; }
+.logo--mc        { background: linear-gradient(135deg, #eb001b 0%, #f79e1b 100%); color: #fff; }
+.logo--paypal    { background: #003087; color: #fff; }
+.logo--gpay      { background: linear-gradient(135deg, #4285f4, #34a853); color: #fff; }
+.logo--applepay  { background: #000; color: #fff; }
+.logo--amazonpay { background: #ff9900; color: #131921; }
+.logo--bank      { background: var(--suhana-maroon, #6b1a1a); color: #fff; }
+
+// ── Form area ─────────────────────────────────────────────────────────────────
+.pp-form-area {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(192, 128, 128, 0.35);
+}
+
+.pp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pp-form-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--suhana-maroon, #6b1a1a);
+  margin: 0 0 12px;
+
+  mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; color: var(--suhana-rose-gold, #c08080); }
+}
+
+.pp-full-width { width: 100%; }
+
+.pp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  mat-form-field { width: 100%; }
+
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+
+  &--3 {
+    grid-template-columns: 1fr 1fr 1fr;
+
+    @media (max-width: 560px) { grid-template-columns: 1fr 1fr; }
+  }
+}
+
+// Monospace class for card/account fields
+.pp-mono input {
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 1px;
+}
+
+// ── Verification step ─────────────────────────────────────────────────────────
+.pp-verifying {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  width: 100%;
+  max-width: 360px;
+
+  &__ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__spinner {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__lock {
+    font-size: 1.6rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--suhana-maroon, #6b1a1a);
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--suhana-maroon, #6b1a1a);
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.88rem;
+    color: var(--suhana-text-secondary, #666);
+    margin: 0;
+  }
+
+  &__bar {
+    width: 100%;
+    max-width: 280px;
+    border-radius: 4px;
+  }
+}
+
+// ── Error state ───────────────────────────────────────────────────────────────
+.pp-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  max-width: 380px;
+
+  &__icon-wrap {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(179, 38, 30, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon {
+    font-size: 2.4rem;
+    width: 2.4rem;
+    height: 2.4rem;
+    color: var(--mat-sys-error, #b3261e);
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--suhana-text-primary, #1a1a1a);
+    margin: 0;
+  }
+
+  &__msg {
+    font-size: 0.875rem;
+    color: var(--suhana-text-secondary, #666);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__ref {
+    font-size: 0.78rem;
+    color: var(--suhana-text-secondary, #666);
+    font-family: monospace;
+    margin: 0;
+  }
+}
+
+// ── Success state ─────────────────────────────────────────────────────────────
+@keyframes pp-pop-in {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60%  { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.pp-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  width: 100%;
+  max-width: 440px;
+
+  &__ring {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: rgba(46, 125, 50, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    color: #2e7d32;
+    animation: pp-pop-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  &__heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--suhana-maroon, #6b1a1a);
+    margin: 0;
+  }
+
+  &__sub {
+    font-size: 0.9rem;
+    color: var(--suhana-text-secondary, #666);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__cta {
+    margin-top: 8px;
+  }
+}
+
+// ── Receipt card ──────────────────────────────────────────────────────────────
+.pp-receipt {
+  width: 100%;
+  border: 1.5px solid rgba(192, 128, 128, 0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: left;
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    font-size: 0.875rem;
+
+    span { color: var(--suhana-text-secondary, #666); }
+    strong { color: var(--suhana-text-primary, #1a1a1a); }
+  }
+
+  &__mono {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+  }
+}
+
+// ── Loading / no-plan state ───────────────────────────────────────────────────
+.pp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 300px;
+  color: var(--suhana-text-secondary, #666);
+}
+
+// ── Dark-mode overrides ───────────────────────────────────────────────────────
+@media (prefers-color-scheme: dark) {
+  .pp-plan-card::after          { background: rgba(255,255,255,0.05); }
+  .pp-method-card               { border-color: rgba(255,255,255,0.12); }
+  .pp-method-card:hover         { background: rgba(255,255,255,0.05); }
+  .pp-method-card--selected     { background: rgba(107,26,26,0.2) !important; }
+  .pp-confirm-info              { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+  .pp-receipt                   { border-color: rgba(255,255,255,0.15); }
+  .pp-form-area                 { border-color: rgba(255,255,255,0.15); }
+  .pp-step-actions              { border-color: rgba(255,255,255,0.12); }
+}

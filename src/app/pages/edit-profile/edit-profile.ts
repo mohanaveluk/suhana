@@ -1,28 +1,35 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TitleCasePipe } from '@angular/common';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ProfileService } from '../../services';
+import { ApiService } from '../../services/api.service';
 import {
   UserProfile, Gender, PhotoPrivacy, ProfileStatus,
   FamilyType, FoodPreference,
   User,
   ProfilePhoto,
 } from '../../models/user.model';
+import { firstValueFrom } from 'rxjs';
 
 const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PHOTO_MB = 2;
 
+const ALLOWED_HOROSCOPE_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+const MAX_HOROSCOPE_MB = 10;
+
 @Component({
   selector: 'app-edit-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, MaterialModule],
+  imports: [ReactiveFormsModule, RouterLink, MaterialModule, TitleCasePipe],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.scss',
 })
 export class EditProfileComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
+  private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   protected readonly isLoading = signal(true);
   protected readonly isSaving = signal(false);
@@ -34,8 +41,24 @@ export class EditProfileComponent implements OnInit {
   protected readonly avatarFile = signal<File | null>(null);
   protected readonly avatarError = signal<string | null>(null);
 
+  // ── Horoscope document ──────────────────────────────────────────────────────
+  protected readonly horoscopeDocUrl = signal<string | null>(null);
+  protected readonly horoscopeDocFile = signal<File | null>(null);
+  protected readonly horoscopeDocName = signal<string | null>(null);
+  protected readonly horoscopeDocError = signal<string | null>(null);
+  protected readonly isDragOverHoroscope = signal(false);
+  protected readonly isUploadingHoroscopeDoc = signal(false);
+  protected readonly showRemoveHoroscopeConfirm = signal(false);
+
   protected readonly user = signal<User | null>(null);
   protected readonly profileId = signal<string | null>(null);
+
+  protected membershipIcon(tier: string): string {
+    if (tier === 'platinum') return 'diamond';
+    if (tier === 'gold')     return 'star';
+    if (tier === 'silver')   return 'workspace_premium';
+    return 'person_outline';
+  }
 
   protected get initials(): string {
     const first = this.basicForm.value.firstName?.[0] ?? '';
@@ -253,6 +276,11 @@ export class EditProfileComponent implements OnInit {
         rashi: p.horoscope.rashi ?? '', nakshatra: p.horoscope.nakshatra ?? '',
         manglikStatus: p.horoscope.manglikStatus ?? '',
       });
+      this.horoscopeDocUrl.set(p.horoscope.documentUrl ?? null);
+      if (p.horoscope.documentUrl) {
+        const parts = p.horoscope.documentUrl.split('/');
+        this.horoscopeDocName.set(parts[parts.length - 1]);
+      }
     }
     this.preferencesForm.patchValue({
       ageMin: p.preferences.ageRange.min, ageMax: p.preferences.ageRange.max,
@@ -332,6 +360,7 @@ export class EditProfileComponent implements OnInit {
         rashi: horo.rashi || undefined,
         nakshatra: horo.nakshatra || undefined,
         manglikStatus: horo.manglikStatus || undefined,
+        documentUrl: this.horoscopeDocUrl() || undefined,
       },
       preferences: {
         ageRange: { min: prefs.ageMin ?? 21, max: prefs.ageMax ?? 35 },
@@ -363,6 +392,84 @@ export class EditProfileComponent implements OnInit {
   }
 
   protected goBack(): void { this.router.navigate(['/profile']); }
+
+  // ── Horoscope document handlers ─────────────────────────────────────────────
+
+  protected onHoroscopeDocSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (file) this.processHoroscopeDoc(file);
+  }
+
+  protected onHoroscopeDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOverHoroscope.set(true);
+  }
+
+  protected onHoroscopeDragLeave(): void {
+    this.isDragOverHoroscope.set(false);
+  }
+
+  protected onHoroscopeDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOverHoroscope.set(false);
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.processHoroscopeDoc(file);
+  }
+
+  protected removeHoroscopeDoc(): void {
+    this.showRemoveHoroscopeConfirm.set(true);
+  }
+
+  protected confirmRemoveHoroscopeDoc(): void {
+    this.horoscopeDocFile.set(null);
+    this.horoscopeDocName.set(null);
+    this.horoscopeDocUrl.set(null);
+    this.horoscopeDocError.set(null);
+    this.showRemoveHoroscopeConfirm.set(false);
+  }
+
+  protected cancelRemoveHoroscopeDoc(): void {
+    this.showRemoveHoroscopeConfirm.set(false);
+  }
+
+  protected horoscopeDocIcon(url: string): string {
+    const ext = url.split('?')[0].split('.').pop()?.toLowerCase() ?? '';
+    if (ext === 'pdf') return 'picture_as_pdf';
+    if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'].includes(ext)) return 'image';
+    return 'description';
+  }
+
+  protected horoscopeDocBadge(url: string): string {
+    return url.split('?')[0].split('.').pop()?.toUpperCase() ?? 'DOC';
+  }
+
+  private async processHoroscopeDoc(file: File): Promise<void> {
+    this.horoscopeDocError.set(null);
+    if (!ALLOWED_HOROSCOPE_TYPES.includes(file.type)) {
+      this.horoscopeDocError.set('Only PDF or image files (JPG, PNG, WebP) are allowed.');
+      return;
+    }
+    if (file.size > MAX_HOROSCOPE_MB * 1024 * 1024) {
+      this.horoscopeDocError.set(`File must be smaller than ${MAX_HOROSCOPE_MB} MB.`);
+      return;
+    }
+    this.horoscopeDocFile.set(file);
+    this.horoscopeDocName.set(file.name);
+    this.isUploadingHoroscopeDoc.set(true);
+    try {
+      const res = await firstValueFrom(this.api.uploadHoroscopeDoc(file));
+      const url: string = res?.url ?? res?.data?.url ?? res?.fileUrl ?? res?.data?.fileUrl ?? '';
+      if (url) {
+        this.horoscopeDocUrl.set(url);
+      }
+    } catch {
+      this.horoscopeDocError.set('Upload failed. You can still save — the document will be re-uploaded on save.');
+    } finally {
+      this.isUploadingHoroscopeDoc.set(false);
+    }
+  }
 
   parseDateOnly(date: string): Date {
     const [month, day, year] = date.split('/').map(Number);

@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\projects\\\\matrimony\\\\suhana\\\\src\\\\environments\")",
-      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\projects\\\\matrimony\\\\suhana\\\\src\\\\app\\\\pages\\\\forgot\")"
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\projects\\\\matrimony\\\\suhana\\\\src\\\\app\\\\pages\\\\forgot\")",
+      "Bash(npx tsc *)"
     ]
   }
 }

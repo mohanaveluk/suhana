@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './layout/header/header';
 import { FooterComponent } from './layout/footer/footer';
+import { HeartbeatService } from './services';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +11,8 @@ import { FooterComponent } from './layout/footer/footer';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {}
+export class App {
+  // Injecting here ensures the singleton is created on app boot and the
+  // internal effect() starts watching auth state immediately.
+  private readonly _heartbeat = inject(HeartbeatService);
+}

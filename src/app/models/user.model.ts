@@ -6,6 +6,11 @@ export type PhotoPrivacy = 'everyone' | 'mutual_matches' | 'premium_only' | 'on_
 export type MembershipTier = 'free' | 'silver' | 'gold' | 'platinum';
 export type FamilyType = 'joint' | 'nuclear';
 export type FoodPreference = 'vegetarian' | 'non_vegetarian' | 'vegan' | 'eggetarian';
+export type MessageDeliveryStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+export type AttachmentType = 'image' | 'video' | 'audio' | 'document';
+export type CallType = 'audio' | 'video';
+export type CallStatus = 'initiated' | 'ringing' | 'connected' | 'ended' | 'missed' | 'declined';
+export type InterestStatus = 'pending' | 'accepted' | 'declined' | 'expired';
 
 export interface User {
   id: string;
@@ -106,10 +111,13 @@ export interface HoroscopeDetails {
   rashi?: string;
   nakshatra?: string;
   manglikStatus?: string;
+  documentUrl?: string;
 }
 
 export interface MatchResult {
   id: string;
+  userId: string;
+  matchedUserId?: string;
   profile: UserProfile;
   matchPercentage: number;
   compatibilityBreakdown: CompatibilityBreakdown;
@@ -136,6 +144,21 @@ export interface CompatibilityBadge {
   score: number;
 }
 
+export interface ChatAttachment {
+  id: string;
+  type: AttachmentType;
+  url: string;
+  name: string;
+  size: number;
+  mimeType: string;
+  thumbnailUrl?: string;
+}
+
+export interface MessageReaction {
+  emoji: string;
+  userId: string;
+}
+
 export interface ChatMessage {
   id: string;
   senderId: string;
@@ -143,15 +166,49 @@ export interface ChatMessage {
   content: string;
   timestamp: Date;
   isRead: boolean;
-  type: 'text' | 'icebreaker' | 'system';
+  type: 'text' | 'icebreaker' | 'system' | 'attachment';
+  deliveryStatus?: MessageDeliveryStatus;
+  attachments?: ChatAttachment[];
+  reactions?: MessageReaction[];
+  deletedAt?: Date;
+}
+
+export interface InterestRequest {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  fromProfile?: UserProfile;
+  toProfile?: UserProfile;
+  fromUser?: User;
+  toUser?: User;
+  message?: string;
+  status: InterestStatus;
+  sentAt: Date;
+  respondedAt?: Date;
+}
+
+export interface CallRecord {
+  id: string;
+  conversationId: string;
+  initiatorId: string;
+  receiverId: string;
+  type: CallType;
+  status: CallStatus;
+  duration?: number;
+  startedAt: Date;
+  endedAt?: Date;
 }
 
 export interface Conversation {
   id: string;
   participants: string[];
+  partnerProfile?: UserProfile;
   lastMessage?: ChatMessage;
   unreadCount: number;
   isUnlocked: boolean;
+  isOnline?: boolean;
+  isTyping?: boolean;
+  lastSeen?: Date;
 }
 
 export interface MatchTracker {
