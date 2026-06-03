@@ -1,8 +1,10 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { MatchService } from '../../services';
 import { ProfileService } from '../../services';
+import { InterestService } from '../../services/interest.service';
 import { MatchResult, UserProfile } from '../../models/user.model';
 
 @Component({
@@ -15,9 +17,11 @@ import { MatchResult, UserProfile } from '../../models/user.model';
   styleUrl: './matchmaking.scss',
 })
 export class MatchmakingComponent implements OnInit {
-  protected readonly matchService = inject(MatchService);
-  private readonly profileService = inject(ProfileService);
-  private readonly route = inject(ActivatedRoute);
+  protected readonly matchService  = inject(MatchService);
+  private readonly profileService  = inject(ProfileService);
+  private readonly interestService = inject(InterestService);
+  private readonly snackBar        = inject(MatSnackBar);
+  private readonly route           = inject(ActivatedRoute);
 
   protected readonly currentMatches = signal<MatchResult[]>([]);
   protected readonly isLoading = signal(false);
@@ -66,11 +70,30 @@ export class MatchmakingComponent implements OnInit {
     this.currentMatches.update(list => list.filter(m => m.id !== match.id));
   }
 
-  expressInterest(match: MatchResult): void {
-    this.matchService.expressInterest(match.id);
+  async expressInterest(match: MatchResult): Promise<void> {
+    const previousStatus = match.status;
+
+    // Optimistic local update
     this.currentMatches.update(list =>
-      list.map(m => m.id === match.id ? { ...m, status: 'interested' as const } : m)
+      list.map(m => m.id === match.id ? { ...m, status: 'interested' as const } : m),
     );
+
+    const defaultMessage = this.interestService.buildDefaultMessage(
+      match.profile,
+      match.matchPercentage,
+    );
+
+    try {
+      this.matchService.expressInterest(match.id);
+      await this.interestService.sendInterest(match.userId, defaultMessage);
+      this.snackBar.open(`Interest sent to ${match.profile.firstName}! 💌`, 'Dismiss', { duration: 3500 });
+    } catch {
+      // Roll back on failure
+      this.currentMatches.update(list =>
+        list.map(m => m.id === match.id ? { ...m, status: previousStatus } : m),
+      );
+      this.snackBar.open('Could not send interest. Please try again.', 'OK', { duration: 3000 });
+    }
   }
 
   getScoreColor(score: number): string {

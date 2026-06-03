@@ -13,6 +13,10 @@
         </div>
         <div class="header-info">
           <h1>{{ p.firstName }} {{ p.lastName }}</h1>
+          <span class="membership-badge membership-badge--{{ membership() }}">
+            <mat-icon class="membership-badge__icon">{{ membershipIcon(membership()) }}</mat-icon>
+            {{ membership() | titlecase }} Member
+          </span>
           <p class="profile-meta">{{ p.age }} yrs &middot; {{ p.height }} &middot; {{ p.location.city }}, {{ p.location.state }}</p>
           <p class="profile-profession">{{ p.occupation.title }} at {{ p.occupation.company }}</p>
           <div class="profile-completeness">
@@ -31,6 +35,46 @@
             <mat-icon>settings</mat-icon> Settings
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- ── Membership Banner ── -->
+    <div class="membership-card membership-card--{{ membership() }}">
+      <div class="mc-shimmer"></div>
+      <div class="mc-icon-wrap">
+        <mat-icon class="mc-icon">{{ membershipIcon(membership()) }}</mat-icon>
+      </div>
+      <div class="mc-body">
+        <div class="mc-tier">{{ membership() | titlecase }} Member</div>
+        <div class="mc-perks">
+          @switch (membership()) {
+            @case ('platinum') {
+              <span>Unlimited matches &middot; Video &amp; audio calls &middot; Phone reveal &middot; Priority support &middot; All features unlocked</span>
+            }
+            @case ('gold') {
+              <span>50 interests/month &middot; Audio calls &middot; Advanced filters &middot; Phone reveal &middot; Profile boost</span>
+            }
+            @case ('silver') {
+              <span>20 interests/month &middot; Profile boost &middot; Basic filters &middot; Priority match visibility</span>
+            }
+            @default {
+              <span>Limited access — upgrade to connect with more profiles and unlock premium features</span>
+            }
+          }
+        </div>
+      </div>
+      <div class="mc-actions">
+        @if (membership() === 'platinum') {
+          <div class="mc-active-badge">
+            <mat-icon>verified</mat-icon> Active
+          </div>
+        } @else {
+          <button mat-raised-button class="mc-upgrade-btn mc-upgrade-btn--{{ membershipUpgradeTarget(membership()) }}"
+                  routerLink="/premium">
+            <mat-icon>{{ membershipIcon(membershipUpgradeTarget(membership())) }}</mat-icon>
+            Go {{ membershipUpgradeTarget(membership()) | titlecase }}
+          </button>
+        }
       </div>
     </div>
 
@@ -347,6 +391,25 @@
                     </div>
                   }
                 </div>
+
+                @if (p.horoscope.documentUrl) {
+                  <a class="horo-doc-card" [href]="p.horoscope.documentUrl"
+                     target="_blank" rel="noopener noreferrer">
+                    <div class="horo-doc-card__icon-wrap">
+                      <mat-icon class="horo-doc-card__icon">{{ horoscopeDocIcon(p.horoscope.documentUrl) }}</mat-icon>
+                    </div>
+                    <div class="horo-doc-card__info">
+                      <span class="horo-doc-card__title">Horoscope Document</span>
+                      <span class="horo-doc-card__meta">
+                        <span class="horo-doc-card__badge">{{ horoscopeDocBadge(p.horoscope.documentUrl) }}</span>
+                        <span class="horo-doc-card__name">{{ horoscopeDocFileName(p.horoscope.documentUrl) }}</span>
+                      </span>
+                    </div>
+                    <span class="horo-doc-card__btn">
+                      <mat-icon>open_in_new</mat-icon> Open Document
+                    </span>
+                  </a>
+                }
               </mat-card-content>
             </mat-card>
           } @else {

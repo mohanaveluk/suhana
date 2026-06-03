@@ -1,0 +1,547 @@
+<div class="pm-page suhana-container">
+
+  <!-- ── Page Nav ─────────────────────────────────────────────────────────── -->
+  <div class="pm-nav">
+    <button mat-icon-button (click)="goBack()" class="back-btn" matTooltip="Go back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="nav-breadcrumb">
+      <span class="nav-root" routerLink="/search">Search</span>
+      <mat-icon class="nav-sep">chevron_right</mat-icon>
+      <span class="nav-current">Match Report</span>
+    </div>
+    <div class="nav-actions">
+      <button mat-icon-button (click)="printReport()" matTooltip="Print report" class="icon-action">
+        <mat-icon>print</mat-icon>
+      </button>
+      <button mat-icon-button (click)="downloadReport()" matTooltip="Download PDF" class="icon-action">
+        <mat-icon>picture_as_pdf</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Loading Skeleton ──────────────────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="skeleton-wrapper">
+      <div class="skeleton-hero">
+        <div class="sk sk-avatar"></div>
+        <div class="sk-center-col">
+          <div class="sk sk-circle"></div>
+          <div class="sk sk-badge"></div>
+        </div>
+        <div class="sk sk-avatar"></div>
+      </div>
+      <div class="sk-tabs">
+        <div class="sk sk-tab"></div>
+        <div class="sk sk-tab"></div>
+        <div class="sk sk-tab"></div>
+        <div class="sk sk-tab"></div>
+      </div>
+      <div class="sk-body">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="sk-bar-row">
+            <div class="sk sk-icon"></div>
+            <div class="sk sk-label"></div>
+            <div class="sk sk-bar"></div>
+            <div class="sk sk-pct"></div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── Error State ───────────────────────────────────────────────────────── -->
+  @else if (error()) {
+    <div class="error-card">
+      <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
+      <h2>Something went wrong</h2>
+      <p>{{ error() }}</p>
+      <button mat-raised-button class="suhana-btn-primary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon> Go Back
+      </button>
+    </div>
+  }
+
+  <!-- ── Main Report ───────────────────────────────────────────────────────── -->
+  @else if (report() && myProfile() && theirProfile()) {
+    <div class="pm-content animate-fade-in">
+
+      <!-- ╔══════════════════════════════════════════╗ -->
+      <!-- ║  HERO — Side-by-side profiles + circle  ║ -->
+      <!-- ╚══════════════════════════════════════════╝ -->
+      <div class="match-hero" [class]="'hero-' + report()!.matchLevel">
+
+        <!-- My Profile -->
+        <div class="hero-profile hero-left">
+          <div class="avatar-ring mine">
+            <img
+              [src]="primaryPhoto(myProfile()!)"
+              [alt]="myProfile()!.firstName"
+              (error)="onImageError($event)"
+              class="avatar-img"
+            />
+            <div class="avatar-label">My Profile</div>
+          </div>
+          <div class="hero-info">
+            <h2 class="hero-name">{{ myProfile()!.firstName }} {{ myProfile()!.lastName }}</h2>
+            <p class="hero-meta">{{ myProfile()!.age }} yrs &bull; {{ myProfile()!.location.city }}</p>
+            <p class="hero-occ">
+              <mat-icon>work</mat-icon>{{ myProfile()!.occupation.title }}
+            </p>
+            <p class="hero-edu">
+              <mat-icon>school</mat-icon>{{ myProfile()!.education.level }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Central Match Ring -->
+        <div class="hero-center">
+          <div class="match-ring-wrap">
+            <svg class="match-ring-svg" [attr.viewBox]="'0 0 ' + (RADIUS*2+20) + ' ' + (RADIUS*2+20)">
+              <circle
+                class="ring-track"
+                [attr.cx]="RADIUS+10" [attr.cy]="RADIUS+10" [attr.r]="RADIUS"
+                fill="none" stroke-width="8"
+              />
+              <circle
+                class="ring-progress"
+                [attr.cx]="RADIUS+10" [attr.cy]="RADIUS+10" [attr.r]="RADIUS"
+                fill="none" stroke-width="8"
+                [attr.stroke]="report()!.badgeColor"
+                [attr.stroke-dasharray]="CIRCUMFERENCE"
+                [style.stroke-dashoffset]="dashOffset()"
+              />
+            </svg>
+            <div class="ring-inner">
+              <span class="ring-pct">{{ report()!.overallPercentage }}%</span>
+              <span class="ring-lbl">Match</span>
+            </div>
+          </div>
+
+          <div class="match-level-badge" [class]="'badge-' + report()!.matchLevel">
+            <mat-icon>{{ matchLevelIcon(report()!.matchLevel) }}</mat-icon>
+            <span>{{ report()!.matchLabel }}</span>
+          </div>
+
+          <div class="hero-hearts">
+            <mat-icon class="heart-icon">favorite</mat-icon>
+          </div>
+        </div>
+
+        <!-- Their Profile -->
+        <div class="hero-profile hero-right">
+          <div class="avatar-ring theirs">
+            <img
+              [src]="primaryPhoto(theirProfile()!)"
+              [alt]="theirProfile()!.firstName"
+              (error)="onImageError($event)"
+              class="avatar-img"
+            />
+            <div class="avatar-label">Their Profile</div>
+          </div>
+          <div class="hero-info">
+            <h2 class="hero-name">{{ theirProfile()!.firstName }} {{ theirProfile()!.lastName }}</h2>
+            <p class="hero-meta">{{ theirProfile()!.age }} yrs &bull; {{ theirProfile()!.location.city }}</p>
+            <p class="hero-occ">
+              <mat-icon>work</mat-icon>{{ theirProfile()!.occupation.title }}
+            </p>
+            <p class="hero-edu">
+              <mat-icon>school</mat-icon>{{ theirProfile()!.education.level }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Quick Stats Strip ─────────────────────────────────────────────── -->
+      <div class="quick-stats-strip">
+        @for (cat of report()!.categories.slice(0, 5); track cat.key) {
+          <div class="qs-pill" [matTooltip]="cat.explanation">
+            <mat-icon [style.color]="cat.color">{{ cat.icon }}</mat-icon>
+            <span class="qs-title">{{ cat.title }}</span>
+            <span class="qs-pct" [style.color]="cat.color">{{ cat.percentage }}%</span>
+          </div>
+        }
+      </div>
+
+      <!-- ╔═══════════════════════════════════════════╗ -->
+      <!-- ║  TABS                                     ║ -->
+      <!-- ╚═══════════════════════════════════════════╝ -->
+      <mat-tab-group
+        [selectedIndex]="activeTab()"
+        (selectedIndexChange)="activeTab.set($event)"
+        class="pm-tabs"
+        mat-stretch-tabs="false"
+        animationDuration="300ms"
+      >
+
+        <!-- ═══════════ TAB 1: OVERVIEW ═══════════ -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">dashboard</mat-icon> Overview
+          </ng-template>
+
+          <div class="tab-content">
+            <!-- Strength / Weakness cards row -->
+            <div class="insight-row">
+              <!-- Strength Areas -->
+              <mat-card class="insight-card strength-card" appearance="outlined">
+                <mat-card-header>
+                  <mat-icon mat-card-avatar class="card-icon green-icon">verified</mat-icon>
+                  <mat-card-title>Strength Areas</mat-card-title>
+                  <mat-card-subtitle>Where you shine together</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="insight-chips">
+                    @for (area of report()!.strengthAreas; track area) {
+                      <mat-chip class="strength-chip">
+                        <mat-icon matChipAvatar>check_circle</mat-icon>
+                        {{ area }}
+                      </mat-chip>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+              <!-- Weak Areas -->
+              <mat-card class="insight-card weak-card" appearance="outlined">
+                <mat-card-header>
+                  <mat-icon mat-card-avatar class="card-icon orange-icon">info</mat-icon>
+                  <mat-card-title>Areas to Discuss</mat-card-title>
+                  <mat-card-subtitle>Topics worth exploring together</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="insight-chips">
+                    @for (area of report()!.weakAreas; track area) {
+                      <mat-chip class="weak-chip">
+                        <mat-icon matChipAvatar>chat_bubble_outline</mat-icon>
+                        {{ area }}
+                      </mat-chip>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- Common Interests -->
+            @if (report()!.commonInterests.length) {
+              <mat-card class="interests-card" appearance="outlined">
+                <mat-card-header>
+                  <mat-icon mat-card-avatar class="card-icon rose-icon">interests</mat-icon>
+                  <mat-card-title>Common Interests</mat-card-title>
+                  <mat-card-subtitle>Things you both enjoy</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="interest-chips">
+                    @for (interest of report()!.commonInterests; track interest) {
+                      <mat-chip class="interest-chip">
+                        <mat-icon matChipAvatar>favorite</mat-icon>
+                        {{ interest }}
+                      </mat-chip>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Mini compatibility overview -->
+            <mat-card class="mini-overview-card" appearance="outlined">
+              <mat-card-header>
+                <mat-icon mat-card-avatar class="card-icon primary-icon">bar_chart</mat-icon>
+                <mat-card-title>Compatibility Snapshot</mat-card-title>
+                <mat-card-subtitle>Top categories at a glance</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="mini-bars">
+                  @for (cat of report()!.categories; track cat.key) {
+                    <div class="mini-bar-row">
+                      <mat-icon class="mini-icon" [style.color]="cat.color">{{ cat.icon }}</mat-icon>
+                      <span class="mini-label">{{ cat.title }}</span>
+                      <mat-progress-bar
+                        class="mini-progress"
+                        mode="determinate"
+                        [value]="cat.percentage"
+                        [color]="cat.progressColor"
+                      ></mat-progress-bar>
+                      <span class="mini-pct" [style.color]="cat.color">{{ cat.percentage }}%</span>
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+          </div>
+        </mat-tab>
+
+        <!-- ═══════════ TAB 2: COMPATIBILITY ═══════════ -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">analytics</mat-icon> Compatibility
+          </ng-template>
+
+          <div class="tab-content">
+            <div class="compat-grid">
+              @for (cat of report()!.categories; track cat.key) {
+                <mat-card class="compat-cat-card" appearance="outlined">
+                  <div class="cat-card-header">
+                    <div class="cat-icon-wrap" [style.background]="cat.color + '22'">
+                      <mat-icon [style.color]="cat.color">{{ cat.icon }}</mat-icon>
+                    </div>
+                    <div class="cat-meta">
+                      <span class="cat-title">{{ cat.title }}</span>
+                      <span class="cat-level-badge" [class]="'level-' + cat.level">
+                        {{ levelLabel(cat.level) }}
+                      </span>
+                    </div>
+                    <span class="cat-pct-big" [style.color]="cat.color">{{ cat.percentage }}%</span>
+                  </div>
+
+                  <mat-progress-bar
+                    class="cat-progress"
+                    mode="determinate"
+                    [value]="cat.percentage"
+                    [color]="cat.progressColor"
+                  ></mat-progress-bar>
+
+                  <p class="cat-explanation">{{ cat.explanation }}</p>
+
+                  <div class="cat-compare-row">
+                    <div class="compare-side">
+                      <mat-icon class="compare-person">person</mat-icon>
+                      <span class="compare-label">You</span>
+                      <span class="compare-value">{{ cat.myValue }}</span>
+                    </div>
+                    <mat-divider vertical></mat-divider>
+                    <div class="compare-side">
+                      <mat-icon class="compare-person">person_outline</mat-icon>
+                      <span class="compare-label">{{ theirProfile()!.firstName }}</span>
+                      <span class="compare-value">{{ cat.theirValue }}</span>
+                    </div>
+                  </div>
+                </mat-card>
+              }
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- ═══════════ TAB 3: DETAILS ═══════════ -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">expand_circle_down</mat-icon> Details
+          </ng-template>
+
+          <div class="tab-content">
+            <mat-accordion class="details-accordion" multi>
+              @for (cat of report()!.categories; track cat.key) {
+                <mat-expansion-panel class="detail-panel">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="panel-title">
+                      <div class="panel-icon-wrap" [style.background]="cat.color + '22'">
+                        <mat-icon [style.color]="cat.color">{{ cat.icon }}</mat-icon>
+                      </div>
+                      <span class="panel-name">{{ cat.title }}</span>
+                    </mat-panel-title>
+                    <mat-panel-description class="panel-desc">
+                      <mat-progress-bar
+                        class="panel-bar"
+                        mode="determinate"
+                        [value]="cat.percentage"
+                        [color]="cat.progressColor"
+                      ></mat-progress-bar>
+                      <span class="panel-pct" [style.color]="cat.color">{{ cat.percentage }}%</span>
+                      <span class="panel-level-chip" [class]="'chip-' + cat.level">
+                        {{ levelLabel(cat.level) }}
+                      </span>
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <div class="panel-body">
+                    <div class="panel-insight">
+                      <mat-icon class="insight-icon" [style.color]="cat.color">{{ cat.icon }}</mat-icon>
+                      <p>{{ cat.explanation }}</p>
+                    </div>
+
+                    <mat-divider></mat-divider>
+
+                    <div class="panel-values-grid">
+                      <div class="pv-side pv-mine">
+                        <div class="pv-header">
+                          <mat-icon>person</mat-icon>
+                          <strong>Your Profile</strong>
+                        </div>
+                        <div class="pv-value">{{ cat.myValue }}</div>
+                      </div>
+                      <div class="pv-vs">
+                        <div class="pv-vs-circle" [style.border-color]="cat.color">
+                          <span [style.color]="cat.color">{{ cat.percentage }}%</span>
+                        </div>
+                      </div>
+                      <div class="pv-side pv-theirs">
+                        <div class="pv-header">
+                          <mat-icon>person_outline</mat-icon>
+                          <strong>{{ theirProfile()!.firstName }}'s Profile</strong>
+                        </div>
+                        <div class="pv-value">{{ cat.theirValue }}</div>
+                      </div>
+                    </div>
+
+                    <div class="panel-weight-note">
+                      <mat-icon>scale</mat-icon>
+                      Category weight: <strong>{{ cat.weight }}%</strong> of overall score
+                    </div>
+                  </div>
+                </mat-expansion-panel>
+              }
+            </mat-accordion>
+          </div>
+        </mat-tab>
+
+        <!-- ═══════════ TAB 4: RECOMMENDATION ═══════════ -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">recommend</mat-icon> Recommendation
+          </ng-template>
+
+          <div class="tab-content">
+
+            <!-- Recommendation Banner -->
+            <div class="reco-banner" [class]="'reco-' + report()!.matchLevel">
+              <div class="reco-icon-wrap">
+                <mat-icon class="reco-main-icon">{{ matchLevelIcon(report()!.matchLevel) }}</mat-icon>
+              </div>
+              <div class="reco-text">
+                <h3 class="reco-label">{{ report()!.matchLabel }}</h3>
+                <p class="reco-body">{{ report()!.recommendation }}</p>
+              </div>
+              <div class="reco-score">
+                <span class="reco-pct">{{ report()!.overallPercentage }}%</span>
+                <span class="reco-pct-lbl">Overall</span>
+              </div>
+            </div>
+
+            <!-- Two-column summary -->
+            <div class="summary-row">
+              <!-- Profile A summary -->
+              <mat-card class="summary-profile-card" appearance="outlined">
+                <div class="spc-header">
+                  <img
+                    [src]="primaryPhoto(myProfile()!)"
+                    [alt]="myProfile()!.firstName"
+                    (error)="onImageError($event)"
+                    class="spc-avatar"
+                  />
+                  <div>
+                    <h3>{{ myProfile()!.firstName }} {{ myProfile()!.lastName }}</h3>
+                    <p>{{ myProfile()!.religion }} &bull; {{ myProfile()!.location.city }}</p>
+                  </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="spc-body">
+                  <div class="spc-row"><mat-icon>cake</mat-icon><span>{{ myProfile()!.age }} years</span></div>
+                  <div class="spc-row"><mat-icon>school</mat-icon><span>{{ myProfile()!.education.level }}, {{ myProfile()!.education.field }}</span></div>
+                  <div class="spc-row"><mat-icon>work</mat-icon><span>{{ myProfile()!.occupation.title }}</span></div>
+                  <div class="spc-row"><mat-icon>family_restroom</mat-icon><span>{{ myProfile()!.familyDetails.familyType | titlecase }} family</span></div>
+                </div>
+              </mat-card>
+
+              <!-- Profile B summary -->
+              <mat-card class="summary-profile-card" appearance="outlined">
+                <div class="spc-header">
+                  <img
+                    [src]="primaryPhoto(theirProfile()!)"
+                    [alt]="theirProfile()!.firstName"
+                    (error)="onImageError($event)"
+                    class="spc-avatar"
+                  />
+                  <div>
+                    <h3>{{ theirProfile()!.firstName }} {{ theirProfile()!.lastName }}</h3>
+                    <p>{{ theirProfile()!.religion }} &bull; {{ theirProfile()!.location.city }}</p>
+                  </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="spc-body">
+                  <div class="spc-row"><mat-icon>cake</mat-icon><span>{{ theirProfile()!.age }} years</span></div>
+                  <div class="spc-row"><mat-icon>school</mat-icon><span>{{ theirProfile()!.education.level }}, {{ theirProfile()!.education.field }}</span></div>
+                  <div class="spc-row"><mat-icon>work</mat-icon><span>{{ theirProfile()!.occupation.title }}</span></div>
+                  <div class="spc-row"><mat-icon>family_restroom</mat-icon><span>{{ theirProfile()!.familyDetails.familyType | titlecase }} family</span></div>
+                </div>
+              </mat-card>
+            </div>
+
+            <!-- Action Panel -->
+            <mat-card class="action-panel-card" appearance="outlined">
+              <mat-card-header>
+                <mat-icon mat-card-avatar class="card-icon rose-icon">celebration</mat-icon>
+                <mat-card-title>Ready to Connect?</mat-card-title>
+                <mat-card-subtitle>Take the next step with {{ theirProfile()!.firstName }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="action-buttons-row">
+                  <button
+                    mat-raised-button
+                    class="action-btn suhana-btn-primary"
+                    (click)="sendInterest()"
+                    [disabled]="interestSent()"
+                  >
+                    <mat-icon>{{ interestSent() ? 'check_circle' : 'send' }}</mat-icon>
+                    {{ interestSent() ? 'Interest Sent!' : 'Send Interest' }}
+                  </button>
+                  <button mat-stroked-button class="action-btn suhana-btn-outline" (click)="startChat()">
+                    <mat-icon>chat</mat-icon> Start Chat
+                  </button>
+                  <button mat-stroked-button class="action-btn" (click)="toggleFavorite()">
+                    <mat-icon>{{ isFavorited() ? 'favorite' : 'favorite_border' }}</mat-icon>
+                    {{ isFavorited() ? 'Saved' : 'Save Profile' }}
+                  </button>
+                  <button mat-stroked-button class="action-btn" (click)="downloadReport()">
+                    <mat-icon>download</mat-icon> Download Report
+                  </button>
+                </div>
+                <p class="report-date">
+                  <mat-icon>schedule</mat-icon>
+                  Report generated on {{ report()!.reportGeneratedAt | date: 'MMMM d, yyyy \'at\' h:mm a' }}
+                </p>
+              </mat-card-content>
+            </mat-card>
+
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+
+      <!-- ── Floating Action Bar (always visible) ────────────────────────── -->
+      <div class="pm-action-bar">
+        <button
+          mat-icon-button
+          (click)="toggleFavorite()"
+          class="fab-fav"
+          [class.fav-active]="isFavorited()"
+          [disabled]="isSelf()"
+          [matTooltip]="isFavorited() ? 'Remove from favourites' : 'Add to favourites'"
+        >
+          <mat-icon>{{ isFavorited() ? 'favorite' : 'favorite_border' }}</mat-icon>
+        </button>
+
+        <button
+          mat-raised-button
+          class="suhana-btn-primary fab-interest"
+          (click)="sendInterest()"
+          [disabled]="interestSent() || isSelf()"
+        >
+          <mat-icon>{{ interestSent() ? 'check_circle' : 'send' }}</mat-icon>
+          {{ interestSent() ? 'Interest Sent' : 'Send Interest' }}
+        </button>
+
+        <button mat-stroked-button class="suhana-btn-outline fab-chat" (click)="startChat()" [disabled]="isSelf()">
+          <mat-icon>chat</mat-icon> Chat
+        </button>
+
+        <button mat-icon-button class="fab-view" [matTooltip]="'View full profile'"
+          [routerLink]="['/profile-view', theirProfile()!.userId]">
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>

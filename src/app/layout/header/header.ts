@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { AuthService } from '../../services';
@@ -15,6 +15,13 @@ import { AuthService } from '../../services';
 export class HeaderComponent {
   protected readonly auth = inject(AuthService);
   protected readonly mobileMenuOpen = signal(false);
+
+  protected readonly displayName = computed(() => {
+    const u = this.auth.user();
+    if (!u) return '';
+    const full = [u.firstName, u.lastName].filter(Boolean).join(' ');
+    return full || u.email;
+  });
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update(v => !v);

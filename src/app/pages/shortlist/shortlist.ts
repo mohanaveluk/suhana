@@ -27,13 +27,13 @@ export class ShortlistComponent implements OnInit {
     }
     const allMatches = this.matchService.matches();
     // Shortlist first 2 for demo
-    if (allMatches.length >= 2) {
-      this.matchService.shortlist(allMatches[0].id);
-      this.matchService.shortlist(allMatches[1].id);
-    }
-    if (allMatches.length >= 3) {
-      this.matchService.expressInterest(allMatches[2].id);
-    }
+    // if (allMatches.length >= 2) {
+    //   this.matchService.shortlist(allMatches[0].id);
+    //   this.matchService.shortlist(allMatches[1].id);
+    // }
+    // if (allMatches.length >= 3) {
+    //   this.matchService.expressInterest(allMatches[2].id);
+    // }
 
     this.refreshLists();
   }

@@ -1,0 +1,494 @@
+<div class="pp-page suhana-container">
+
+  <!-- ── Page header ─────────────────────────────────────────────────────── -->
+  <div class="pp-header">
+    <div class="pp-header__icon-wrap">
+      <mat-icon class="pp-header__icon">workspace_premium</mat-icon>
+    </div>
+    <div>
+      <h1 class="pp-header__title">Complete Your Purchase</h1>
+      <p class="pp-header__sub">
+        <mat-icon class="pp-header__lock">lock</mat-icon>
+        Secured with 256-bit SSL encryption
+      </p>
+    </div>
+    <button mat-stroked-button class="pp-header__back" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon> Plans
+    </button>
+  </div>
+
+  @if (plan(); as p) {
+    <div class="pp-layout">
+
+      <!-- ── Left: Plan Summary (persistent) ──────────────────────────── -->
+      <aside class="pp-aside">
+        <div class="pp-plan-card pp-plan-card--{{ p.tier }}">
+
+          <!-- Tier badge -->
+          <div class="pp-plan-card__badge">
+            <mat-icon>{{ tierIcon(p.tier) }}</mat-icon>
+            {{ p.name }} Plan
+          </div>
+
+          <!-- Price -->
+          <div class="pp-plan-card__price-block">
+            <span class="pp-plan-card__currency">₹</span>
+            <span class="pp-plan-card__price">{{ p.price | number:'1.0-0' }}</span>
+            <span class="pp-plan-card__duration">/ {{ p.duration }}</span>
+          </div>
+
+          <!-- Features -->
+          <ul class="pp-plan-card__features">
+            @for (f of p.features; track f) {
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>{{ f }}</span>
+              </li>
+            }
+          </ul>
+
+          <mat-divider class="pp-plan-card__divider"></mat-divider>
+
+          <!-- Financial breakdown -->
+          <div class="pp-plan-card__summary">
+            <div class="pp-plan-card__row">
+              <span>Subtotal</span>
+              <span>₹{{ p.price | number:'1.0-0' }}</span>
+            </div>
+            <div class="pp-plan-card__row">
+              <span>GST (18%)</span>
+              <span>₹{{ gst() | number:'1.0-0' }}</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="pp-plan-card__row pp-plan-card__row--total">
+              <span>Total</span>
+              <span>₹{{ total() | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security / trust badges -->
+        <div class="pp-trust-badges">
+          <div class="pp-trust-badge">
+            <mat-icon>verified_user</mat-icon>
+            <span>Secure Payment</span>
+          </div>
+          <div class="pp-trust-badge">
+            <mat-icon>replay</mat-icon>
+            <span>Cancel Anytime</span>
+          </div>
+          <div class="pp-trust-badge">
+            <mat-icon>support_agent</mat-icon>
+            <span>24/7 Support</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ── Right: Material Stepper ───────────────────────────────────── -->
+      <main class="pp-main">
+        <mat-stepper #stepper labelPosition="bottom" class="pp-stepper">
+
+          <!-- ══ Step 1: Plan Review ════════════════════════════════════ -->
+          <mat-step label="Plan Review" [completed]="step1Done()">
+            <ng-template matStepLabel>
+              <span class="pp-step-label">Plan Review</span>
+            </ng-template>
+
+            <div class="pp-step-content">
+              <div class="pp-step-title">
+                <mat-icon>fact_check</mat-icon>
+                <h2>Confirm Your Selection</h2>
+              </div>
+              <p class="pp-step-intro">
+                You are about to activate the <strong>{{ p.name }}</strong> plan for
+                <strong>₹{{ total() | number:'1.0-0' }}</strong> (incl. GST).
+              </p>
+
+              <!-- Mobile-only compact plan summary -->
+              <div class="pp-mobile-summary">
+                <div class="pp-mobile-summary__badge pp-mobile-summary__badge--{{ p.tier }}">
+                  <mat-icon>{{ tierIcon(p.tier) }}</mat-icon> {{ p.name }}
+                </div>
+                <div class="pp-mobile-summary__price">₹{{ total() | number:'1.0-0' }} · {{ p.duration }}</div>
+              </div>
+
+              <div class="pp-confirm-info">
+                <div class="pp-confirm-info__item">
+                  <mat-icon>event_available</mat-icon>
+                  <div>
+                    <label>Validity</label>
+                    <span>{{ p.duration }} from activation</span>
+                  </div>
+                </div>
+                <div class="pp-confirm-info__item">
+                  <mat-icon>receipt_long</mat-icon>
+                  <div>
+                    <label>Billing</label>
+                    <span>One-time payment · No auto-renewal</span>
+                  </div>
+                </div>
+                <div class="pp-confirm-info__item">
+                  <mat-icon>cancel</mat-icon>
+                  <div>
+                    <label>Cancellation</label>
+                    <span>Contact support within 24 hrs for a full refund</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pp-step-actions">
+                <button mat-stroked-button (click)="goBack()">
+                  <mat-icon>arrow_back</mat-icon> Change Plan
+                </button>
+                <button mat-raised-button class="pp-btn-primary" (click)="confirmPlan()">
+                  Continue to Payment <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </div>
+          </mat-step>
+
+          <!-- ══ Step 2: Payment Information ════════════════════════════ -->
+          <mat-step label="Payment" [completed]="isSuccess()">
+            <ng-template matStepLabel>
+              <span class="pp-step-label">Payment</span>
+            </ng-template>
+
+            <div class="pp-step-content">
+              <div class="pp-step-title">
+                <mat-icon>payment</mat-icon>
+                <h2>Payment Method</h2>
+              </div>
+
+              <!-- Payment method cards -->
+              <div class="pp-method-grid">
+                @for (pm of paymentMethods; track pm.id) {
+                  <button type="button" class="pp-method-card"
+                          [class.pp-method-card--selected]="selectedMethod() === pm.id"
+                          (click)="selectMethod(pm.id)">
+                    <div class="pp-method-card__logo {{ pm.logoClass }}">
+                      <mat-icon>{{ pm.icon }}</mat-icon>
+                    </div>
+                    <span class="pp-method-card__name">{{ pm.label }}</span>
+                    <span class="pp-method-card__desc">{{ pm.description }}</span>
+                    @if (selectedMethod() === pm.id) {
+                      <mat-icon class="pp-method-card__check">check_circle</mat-icon>
+                    }
+                  </button>
+                }
+              </div>
+
+              <!-- ── Dynamic form area ────────────────────────────────── -->
+              @if (selectedMethod()) {
+                <div class="pp-form-area">
+
+                  <!-- Visa / Mastercard -->
+                  @if (selectedMethod() === PaymentMethod.VISA || selectedMethod() === PaymentMethod.MASTERCARD) {
+                    <form [formGroup]="cardForm" class="pp-form" autocomplete="off">
+                      <h3 class="pp-form-title">
+                        <mat-icon>credit_card</mat-icon> Card Details
+                      </h3>
+                      <mat-form-field appearance="outline" class="pp-full-width">
+                        <mat-label>Cardholder Name</mat-label>
+                        <input matInput formControlName="cardHolderName" autocomplete="cc-name" />
+                        <mat-icon matPrefix>person</mat-icon>
+                        @if (cardForm.get('cardHolderName')?.invalid && cardForm.get('cardHolderName')?.touched) {
+                          <mat-error>Name must be at least 3 characters</mat-error>
+                        }
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="pp-full-width">
+                        <mat-label>Card Number</mat-label>
+                        <input matInput formControlName="cardNumber" maxlength="19"
+                               placeholder="1234  5678  9012  3456" class="pp-mono"
+                               (input)="onCardNumberInput($event)" autocomplete="cc-number" />
+                        <mat-icon matPrefix>credit_card</mat-icon>
+                        @if (cardForm.get('cardNumber')?.invalid && cardForm.get('cardNumber')?.touched) {
+                          <mat-error>Enter a valid 16-digit card number</mat-error>
+                        }
+                      </mat-form-field>
+
+                      <div class="pp-row pp-row--3">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Expiry Month</mat-label>
+                          <input matInput formControlName="expiryMonth" placeholder="MM" maxlength="2" class="pp-mono" />
+                          @if (cardForm.get('expiryMonth')?.invalid && cardForm.get('expiryMonth')?.touched) {
+                            <mat-error>MM (01–12)</mat-error>
+                          }
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                          <mat-label>Expiry Year</mat-label>
+                          <input matInput formControlName="expiryYear" placeholder="YYYY" maxlength="4" class="pp-mono" />
+                          @if (cardForm.get('expiryYear')?.invalid && cardForm.get('expiryYear')?.touched) {
+                            <mat-error>YYYY (2024+)</mat-error>
+                          }
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                          <mat-label>CVV</mat-label>
+                          <input matInput formControlName="cvv" type="password" placeholder="•••" maxlength="4" class="pp-mono" />
+                          <mat-icon matSuffix matTooltip="3 or 4-digit security code on the back of your card">help_outline</mat-icon>
+                          @if (cardForm.get('cvv')?.invalid && cardForm.get('cvv')?.touched) {
+                            <mat-error>3 or 4 digits</mat-error>
+                          }
+                        </mat-form-field>
+                      </div>
+                    </form>
+                  }
+
+                  <!-- PayPal -->
+                  @if (selectedMethod() === PaymentMethod.PAYPAL) {
+                    <form [formGroup]="paypalForm" class="pp-form">
+                      <h3 class="pp-form-title">
+                        <mat-icon>account_balance_wallet</mat-icon> PayPal Account
+                      </h3>
+                      <mat-form-field appearance="outline" class="pp-full-width">
+                        <mat-label>PayPal Email Address</mat-label>
+                        <input matInput formControlName="email" type="email" />
+                        <mat-icon matPrefix>email</mat-icon>
+                        @if (paypalForm.get('email')?.invalid && paypalForm.get('email')?.touched) {
+                          <mat-error>Enter a valid PayPal email</mat-error>
+                        }
+                      </mat-form-field>
+                    </form>
+                  }
+
+                  <!-- Google Pay -->
+                  @if (selectedMethod() === PaymentMethod.GOOGLE_PAY) {
+                    <form [formGroup]="googlePayForm" class="pp-form">
+                      <h3 class="pp-form-title">
+                        <mat-icon>smartphone</mat-icon> Google Pay
+                      </h3>
+                      <div class="pp-row">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Mobile Number</mat-label>
+                          <input matInput formControlName="mobile" type="tel"
+                                 placeholder="10-digit number" maxlength="10" />
+                          <mat-icon matPrefix>phone</mat-icon>
+                          @if (googlePayForm.get('mobile')?.invalid && googlePayForm.get('mobile')?.touched) {
+                            <mat-error>Enter valid 10-digit mobile</mat-error>
+                          }
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Google Account Email</mat-label>
+                          <input matInput formControlName="email" type="email" />
+                          <mat-icon matPrefix>email</mat-icon>
+                          @if (googlePayForm.get('email')?.invalid && googlePayForm.get('email')?.touched) {
+                            <mat-error>Enter a valid email</mat-error>
+                          }
+                        </mat-form-field>
+                      </div>
+                    </form>
+                  }
+
+                  <!-- Apple Pay -->
+                  @if (selectedMethod() === PaymentMethod.APPLE_PAY) {
+                    <form [formGroup]="applePayForm" class="pp-form">
+                      <h3 class="pp-form-title">
+                        <mat-icon>phone_iphone</mat-icon> Apple Pay
+                      </h3>
+                      <mat-form-field appearance="outline" class="pp-full-width">
+                        <mat-label>Apple ID (Email)</mat-label>
+                        <input matInput formControlName="appleId" type="email" />
+                        <mat-icon matPrefix>email</mat-icon>
+                        @if (applePayForm.get('appleId')?.invalid && applePayForm.get('appleId')?.touched) {
+                          <mat-error>Enter your Apple ID email</mat-error>
+                        }
+                      </mat-form-field>
+                    </form>
+                  }
+
+                  <!-- Amazon Pay -->
+                  @if (selectedMethod() === PaymentMethod.AMAZON_PAY) {
+                    <form [formGroup]="amazonPayForm" class="pp-form">
+                      <h3 class="pp-form-title">
+                        <mat-icon>shopping_basket</mat-icon> Amazon Pay
+                      </h3>
+                      <mat-form-field appearance="outline" class="pp-full-width">
+                        <mat-label>Amazon Account Email</mat-label>
+                        <input matInput formControlName="email" type="email" />
+                        <mat-icon matPrefix>email</mat-icon>
+                        @if (amazonPayForm.get('email')?.invalid && amazonPayForm.get('email')?.touched) {
+                          <mat-error>Enter your Amazon account email</mat-error>
+                        }
+                      </mat-form-field>
+                    </form>
+                  }
+
+                  <!-- Bank Transfer -->
+                  @if (selectedMethod() === PaymentMethod.BANK_TRANSFER) {
+                    <form [formGroup]="bankForm" class="pp-form">
+                      <h3 class="pp-form-title">
+                        <mat-icon>account_balance</mat-icon> Bank Account Details
+                      </h3>
+                      <mat-form-field appearance="outline" class="pp-full-width">
+                        <mat-label>Search &amp; Select Bank</mat-label>
+                        <input matInput formControlName="bank"
+                               [matAutocomplete]="bankAuto"
+                               placeholder="Type bank name…"
+                               (input)="onBankInput($event)" />
+                        <mat-icon matPrefix>account_balance</mat-icon>
+                        <mat-autocomplete #bankAuto="matAutocomplete"
+                                          autoActiveFirstOption
+                                          (optionSelected)="onBankSelected()">
+                          @for (bank of filteredBanks(); track bank.code) {
+                            <mat-option [value]="bank.name">{{ bank.name }}</mat-option>
+                          }
+                        </mat-autocomplete>
+                        @if (bankForm.get('bank')?.invalid && bankForm.get('bank')?.touched) {
+                          <mat-error>Please select your bank</mat-error>
+                        }
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="pp-full-width">
+                        <mat-label>Account Holder Name</mat-label>
+                        <input matInput formControlName="accountHolder" />
+                        <mat-icon matPrefix>person</mat-icon>
+                        @if (bankForm.get('accountHolder')?.invalid && bankForm.get('accountHolder')?.touched) {
+                          <mat-error>Enter account holder name</mat-error>
+                        }
+                      </mat-form-field>
+
+                      <div class="pp-row">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Account Number</mat-label>
+                          <input matInput formControlName="accountNumber" type="password" class="pp-mono" />
+                          @if (bankForm.get('accountNumber')?.invalid && bankForm.get('accountNumber')?.touched) {
+                            <mat-error>9–18 digits</mat-error>
+                          }
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>IFSC Code</mat-label>
+                          <input matInput formControlName="ifsc" class="pp-mono"
+                                 placeholder="HDFC0001234" maxlength="11"
+                                 (input)="onIfscInput($event)" />
+                          @if (bankForm.get('ifsc')?.invalid && bankForm.get('ifsc')?.touched) {
+                            <mat-error>e.g. HDFC0001234</mat-error>
+                          }
+                        </mat-form-field>
+                      </div>
+                    </form>
+                  }
+
+                </div>
+              }
+
+              <div class="pp-step-actions">
+                <button mat-stroked-button matStepperPrevious>
+                  <mat-icon>arrow_back</mat-icon> Back
+                </button>
+                <button mat-raised-button class="pp-btn-primary pp-btn-pay"
+                        [disabled]="!canPay()"
+                        (click)="processPayment()">
+                  <mat-icon>lock</mat-icon>
+                  Pay ₹{{ total() | number:'1.0-0' }}
+                </button>
+              </div>
+            </div>
+          </mat-step>
+
+          <!-- ══ Step 3: Verification ════════════════════════════════════ -->
+          <mat-step label="Verification" [editable]="false" [completed]="isSuccess()">
+            <ng-template matStepLabel>
+              <span class="pp-step-label">Verification</span>
+            </ng-template>
+
+            <div class="pp-step-content pp-step-content--center">
+
+              <!-- Processing state -->
+              @if (isProcessing()) {
+                <div class="pp-verifying">
+                  <div class="pp-verifying__ring">
+                    <mat-spinner diameter="72" class="pp-verifying__spinner"></mat-spinner>
+                    <mat-icon class="pp-verifying__lock">lock</mat-icon>
+                  </div>
+                  <h2>Verifying Payment</h2>
+                  <p>Please do not close or refresh this window</p>
+                  <mat-progress-bar mode="indeterminate" class="pp-verifying__bar"></mat-progress-bar>
+                </div>
+              }
+
+              <!-- Error state -->
+              @if (isError() && !isProcessing()) {
+                <div class="pp-error-state">
+                  <div class="pp-error-state__icon-wrap">
+                    <mat-icon class="pp-error-state__icon">error_outline</mat-icon>
+                  </div>
+                  <h2>Payment Failed</h2>
+                  <p class="pp-error-state__msg">{{ errorMessage() }}</p>
+                  @if (transactionId()) {
+                    <p class="pp-error-state__ref">Ref: {{ transactionId() }}</p>
+                  }
+                  <div class="pp-step-actions pp-step-actions--center">
+                    <button mat-stroked-button (click)="retryPayment()">
+                      <mat-icon>refresh</mat-icon> Try Again
+                    </button>
+                    <button mat-stroked-button (click)="goBack()">
+                      <mat-icon>arrow_back</mat-icon> Change Plan
+                    </button>
+                  </div>
+                </div>
+              }
+
+            </div>
+          </mat-step>
+
+          <!-- ══ Step 4: Success ════════════════════════════════════════ -->
+          <mat-step label="Success" [editable]="false">
+            <ng-template matStepLabel>
+              <span class="pp-step-label">Success</span>
+            </ng-template>
+
+            <div class="pp-step-content pp-step-content--center">
+              <div class="pp-success">
+                <div class="pp-success__ring">
+                  <mat-icon class="pp-success__icon">check_circle</mat-icon>
+                </div>
+                <h2 class="pp-success__heading">Payment Successful!</h2>
+                <p class="pp-success__sub">
+                  Your <strong>{{ p.name }}</strong> membership is now active.
+                  Enjoy all premium features!
+                </p>
+
+                <!-- Receipt card -->
+                <div class="pp-receipt">
+                  <div class="pp-receipt__row">
+                    <span>Transaction ID</span>
+                    <strong class="pp-receipt__mono">{{ transactionId() }}</strong>
+                  </div>
+                  <mat-divider></mat-divider>
+                  <div class="pp-receipt__row">
+                    <span>Plan</span>
+                    <strong>{{ p.name }} · {{ p.duration }}</strong>
+                  </div>
+                  <mat-divider></mat-divider>
+                  <div class="pp-receipt__row">
+                    <span>Amount Paid</span>
+                    <strong>₹{{ total() | number:'1.0-0' }}</strong>
+                  </div>
+                  <mat-divider></mat-divider>
+                  <div class="pp-receipt__row">
+                    <span>Date</span>
+                    <strong>{{ now | date:'dd MMM yyyy, hh:mm a' }}</strong>
+                  </div>
+                </div>
+
+                <button mat-raised-button class="pp-btn-primary pp-success__cta" (click)="goToDashboard()">
+                  <mat-icon>home</mat-icon> Go to Dashboard
+                </button>
+              </div>
+            </div>
+          </mat-step>
+
+        </mat-stepper>
+      </main>
+
+    </div>
+  } @else {
+    <div class="pp-loading">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Loading plan details…</p>
+    </div>
+  }
+
+</div>

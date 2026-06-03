@@ -43,7 +43,8 @@
           <button mat-raised-button
                   [class.suhana-btn-primary]="plan.isPopular"
                   [class.suhana-btn-outline]="!plan.isPopular"
-                  (click)="selectPlan(plan.id)"
+                  [disabled]="plan.price.toString() === '0' || plan.price.toString() === '0.00'"
+                  (click)="selectPlan(plan)"
                   class="plan-btn">
             @if (plan.price === 0) {
               Current Plan

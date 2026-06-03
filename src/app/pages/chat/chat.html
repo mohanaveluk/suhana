@@ -1,113 +1,461 @@
-<div class="chat-page">
-  <!-- Conversations Sidebar -->
-  <aside class="chat-sidebar" role="navigation" aria-label="Conversations">
+<div class="chat-page" [class.mobile-conv-open]="!mobileSidebarOpen()">
+
+  <!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+  <aside class="chat-sidebar" [class.mobile-hidden]="!mobileSidebarOpen()">
+
+    <!-- Header -->
     <div class="sidebar-header">
       <h2><mat-icon>chat</mat-icon> Messages</h2>
+      <div class="header-actions">
+        <button mat-icon-button (click)="toggleSearch()" [class.active]="showSearch()" matTooltip="Search">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
     </div>
-    <div class="conversations-list">
-      @for (conv of conversations(); track conv.id) {
-        <div class="conversation-item"
-             [class.active]="chatService.activeConversation() === conv.id"
-             (click)="openChat(conv)"
-             role="button"
-             tabindex="0"
-             (keydown.enter)="openChat(conv)"
-             [attr.aria-label]="'Chat with ' + conv.profile.firstName">
-          <img [src]="conv.profile.photos[0]?.url" [alt]="conv.profile.firstName" class="conv-avatar" />
-          <div class="conv-info">
-            <h4>{{ conv.profile.firstName }} {{ conv.profile.lastName }}</h4>
-            <p class="conv-preview">{{ conv.lastMessage ?? 'Start a conversation...' }}</p>
+
+    <!-- Search -->
+    @if (showSearch()) {
+      <div class="search-bar">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input class="search-input" placeholder="Search conversations…"
+               [value]="searchQuery()"
+               (input)="searchQuery.set($any($event.target).value)"
+               autofocus />
+        @if (searchQuery()) {
+          <button mat-icon-button class="clear-search" (click)="searchQuery.set('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Tabs -->
+    <div class="sidebar-tabs">
+      <button class="tab-btn" [class.active]="activeTab() === 'chats'" (click)="activeTab.set('chats')">
+        Chats
+        @if (chatService.totalUnread() > 0) {
+          <span class="tab-badge">{{ chatService.totalUnread() }}</span>
+        }
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'interests'" (click)="activeTab.set('interests')">
+        Interests
+        @if (pendingInterestsCount() > 0) {
+          <span class="tab-badge">{{ pendingInterestsCount() }}</span>
+        }
+      </button>
+    </div>
+
+    <!-- ── CHATS TAB ── -->
+    @if (activeTab() === 'chats') {
+      <div class="conversations-list">
+        @if (isLoadingConversations()) {
+          <div class="loading-state">
+            <mat-spinner diameter="32"></mat-spinner>
+            <span>Loading conversations…</span>
           </div>
-          @if (conv.time) {
-            <span class="conv-time">{{ conv.time | date:'shortTime' }}</span>
+        } @else {
+          @for (conv of filteredConversations(); track conv.id) {
+            <div class="conversation-item"
+                 [class.active]="activeConv()?.id === conv.id"
+                 [class.unread]="conv.unreadCount > 0"
+                 (click)="openConversation(conv)"
+                 role="button" tabindex="0"
+                 (keydown.enter)="openConversation(conv)">
+              <div class="avatar-wrap">
+                <img [src]="conv.partnerProfile?.photos?.[0]?.url || 'assets/default-avatar.png'"
+                     [alt]="conv.partnerProfile?.firstName"
+                     class="conv-avatar" />
+                @if (conv.isOnline) {
+                  <span class="online-dot" matTooltip="Online"></span>
+                }
+              </div>
+              <div class="conv-info">
+                <div class="conv-top-row">
+                  <h4>{{ conv.partnerProfile?.firstName }} {{ conv.partnerProfile?.lastName }}</h4>
+                  <span class="conv-time">
+                    {{ (conv.lastMessage?.timestamp ?? conv.lastSeen) | date:'shortTime' }}
+                  </span>
+                </div>
+                <div class="conv-bottom-row">
+                  @if (conv.isTyping) {
+                    <span class="typing-preview">
+                      <span class="tp-dot"></span><span class="tp-dot"></span><span class="tp-dot"></span>
+                      <em>typing…</em>
+                    </span>
+                  } @else {
+                    <p class="conv-preview">
+                      {{ conv.lastMessage?.content ?? 'Start a conversation…' }}
+                    </p>
+                  }
+                  @if (conv.unreadCount > 0) {
+                    <span class="unread-badge">{{ conv.unreadCount }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">
+              <mat-icon>chat_bubble_outline</mat-icon>
+              @if (searchQuery()) {
+                <p>No results for "{{ searchQuery() }}"</p>
+              } @else {
+                <p>No conversations yet.<br>Connect with profiles to chat!</p>
+              }
+            </div>
           }
-        </div>
-      } @empty {
-        <div class="no-conversations">
-          <mat-icon>chat_bubble_outline</mat-icon>
-          <p>No conversations yet</p>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    }
+
+    <!-- ── INTERESTS TAB ── -->
+    @if (activeTab() === 'interests') {
+      <div class="interests-list">
+        @for (interest of pendingInterests(); track interest.id) {
+          <div class="interest-item">
+            <img [src]="interest.fromUser?.profile?.photos?.[0]?.url || 'assets/default-avatar.png'"
+                 [alt]="interest.fromUser?.profile?.firstName"
+                 class="interest-avatar" />
+            <div class="interest-info">
+              <h4>{{ interest.fromUser?.profile?.firstName }} {{ interest.fromUser?.profile?.lastName }}</h4>
+              <p>{{ interest.fromUser?.profile?.location?.city }} &middot; {{ interest.fromUser?.profile?.occupation?.title }}</p>
+              @if (interest.message) {
+                <p class="interest-message">"{{ interest.message }}"</p>
+              }
+              <span class="interest-time">{{ interest.sentAt | date:'mediumDate' }}</span>
+            </div>
+            <div class="interest-actions">
+              <button mat-icon-button color="primary" matTooltip="Accept"
+                      (click)="acceptInterest(interest)">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Decline"
+                      (click)="declineInterest(interest)">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <mat-icon>favorite_border</mat-icon>
+            <p>No pending interests</p>
+          </div>
+        }
+      </div>
+    }
   </aside>
 
-  <!-- Chat Area -->
-  <main class="chat-main">
-    @if (activeChat(); as chat) {
-      <!-- Chat Header -->
+  <!-- ═══════════════════════════════ CHAT MAIN ════════════════════════════ -->
+  <main class="chat-main" [class.mobile-hidden]="mobileSidebarOpen()">
+
+    @if (activeConvLive(); as conv) {
+
+      <!-- ── CHAT HEADER ── -->
       <div class="chat-header">
-        <img [src]="chat.profile.photos[0]?.url" [alt]="chat.profile.firstName" class="chat-header-avatar" />
-        <div class="chat-header-info">
-          <h3>{{ chat.profile.firstName }} {{ chat.profile.lastName }}</h3>
-          <span>{{ chat.profile.location.city }} &middot; {{ chat.profile.occupation.title }}</span>
+        <button mat-icon-button class="back-btn" (click)="openMobileSidebar()" matTooltip="Back">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <div class="header-avatar-wrap" [routerLink]="['/profile-view', conv.partnerProfile?.userId]"
+             style="cursor:pointer">
+          <img [src]="conv.partnerProfile?.photos?.[0]?.url || 'assets/default-avatar.png'"
+               [alt]="conv.partnerProfile?.firstName"
+               class="header-avatar" />
+          @if (conv.isOnline) {
+            <span class="online-dot"></span>
+          }
         </div>
-        <div class="chat-header-actions">
-          <button mat-icon-button aria-label="View profile">
+
+        <div class="header-info">
+          <h3>{{ conv.partnerProfile?.firstName }} {{ conv.partnerProfile?.lastName }}</h3>
+          <span class="header-status">
+            @if (conv.isTyping) {
+              <em>typing…</em>
+            } @else if (conv.isOnline) {
+              <span class="online-text">Online</span>
+            } @else if (conv.lastSeen) {
+              Last seen {{ conv.lastSeen | date:'shortTime' }}
+            } @else {
+              {{ conv.partnerProfile?.location?.city }} &middot; {{ conv.partnerProfile?.occupation?.title }}
+            }
+          </span>
+        </div>
+
+        <div class="header-actions">
+          <!-- Audio call -->
+          <button mat-icon-button
+                  [class.premium-locked]="!isPremium()"
+                  (click)="initiateCall('audio')"
+                  [matTooltip]="isPremium() ? 'Audio call' : 'Premium feature'">
+            <mat-icon>call</mat-icon>
+          </button>
+
+          <!-- Video call -->
+          <button mat-icon-button
+                  [class.premium-locked]="!isPremium()"
+                  (click)="initiateCall('video')"
+                  [matTooltip]="isPremium() ? 'Video call' : 'Premium feature'">
+            <mat-icon>videocam</mat-icon>
+          </button>
+
+          <!-- View profile -->
+          <button mat-icon-button [routerLink]="['/profile-view', conv.partnerProfile?.userId]"
+                  matTooltip="View profile">
             <mat-icon>person</mat-icon>
           </button>
-          <button mat-icon-button aria-label="More options">
+
+          <!-- More menu -->
+          <button mat-icon-button [matMenuTriggerFor]="chatMenu" matTooltip="More options">
             <mat-icon>more_vert</mat-icon>
           </button>
+          <mat-menu #chatMenu="matMenu">
+            <button mat-menu-item (click)="revealPhone()">
+              <mat-icon>phone</mat-icon>
+              {{ isPremium() ? 'View Phone Number' : 'Unlock Phone (Premium)' }}
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item class="danger-item" disabled>
+              <mat-icon>block</mat-icon> Block User
+            </button>
+            <button mat-menu-item class="danger-item" disabled>
+              <mat-icon>report</mat-icon> Report
+            </button>
+          </mat-menu>
         </div>
       </div>
 
-      <!-- Messages Area -->
-      <div class="messages-area">
-        @if (chat.messages.length === 0) {
+      <!-- Phone number banner (revealed) -->
+      @if (revealedPhone()) {
+        <div class="phone-banner">
+          <mat-icon>phone</mat-icon>
+          <span>{{ conv.partnerProfile?.firstName }}'s phone: <strong>{{ revealedPhone() }}</strong></span>
+          <button mat-icon-button (click)="revealedPhone.set(null)"><mat-icon>close</mat-icon></button>
+        </div>
+      }
+
+      <!-- ── MESSAGES AREA ── -->
+      <div class="messages-area" #messagesArea>
+
+        @if (isLoadingMessages()) {
+          <div class="messages-loading">
+            <mat-spinner diameter="28"></mat-spinner>
+          </div>
+        } @else if (messages().length === 0) {
           <div class="chat-start">
-            <img [src]="chat.profile.photos[0]?.url" [alt]="chat.profile.firstName" class="start-avatar" />
-            <h3>Start chatting with {{ chat.profile.firstName }}</h3>
-            <p>Break the ice with a thoughtful message</p>
+            <img [src]="conv.partnerProfile?.photos?.[0]?.url || 'assets/default-avatar.png'"
+                 [alt]="conv.partnerProfile?.firstName"
+                 class="start-avatar" />
+            <h3>Start chatting with {{ conv.partnerProfile?.firstName }}</h3>
+            <p>You're now connected! Break the ice with a thoughtful message.</p>
           </div>
         }
 
-        @for (msg of chat.messages; track msg.id) {
-          <div class="message-bubble" [class.sent]="msg.senderId === 'me'" [class.received]="msg.senderId !== 'me'">
-            <div class="bubble-content">
-              @if (msg.type === 'icebreaker') {
-                <span class="icebreaker-tag"><mat-icon>auto_awesome</mat-icon> Icebreaker</span>
-              }
-              <p>{{ msg.content }}</p>
-              <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+        @for (msg of messages(); track msg.id; let i = $index) {
+
+          <!-- Date separator -->
+          @if (shouldShowDateSeparator(i)) {
+            <div class="date-separator">
+              <span>{{ dateLabel(msg.timestamp) }}</span>
             </div>
-          </div>
-        }
+          }
 
-        <!-- Icebreakers -->
-        @if (showIcebreakers() || chat.messages.length === 0) {
-          <div class="icebreakers-section">
-            <p class="icebreakers-label"><mat-icon>lightbulb</mat-icon> Try an icebreaker:</p>
-            <div class="icebreaker-chips">
-              @for (ib of icebreakers; track ib) {
-                <button mat-stroked-button class="icebreaker-chip" (click)="sendIcebreaker(ib)">
-                  {{ ib }}
+          @if (msg.deletedAt) {
+            <!-- Deleted message tombstone -->
+            <div class="message-bubble" [class.sent]="msg.senderId === currentUserId()" [class.received]="msg.senderId !== currentUserId()">
+              <div class="bubble-content deleted">
+                <mat-icon>do_not_disturb</mat-icon>
+                <span>This message was deleted</span>
+              </div>
+            </div>
+          } @else {
+            <div class="message-bubble"
+                 [class.sent]="msg.senderId === currentUserId()"
+                 [class.received]="msg.senderId !== currentUserId()">
+
+              <div class="bubble-content" [class.has-attachment]="msg.type === 'attachment'">
+
+                <!-- Icebreaker tag -->
+                @if (msg.type === 'icebreaker') {
+                  <span class="icebreaker-tag">
+                    <mat-icon>auto_awesome</mat-icon> Icebreaker
+                  </span>
+                }
+
+                <!-- Attachments -->
+                @if (msg.attachments?.length) {
+                  @for (att of msg.attachments; track att.id) {
+                    @if (att.type === 'image') {
+                      <div class="attachment-image-wrap">
+                        <img [src]="att.url" [alt]="att.name" class="attachment-image"
+                             (click)="$any($event.target).requestFullscreen?.() || $any($event.target).webkitRequestFullscreen?.()" />
+                      </div>
+                    } @else if (att.type === 'video') {
+                      <div class="attachment-video-wrap">
+                        <video [src]="att.url" controls class="attachment-video" preload="metadata"></video>
+                      </div>
+                    } @else if (att.type === 'audio') {
+                      <div class="attachment-audio-wrap">
+                        <mat-icon>audiotrack</mat-icon>
+                        <audio [src]="att.url" controls class="attachment-audio"></audio>
+                      </div>
+                    } @else {
+                      <a class="attachment-file" [href]="att.url" [download]="att.name" target="_blank">
+                        <mat-icon class="file-icon">{{ att.mimeType.includes('pdf') ? 'picture_as_pdf' : 'description' }}</mat-icon>
+                        <div class="file-details">
+                          <span class="file-name">{{ att.name }}</span>
+                          <span class="file-size">{{ formatFileSize(att.size) }}</span>
+                        </div>
+                        <mat-icon class="download-icon">download</mat-icon>
+                      </a>
+                    }
+                  }
+                }
+
+                <!-- Text content (skip for attachment-only messages with no caption) -->
+                @if (msg.content && msg.type !== 'attachment') {
+                  <p>{{ msg.content }}</p>
+                }
+                @if (msg.content && msg.type === 'attachment' && msg.attachments?.length && msg.content !== msg.attachments![0].name) {
+                  <!-- <p class="attachment-caption">{{ msg.content }}</p> -->
+                }
+
+                <!-- Timestamp + delivery status -->
+                <div class="msg-meta">
+                  <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+                  @if (msg.senderId === currentUserId()) {
+                    <mat-icon class="delivery-icon" [class]="deliveryClass(msg.deliveryStatus)">
+                      {{ deliveryIcon(msg.deliveryStatus) }}
+                    </mat-icon>
+                  }
+                </div>
+              </div>
+
+              <!-- Delete own message -->
+              @if (msg.senderId === currentUserId() && !msg.deletedAt) {
+                <button mat-icon-button class="msg-delete-btn"
+                        (click)="deleteMessage(msg.id)" matTooltip="Delete message">
+                  <mat-icon>delete_outline</mat-icon>
                 </button>
               }
             </div>
+          }
+        }
+
+        <!-- Typing indicator -->
+        @if (conv.isTyping) {
+          <div class="message-bubble received">
+            <div class="bubble-content typing-bubble">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
           </div>
         }
       </div>
 
-      <!-- Message Input -->
+      <!-- ── ICEBREAKERS BAR ── -->
+      @if (showIcebreakers() && messages().length === 0) {
+        <div class="icebreakers-bar">
+          <p class="icebreakers-label"><mat-icon>lightbulb</mat-icon> Try an icebreaker:</p>
+          <div class="icebreaker-chips">
+            @for (ib of icebreakers; track ib) {
+              <button mat-stroked-button class="icebreaker-chip" (click)="sendIcebreaker(ib)">
+                {{ ib }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── INPUT AREA ── -->
       <div class="message-input-area">
-        <button mat-icon-button (click)="showIcebreakers.set(!showIcebreakers())" aria-label="Icebreakers">
+
+        <!-- Hidden file inputs -->
+        <input #imageFileInput type="file" [accept]="acceptedFileTypes.image" multiple
+               (change)="onFileSelected($event)" hidden />
+        <input #docFileInput type="file" [accept]="acceptedFileTypes.doc" multiple
+               (change)="onFileSelected($event)" hidden />
+        <input #audioFileInput type="file" [accept]="acceptedFileTypes.audio"
+               (change)="onFileSelected($event)" hidden />
+
+        <!-- Attach button -->
+        <button mat-icon-button [matMenuTriggerFor]="attachMenu" matTooltip="Attach file"
+                [disabled]="isUploading()">
+          <mat-icon>attach_file</mat-icon>
+        </button>
+        <mat-menu #attachMenu="matMenu" class="attach-menu">
+          <button mat-menu-item (click)="triggerFileInput('image')">
+            <mat-icon>image</mat-icon> Photo / Video
+          </button>
+          <button mat-menu-item (click)="triggerFileInput('doc')">
+            <mat-icon>description</mat-icon> Document
+          </button>
+          <button mat-menu-item (click)="triggerFileInput('audio')">
+            <mat-icon>audiotrack</mat-icon> Audio
+          </button>
+        </mat-menu>
+
+        <!-- Icebreaker toggle -->
+        <button mat-icon-button (click)="showIcebreakers.set(!showIcebreakers())"
+                matTooltip="Icebreakers" [class.active]="showIcebreakers()">
           <mat-icon>lightbulb</mat-icon>
         </button>
-        <mat-form-field appearance="outline" class="message-input">
-          <input matInput placeholder="Type a message..." [value]="messageText()"
-                 (input)="onMessageInput($event)" (keydown.enter)="sendMessage()" />
-        </mat-form-field>
-        <button mat-icon-button class="send-btn" (click)="sendMessage()" aria-label="Send message"
-                [disabled]="!messageText().trim()">
+
+        <!-- Text input -->
+        <div class="text-wrap">
+          <textarea #messageInput
+                    class="message-textarea"
+                    placeholder="Type a message… (Shift+Enter for new line)"
+                    rows="1"
+                    [value]="messageText()"
+                    (input)="onMessageInput($event)"
+                    (keydown.enter)="onEnterKey($event)">
+          </textarea>
+          @if (isUploading()) {
+            <mat-progress-bar mode="indeterminate" class="upload-progress"></mat-progress-bar>
+          }
+        </div>
+
+        <!-- Send button -->
+        <button mat-icon-button class="send-btn"
+                (click)="sendMessage()"
+                [disabled]="!canSend() || isUploading()"
+                matTooltip="Send (Enter)">
           <mat-icon>send</mat-icon>
         </button>
       </div>
+
     } @else {
+      <!-- ── NO ACTIVE CHAT ── -->
       <div class="no-active-chat">
         <mat-icon>forum</mat-icon>
-        <h3>Select a conversation</h3>
-        <p>Choose a conversation from the sidebar to start chatting</p>
+        <h3>Your Messages</h3>
+        <p>Select a conversation from the sidebar to start chatting</p>
       </div>
     }
   </main>
+
+  <!-- ═══════════════════════════ PREMIUM MODAL ════════════════════════════ -->
+  @if (showPremiumModal()) {
+    <div class="premium-overlay" (click)="showPremiumModal.set(false)">
+      <div class="premium-modal" (click)="$event.stopPropagation()">
+        <button mat-icon-button class="modal-close" (click)="showPremiumModal.set(false)">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-icon class="premium-icon">workspace_premium</mat-icon>
+        <h2>Premium Feature</h2>
+        <p>Upgrade to Gold or Platinum to unlock <strong>{{ premiumModalReason() }}</strong>.</p>
+        <div class="premium-modal-benefits">
+          <div class="benefit"><mat-icon>call</mat-icon> Audio &amp; Video Calls</div>
+          <div class="benefit"><mat-icon>phone</mat-icon> View Phone Numbers</div>
+          <div class="benefit"><mat-icon>star</mat-icon> Priority Match Visibility</div>
+          <div class="benefit"><mat-icon>verified</mat-icon> Verified Badge</div>
+        </div>
+        <button mat-raised-button color="primary" routerLink="/premium"
+                (click)="showPremiumModal.set(false)">
+          Upgrade to Premium
+        </button>
+      </div>
+    </div>
+  }
+
 </div>

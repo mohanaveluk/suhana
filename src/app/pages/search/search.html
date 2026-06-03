@@ -108,11 +108,16 @@
           </div>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-button color="primary">
-            <mat-icon>favorite_border</mat-icon> Shortlist
+          <button mat-button color="primary"
+                  (click)="toggleShortlist(profile)"
+                  [color]="isShortlisted(profile.user?.id ?? '') ? 'warn' : 'primary'"
+                  [matTooltip]="isShortlisted(profile.user?.id ?? '') ? 'Remove from shortlist' : 'Add to shortlist'"
+                  [disabled]="isSelf(profile)">
+            <mat-icon>{{ isShortlisted(profile.user?.id ?? '') ? 'favorite' : 'favorite_border' }}</mat-icon>
+            {{ isShortlisted(profile.user?.id ?? '') ? 'Shortlisted' : 'Shortlist' }}
           </button>
-          <button mat-raised-button class="suhana-btn-primary" [routerLink]="['/matchmaking', profile.userId]">
-            <mat-icon>compare_arrows</mat-icon> View Match
+          <button mat-raised-button class="suhana-btn-primary" [routerLink]="['/profile-match', profile.userId]">
+            <mat-icon>analytics</mat-icon> View Match
           </button>
         </mat-card-actions>
       </mat-card>

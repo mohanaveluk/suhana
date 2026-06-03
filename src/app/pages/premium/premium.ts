@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { PremiumPlan } from '../../models/user.model';
 import { ApiService, AuthService } from '../../services';
@@ -12,8 +13,9 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './premium.scss',
 })
 export class PremiumComponent implements OnInit {
-  private readonly api = inject(ApiService);
-  private readonly auth = inject(AuthService);
+  private readonly api    = inject(ApiService);
+  private readonly auth   = inject(AuthService);
+  private readonly router = inject(Router);
 
   protected readonly plans = signal<PremiumPlan[]>([
     {
@@ -63,8 +65,13 @@ export class PremiumComponent implements OnInit {
     } catch { /* use default plans */ }
   }
 
-  selectPlan(planId: string): void {
-    this.selectedPlan.set(planId);
+  selectPlan(plan: PremiumPlan): void {
+    if (plan.price === 0) return;
+    this.selectedPlan.set(plan.id);
+    this.router.navigate(['/premium/payment'], {
+      queryParams: { planId: plan.id },
+      state: { plan },
+    });
   }
 
   async subscribe(planId: string): Promise<void> {

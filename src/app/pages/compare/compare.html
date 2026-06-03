@@ -124,10 +124,10 @@
               <td>
                 <div class="action-cell">
                   <button mat-stroked-button (click)="shortlist(match)" matTooltip="Shortlist">
-                    <mat-icon>bookmark</mat-icon> Shortlist
+                    <mat-icon>bookmark</mat-icon> {{ match.status === 'shortlisted' ? 'shortlisted' : 'shortlist' }}
                   </button>
                   <button mat-raised-button class="suhana-btn-primary" (click)="connect(match)">
-                    <mat-icon>favorite</mat-icon> Connect
+                    <mat-icon>favorite</mat-icon> {{ match.status === 'interested' ? 'Interest Sent' : 'Connect' }}
                   </button>
                 </div>
               </td>
@@ -136,6 +136,11 @@
         </tfoot>
       </table>
     </div>
+  } @else if (isLoading()) {
+    <div class="profile-loading">
+      <mat-spinner diameter="56"></mat-spinner>
+      <p>Comparing Matches…</p>
+    </div>    
   } @else {
     <div class="empty-state">
       <mat-icon>compare_arrows</mat-icon>

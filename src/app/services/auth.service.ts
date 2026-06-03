@@ -125,14 +125,14 @@ export class AuthService {
     const user: User = {
       id: u['id'] as string, 
       email: u['email'] as string,
-      firstName: u['first_name'] as string,
-      lastName: u['last_name'] as string,
+      firstName: u['firstName'] as string,
+      lastName: u['lastName'] as string,
       role: u['role'] as UserRole, 
       gender: u['gender'] as 'bride' | 'groom',
       membership: u['membership'] as MembershipTier,
       lastActive: new Date(),
       isVerified: u['is_verified'] as boolean,
-      createdAt: u['active_since'] ? new Date(u['created_at'] as string) : new Date(),
+      createdAt: u['created_at'] ? new Date(u['created_at'] as string) : new Date(),
     };
     localStorage.setItem('suhana_user', JSON.stringify(user));
     this.currentUser.set(user);

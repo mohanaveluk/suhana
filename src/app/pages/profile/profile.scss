@@ -110,6 +110,188 @@
   }
 }
 
+// ── Membership Badge (header chip) ───────────────────────────────────────────
+.membership-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin: 6px 0 2px;
+
+  &__icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+
+  &--free     { background: #f0f0f0; color: #757575; border: 1px solid #d0d0d0; }
+  &--silver   { background: linear-gradient(90deg, #e8e8e8, #bdbdbd); color: #424242; border: 1px solid #b0b0b0; }
+  &--gold     { background: linear-gradient(90deg, #fff8e1, #f9a825); color: #6d3200; border: 1px solid #f9a825; }
+  &--platinum { background: linear-gradient(90deg, #1a1a2e, #0f3460); color: #90caf9; border: 1px solid rgba(100,160,255,0.4); }
+}
+
+// ── Membership Card (banner between header and tabs) ──────────────────────────
+.membership-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 28px;
+  border-radius: 18px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.10);
+
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  // ── Tier-specific themes ──────────────────────────────────────────────────
+
+  &--free {
+    background: linear-gradient(135deg, #fafafa 0%, #eeeeee 100%);
+    border: 1.5px solid #d0d0d0;
+
+    .mc-icon-wrap { background: #bdbdbd; }
+    .mc-tier      { color: #424242; }
+    .mc-perks     { color: #757575; }
+    .mc-icon      { color: #fff; }
+  }
+
+  &--silver {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 40%, #c8c8c8 100%);
+    border: 1.5px solid #b0b0b0;
+
+    .mc-icon-wrap { background: linear-gradient(135deg, #e0e0e0, #9e9e9e); }
+    .mc-tier      { color: #212121; }
+    .mc-perks     { color: #555; }
+    .mc-icon      { color: #fff; }
+  }
+
+  &--gold {
+    background: linear-gradient(135deg, #fffde7 0%, #fff59d 40%, #f9a825 100%);
+    border: 1.5px solid #f9a825;
+
+    .mc-icon-wrap { background: linear-gradient(135deg, #ffd54f, #e65100); }
+    .mc-tier      { color: #4e2000; }
+    .mc-perks     { color: #7b3a00; }
+    .mc-icon      { color: #fff; }
+
+    .mc-shimmer {
+      background: linear-gradient(90deg,
+        transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%);
+      animation: mc-shimmer 2.8s ease-in-out infinite;
+    }
+  }
+
+  &--platinum {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3e 50%, #0f2460 100%);
+    border: 1.5px solid rgba(120, 170, 255, 0.35);
+
+    .mc-icon-wrap { background: linear-gradient(135deg, #3949ab, #1a237e); }
+    .mc-tier      { color: #e8eaff; }
+    .mc-perks     { color: #9db8e8; }
+    .mc-icon      { color: #b3c9ff; }
+
+    .mc-shimmer {
+      background: linear-gradient(90deg,
+        transparent 0%, rgba(140, 180, 255, 0.18) 50%, transparent 100%);
+      animation: mc-shimmer 3.2s ease-in-out infinite;
+    }
+  }
+}
+
+// Shimmer overlay — positioned absolutely, covers the full card
+.mc-shimmer {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  background-size: 200% 100%;
+  pointer-events: none;
+}
+
+@keyframes mc-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.mc-icon-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.20);
+}
+
+.mc-icon {
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+.mc-body {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.mc-tier {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.mc-perks {
+  font-size: 0.81rem;
+  line-height: 1.5;
+}
+
+.mc-actions {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.mc-upgrade-btn {
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 6px 20px !important;
+  letter-spacing: 0.3px;
+
+  mat-icon { margin-right: 4px; font-size: 18px; width: 18px; height: 18px; }
+
+  &--silver   { background: linear-gradient(135deg, #e0e0e0, #9e9e9e) !important; color: #212121 !important; }
+  &--gold     { background: linear-gradient(135deg, #ffd54f, #f57f17) !important; color: #3e1f00 !important; }
+  &--platinum { background: linear-gradient(135deg, #5c6bc0, #1a237e) !important; color: #e8eaff !important; }
+}
+
+.mc-active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 22px;
+  background: rgba(140, 180, 255, 0.15);
+  border: 1px solid rgba(140, 180, 255, 0.30);
+  color: #90caf9;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  position: relative;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
 .profile-tabs {
   background: white;
   border-radius: 16px;
@@ -165,6 +347,113 @@
     font-size: 0.95rem;
     color: var(--suhana-text-primary);
     font-weight: 450;
+  }
+}
+
+.horo-doc-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  margin-top: 20px;
+  border-radius: 12px;
+  border: 1.5px solid var(--suhana-rose-gold, #c08080);
+  background: linear-gradient(135deg, rgba(192, 128, 128, 0.07) 0%, rgba(107, 26, 26, 0.04) 100%);
+  text-decoration: none;
+  cursor: pointer;
+  transition: box-shadow 0.18s, border-color 0.18s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(107, 26, 26, 0.14);
+    border-color: var(--suhana-maroon, #6b1a1a);
+  }
+
+  &__icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: var(--suhana-maroon, #6b1a1a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    color: #fff;
+    font-size: 1.8rem;
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--suhana-maroon);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--suhana-maroon, #6b1a1a);
+    color: #fff;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-size: 0.8rem;
+    color: var(--suhana-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    background: var(--suhana-maroon, #6b1a1a);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    transition: background 0.18s;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &:hover &__btn {
+    background: var(--suhana-rose-gold, #c08080);
+  }
+
+  @media (max-width: 500px) {
+    flex-wrap: wrap;
+
+    &__btn { width: 100%; justify-content: center; }
   }
 }
 

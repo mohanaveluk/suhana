@@ -202,7 +202,7 @@
               mat-raised-button
               class="suhana-btn-primary action-interest"
               (click)="sendInterest()"
-              [disabled]="interestSent()"
+              [disabled]="interestSent() || isSelf()"
               [attr.aria-label]="interestSent() ? 'Interest already sent' : 'Send interest to ' + p.firstName">
               <mat-icon>{{ interestSent() ? 'check_circle' : 'favorite' }}</mat-icon>
               {{ interestSent() ? 'Interest Sent!' : 'Send Interest' }}
@@ -212,6 +212,7 @@
               mat-stroked-button
               class="action-chat"
               (click)="startChat()"
+              [disabled]="isSelf()"
               [attr.aria-label]="'Start chat with ' + p.firstName">
               <mat-icon>chat_bubble_outline</mat-icon> Chat
             </button>
@@ -221,6 +222,7 @@
               class="action-shortlist"
               [class.shortlisted]="isShortlisted()"
               (click)="toggleShortlist()"
+              [disabled]="isSelf()"
               [matTooltip]="isShortlisted() ? 'Remove from shortlist' : 'Add to shortlist'"
               [attr.aria-label]="isShortlisted() ? 'Remove from shortlist' : 'Shortlist profile'">
               <mat-icon>{{ isShortlisted() ? 'bookmark' : 'bookmark_border' }}</mat-icon>
@@ -780,17 +782,18 @@
                   mat-raised-button
                   class="suhana-btn-primary sb-btn"
                   (click)="sendInterest()"
-                  [disabled]="interestSent()">
+                  [disabled]="interestSent() || isSelf()">
                   <mat-icon>{{ interestSent() ? 'check_circle' : 'favorite' }}</mat-icon>
                   {{ interestSent() ? 'Interest Sent!' : 'Send Interest' }}
                 </button>
-                <button mat-stroked-button class="suhana-btn-outline sb-btn" (click)="startChat()">
+                <button mat-stroked-button class="suhana-btn-outline sb-btn" (click)="startChat()" [disabled]="isSelf()">
                   <mat-icon>chat_bubble_outline</mat-icon> Start Chat
                 </button>
                 <button
                   mat-stroked-button
                   class="sb-btn shortlist-sb-btn"
                   [class.shortlisted]="isShortlisted()"
+                  [disabled]="isSelf()"
                   (click)="toggleShortlist()">
                   <mat-icon>{{ isShortlisted() ? 'bookmark' : 'bookmark_border' }}</mat-icon>
                   {{ isShortlisted() ? 'Shortlisted ✓' : 'Shortlist Profile' }}
@@ -971,11 +974,11 @@
             mat-raised-button
             class="cta-interest-btn"
             (click)="sendInterest()"
-            [disabled]="interestSent()">
+            [disabled]="interestSent() || isSelf()">
             <mat-icon>{{ interestSent() ? 'check_circle' : 'favorite' }}</mat-icon>
             {{ interestSent() ? 'Interest Sent!' : 'Send Interest' }}
           </button>
-          <button mat-stroked-button class="cta-chat-btn" (click)="startChat()">
+          <button mat-stroked-button class="cta-chat-btn" (click)="startChat()" [disabled]="isSelf()">
             <mat-icon>chat_bubble_outline</mat-icon> Chat Now
           </button>
           <button
@@ -983,6 +986,7 @@
             class="cta-shortlist-btn"
             (click)="toggleShortlist()"
             [class.active]="isShortlisted()"
+            [disabled]="isSelf()"
             matTooltip="Shortlist">
             <mat-icon>{{ isShortlisted() ? 'bookmark' : 'bookmark_border' }}</mat-icon>
           </button>

@@ -196,3 +196,17 @@ tfoot td {
   h3 { color: var(--suhana-maroon); margin-bottom: 4px; }
   p { color: var(--suhana-text-secondary); margin-bottom: 24px; }
 }
+
+.profile-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px;
+  gap: 24px;
+
+  p {
+    color: var(--suhana-text-secondary);
+    font-size: 15px;
+  }
+}

@@ -92,6 +92,12 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/v1/profiles/profile/image`, formData);
   }
 
+  uploadHoroscopeDoc(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post(`${this.baseUrl}/v1/profiles/horoscope/document`, formData);
+  }
+
   addPhoto(url: string, isPrimary = false): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/profiles/me/photos`, { url, isPrimary });
   }
@@ -111,6 +117,10 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/v1/matches`);
   }
 
+  getMatchByUserId(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/matches/user/${id}`);
+  }
+  
   getMatchById(id: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/v1/matches/${id}`);
   }
@@ -134,6 +144,15 @@ export class ApiService {
 
   shortlist(matchId: string): Observable<any> {
     return this.http.patch(`${this.baseUrl}/v1/shortlist/${matchId}/shortlist`, {});
+  }
+
+  /** Shortlist by user ID (used from profile/search pages where matchId is unavailable). */
+  shortlistUser(userId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/shortlist/user/${userId}`, {});
+  }
+
+  removeShortlistUser(userId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/v1/shortlist/user/${userId}`);
   }
 
   expressInterest(matchId: string): Observable<any> {
@@ -175,6 +194,86 @@ export class ApiService {
 
   getIcebreakers(): Observable<string[]> {
     return this.http.get<string[]>(`${this.baseUrl}/v1/chat/icebreakers`);
+  }
+
+  sendAttachment(conversationId: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post(`${this.baseUrl}/v1/chat/conversations/${conversationId}/attachments`, formData);
+  }
+
+  sendTypingIndicator(conversationId: string, isTyping: boolean): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/chat/conversations/${conversationId}/typing`, { isTyping });
+  }
+
+  getTypingStatus(conversationId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/chat/conversations/${conversationId}/typing`);
+  }
+
+  deleteMessage(conversationId: string, messageId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/v1/chat/conversations/${conversationId}/messages/${messageId}`);
+  }
+
+  // Interests
+  getReceivedInterests(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/interests/received`);
+  }
+
+  getSentInterests(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/interests/sent`);
+  }
+
+  sendInterest(toUserId: string, message?: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/interests/send`, { toUserId, message });
+  }
+
+  acceptInterest(interestId: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/interests/${interestId}/accept`, {});
+  }
+
+  declineInterest(interestId: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/interests/${interestId}/decline`, {});
+  }
+
+  // Calls (premium)
+  initiateCall(conversationId: string, type: 'audio' | 'video'): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/calls/initiate`, { conversationId, type });
+  }
+
+  getCallHistory(conversationId?: string): Observable<any> {
+    const params: Record<string, string> = {};
+    if (conversationId) params['conversationId'] = conversationId;
+    return this.http.get(`${this.baseUrl}/v1/calls/history`, { params });
+  }
+
+  endCall(callId: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/calls/${callId}/end`, {});
+  }
+
+  heartbeat(): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/v1/user/heartbeat`, {});
+  }
+
+  // User online status
+  getUserOnlineStatus(userId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/user/${userId}/status`);
+  }
+
+  revealPhoneNumber(userId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/users/${userId}/phone`);
+  }
+
+  // Connected profiles for chat list
+  getConnectedProfiles(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/shortlist/connected`);
+  }
+
+  blockUser(userId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/users/${userId}/block`, {});
+  }
+
+  reportUser(userId: string, reason: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/users/${userId}/report`, { reason });
   }
 
   // Premium

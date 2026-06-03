@@ -14,14 +14,14 @@ export class SearchService {
   private readonly activeFilters = signal<Partial<MatchPreferences>>({});
   private readonly viewMode = signal<'grid' | 'list' | 'swipe'>('grid');
   private readonly apiResults = signal<UserProfile[]>([]);
-  private useApiResults = false;
+  private readonly useApiResults = signal(false);
 
   readonly query = this.searchQuery.asReadonly();
   readonly filters = this.activeFilters.asReadonly();
   readonly currentViewMode = this.viewMode.asReadonly();
 
   readonly searchResults = computed(() => {
-    if (this.useApiResults && this.apiResults().length > 0) {
+    if (this.useApiResults() && this.apiResults().length > 0) {
       return this.apiResults();
     }
 
@@ -58,7 +58,7 @@ export class SearchService {
   clearFilters(): void {
     this.activeFilters.set({});
     this.searchQuery.set('');
-    this.useApiResults = false;
+    this.useApiResults.set(false);
     this.apiResults.set([]);
   }
 
@@ -68,12 +68,13 @@ export class SearchService {
 
   readonly availableReligions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist'];
   readonly availableCities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Jaipur'];
-  readonly availableEducation = ["Bachelor's", "Master's", 'PhD', 'MBA', 'Medical', 'Engineering'];
+  readonly availableEducation = ["Bachelor", "Master", 'PhD', 'MBA', 'Medical', 'Engineering'];
   readonly availableOccupations = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA'];
 
   private searchViaApi(query: string): void {
     if (!query) {
-      this.useApiResults = false;
+      this.useApiResults.set(false);
+      this.apiResults.set([]);
       return;
     }
     this.api.getProfiles({ query }).subscribe({
@@ -81,11 +82,11 @@ export class SearchService {
         const list = res.data ?? res;
         if (Array.isArray(list) && list.length > 0) {
           this.apiResults.set(list);
-          this.useApiResults = true;
+          this.useApiResults.set(true);
         }
       },
       error: () => {
-        this.useApiResults = false;
+        this.useApiResults.set(false);
       },
     });
   }

@@ -1,0 +1,455 @@
+<div class="about-page">
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       1. HERO
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-hero">
+    <div class="au-hero__deco au-hero__deco--tl"></div>
+    <div class="au-hero__deco au-hero__deco--br"></div>
+
+    <div class="au-hero__content suhana-container">
+      <div class="au-hero__eyebrow" #animTarget>
+        <mat-icon>auto_awesome</mat-icon>
+        <span>A New Chapter in Indian Matchmaking</span>
+      </div>
+
+      <h1 class="au-hero__title" #animTarget>
+        About <span class="au-hero__brand">Suhana</span>
+      </h1>
+
+      <p class="au-hero__subtitle" #animTarget>
+        Where Tradition Meets Intelligent Matchmaking
+      </p>
+
+      <p class="au-hero__desc" #animTarget>
+        Helping individuals and families discover meaningful life partnerships<br class="au-br" />
+        through trust, technology, and timeless values.
+      </p>
+
+      <div class="au-hero__actions" #animTarget>
+        <button mat-raised-button class="au-btn-primary" routerLink="/register">
+          <mat-icon>favorite</mat-icon> Find Your Match
+        </button>
+        <button mat-stroked-button class="au-btn-ghost" (click)="scrollToStory()">
+          <mat-icon>south</mat-icon> Learn More
+        </button>
+      </div>
+
+      <div class="au-hero__trust-row" #animTarget>
+        <div class="au-trust-chip"><mat-icon>verified</mat-icon> 1 Lakh+ Verified Profiles</div>
+        <div class="au-trust-chip"><mat-icon>favorite</mat-icon> 10,000+ Couples United</div>
+        <div class="au-trust-chip"><mat-icon>lock</mat-icon> Privacy-First Platform</div>
+      </div>
+    </div>
+
+    <div class="au-hero__wave">
+      <svg viewBox="0 0 1440 72" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,32 C150,80 300,0 450,32 C600,64 750,96 900,48 C1050,0 1200,32 1440,72 L1440,160 L0,160 Z" fill="#fdf8f4"/>
+      </svg>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       2. OUR STORY
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-story suhana-container" id="au-story">
+    <div class="au-section-eyebrow" #animTarget>Our Story</div>
+    <h2 class="au-section-title" #animTarget>Born from a Simple Question</h2>
+    <p class="au-section-lead" #animTarget>Why should finding a life partner be this difficult?</p>
+
+    <div class="au-story__grid">
+      <div class="au-story__text" #animTarget>
+        <p>
+          For decades, Indian matrimony platforms collected thousands of profiles and left
+          families to search through them alone — spending months filtering by age, caste,
+          and city, with no real understanding of whether two people were truly compatible.
+        </p>
+        <p>
+          Families struggled. Young professionals felt overwhelmed. Months became years.
+          And yet, the most important decision of a person's life was being made with the
+          same tools as a job listing.
+        </p>
+        <p class="au-story__emphasis">
+          <mat-icon>format_quote</mat-icon>
+          Suhana was born from the belief that this could — and should — be far better.
+        </p>
+        <p>
+          We combined the warmth and wisdom of traditional Indian matchmaking — the value
+          of family, the reverence for astrology, the importance of culture and shared
+          values — with the transformative power of modern AI. The result is a platform
+          that does not just show you profiles. It helps you understand <em>why</em>
+          someone might be the right partner for you.
+        </p>
+        <p>
+          Today, Suhana is trusted by over one lakh families across India and the NRI
+          community — each one deserving not just a match, but a meaningful connection.
+        </p>
+      </div>
+
+      <div class="au-story__visual" #animTarget>
+        <div class="au-story__ring">
+          <mat-icon class="au-story__ring-icon">favorite</mat-icon>
+          <div class="au-story__ring-pulse"></div>
+        </div>
+        <div class="au-story__stat-cards">
+          <div class="au-story__stat">
+            <mat-icon>people</mat-icon>
+            <strong>1 Lakh+</strong>
+            <span>Families Trust Us</span>
+          </div>
+          <div class="au-story__stat">
+            <mat-icon>verified</mat-icon>
+            <strong>98%</strong>
+            <span>Verification Rate</span>
+          </div>
+          <div class="au-story__stat">
+            <mat-icon>celebration</mat-icon>
+            <strong>10,000+</strong>
+            <span>Success Stories</span>
+          </div>
+          <div class="au-story__stat">
+            <mat-icon>auto_awesome</mat-icon>
+            <strong>200+</strong>
+            <span>AI Dimensions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       3. OVERVIEW
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-overview">
+    <div class="suhana-container">
+      <div class="au-overview__grid">
+
+        <div class="au-overview-card" #animTarget>
+          <div class="au-overview-card__icon"><mat-icon>description</mat-icon></div>
+          <h3>The Platform</h3>
+          <p>
+            Suhana is an elegant, user-centric web application that blends traditional
+            Indian matchmaking values with modern AI compatibility scoring, smart search,
+            and granular privacy controls. Users can compare up to 4 profiles at once
+            with AI-generated compatibility percentages.
+          </p>
+        </div>
+
+        <div class="au-overview-card" #animTarget>
+          <div class="au-overview-card__icon"><mat-icon>track_changes</mat-icon></div>
+          <h3>Our Goals</h3>
+          <ul class="au-goal-list">
+            <li><mat-icon>check_circle</mat-icon><span>Elegant, emotionally engaging user experience</span></li>
+            <li><mat-icon>check_circle</mat-icon><span>Data-driven matching with clear compatibility scores</span></li>
+            <li><mat-icon>check_circle</mat-icon><span>Full user control over privacy and preferences</span></li>
+            <li><mat-icon>check_circle</mat-icon><span>Respectful, meaningful family involvement</span></li>
+            <li><mat-icon>check_circle</mat-icon><span>Secure, authentic, and scalable communication</span></li>
+          </ul>
+        </div>
+
+        <div class="au-overview-card" #animTarget>
+          <div class="au-overview-card__icon"><mat-icon>groups</mat-icon></div>
+          <h3>Who We Serve</h3>
+          <p>Indian singles and NRI communities seeking serious, commitment-driven relationships.</p>
+          <div class="au-chip-row">
+            <mat-chip-set>
+              <mat-chip highlighted>Indian Singles 21–40</mat-chip>
+              <mat-chip highlighted>NRI Communities</mat-chip>
+              <mat-chip highlighted>Family-Led Searches</mat-chip>
+              <mat-chip highlighted>Serious Relationships</mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       4. VISION
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-vision suhana-container">
+    <div class="au-vision__card" #animTarget>
+      <div class="au-vision__ornament">"</div>
+      <div class="au-vision__badge">
+        <mat-icon>visibility</mat-icon> Our Vision
+      </div>
+      <h2 class="au-vision__title">
+        Revolutionising Indian Matchmaking —<br />
+        One Meaningful Match at a Time
+      </h2>
+      <mat-divider class="au-vision__divider"></mat-divider>
+      <div class="au-vision__body">
+        <p>
+          At Suhana Matrimony, our vision is to become India's most trusted and intelligent
+          matrimonial platform — one that earns the confidence of both individuals and families
+          by combining the warmth of tradition with the precision of modern technology.
+        </p>
+        <p>
+          We aim to help every individual find their ideal life partner not through shallow
+          filters, but through AI-driven compatibility scoring that weighs lifestyle, values,
+          education, career, personality, and the timeless wisdom of horoscope alignment.
+        </p>
+        <p>
+          With a strong commitment to user trust, we ensure photo privacy, verified profile
+          authenticity, and respectful family participation — so that every person approaches
+          the most important decision of their life with confidence, clarity, and care.
+        </p>
+      </div>
+      <div class="au-vision__pillars">
+        <div class="au-vision__pillar"><mat-icon>verified_user</mat-icon><span>Trust</span></div>
+        <div class="au-vision__pillar"><mat-icon>insights</mat-icon><span>Intelligence</span></div>
+        <div class="au-vision__pillar"><mat-icon>favorite</mat-icon><span>Meaning</span></div>
+        <div class="au-vision__pillar"><mat-icon>family_restroom</mat-icon><span>Family</span></div>
+        <div class="au-vision__pillar"><mat-icon>diamond</mat-icon><span>Elegance</span></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       5. MISSION
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-mission">
+    <div class="suhana-container">
+      <div class="au-section-eyebrow au-section-eyebrow--light" #animTarget>Our Mission</div>
+      <h2 class="au-section-title au-section-title--light" #animTarget>
+        To Be the Most Trusted Partner<br />in Your Most Important Journey
+      </h2>
+
+      <div class="au-mission__pillars" #animTarget>
+        @for (p of missionPillars; track p.title) {
+          <div class="au-mission__pillar">
+            <mat-icon>{{ p.icon }}</mat-icon>
+            <span>{{ p.title }}</span>
+          </div>
+        }
+      </div>
+
+      <p class="au-mission__body" #animTarget>
+        Suhana's mission is to create a platform where every interaction — every search,
+        every match, every conversation — is rooted in honesty, respect, and a genuine
+        desire to help real people find their real person. We believe technology should
+        serve human values, not replace them. And we believe marriage is not a transaction
+        — it is a lifelong commitment that deserves every ounce of intelligence, warmth,
+        and care we can offer.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       6. WHY CHOOSE SUHANA
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-features suhana-container">
+    <div class="au-section-eyebrow" #animTarget>Why Choose Suhana</div>
+    <h2 class="au-section-title" #animTarget>Everything You Need for a Meaningful Match</h2>
+    <p class="au-section-lead" #animTarget>
+      Built with love for the Indian matrimony experience — intelligent, private, and family-friendly.
+    </p>
+
+    <div class="au-features__grid">
+      @for (f of features; track f.title; let i = $index) {
+        <mat-card class="au-feature-card" #animTarget appearance="outlined">
+          <div class="au-feature-card__icon-wrap">
+            <mat-icon class="au-feature-card__icon">{{ f.icon }}</mat-icon>
+          </div>
+          <mat-card-header>
+            <mat-card-title class="au-feature-card__title">{{ f.title }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{ f.description }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       7. HOW SUHANA WORKS
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-timeline">
+    <div class="suhana-container">
+      <div class="au-section-eyebrow au-section-eyebrow--light" #animTarget>How It Works</div>
+      <h2 class="au-section-title au-section-title--light" #animTarget>Your Journey in Five Steps</h2>
+
+      <div class="au-timeline__track">
+        @for (step of timelineSteps; track step.step) {
+          <div class="au-timeline__item" #animTarget>
+            <div class="au-timeline__left">
+              <div class="au-timeline__node">
+                <span class="au-timeline__num">{{ step.step }}</span>
+              </div>
+              @if (step.step < timelineSteps.length) {
+                <div class="au-timeline__line"></div>
+              }
+            </div>
+            <div class="au-timeline__content">
+              <div class="au-timeline__icon-wrap">
+                <mat-icon>{{ step.icon }}</mat-icon>
+              </div>
+              <div class="au-timeline__text">
+                <h3>{{ step.title }}</h3>
+                <p>{{ step.description }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       8. CORE VALUES
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-values suhana-container">
+    <div class="au-section-eyebrow" #animTarget>Core Values</div>
+    <h2 class="au-section-title" #animTarget>The Principles We Live By</h2>
+    <p class="au-section-lead" #animTarget>
+      Every decision at Suhana is guided by a set of values we refuse to compromise on.
+    </p>
+
+    <div class="au-values__grid">
+      @for (v of coreValues; track v.title) {
+        <div class="au-value-card {{ v.colorClass }}" #animTarget>
+          <div class="au-value-card__icon-wrap">
+            <mat-icon>{{ v.icon }}</mat-icon>
+          </div>
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.description }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       9. STATISTICS
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-stats">
+    <div class="suhana-container">
+      <div class="au-section-eyebrow au-section-eyebrow--light" #animTarget>Our Impact</div>
+      <h2 class="au-section-title au-section-title--light" #animTarget>
+        Numbers That Speak for Themselves
+      </h2>
+
+      <div class="au-stats__grid">
+        @for (s of stats; track s.label) {
+          <div class="au-stat-card" #animTarget>
+            <div class="au-stat-card__icon-wrap">
+              <mat-icon>{{ s.icon }}</mat-icon>
+            </div>
+            <div class="au-stat-card__value">{{ s.value }}</div>
+            <div class="au-stat-card__label">{{ s.label }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       10. SUCCESS PROMISE
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-promise suhana-container">
+    <div class="au-promise__card" #animTarget>
+      <div class="au-promise__header">
+        <div class="au-promise__badge">
+          <mat-icon>workspace_premium</mat-icon> The Suhana Promise
+        </div>
+        <h2>We Are Committed to Your Journey</h2>
+        <p>
+          At Suhana, every feature we build and every decision we make is guided by a single
+          commitment — to be the most honest, intelligent, and caring companion in your
+          journey toward finding your life partner.
+        </p>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="au-promise__grid">
+        @for (item of successPromises; track item.title) {
+          <div class="au-promise__item">
+            <div class="au-promise__item-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
+            <div class="au-promise__item-body">
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.desc }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       11. FAQ
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-faq">
+    <div class="suhana-container">
+      <div class="au-section-eyebrow" #animTarget>FAQ</div>
+      <h2 class="au-section-title" #animTarget>Frequently Asked Questions</h2>
+      <p class="au-section-lead" #animTarget>
+        Everything you need to know about Suhana Matrimony.
+      </p>
+
+      <mat-accordion class="au-faq__accordion" #animTarget>
+        @for (faq of faqs; track faq.question) {
+          <mat-expansion-panel class="au-faq__panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="au-faq__q-icon">help_outline</mat-icon>
+                {{ faq.question }}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p class="au-faq__answer">{{ faq.answer }}</p>
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       12. CALL TO ACTION
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="au-cta">
+    <div class="au-cta__deco au-cta__deco--tl"></div>
+    <div class="au-cta__deco au-cta__deco--br"></div>
+    <div class="suhana-container au-cta__content" #animTarget>
+      <div class="au-cta__icon-wrap">
+        <mat-icon>favorite</mat-icon>
+      </div>
+      <h2>Your Journey Begins Here</h2>
+      <p>
+        Find a meaningful connection through trust, intelligence, and tradition.<br />
+        Thousands of families have already begun their story on Suhana.
+      </p>
+      <div class="au-cta__actions">
+        <button mat-raised-button class="au-cta__btn-primary" routerLink="/register">
+          <mat-icon>person_add</mat-icon> Create Profile
+        </button>
+        <button mat-stroked-button class="au-cta__btn-outline" routerLink="/search">
+          <mat-icon>search</mat-icon> Explore Matches
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       13. FOOTER NOTE
+  ════════════════════════════════════════════════════════════════════ -->
+  <div class="au-footer-note" #animTarget>
+    <mat-icon class="au-footer-note__icon">favorite</mat-icon>
+    <blockquote>
+      "Suhana is more than a matrimony platform. It is a trusted companion in your
+      journey toward finding a meaningful lifelong partnership."
+    </blockquote>
+    <div class="au-footer-note__brand">— The Suhana Team</div>
+  </div>
+
+</div>

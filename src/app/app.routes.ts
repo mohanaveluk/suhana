@@ -41,6 +41,11 @@ export const routes: Routes = [
       import('./pages/profile-view/profile-view.component').then(m => m.ProfileViewComponent),
   },
   {
+    path: 'profile-match/:id',
+    loadComponent: () =>
+      import('./pages/profile-match/profile-match.component').then(m => m.ProfileMatchComponent),
+  },
+  {
     path: 'matchmaking',
     loadComponent: () => import('./pages/matchmaking/matchmaking').then(m => m.MatchmakingComponent),
   },
@@ -69,6 +74,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/premium/premium').then(m => m.PremiumComponent),
   },
   {
+    path: 'premium/payment',
+    loadComponent: () =>
+      import('./pages/premium-payment/premium-payment').then(m => m.PremiumPaymentComponent),
+  },
+  {
     path: 'match-tracker',
     loadComponent: () => import('./pages/match-tracker/match-tracker').then(m => m.MatchTrackerComponent),
   },
@@ -83,6 +93,10 @@ export const routes: Routes = [
       import('./pages/gallery/gallery-management.component').then(m => m.GalleryManagementComponent),
   },
   { path: 'auth/verifyemail/:userGuid/:verificationCode', component: VerifyEmailComponent },
+  {
+    path: 'about',
+    loadComponent: () => import('./pages/about-us/about-us.component').then(m => m.AboutUsComponent),
+  },
   {
     path: '**',
     redirectTo: '',
