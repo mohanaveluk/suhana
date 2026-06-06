@@ -1,0 +1,1356 @@
+// ═══════════════════════════════════════════════════════════════════════════
+//  Horoscope Match — Component Styles
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Toolbar ────────────────────────────────────────────────────────────────
+.hm-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--suhana-gradient) !important;
+  box-shadow: 0 2px 16px var(--suhana-shadow);
+  gap: 8px;
+  color: #fff !important;
+
+  .hm-toolbar-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+  }
+
+  .hm-flex-spacer { flex: 1 1 auto; }
+
+  .hm-cache-chip {
+    background: rgba(255,255,255,0.2) !important;
+    color: #fff !important;
+    font-size: 0.75rem;
+    height: 26px;
+    
+    mat-icon { color: #fff; font-size: 16px; }
+  }
+
+  button[mat-icon-button] { color: #fff; }
+}
+
+// ── Loading & state placeholders ───────────────────────────────────────────
+.hm-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 100px 24px;
+  background: var(--suhana-ivory-warm);
+
+  p { color: var(--suhana-text-secondary); font-size: 0.95rem; margin: 0; }
+}
+
+.hm-state-wrap {
+  background: var(--suhana-ivory-warm);
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.hm-error-card,
+.hm-empty-card {
+  border-radius: 20px !important;
+  max-width: 440px;
+  width: 100%;
+
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 40px 32px !important;
+    text-align: center;
+    h3 { color: var(--suhana-text-primary); margin: 0; }
+    p  { color: var(--suhana-text-secondary); margin: 0; }
+  }
+}
+
+.hm-state-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  &.state-error { color: #f44336; }
+  &.state-empty { color: var(--suhana-gold); }
+}
+
+// ── Hero ───────────────────────────────────────────────────────────────────
+.hm-hero {
+  background: var(--suhana-gradient);
+  position: relative;
+  overflow: hidden;
+  padding: 36px 0 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 60%, rgba(255,255,255,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 40%, rgba(255,255,255,0.08) 0%, transparent 55%);
+    pointer-events: none;
+  }
+}
+
+.hm-hero-content {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0;
+    .hm-hero-center { order: -1; }
+  }
+}
+
+// Profile card (both sides)
+.hm-hero-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  padding-bottom: 24px;
+
+  &--right { @media (min-width: 769px) { align-items: center; } }
+
+  @media (max-width: 768px) {
+    align-items: center !important;
+    padding-bottom: 16px;
+  }
+}
+
+.hm-hero-photo-wrap {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.hm-hero-photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.6);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+
+  &--placeholder {
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    mat-icon { font-size: 44px; color: rgba(255,255,255,0.7); }
+  }
+}
+
+.hm-verified-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #4caf50;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  mat-icon { font-size: 13px; width: 13px; height: 13px; color: #fff; }
+}
+
+.hm-hero-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.hm-hero-age {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+}
+
+.hm-gender-chip {
+  font-size: 0.72rem !important;
+  height: 22px !important;
+  &.chip-bride { background: #fce4ec !important; color: #c2185b !important; }
+  &.chip-groom { background: #e3f2fd !important; color: #1565c0 !important; }
+}
+
+.hm-hero-astro {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.85);
+  font-style: italic;
+
+  .hm-astro-dot { opacity: 0.5; }
+}
+
+// Central score ring
+.hm-hero-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 24px;
+
+  @media (max-width: 768px) { padding: 16px 0; }
+}
+
+.hm-ring-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+}
+
+.hm-ring-svg {
+  width: 180px;
+  height: 180px;
+  transform: rotate(-90deg);
+
+  .hm-ring-track {
+    stroke: rgba(255,255,255,0.18);
+  }
+  .hm-ring-progress {
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
+
+.hm-ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hm-ring-value {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.hm-ring-pct {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  line-height: 1;
+}
+
+.hm-ring-sub {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.hm-category-badge {
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  border: 2px solid rgba(255,255,255,0.4);
+
+  &.cat-excellent { background: rgba(76,175,80,0.25); color: #e8f5e9; border-color: #81c784; }
+  &.cat-good      { background: rgba(33,150,243,0.25); color: #e3f2fd; border-color: #64b5f6; }
+  &.cat-moderate  { background: rgba(255,152,0,0.25); color: #fff3e0; border-color: #ffb74d; }
+  &.cat-caution   { background: rgba(244,67,54,0.25); color: #ffebee; border-color: #e57373; }
+}
+
+.hm-hero-hearts {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .hm-heart-sm {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: rgba(255,255,255,0.8);
+  }
+}
+
+// Summary strip inside hero
+.hm-hero-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 0 20px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  position: relative;
+  z-index: 1;
+
+  mat-icon { color: rgba(255,255,255,0.5); font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+
+  p {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.85);
+    margin: 0;
+    line-height: 1.6;
+    font-style: italic;
+  }
+}
+
+// ── Quick stats strip ──────────────────────────────────────────────────────
+.hm-stats-strip {
+  background: #fff;
+  border-bottom: 1px solid var(--suhana-rose-gold-lighter);
+  box-shadow: 0 2px 12px var(--suhana-shadow);
+}
+
+.hm-stats-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow-x: auto;
+
+  @media (max-width: 600px) {
+    gap: 0;
+    justify-content: space-between;
+  }
+}
+
+.hm-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  flex: 1;
+  min-width: 0;
+
+  mat-icon {
+    font-size: 22px;
+    color: var(--suhana-rose-gold);
+    flex-shrink: 0;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  @media (max-width: 600px) { padding: 12px 10px; }
+}
+
+.hm-stat-label {
+  font-size: 0.72rem;
+  color: var(--suhana-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.hm-stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--suhana-text-primary);
+  white-space: nowrap;
+}
+
+.hm-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--suhana-rose-gold-lighter);
+  flex-shrink: 0;
+}
+
+// ── Tab group wrapper ──────────────────────────────────────────────────────
+.hm-tabs-wrapper {
+  padding-top: 24px;
+  padding-bottom: 0;
+}
+
+.hm-tab-group {
+  background: transparent;
+
+  ::ng-deep {
+    .mat-mdc-tab-header {
+      background: #fff;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 2px 12px var(--suhana-shadow);
+      border: 1px solid var(--suhana-rose-gold-lighter);
+      border-bottom: none;
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      background: var(--suhana-ivory-warm);
+      border: 1px solid var(--suhana-rose-gold-lighter);
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 4px 20px var(--suhana-shadow);
+    }
+
+    .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+      color: var(--suhana-maroon);
+    }
+
+    .mdc-tab-indicator__content--underline {
+      border-color: var(--suhana-rose-gold) !important;
+    }
+  }
+}
+
+.hm-tab-icon {
+  font-size: 18px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.hm-tab-content {
+  padding: 24px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @media (max-width: 600px) { padding: 16px 12px 24px; }
+}
+
+// ── Section headers ────────────────────────────────────────────────────────
+.hm-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -4px;
+
+  mat-icon { color: var(--suhana-rose-gold); }
+
+  h2 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--suhana-text-primary);
+    margin: 0;
+  }
+}
+
+// ── Overview tab: Overall bar card ─────────────────────────────────────────
+.hm-overall-bar-card {
+  border-radius: 16px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+  background: linear-gradient(135deg, #fffaf9 0%, #fff0f2 100%) !important;
+}
+
+.hm-overall-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.hm-overall-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hm-overall-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--suhana-blush);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  mat-icon { font-size: 26px; width: 26px; height: 26px; }
+}
+
+.hm-overall-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--suhana-text-secondary);
+  margin: 0;
+}
+
+.hm-overall-category {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--suhana-text-primary);
+  margin: 0;
+}
+
+.hm-overall-pct {
+  font-size: 2.2rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+// ── Progress bars (custom, full colour control) ────────────────────────────
+.hm-prog-outer {
+  height: 8px;
+  background: #ede8e9;
+  border-radius: 4px;
+  overflow: hidden;
+
+  &.hm-prog-overall { height: 10px; border-radius: 5px; }
+  &.hm-prog-sm      { height: 6px; }
+}
+
+.hm-prog-inner {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0; // animates from 0 → bound value
+}
+
+// ── Aspect cards grid ──────────────────────────────────────────────────────
+.hm-aspects-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.hm-aspect-card {
+  border-radius: 14px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+
+  mat-card-content {
+    padding: 16px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.hm-aspect-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hm-aspect-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  mat-icon { font-size: 22px; width: 22px; height: 22px; }
+}
+
+.hm-aspect-title-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.hm-aspect-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--suhana-text-primary);
+}
+
+.hm-aspect-pct {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.hm-aspect-exp {
+  font-size: 0.78rem;
+  color: var(--suhana-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+// ── List cards (strengths / areas) ─────────────────────────────────────────
+.hm-list-card {
+  border-radius: 14px !important;
+
+  &--green { border-color: #c8e6c9 !important; background: #f9fff9 !important; }
+  &--amber { border-color: #ffe0b2 !important; background: #fffdf8 !important; }
+}
+
+.icon-green  { color: #4caf50 !important; }
+.icon-amber  { color: #ff9800 !important; }
+.icon-red    { color: #f44336 !important; }
+.icon-rose   { color: var(--suhana-rose-gold) !important; }
+
+.hm-bullet-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hm-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.87rem;
+  line-height: 1.5;
+  color: var(--suhana-text-primary);
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; }
+
+  &--green mat-icon { color: #4caf50; }
+  &--amber mat-icon { color: #ff9800; }
+}
+
+// ── AI Summary tab ─────────────────────────────────────────────────────────
+.hm-ai-card {
+  border-radius: 16px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+}
+
+.hm-ai-avatar {
+  background: var(--suhana-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mat-icon { color: #fff; font-size: 20px; }
+}
+
+.hm-ai-text {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--suhana-text-primary);
+  margin: 0;
+  font-style: italic;
+}
+
+// Recommendation card
+.hm-rec-card {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+
+  &.rec-excellent .hm-rec-header { background: linear-gradient(135deg, #1b5e20, #43a047); }
+  &.rec-good      .hm-rec-header { background: linear-gradient(135deg, #0d47a1, #1e88e5); }
+  &.rec-moderate  .hm-rec-header { background: linear-gradient(135deg, #e65100, #fb8c00); }
+  &.rec-caution   .hm-rec-header { background: linear-gradient(135deg, #b71c1c, #e53935); }
+}
+
+.hm-rec-header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .hm-rec-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    mat-icon { font-size: 28px; color: #fff; }
+  }
+}
+
+.hm-rec-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 2px;
+}
+
+.hm-rec-category {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.95);
+  margin: 0;
+}
+
+.hm-rec-body {
+  padding: 20px 24px;
+  background: #fff;
+
+  p {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: var(--suhana-text-primary);
+    margin: 0;
+  }
+}
+
+// Snapshot card
+.hm-snapshot-card {
+  border-radius: 16px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+}
+
+.hm-snapshot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.hm-snapshot-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hm-snapshot-name-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+
+  .hm-snapshot-name { margin: 0; font-size: 1rem; font-weight: 700; color: var(--suhana-maroon); }
+  .hm-snapshot-score { font-size: 1.5rem; font-weight: 800; }
+}
+
+.hm-snapshot-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hm-snap-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.84rem;
+  color: var(--suhana-text-primary);
+
+  mat-icon { font-size: 15px; width: 15px; height: 15px; color: var(--suhana-rose-gold); flex-shrink: 0; }
+}
+
+.hm-snap-doshas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.hm-dosha-chip {
+  font-size: 0.7rem !important;
+  height: 20px !important;
+  background: #fff3e0 !important;
+  color: #e65100 !important;
+}
+
+.hm-snap-no-dosha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #4caf50;
+  font-weight: 600;
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+}
+
+// ── Horoscope tab — expansion panels ──────────────────────────────────────
+.hm-panel {
+  border-radius: 14px !important;
+  border: 1px solid var(--suhana-rose-gold-lighter) !important;
+  box-shadow: 0 2px 12px var(--suhana-shadow) !important;
+  margin-bottom: 0 !important;
+
+  &.mat-expanded {
+    border-color: var(--suhana-rose-gold-light) !important;
+  }
+}
+
+.hm-panel-icon {
+  color: var(--suhana-rose-gold);
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+// Kundli grid
+.hm-kootas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 500px)  { grid-template-columns: 1fr; }
+}
+
+.hm-koota-card {
+  border-radius: 12px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+  padding: 12px;
+
+  .hm-koota-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+
+    .hm-koota-name { font-weight: 600; font-size: 0.88rem; color: var(--suhana-text-primary); }
+    .hm-koota-score { font-weight: 700; font-size: 0.88rem; }
+  }
+
+  .hm-koota-desc {
+    font-size: 0.76rem;
+    color: var(--suhana-text-secondary);
+    margin: 8px 0 0;
+    line-height: 1.45;
+  }
+}
+
+.hm-kundli-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--suhana-ivory-warm);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: var(--suhana-text-primary);
+  border: 1px solid var(--suhana-rose-gold-lighter);
+
+  mat-icon { color: var(--suhana-rose-gold); font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+}
+
+// Dosha grid
+.hm-doshas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+}
+
+.hm-dosha-card {
+  border-radius: 14px !important;
+  &.dosha-detected { border-color: #ffcdd2 !important; background: #fff8f8 !important; }
+  &.dosha-clear    { border-color: #c8e6c9 !important; background: #f9fff9 !important; }
+}
+
+.hm-no-dosha {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #4caf50;
+  font-weight: 600;
+  font-size: 0.84rem;
+  margin: 0 0 6px;
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+}
+
+.hm-dosha-impact {
+  font-size: 0.84rem;
+  color: var(--suhana-text-primary);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.hm-remedies {
+  background: var(--suhana-ivory-warm);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--suhana-rose-gold-lighter);
+
+  .hm-remedies-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--suhana-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 6px;
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    li {
+      font-size: 0.78rem;
+      color: var(--suhana-text-secondary);
+      line-height: 1.5;
+    }
+  }
+}
+
+// Severity chip colours
+.hm-severity-chip {
+  font-size: 0.7rem !important;
+  height: 20px !important;
+  &.severity-none   { background: #e8f5e9 !important; color: #2e7d32 !important; }
+  &.severity-low    { background: #e3f2fd !important; color: #1565c0 !important; }
+  &.severity-medium { background: #fff3e0 !important; color: #e65100 !important; }
+  &.severity-high   { background: #ffebee !important; color: #b71c1c !important; }
+}
+
+// Profile detail cards inside horoscope tab
+.hm-profiles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.hm-profile-card {
+  border-radius: 14px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+}
+
+.hm-photo-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 20px 20px 8px;
+}
+
+.hm-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--suhana-rose-gold-lighter);
+
+  &.hm-photo-placeholder {
+    background: var(--suhana-blush);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    mat-icon { font-size: 40px; color: var(--suhana-rose-gold); }
+  }
+}
+
+.hm-photo-verified {
+  position: absolute;
+  bottom: 8px;
+  right: calc(50% - 52px);
+  background: #4caf50;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mat-icon { font-size: 12px; width: 12px; height: 12px; color: #fff; }
+}
+
+.hm-profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px 10px;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hm-profile-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--suhana-text-primary);
+}
+
+.hm-profile-body,
+.hm-horoscope-body {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.hm-sub-label {
+  margin: 0 0 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--suhana-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hm-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.84rem;
+  color: var(--suhana-text-primary);
+  flex-wrap: wrap;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    color: var(--suhana-rose-gold);
+    flex-shrink: 0;
+  }
+}
+
+.hm-doc-btn {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  border-radius: 20px !important;
+}
+
+.hm-relocate-chip {
+  font-size: 0.66rem !important;
+  height: 18px !important;
+  background: var(--suhana-blush) !important;
+  color: var(--suhana-maroon) !important;
+}
+
+.chip-green { background: #e8f5e9 !important; color: #2e7d32 !important; }
+.chip-red   { background: #ffebee !important; color: #b71c1c !important; }
+
+// ── Planets tab ────────────────────────────────────────────────────────────
+.hm-marriage-card {
+  border-radius: 14px !important;
+  border-color: #bbdefb !important;
+  background: #f0f8ff !important;
+
+  p { font-size: 0.9rem; color: var(--suhana-text-primary); line-height: 1.6; margin: 0; }
+}
+
+.hm-planets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.hm-planet-col-card {
+  border-radius: 14px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+}
+
+.hm-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.chip-position {
+  background: var(--suhana-blush) !important;
+  color: var(--suhana-maroon) !important;
+  font-size: 0.72rem !important;
+  height: 24px !important;
+}
+
+.hm-planet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+
+  thead tr { background: var(--suhana-ivory-warm); }
+
+  th {
+    text-align: left;
+    padding: 7px 10px;
+    font-weight: 600;
+    color: var(--suhana-text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--suhana-rose-gold-lighter);
+  }
+
+  td {
+    padding: 6px 10px;
+    color: var(--suhana-text-primary);
+    border-bottom: 1px solid #f5f0f0;
+    vertical-align: middle;
+  }
+
+  tbody tr:hover { background: var(--suhana-ivory-warm); }
+
+  .hm-planet-name { font-weight: 600; color: var(--suhana-maroon); width: 90px; }
+  .hm-planet-pos  { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+}
+
+.chip-retro {
+  background: #fff3e0 !important;
+  color: #e65100 !important;
+  font-size: 0.68rem !important;
+  height: 18px !important;
+  font-weight: 700;
+}
+
+// Planet comparison table
+.hm-planet-compare-card {
+  border-radius: 14px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+
+  mat-card-content { padding: 0 !important; }
+}
+
+.hm-compare-table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+}
+
+.hm-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 600px;
+
+  thead tr { background: var(--suhana-blush); }
+
+  th {
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--suhana-maroon);
+    font-size: 0.8rem;
+    border-bottom: 2px solid var(--suhana-rose-gold-lighter);
+  }
+
+  td {
+    padding: 8px 14px;
+    border-bottom: 1px solid #f5f0f0;
+    color: var(--suhana-text-primary);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+
+  tbody tr:hover { background: var(--suhana-ivory-warm); }
+
+  .hm-cmp-planet { font-weight: 700; color: var(--suhana-maroon); width: 80px; }
+  .hm-cmp-pos    { color: var(--suhana-text-secondary); font-size: 0.8rem; width: 160px; }
+  .hm-cmp-compat { font-size: 0.78rem; color: var(--suhana-text-secondary); }
+}
+
+// House placements
+.hm-house-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.hm-house-card {
+  border-radius: 14px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+
+  mat-card-content { padding: 0 !important; }
+}
+
+.hm-house-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  thead tr { background: var(--suhana-ivory-warm); }
+
+  th {
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--suhana-text-secondary);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--suhana-rose-gold-lighter);
+  }
+
+  td { padding: 7px 12px; border-bottom: 1px solid #f8f4f4; vertical-align: top; }
+
+  .hm-house-num {
+    font-weight: 700;
+    color: var(--suhana-maroon);
+    width: 50px;
+    white-space: nowrap;
+  }
+  .hm-house-val { color: var(--suhana-text-primary); line-height: 1.4; }
+
+  .house-occupied .hm-house-val { color: var(--suhana-text-primary); }
+  .house-empty    .hm-house-val { color: var(--suhana-text-secondary); font-style: italic; }
+}
+
+// ── Inner sub-tab group (Planets) ─────────────────────────────────────────
+.hm-inner-tab-group {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  box-shadow: 0 2px 10px var(--suhana-shadow);
+
+  ::ng-deep {
+    .mat-mdc-tab-header {
+      background: #fdf8f6;
+      border-bottom: 1px solid var(--suhana-rose-gold-lighter);
+      border-radius: 0;
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      background: #fff;
+    }
+
+    .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+      color: var(--suhana-maroon);
+      font-weight: 600;
+    }
+
+    .mat-mdc-tab .mdc-tab__text-label {
+      font-size: 0.82rem;
+    }
+
+    .mdc-tab-indicator__content--underline {
+      border-color: var(--suhana-rose-gold) !important;
+    }
+  }
+}
+
+.hm-inner-tab-icon {
+  font-size: 15px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.hm-inner-tab-content {
+  padding: 20px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (max-width: 600px) { padding: 14px 10px 20px; }
+}
+
+// ── Birth Charts ───────────────────────────────────────────────────────────
+.hm-birth-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.hm-birth-chart-card {
+  border-radius: 14px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+}
+
+.hm-birth-chart-pre {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.78rem;
+  color: var(--suhana-text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  line-height: 1.6;
+  background: var(--suhana-ivory-warm);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  overflow-x: auto;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+// ── Rasi & Navamsa Analysis ────────────────────────────────────────────────
+.hm-analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.hm-analysis-card {
+  border-radius: 14px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+}
+
+.hm-analysis-text {
+  font-size: 0.88rem;
+  color: var(--suhana-text-primary);
+  line-height: 1.75;
+  margin: 0;
+}
+
+// ── Disclaimer ─────────────────────────────────────────────────────────────
+.hm-disclaimer-wrap {
+  padding-top: 20px;
+  padding-bottom: 32px;
+}
+
+.hm-disclaimer {
+  border-radius: 14px !important;
+  border-left: 5px solid #ff9800 !important;
+  border-color: #ffe0b2 !important;
+  background: #fffde7 !important;
+}
+
+.hm-disclaimer-inner {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 4px 0;
+}
+
+.hm-disclaimer-icon {
+  color: #ff9800;
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.hm-disclaimer-text {
+  font-size: 0.82rem;
+  font-style: italic;
+  color: #5d4037;
+  line-height: 1.65;
+  margin: 0;
+}
+
+// ── Scroll-to-top FAB ──────────────────────────────────────────────────────
+.hm-fab-top {
+  position: fixed !important;
+  bottom: 28px;
+  right: 24px;
+  z-index: 300;
+  background: var(--suhana-gradient) !important;
+  box-shadow: 0 6px 20px var(--suhana-shadow) !important;
+  animation: hmFadeUp 0.2s ease;
+
+  mat-icon { color: #fff; font-size: 20px; }
+}
+
+@keyframes hmFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

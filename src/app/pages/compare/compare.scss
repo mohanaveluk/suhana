@@ -130,8 +130,9 @@
 }
 
 .score-bar-container {
-  display: flex;
+  display: grid;
   align-items: center;
+  grid-template-columns: 1fr 35px;
   gap: 8px;
   width: 100%;
 

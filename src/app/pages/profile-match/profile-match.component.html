@@ -539,6 +539,16 @@
           [routerLink]="['/profile-view', theirProfile()!.userId]">
           <mat-icon>open_in_new</mat-icon>
         </button>
+
+        <button
+          mat-stroked-button
+          class="suhana-btn-outline fab-horoscope"
+          [routerLink]="['/horoscope-match', theirProfile()?.user?.id ?? theirProfile()!.userId]"
+          [disabled]="isSelf()"
+          matTooltip="View AI horoscope compatibility report"
+        >
+          <mat-icon>auto_awesome</mat-icon> View Horoscope Match
+        </button>
       </div>
 
     </div>

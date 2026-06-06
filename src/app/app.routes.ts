@@ -94,6 +94,13 @@ export const routes: Routes = [
   },
   { path: 'auth/verifyemail/:userGuid/:verificationCode', component: VerifyEmailComponent },
   {
+    path: 'horoscope-match/:matchUserId',
+    loadComponent: () =>
+      import('./pages/horoscope-match/horoscope-match.component').then(
+        m => m.HoroscopeMatchComponent
+      ),
+  },
+  {
     path: 'about',
     loadComponent: () => import('./pages/about-us/about-us.component').then(m => m.AboutUsComponent),
   },

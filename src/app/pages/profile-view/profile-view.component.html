@@ -913,7 +913,7 @@
       </div><!-- /profile-main-layout -->
 
       <!-- ── PHOTO GALLERY ──────────────────────────────── -->
-      @if (galleryPhotos().length > 0) {
+      <!-- @if (galleryPhotos().length > 0) {
         <section class="gallery-section animate-fade-in-up" aria-label="Photo gallery">
           <div class="section-heading">
             <mat-icon>photo_library</mat-icon>
@@ -936,6 +936,54 @@
 
                 <img
                   [src]="photo.url"
+                  [alt]="p.firstName + ' photo ' + (i + 1)"
+                  loading="lazy"
+                  (error)="onImageError($event)" />
+
+                <div class="gallery-overlay">
+                  <mat-icon class="zoom-icon">zoom_in</mat-icon>
+                </div>
+
+                @if (photo.isPrimary) {
+                  <span class="gallery-primary-label">
+                    <mat-icon>star</mat-icon> Primary
+                  </span>
+                }
+                @if (photo.isVerified) {
+                  <span class="gallery-verified-label">
+                    <mat-icon>verified</mat-icon>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      } -->
+
+      <!-- ── Image GALLERY ──────────────────────────────── -->
+      @if (gallaryImages().length > 0) {
+        <section class="gallery-section animate-fade-in-up" aria-label="Photo gallery">
+          <div class="section-heading">
+            <mat-icon>photo_library</mat-icon>
+            <h2>Photo Gallery</h2>
+            <span class="photo-count">{{ gallaryImages().length }} Photos</span>
+          </div>
+
+          <div class="gallery-grid">
+            @for (photo of gallaryImages(); track photo.id; let i = $index) {
+              <div
+                class="gallery-item"
+                [class.primary-item]="photo.isPrimary"
+                (click)="openGalleryDialog(gallaryImages(), i)"
+                matRipple
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'View photo ' + (i + 1)"
+                (keydown.enter)="openGalleryDialog(gallaryImages(), i)"
+                (keydown.space)="openGalleryDialog(gallaryImages(), i)">
+
+                <img
+                  [src]="photo.imageUrl"
                   [alt]="p.firstName + ' photo ' + (i + 1)"
                   loading="lazy"
                   (error)="onImageError($event)" />

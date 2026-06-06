@@ -9,6 +9,7 @@ import {
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ProfilePhoto } from '../../models/user.model';
+import { GalleryImageData } from '../../models/gallery.model';
 
 export interface PhotoDialogData {
   photos: ProfilePhoto[];
@@ -28,7 +29,7 @@ export interface PhotoDialogData {
       <div class="dialog-topbar">
         <span class="counter-label">
           <mat-icon>photo_library</mat-icon>
-          {{ currentIndex() + 1 }} of {{ data.photos.length }}
+          {{ currentIndex() + 1 }} of {{ data.Image.length }}
         </span>
         @if (currentPhoto().isVerified) {
           <span class="verified-pill">
@@ -53,7 +54,7 @@ export interface PhotoDialogData {
 
         <div class="photo-frame" matRipple>
           <img
-            [src]="currentPhoto().url"
+            [src]="currentPhoto().imageUrl"
             [alt]="data.profileName + ' — photo ' + (currentIndex() + 1)"
             class="main-photo"
             (error)="onImageError($event)" />
@@ -68,16 +69,16 @@ export interface PhotoDialogData {
           mat-icon-button
           class="nav-btn nav-next"
           (click)="next()"
-          [disabled]="currentIndex() === data.photos.length - 1"
+          [disabled]="currentIndex() === data.Image.length - 1"
           aria-label="Next photo">
           <mat-icon>chevron_right</mat-icon>
         </button>
       </div>
 
       <!-- Thumbnail strip -->
-      @if (data.photos.length > 1) {
+      @if (data.Image.length > 1) {
         <div class="thumb-strip" role="listbox" aria-label="Photo thumbnails">
-          @for (photo of data.photos; track photo.id; let i = $index) {
+          @for (photo of data.Image; track photo.id; let i = $index) {
             <div
               class="thumb"
               [class.active]="currentIndex() === i"
@@ -86,7 +87,7 @@ export interface PhotoDialogData {
               role="option"
               matRipple>
               <img
-                [src]="photo.url"
+                [src]="photo.imageUrl"
                 [alt]="'Thumbnail ' + (i + 1)"
                 (error)="onImageError($event)" />
               @if (photo.isVerified) {
@@ -294,10 +295,10 @@ export interface PhotoDialogData {
 })
 export class PhotoGalleryDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<PhotoGalleryDialogComponent>);
-  readonly data = inject<PhotoDialogData>(MAT_DIALOG_DATA);
+  readonly data = inject<GalleryImageData>(MAT_DIALOG_DATA);
 
   readonly currentIndex = signal(this.data.currentIndex);
-  readonly currentPhoto = computed(() => this.data.photos[this.currentIndex()]);
+  readonly currentPhoto = computed(() => this.data.Image[this.currentIndex()!]);
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
@@ -307,11 +308,11 @@ export class PhotoGalleryDialogComponent {
   }
 
   prev(): void {
-    if (this.currentIndex() > 0) this.currentIndex.update(i => i - 1);
+    if (this.currentIndex()! > 0) this.currentIndex.update(i => i - 1);
   }
 
   next(): void {
-    if (this.currentIndex() < this.data.photos.length - 1) {
+    if (this.currentIndex()! < this.data.Image.length - 1) {
       this.currentIndex.update(i => i + 1);
     }
   }

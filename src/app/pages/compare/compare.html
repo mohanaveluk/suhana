@@ -91,7 +91,8 @@
           @for (cat of categories; track cat) {
             <tr class="score-row">
               <td class="label-col">
-                <mat-icon>{{ cat === 'lifestyle' ? 'spa' : cat === 'education' ? 'school' : cat === 'location' ? 'location_on' : cat === 'familyValues' ? 'family_restroom' : cat === 'interests' ? 'interests' : cat === 'career' ? 'work' : 'psychology' }}</mat-icon>
+                <mat-icon>{{cat === 'education' ? 'school' : cat === 'location' ? 'location_on' : cat === 'familyValues' ? 'family_restroom' : cat === 'career' ? 'work' :'psychology' }}</mat-icon>
+                <!-- <mat-icon>{{ cat === 'lifestyle' ? 'spa' : cat === 'education' ? 'school' : cat === 'location' ? 'location_on' : cat === 'familyValues' ? 'family_restroom' : cat === 'interests' ? 'interests' : cat === 'career' ? 'work' : 'psychology' }}</mat-icon> -->
                 {{ categoryLabels[cat] }}
               </td>
               @for (match of compareList(); track match.id) {

@@ -8,6 +8,12 @@ export const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
 
 export type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 
+export interface GalleryImageData {
+  Image: GalleryImage[];
+  currentIndex: number; // Used for dialog navigation
+  profileName?: string;  // Used for alt text and ARIA labels
+}
+
 export interface GalleryImage {
   id: string;
   imageUrl: string;

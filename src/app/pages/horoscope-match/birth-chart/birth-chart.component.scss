@@ -1,0 +1,377 @@
+// ═══════════════════════════════════════════════════════════════════════════
+//  Birth Chart Component
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Inner tab group ────────────────────────────────────────────────────────
+.bc-tab-group {
+  ::ng-deep {
+    .mat-mdc-tab-body-content { padding: 16px 0 0; overflow: hidden; }
+    .mat-mdc-tab-header {
+      border-bottom: 1px solid var(--suhana-rose-gold-lighter);
+      background: transparent;
+    }
+    .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label { color: var(--suhana-maroon); }
+    .mdc-tab-indicator__content--underline { border-color: var(--suhana-rose-gold) !important; }
+  }
+}
+
+.bc-tab-icon {
+  font-size: 16px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+// ── Charts tab ─────────────────────────────────────────────────────────────
+.bc-charts-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 8px 0;
+
+  @media (max-width: 820px) { grid-template-columns: 1fr; }
+}
+
+.bc-chart-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+// ── Person name + DOB ──────────────────────────────────────────────────────
+.bc-person-header {
+  text-align: center;
+  width: 100%;
+
+  .bc-person-name {
+    margin: 0 0 2px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--suhana-maroon);
+  }
+
+  .bc-dob {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--suhana-text-secondary);
+    letter-spacing: 0.02em;
+  }
+}
+
+// ── Lagna / Rasi / Nakshatra strip ─────────────────────────────────────────
+.bc-astro-strip {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 340px;
+  background: var(--suhana-blush);
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bc-astro-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+}
+
+.bc-astro-divider {
+  width: 1px;
+  background: var(--suhana-rose-gold-lighter);
+  margin: 6px 0;
+}
+
+.bc-astro-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--suhana-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  line-height: 1;
+}
+
+.bc-astro-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--suhana-maroon);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+// ── South Indian 4×4 grid ──────────────────────────────────────────────────
+.bc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  border: 2px solid var(--suhana-rose-gold);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 4px 20px var(--suhana-shadow);
+  background: var(--suhana-ivory-warm);
+}
+
+.bc-cell {
+  border: 1px solid #e8d0cc;
+  padding: 4px 3px 3px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  background: #fff;
+  cursor: default;
+  transition: background 0.15s;
+
+  &:hover { background: #fffaf9; }
+
+  &--lagna {
+    background: linear-gradient(135deg, #fffde7, #fff8c4) !important;
+    border: 1.5px solid #f9a825 !important;
+    box-shadow: inset 0 0 0 1px rgba(249, 168, 37, 0.2);
+
+    &:hover { background: linear-gradient(135deg, #fff9d6, #fff3a0) !important; }
+
+    .bc-sign { color: #e65100; font-weight: 800; }
+  }
+}
+
+// ── Center 2×2 merged decoration ──────────────────────────────────────────
+.bc-center-cell {
+  grid-row: 2 / 4;
+  grid-column: 2 / 4;
+  border: 1px solid #e8d0cc;
+  background: linear-gradient(135deg, #fef6f2 0%, #fdeee8 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: var(--suhana-rose-gold);
+    opacity: 0.55;
+  }
+
+  .bc-center-name {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--suhana-text-secondary);
+    font-style: normal;
+    text-align: center;
+    line-height: 1.3;
+    padding: 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+  }
+  .bc-center-date {
+    font-size: 0.6rem;
+    color: var(--suhana-text-secondary);
+    font-style: normal;
+    text-align: center;
+    line-height: 1.3;
+    padding: 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+  }  
+}
+
+// ── Cell content ───────────────────────────────────────────────────────────
+.bc-cell-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 1px;
+}
+
+.bc-sign {
+  font-size: clamp(0.52rem, 1.4vw, 0.65rem);
+  font-weight: 700;
+  color: var(--suhana-text-secondary);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.bc-house {
+  font-size: clamp(0.44rem, 1.1vw, 0.55rem);
+  color: var(--suhana-text-secondary);
+  opacity: 0.65;
+  line-height: 1;
+  font-style: italic;
+}
+
+.bc-lagna-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 13px;
+  height: 13px;
+  background: var(--suhana-rose-gold);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.48rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.bc-planet-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  margin-top: 2px;
+}
+
+// ── Planet tag chips ───────────────────────────────────────────────────────
+.bc-pl-tag {
+  font-size: clamp(0.52rem, 1.3vw, 0.62rem);
+  font-weight: 700;
+  padding: 1px 3px;
+  border-radius: 3px;
+  line-height: 1.3;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+
+  &.pl-sun      { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+  &.pl-moon     { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+  &.pl-mars     { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; }
+  &.pl-mercury  { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+  &.pl-venus    { background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; }
+  &.pl-jupiter  { background: #fffde7; color: #f57f17; border: 1px solid #fff176; }
+  &.pl-saturn   { background: #ede7f6; color: #311b92; border: 1px solid #b39ddb; }
+  &.pl-rahu     { background: #f3e5f5; color: #4a148c; border: 1px solid #ce93d8; }
+  &.pl-ketu     { background: #e0f2f1; color: #004d40; border: 1px solid #80cbc4; }
+  &.pl-default  { background: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
+}
+
+// ── Planet legend ──────────────────────────────────────────────────────────
+.bc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  padding: 2px 0 16px 0;
+
+  .bc-legend-tag {
+    font-size: 0.68rem !important;
+    padding: 2px 5px;
+    cursor: default;
+  }
+}
+
+// ── Planet Comparison tab ──────────────────────────────────────────────────
+.bc-compare-wrap {
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.bc-comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 380px;
+
+  thead tr { background: var(--suhana-blush); }
+
+  th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--suhana-maroon);
+    border-bottom: 2px solid var(--suhana-rose-gold-lighter);
+    font-size: 0.78rem;
+    &.bc-th-match { text-align: center; }
+  }
+
+  td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #f5f0f0;
+    color: var(--suhana-text-primary);
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+
+  tbody tr {
+    &:hover { background: var(--suhana-ivory-warm); }
+    &.bc-row-match { background: #f9fff9; }
+  }
+
+  .bc-td-match { text-align: center; }
+}
+
+.bc-planet-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .bc-planet-name { font-weight: 600; color: var(--suhana-maroon); }
+}
+
+.icon-match   { color: #4caf50; font-size: 18px; width: 18px; height: 18px; }
+.icon-diff    { color: #bdbdbd; font-size: 18px; width: 18px; height: 18px; }
+
+// ── How to Read tab ────────────────────────────────────────────────────────
+.bc-howto-wrap { padding: 4px 0; }
+
+.bc-howto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.bc-howto-card {
+  border-radius: 12px !important;
+  border-color: var(--suhana-rose-gold-lighter) !important;
+
+  mat-card-content {
+    padding: 14px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.bc-howto-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--suhana-blush);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--suhana-rose-gold); }
+}
+
+.bc-howto-title {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--suhana-text-primary);
+}
+
+.bc-howto-text {
+  font-size: 0.77rem;
+  color: var(--suhana-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
