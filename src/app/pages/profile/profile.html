@@ -525,110 +525,167 @@
               </mat-card-header>
               <mat-card-content>
                 <div class="compat-bars">
+                  @if(m.compatibilityBreakdown.lifestyle !== undefined) {
                   <div class="compat-bar-row">
                     <div class="compat-bar-label">
                       <mat-icon>favorite</mat-icon><span>Lifestyle</span>
                     </div>
                     <div class="compat-bar-track">
                       <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.lifestyle) }}"
-                           [style.width.%]="m.compatibilityBreakdown.lifestyle"></div>
+                        [style.width.%]="m.compatibilityBreakdown.lifestyle"></div>
                     </div>
                     <span class="compat-score {{ compatClass(m.compatibilityBreakdown.lifestyle) }}">
                       {{ m.compatibilityBreakdown.lifestyle }}%
                     </span>
                   </div>
-
+                  }
+              
+                  @if(m.compatibilityBreakdown.education !== undefined){
                   <div class="compat-bar-row">
                     <div class="compat-bar-label">
                       <mat-icon>school</mat-icon><span>Education</span>
                     </div>
                     <div class="compat-bar-track">
                       <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.education) }}"
-                           [style.width.%]="m.compatibilityBreakdown.education"></div>
+                        [style.width.%]="m.compatibilityBreakdown.education"></div>
                     </div>
                     <span class="compat-score {{ compatClass(m.compatibilityBreakdown.education) }}">
                       {{ m.compatibilityBreakdown.education }}%
                     </span>
                   </div>
-
+                  }
+                  @if(m.compatibilityBreakdown.location !== undefined){
                   <div class="compat-bar-row">
                     <div class="compat-bar-label">
                       <mat-icon>location_on</mat-icon><span>Location</span>
                     </div>
                     <div class="compat-bar-track">
                       <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.location) }}"
-                           [style.width.%]="m.compatibilityBreakdown.location"></div>
+                        [style.width.%]="m.compatibilityBreakdown.location"></div>
                     </div>
                     <span class="compat-score {{ compatClass(m.compatibilityBreakdown.location) }}">
                       {{ m.compatibilityBreakdown.location }}%
                     </span>
                   </div>
-
+                  }
+                  @if(m.compatibilityBreakdown.familyValues !== undefined){
                   <div class="compat-bar-row">
                     <div class="compat-bar-label">
                       <mat-icon>family_restroom</mat-icon><span>Family Values</span>
                     </div>
                     <div class="compat-bar-track">
                       <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.familyValues) }}"
-                           [style.width.%]="m.compatibilityBreakdown.familyValues"></div>
+                        [style.width.%]="m.compatibilityBreakdown.familyValues"></div>
                     </div>
                     <span class="compat-score {{ compatClass(m.compatibilityBreakdown.familyValues) }}">
                       {{ m.compatibilityBreakdown.familyValues }}%
                     </span>
                   </div>
-
+                  }
+              
+                  @if(m.compatibilityBreakdown.interests !== undefined){
                   <div class="compat-bar-row">
                     <div class="compat-bar-label">
                       <mat-icon>interests</mat-icon><span>Interests</span>
                     </div>
                     <div class="compat-bar-track">
                       <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.interests) }}"
-                           [style.width.%]="m.compatibilityBreakdown.interests"></div>
+                        [style.width.%]="m.compatibilityBreakdown.interests"></div>
                     </div>
                     <span class="compat-score {{ compatClass(m.compatibilityBreakdown.interests) }}">
                       {{ m.compatibilityBreakdown.interests }}%
                     </span>
                   </div>
-
+                  }
+                  @if(m.compatibilityBreakdown.career !== undefined){
                   <div class="compat-bar-row">
                     <div class="compat-bar-label">
                       <mat-icon>work</mat-icon><span>Career</span>
                     </div>
                     <div class="compat-bar-track">
                       <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.career) }}"
-                           [style.width.%]="m.compatibilityBreakdown.career"></div>
+                        [style.width.%]="m.compatibilityBreakdown.career"></div>
                     </div>
                     <span class="compat-score {{ compatClass(m.compatibilityBreakdown.career) }}">
                       {{ m.compatibilityBreakdown.career }}%
                     </span>
                   </div>
+                  }
+              
+                  @if(m.compatibilityBreakdown.ageGap !== undefined){
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>psychology</mat-icon><span>Age Gap</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.ageGap) }}"
+                        [style.width.%]="m.compatibilityBreakdown.ageGap"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.ageGap) }}">
+                      {{ m.compatibilityBreakdown.ageGap }}%
+                    </span>
+                  </div>
+                  }
 
+                  @if(m.compatibilityBreakdown.income !== undefined){
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>psychology</mat-icon><span>Income</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.income) }}"
+                        [style.width.%]="m.compatibilityBreakdown.income"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.income) }}">
+                      {{ m.compatibilityBreakdown.income }}%
+                    </span>
+                  </div>
+                  }
+
+
+                  @if(m.compatibilityBreakdown.religion !== undefined){
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>psychology</mat-icon><span>Religion</span>
+                    </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.religion) }}"
+                        [style.width.%]="m.compatibilityBreakdown.religion"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.religion) }}">
+                      {{ m.compatibilityBreakdown.religion }}%
+                    </span>
+                  </div>
+                  }
+
+                  @if(m.compatibilityBreakdown.emotional !== undefined){
                   <div class="compat-bar-row">
                     <div class="compat-bar-label">
                       <mat-icon>psychology</mat-icon><span>Emotional</span>
                     </div>
                     <div class="compat-bar-track">
                       <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.emotional) }}"
-                           [style.width.%]="m.compatibilityBreakdown.emotional"></div>
+                        [style.width.%]="m.compatibilityBreakdown.emotional"></div>
                     </div>
                     <span class="compat-score {{ compatClass(m.compatibilityBreakdown.emotional) }}">
                       {{ m.compatibilityBreakdown.emotional }}%
                     </span>
                   </div>
-
+                  }
+              
                   @if (m.compatibilityBreakdown.horoscope !== undefined) {
-                    <div class="compat-bar-row">
-                      <div class="compat-bar-label">
-                        <mat-icon>auto_awesome</mat-icon><span>Horoscope</span>
-                      </div>
-                      <div class="compat-bar-track">
-                        <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.horoscope) }}"
-                             [style.width.%]="m.compatibilityBreakdown.horoscope"></div>
-                      </div>
-                      <span class="compat-score {{ compatClass(m.compatibilityBreakdown.horoscope) }}">
-                        {{ m.compatibilityBreakdown.horoscope }}%
-                      </span>
+                  <div class="compat-bar-row">
+                    <div class="compat-bar-label">
+                      <mat-icon>auto_awesome</mat-icon><span>Horoscope</span>
                     </div>
+                    <div class="compat-bar-track">
+                      <div class="compat-bar-fill {{ compatClass(m.compatibilityBreakdown.horoscope) }}"
+                        [style.width.%]="m.compatibilityBreakdown.horoscope"></div>
+                    </div>
+                    <span class="compat-score {{ compatClass(m.compatibilityBreakdown.horoscope) }}">
+                      {{ m.compatibilityBreakdown.horoscope }}%
+                    </span>
+                  </div>
                   }
                 </div>
               </mat-card-content>

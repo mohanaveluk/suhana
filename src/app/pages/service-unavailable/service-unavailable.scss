@@ -1,0 +1,138 @@
+@use '../not-found/not-found' as *;
+
+// ── Pulse animation for the icon ──────────────────────────────────────────────
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(183, 110, 121, 0.4); }
+  70%  { box-shadow: 0 0 0 14px rgba(183, 110, 121, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(183, 110, 121, 0); }
+}
+
+.error-icon-wrap--pulse {
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+// ── Status banner ─────────────────────────────────────────────────────────────
+.error-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 24px;
+  background: #fff3e0;
+  border: 1px solid #ffb74d;
+  color: #e65100;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.error-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f57c00;
+  flex-shrink: 0;
+  animation: blink 1.4s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+// ── Retry progress ────────────────────────────────────────────────────────────
+.error-retry {
+  width: 100%;
+  margin-bottom: 24px;
+
+  &__checking {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--suhana-text-secondary, #6b5557);
+    height: 44px;
+  }
+
+  &__label {
+    font-size: 0.88rem;
+    color: var(--suhana-text-secondary, #6b5557);
+    margin: 0 0 8px;
+    text-align: center;
+
+    strong { color: var(--suhana-maroon, #800020); }
+  }
+
+  &__bar {
+    width: 100%;
+    height: 6px;
+    background: var(--suhana-rose-gold-lighter, #f0d4d8);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    background: var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
+    border-radius: 3px;
+    transition: width 1s linear;
+  }
+}
+
+// ── Tips ──────────────────────────────────────────────────────────────────────
+.error-tips {
+  width: 100%;
+  text-align: left;
+  background: var(--suhana-ivory-warm, #fdf8f4);
+  border: 1px solid var(--suhana-rose-gold-lighter, #f0d4d8);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--suhana-maroon, #800020);
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+
+    mat-icon { font-size: 1rem; width: 1rem; height: 1rem; color: var(--suhana-rose-gold, #b76e79); }
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: var(--suhana-text-primary, #3d2c2e);
+
+      mat-icon {
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
+        color: #388e3c;
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+
+// ── Extended contact (SLA line) ───────────────────────────────────────────────
+.error-contact__sla {
+  font-size: 0.72rem !important;
+  color: var(--suhana-rose-gold, #b76e79) !important;
+  font-weight: 500 !important;
+}

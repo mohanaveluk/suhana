@@ -23,6 +23,13 @@ export class GalleryService {
     );
   }
 
+  /** Fetch all gallery images for a profile */
+  getProfileGalleryView(profileId: string): Observable<GalleryApiResponse> {
+    return this.http.get<GalleryApiResponse>(
+      `${this.baseUrl}/v1/gallery/profile/view/${profileId}`,
+    );
+  }
+
   /**
    * Upload a single image with per-byte progress reporting.
    * Emits `UploadProgress` events; completes or errors when done.

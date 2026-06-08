@@ -1,0 +1,697 @@
+<div class="edit-profile-page suhana-container">
+
+  <!-- ── Page Header ───────────────────────────────────────────────────────── -->
+  <div class="ep-header">
+    <button mat-icon-button (click)="goBack()" aria-label="Back to admin">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="ep-header__title">
+      <h1><mat-icon style="vertical-align:middle;margin-right:6px;color:var(--suhana-rose-gold)">admin_panel_settings</mat-icon>Edit User Profile</h1>
+      <p>Admin — editing profile for {{ basicForm.value.firstName }} {{ basicForm.value.lastName }}</p>
+    </div>
+  </div>
+
+  <!-- ── Alerts ─────────────────────────────────────────────────────────────── -->
+  @if (saveSuccess()) {
+    <div class="ep-alert ep-alert--success" role="status">
+      <mat-icon>check_circle</mat-icon>
+      <span>Profile saved successfully! Returning to admin panel…</span>
+    </div>
+  }
+  @if (saveError()) {
+    <div class="ep-alert ep-alert--error" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ saveError() }}</span>
+      <button mat-icon-button (click)="saveError.set(null)" aria-label="Dismiss">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" class="ep-loader"></mat-progress-bar>
+  } @else {
+
+  <div class="ep-layout">
+
+    <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+    <aside class="ep-sidebar">
+
+      <!-- Avatar uploader -->
+      <div class="ep-avatar-wrap">
+        <div class="ep-avatar" (click)="fileInput.click()" role="button" aria-label="Change profile photo">
+          @if (avatarPreview() || currentAvatarUrl()) {
+            <img [src]="avatarPreview() ?? currentAvatarUrl()" alt="Profile photo" class="ep-avatar__img" />
+          } @else {
+            <span class="ep-avatar__initials">{{ initials }}</span>
+          }
+          <div class="ep-avatar__overlay">
+            <mat-icon>photo_camera</mat-icon>
+            <span>Change</span>
+          </div>
+        </div>
+
+        @if (avatarFile()) {
+          <div class="ep-avatar__badge">
+            <mat-icon>schedule</mat-icon>
+            <span>Pending upload</span>
+          </div>
+        }
+      </div>
+
+      @if (avatarError()) {
+        <p class="ep-avatar-error">{{ avatarError() }}</p>
+      }
+
+      <!-- Action chips -->
+      <div class="ep-photo-chips">
+        <button mat-stroked-button class="ep-chip ep-chip--upload" (click)="fileInput.click()">
+          <mat-icon>{{ (currentAvatarUrl() || avatarPreview()) ? 'edit' : 'add_a_photo' }}</mat-icon>
+          {{ (currentAvatarUrl() || avatarPreview()) ? 'Change Photo' : 'Upload Photo' }}
+        </button>
+        @if (currentAvatarUrl() || avatarPreview()) {
+          <button mat-stroked-button class="ep-chip ep-chip--remove" (click)="onRemovePhoto()">
+            <mat-icon>delete_outline</mat-icon> Remove
+          </button>
+        }
+        <p class="avatar-hint">JPG, PNG or WebP · Max 2 MB</p>
+      </div>
+
+      <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden
+             (change)="onFileSelected($event)" />
+
+      <mat-divider class="ep-sidebar__divider"></mat-divider>
+
+      <!-- Quick info -->
+      <div class="sidebar-name">
+        @if (basicForm.value.firstName || basicForm.value.lastName) {
+          <div class="ep-info-title">
+            <mat-icon>person</mat-icon>
+            <span>{{ basicForm.value.firstName }} {{ basicForm.value.lastName }}</span>
+          </div>
+        }
+      </div>
+      <div class="sidebar-email">{{ user()?.email }}</div>
+
+      <mat-divider class="ep-sidebar__divider"></mat-divider>
+
+      <!-- Quick-glance contact / profile info -->
+      <div class="ep-sidebar__info">
+        @if (user()?.mobile) {
+          <div class="ep-info-item">
+            <mat-icon>phone</mat-icon>
+            <span>{{ user()?.mobile }}</span>
+          </div>
+        }
+        @if (locationForm.value.city) {
+          <div class="ep-info-item">
+            <mat-icon>location_on</mat-icon>
+            <span>{{ locationForm.value.city }}@if (locationForm.value.state) {, {{ locationForm.value.state }}}</span>
+          </div>
+        }
+        @if (occupationForm.value.title) {
+          <div class="ep-info-item">
+            <mat-icon>work</mat-icon>
+            <span>{{ occupationForm.value.title }}</span>
+          </div>
+        }
+        @if (educationForm.value.level) {
+          <div class="ep-info-item">
+            <mat-icon>school</mat-icon>
+            <span>{{ educationForm.value.level }}</span>
+          </div>
+        }
+        @if (religionForm.value.religion) {
+          <div class="ep-info-item">
+            <mat-icon>temple_hindu</mat-icon>
+            <span>{{ religionForm.value.religion }}</span>
+          </div>
+        }
+      </div>
+
+      <mat-divider class="ep-sidebar__divider"></mat-divider>
+
+      <!-- Membership (read-only display) -->
+      <div class="ep-membership">
+        <div class="ep-membership__pill ep-membership__pill--{{ user()?.membership || 'free' }}">
+          <mat-icon class="ep-membership__icon">{{ membershipIcon(user()?.membership || 'free') }}</mat-icon>
+          <span>{{ (user()?.membership || 'free') | titlecase }} Member</span>
+        </div>
+      </div>
+
+      <mat-divider class="ep-sidebar__divider"></mat-divider>
+
+      <!-- Sidebar save -->
+      <button mat-raised-button class="suhana-btn-primary ep-sidebar__save"
+              [disabled]="isSaving()" (click)="saveAll()">
+        @if (isSaving()) {
+          <ng-container><mat-icon>hourglass_empty</mat-icon> Saving...</ng-container>
+        } @else {
+          <ng-container><mat-icon>save</mat-icon> Save All Changes</ng-container>
+        }
+      </button>
+    </aside>
+
+    <!-- ── Main content ────────────────────────────────────────────────────── -->
+    <div class="ep-main">
+      <mat-accordion multi class="ep-accordion">
+
+        <!-- ══ 1. Basic Information ══════════════════════════════════════════ -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>person</mat-icon> Basic Information
+            </mat-panel-title>
+            <mat-panel-description>Name, date of birth, height &amp; about you</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="basicForm" class="ep-form">
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName" />
+                @if (basicForm.controls.firstName.invalid && basicForm.controls.firstName.touched) {
+                  <mat-error>Required (min 2 chars)</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName" />
+                @if (basicForm.controls.lastName.invalid && basicForm.controls.lastName.touched) {
+                  <mat-error>Required (min 2 chars)</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Date of Birth</mat-label>
+                <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
+                <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+                <mat-datepicker #dobPicker></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Height</mat-label>
+                <mat-select formControlName="height">
+                  @for (h of heights; track h) { <mat-option [value]="h">{{ h }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Weight (kg) — Optional</mat-label>
+                <input matInput formControlName="weight" placeholder="e.g. 65" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Complexion</mat-label>
+                <mat-select formControlName="complexion">
+                  <mat-option value="">Prefer not to say</mat-option>
+                  @for (c of complexions; track c) { <mat-option [value]="c">{{ c }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>About Me</mat-label>
+              <textarea matInput formControlName="aboutMe" rows="4"
+                placeholder="Tell potential matches about yourself…"></textarea>
+              <mat-hint>Minimum 20 characters</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Video Introduction URL — Optional</mat-label>
+              <input matInput formControlName="videoIntroUrl" placeholder="https://youtube.com/…" />
+              <mat-icon matPrefix>videocam</mat-icon>
+            </mat-form-field>
+          </form>
+        </mat-expansion-panel>
+
+        <!-- ══ 2. Religion & Culture ════════════════════════════════════════ -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>temple_hindu</mat-icon> Religion &amp; Culture
+            </mat-panel-title>
+            <mat-panel-description>Religion, caste &amp; mother tongue</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="religionForm" class="ep-form">
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Religion</mat-label>
+                <mat-select formControlName="religion">
+                  @for (r of religions; track r) { <mat-option [value]="r">{{ r }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Caste — Optional</mat-label>
+                <input matInput formControlName="caste" />
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mother Tongue</mat-label>
+              <input matInput formControlName="motherTongue" placeholder="e.g. Hindi, Tamil…" />
+            </mat-form-field>
+          </form>
+        </mat-expansion-panel>
+
+        <!-- ══ 3. Location ══════════════════════════════════════════════════ -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>location_on</mat-icon> Location
+            </mat-panel-title>
+            <mat-panel-description>City, state, country &amp; relocation preference</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="locationForm" class="ep-form">
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>City</mat-label>
+                <input matInput formControlName="city" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>State</mat-label>
+                <input matInput formControlName="state" />
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Country</mat-label>
+                <input matInput formControlName="country" />
+              </mat-form-field>
+              <div class="ep-toggle-field">
+                <mat-slide-toggle formControlName="willingToRelocate" color="primary">
+                  Willing to Relocate
+                </mat-slide-toggle>
+              </div>
+            </div>
+          </form>
+        </mat-expansion-panel>
+
+        <!-- ══ 4. Education ════════════════════════════════════════════════ -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>school</mat-icon> Education
+            </mat-panel-title>
+            <mat-panel-description>Highest qualification &amp; field of study</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="educationForm" class="ep-form">
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Education Level</mat-label>
+                <mat-select formControlName="level">
+                  @for (e of educationLevels; track e) { <mat-option [value]="e">{{ e }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Field of Study</mat-label>
+                <input matInput formControlName="field" placeholder="e.g. Computer Science" />
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Institution — Optional</mat-label>
+              <input matInput formControlName="institution" placeholder="e.g. IIT Delhi" />
+              <mat-icon matPrefix>account_balance</mat-icon>
+            </mat-form-field>
+          </form>
+        </mat-expansion-panel>
+
+        <!-- ══ 5. Occupation ═══════════════════════════════════════════════ -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>work</mat-icon> Occupation
+            </mat-panel-title>
+            <mat-panel-description>Job title, company &amp; income</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="occupationForm" class="ep-form">
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Job Title</mat-label>
+                <mat-select formControlName="title">
+                  @for (o of occupationList; track o) { <mat-option [value]="o">{{ o }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Working Status</mat-label>
+                <mat-select formControlName="workingStatus">
+                  @for (w of workingStatuses; track w) { <mat-option [value]="w">{{ w }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Company — Optional</mat-label>
+                <input matInput formControlName="company" />
+                <mat-icon matPrefix>business</mat-icon>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Annual Income — Optional</mat-label>
+                <input matInput formControlName="annualIncome" placeholder="e.g. 12 LPA" />
+                <mat-icon matPrefix>currency_rupee</mat-icon>
+              </mat-form-field>
+            </div>
+          </form>
+        </mat-expansion-panel>
+
+        <!-- ══ 6. Family Details ═══════════════════════════════════════════ -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>family_restroom</mat-icon> Family Details
+            </mat-panel-title>
+            <mat-panel-description>Family background &amp; values</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="familyForm" class="ep-form">
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Family Type</mat-label>
+                <mat-select formControlName="familyType">
+                  <mat-option value="nuclear">Nuclear</mat-option>
+                  <mat-option value="joint">Joint</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Number of Siblings</mat-label>
+                <input matInput type="number" formControlName="siblings" min="0" max="10" />
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Father's Occupation — Optional</mat-label>
+                <input matInput formControlName="fatherOccupation" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Mother's Occupation — Optional</mat-label>
+                <input matInput formControlName="motherOccupation" />
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Family Values — Optional</mat-label>
+              <input matInput formControlName="familyValues" placeholder="e.g. Traditional with modern outlook" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Family Preference Note — Optional</mat-label>
+              <textarea matInput formControlName="familyPreferenceNote" rows="3"
+                placeholder="Any notes about family for potential matches…"></textarea>
+            </mat-form-field>
+          </form>
+        </mat-expansion-panel>
+
+        <!-- ══ 7. Horoscope ════════════════════════════════════════════════ -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>auto_awesome</mat-icon> Horoscope Details
+            </mat-panel-title>
+            <mat-panel-description>Rashi, nakshatra &amp; manglik status</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="horoscopeForm" class="ep-form">
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Date of Birth (Horoscope)</mat-label>
+                <input matInput [matDatepicker]="horoPicker" formControlName="dateOfBirth" />
+                <mat-datepicker-toggle matSuffix [for]="horoPicker"></mat-datepicker-toggle>
+                <mat-datepicker #horoPicker></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Time of Birth — Optional</mat-label>
+                <input matInput formControlName="timeOfBirth" placeholder="e.g. 10:30 AM" />
+                <mat-icon matPrefix>schedule</mat-icon>
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Place of Birth — Optional</mat-label>
+                <input matInput formControlName="placeOfBirth" />
+                <mat-icon matPrefix>place</mat-icon>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Manglik Status</mat-label>
+                <mat-select formControlName="manglikStatus">
+                  <mat-option value="">Not specified</mat-option>
+                  @for (m of manglikOptions; track m) { <mat-option [value]="m">{{ m }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Rashi (Moon Sign)</mat-label>
+                <mat-select formControlName="rashi">
+                  <mat-option value="">Not specified</mat-option>
+                  @for (r of rashiList; track r) { <mat-option [value]="r">{{ r }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Nakshatra (Birth Star)</mat-label>
+                <mat-select formControlName="nakshatra">
+                  <mat-option value="">Not specified</mat-option>
+                  @for (n of nakshatraList; track n) { <mat-option [value]="n">{{ n }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <!-- Horoscope document upload -->
+            <div class="ep-horo-upload__label">
+              <mat-icon>description</mat-icon>
+              <span>Horoscope Document <span class="ep-horo-upload__optional">(Optional)</span></span>
+            </div>
+
+            @if (horoscopeDocName() || horoscopeDocUrl()) {
+              @if (!showRemoveHoroscopeConfirm()) {
+                <div class="ep-horo-doc-card">
+                  <div class="ep-horo-doc-card__top">
+                    <div class="ep-horo-doc-card__icon-wrap">
+                      <mat-icon class="ep-horo-doc-card__icon">
+                        {{ horoscopeDocUrl() ? horoscopeDocIcon(horoscopeDocUrl()!) : (horoscopeDocName()?.endsWith('.pdf') ? 'picture_as_pdf' : 'image') }}
+                      </mat-icon>
+                    </div>
+                    <div class="ep-horo-doc-card__info">
+                      <span class="ep-horo-doc-card__title">Horoscope Document</span>
+                      <span class="ep-horo-doc-card__meta">
+                        @if (horoscopeDocUrl()) {
+                          <span class="ep-horo-doc-card__badge">{{ horoscopeDocBadge(horoscopeDocUrl()!) }}</span>
+                        }
+                        <span class="ep-horo-doc-card__name">{{ horoscopeDocName() }}</span>
+                        @if (isUploadingHoroscopeDoc()) {
+                          <mat-spinner diameter="14"></mat-spinner>
+                        } @else if (horoscopeDocUrl()) {
+                          <mat-icon class="ep-horo-doc-card__check">check_circle</mat-icon>
+                        }
+                      </span>
+                    </div>
+                    @if (horoscopeDocUrl()) {
+                      <a class="ep-horo-doc-card__view-btn"
+                         [href]="horoscopeDocUrl()" target="_blank" rel="noopener noreferrer"
+                         matTooltip="Open document in new tab">
+                        <mat-icon>open_in_new</mat-icon> View
+                      </a>
+                    }
+                  </div>
+                  <mat-divider class="ep-horo-doc-card__divider"></mat-divider>
+                  <div class="ep-horo-doc-card__actions">
+                    <label class="ep-horo-doc-card__replace-link" matTooltip="Choose a different file">
+                      <mat-icon>swap_horiz</mat-icon> Replace
+                      <input type="file" hidden accept="application/pdf,image/jpeg,image/png,image/webp"
+                        (change)="onHoroscopeDocSelected($event)" />
+                    </label>
+                    <button class="ep-horo-doc-card__remove-btn" (click)="removeHoroscopeDoc()"
+                      matTooltip="Remove this document">
+                      <mat-icon>delete_outline</mat-icon> Remove
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div class="ep-horo-remove-confirm">
+                  <mat-icon class="ep-horo-remove-confirm__icon">warning_amber</mat-icon>
+                  <div class="ep-horo-remove-confirm__body">
+                    <p class="ep-horo-remove-confirm__question">Remove horoscope document?</p>
+                    <p class="ep-horo-remove-confirm__sub">The document will be permanently unlinked from this profile.</p>
+                  </div>
+                  <div class="ep-horo-remove-confirm__btns">
+                    <button mat-stroked-button (click)="cancelRemoveHoroscopeDoc()">Cancel</button>
+                    <button mat-flat-button color="warn" (click)="confirmRemoveHoroscopeDoc()">
+                      <mat-icon>delete</mat-icon> Yes, Remove
+                    </button>
+                  </div>
+                </div>
+              }
+            } @else {
+              <div class="ep-horo-upload__zone"
+                [class.ep-horo-upload__zone--active]="isDragOverHoroscope()"
+                (dragover)="onHoroscopeDragOver($event)"
+                (dragleave)="onHoroscopeDragLeave()"
+                (drop)="onHoroscopeDrop($event)">
+                <mat-icon class="ep-horo-upload__zone-icon">cloud_upload</mat-icon>
+                <p class="ep-horo-upload__zone-text">Drag &amp; drop horoscope here</p>
+                <p class="ep-horo-upload__zone-sub">PDF, JPG, PNG or WebP &bull; Max 10 MB</p>
+                <label mat-stroked-button class="ep-chip ep-chip--upload">
+                  <mat-icon>attach_file</mat-icon> Choose File
+                  <input type="file" hidden [accept]="'application/pdf,image/jpeg,image/png,image/webp'"
+                    (change)="onHoroscopeDocSelected($event)" />
+                </label>
+              </div>
+            }
+
+            @if (horoscopeDocError()) {
+              <p class="ep-horo-upload__error">
+                <mat-icon>error_outline</mat-icon> {{ horoscopeDocError() }}
+              </p>
+            }
+          </form>
+        </mat-expansion-panel>
+
+        <!-- ══ 8. Partner Preferences ══════════════════════════════════════ -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>favorite_border</mat-icon> Partner Preferences
+            </mat-panel-title>
+            <mat-panel-description>Age, height, religion, location &amp; more</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="preferencesForm" class="ep-form">
+            <p class="ep-section-label">Age Range</p>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Min Age</mat-label>
+                <input matInput type="number" formControlName="ageMin" min="18" max="70" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Max Age</mat-label>
+                <input matInput type="number" formControlName="ageMax" min="18" max="70" />
+              </mat-form-field>
+            </div>
+
+            <p class="ep-section-label">Height Range — Optional</p>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Min Height</mat-label>
+                <mat-select formControlName="heightMin">
+                  <mat-option value="">Any</mat-option>
+                  @for (h of heights; track h) { <mat-option [value]="h">{{ h }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Max Height</mat-label>
+                <mat-select formControlName="heightMax">
+                  <mat-option value="">Any</mat-option>
+                  @for (h of heights; track h) { <mat-option [value]="h">{{ h }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Preferred Religions</mat-label>
+                <mat-select formControlName="religions" multiple>
+                  @for (r of religions; track r) { <mat-option [value]="r">{{ r }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Preferred Education</mat-label>
+                <mat-select formControlName="education" multiple>
+                  @for (e of educationLevels; track e) { <mat-option [value]="e">{{ e }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Preferred Occupations</mat-label>
+                <mat-select formControlName="occupations" multiple>
+                  @for (o of occupationList; track o) { <mat-option [value]="o">{{ o }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Preferred Locations</mat-label>
+                <mat-select formControlName="locations" multiple>
+                  @for (c of cities; track c) { <mat-option [value]="c">{{ c }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Food Preference</mat-label>
+                <mat-select formControlName="foodPreference">
+                  <mat-option value="">No preference</mat-option>
+                  @for (f of foodPreferenceOptions; track f.value) {
+                    <mat-option [value]="f.value">{{ f.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Preferred Family Type</mat-label>
+                <mat-select formControlName="familyType">
+                  <mat-option value="">No preference</mat-option>
+                  <mat-option value="nuclear">Nuclear</mat-option>
+                  <mat-option value="joint">Joint</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </form>
+        </mat-expansion-panel>
+
+        <!-- ══ 9. Photos & Privacy ═════════════════════════════════════════ -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="ep-panel-title">
+              <mat-icon>lock</mat-icon> Photos &amp; Privacy
+            </mat-panel-title>
+            <mat-panel-description>Who can see photos and profile status</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="privacyForm" class="ep-form">
+            <p class="ep-section-label">Photo Privacy</p>
+            <mat-radio-group formControlName="photoPrivacy" class="ep-radio-group">
+              @for (opt of photoPrivacyOptions; track opt.value) {
+                <mat-radio-button [value]="opt.value" color="primary" class="ep-radio-btn">
+                  <div class="ep-radio-content">
+                    <mat-icon>{{ opt.icon }}</mat-icon>
+                    <span>{{ opt.label }}</span>
+                  </div>
+                </mat-radio-button>
+              }
+            </mat-radio-group>
+
+            <mat-divider class="ep-divider"></mat-divider>
+
+            <p class="ep-section-label">Profile Status</p>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="status">
+                @for (s of profileStatusOptions; track s.value) {
+                  <mat-option [value]="s.value">{{ s.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </form>
+        </mat-expansion-panel>
+
+      </mat-accordion>
+
+      <!-- ── Footer ────────────────────────────────────────────────────── -->
+      <div class="ep-footer">
+        <button mat-stroked-button (click)="goBack()">Cancel</button>
+        <button mat-raised-button class="suhana-btn-primary" [disabled]="isSaving()" (click)="saveAll()">
+          @if (isSaving()) {
+            Saving...
+          } @else {
+            <ng-container><mat-icon>save</mat-icon> Save All Changes</ng-container>
+          }
+        </button>
+      </div>
+    </div><!-- /ep-main -->
+
+  </div><!-- /ep-layout -->
+
+  } <!-- end @else isLoading -->
+</div>

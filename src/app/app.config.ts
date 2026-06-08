@@ -5,12 +5,14 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { httpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    // httpErrorInterceptor must be outermost so authInterceptor (inner) handles 401 refresh first
+    provideHttpClient(withInterceptors([httpErrorInterceptor, authInterceptor])),
   ]
 };

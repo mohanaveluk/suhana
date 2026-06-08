@@ -762,6 +762,24 @@
                         }
 
                       </div>
+                @if (p.horoscope.documentUrl) {
+                  <a class="horo-doc-card" [href]="p.horoscope.documentUrl"
+                     target="_blank" rel="noopener noreferrer">
+                    <div class="horo-doc-card__icon-wrap">
+                      <mat-icon class="horo-doc-card__icon">{{ horoscopeDocIcon(p.horoscope.documentUrl) }}</mat-icon>
+                    </div>
+                    <div class="horo-doc-card__info">
+                      <span class="horo-doc-card__title">Horoscope Document</span>
+                      <span class="horo-doc-card__meta">
+                        <span class="horo-doc-card__badge">{{ horoscopeDocBadge(p.horoscope.documentUrl) }}</span>
+                        <span class="horo-doc-card__name">{{ horoscopeDocFileName(p.horoscope.documentUrl) }}</span>
+                      </span>
+                    </div>
+                    <span class="horo-doc-card__btn">
+                      <mat-icon>open_in_new</mat-icon> Open Document
+                    </span>
+                  </a>
+                }                      
                     </mat-card-content>
                   </mat-card>
                 </div>

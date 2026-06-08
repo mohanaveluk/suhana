@@ -37,6 +37,18 @@ export const routes: Routes = [
   {
     // Detailed profile view for any profile by ID (distinct from the user's own /profile)
     path: 'profile-view/:id',
+    data: {
+      profileType: 'profile'
+    },
+    loadComponent: () =>
+      import('./pages/profile-view/profile-view.component').then(m => m.ProfileViewComponent),
+  },
+  {
+    // Detailed profile view for any profile by ID (distinct from the user's own /profile)
+    path: 'view/:id',
+    data: {
+      profileType: 'view'
+    },
     loadComponent: () =>
       import('./pages/profile-view/profile-view.component').then(m => m.ProfileViewComponent),
   },
@@ -70,6 +82,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/admin').then(m => m.AdminComponent),
   },
   {
+    path: 'admin/edit-profile/:id',
+    loadComponent: () =>
+      import('./pages/admin-edit-profile/admin-edit-profile').then(m => m.AdminEditProfileComponent),
+  },
+  {
     path: 'premium',
     loadComponent: () => import('./pages/premium/premium').then(m => m.PremiumComponent),
   },
@@ -92,6 +109,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/gallery/gallery-management.component').then(m => m.GalleryManagementComponent),
   },
+  {
+    path: 'service-unavailable',
+    loadComponent: () =>
+      import('./pages/service-unavailable/service-unavailable').then(m => m.ServiceUnavailableComponent),
+  },
   { path: 'auth/verifyemail/:userGuid/:verificationCode', component: VerifyEmailComponent },
   {
     path: 'horoscope-match/:matchUserId',
@@ -105,7 +127,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/about-us/about-us.component').then(m => m.AboutUsComponent),
   },
   {
+    path: 'contact',
+    loadComponent: () =>
+      import('./pages/contact/contact.component').then(m => m.ContactComponent),
+  },
+  {
     path: '**',
-    redirectTo: '',
+    loadComponent: () =>
+      import('./pages/not-found/not-found').then(m => m.NotFoundComponent),
   },
 ];

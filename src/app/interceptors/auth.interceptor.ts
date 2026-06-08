@@ -8,7 +8,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, filter, switchMap, take } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 
-const TOKEN_KEY = 'suhana_token';
+const TOKEN_KEY   = 'suhana_token';
 const REFRESH_KEY = 'refresh_token';
 
 let isRefreshing = false;
@@ -19,7 +19,24 @@ function addAuthHeader(req: HttpRequest<unknown>, token: string | null): HttpReq
 }
 
 function isPublicRoute(url: string): boolean {
-  return (url.includes('/v1/auth/') || url.includes('/v1/token/refresh')) && !url.includes('/v1/auth/update-password-legacy');
+  return (
+    (url.includes('/v1/auth/') || url.includes('/v1/token/refresh') || url.includes('/v1/health')) &&
+    !url.includes('/v1/auth/update-password-legacy')
+  );
+}
+
+function isTokenExpiredError(error: HttpErrorResponse): boolean {
+  // Treat any 401 as needing a token refresh
+  return error.status === 401;
+}
+
+function clearSession(router: Router): void {
+  isRefreshing = false;
+  refreshTokenSubject.next(null);
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(REFRESH_KEY);
+  localStorage.removeItem('suhana_user');
+  router.navigate(['/login']);
 }
 
 function handle401(
@@ -28,6 +45,7 @@ function handle401(
   api: ApiService,
   router: Router,
 ): Observable<HttpEvent<unknown>> {
+  // If a refresh is already in flight, queue this request until the new token arrives
   if (isRefreshing) {
     return refreshTokenSubject.pipe(
       filter((token): token is string => token !== null),
@@ -36,38 +54,33 @@ function handle401(
     );
   }
 
-  isRefreshing = true;
-  refreshTokenSubject.next(null);
-
   const storedRefreshToken = localStorage.getItem(REFRESH_KEY);
   if (!storedRefreshToken) {
-    isRefreshing = false;
-    router.navigate(['/login']);
+    clearSession(router);
     return throwError(() => new Error('Session expired. Please log in again.'));
   }
+
+  isRefreshing = true;
+  refreshTokenSubject.next(null);
 
   return api.refreshToken(storedRefreshToken).pipe(
     switchMap(res => {
       isRefreshing = false;
-      localStorage.setItem(TOKEN_KEY, res.access_token);
-      refreshTokenSubject.next(res.access_token);
-      return next(addAuthHeader(req, res.access_token));
+      const newToken: string = res.access_token;
+      localStorage.setItem(TOKEN_KEY, newToken);
+      refreshTokenSubject.next(newToken);
+      // Retry the original request with the fresh token
+      return next(addAuthHeader(req, newToken));
     }),
     catchError(err => {
-      isRefreshing = false;
-      refreshTokenSubject.next(null);
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(REFRESH_KEY);
-      localStorage.removeItem('suhana_user');
-      localStorage.removeItem('refresh_token');
-      router.navigate(['/login']);
+      clearSession(router);
       return throwError(() => err);
     }),
   );
 }
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const api = inject(ApiService);
+  const api    = inject(ApiService);
   const router = inject(Router);
 
   if (isPublicRoute(req.url)) {
@@ -76,8 +89,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const token = localStorage.getItem(TOKEN_KEY);
   return next(addAuthHeader(req, token)).pipe(
-    catchError(error => {
-      if (error instanceof HttpErrorResponse && error.status === 401) {
+    catchError((error: HttpErrorResponse) => {
+      if (error instanceof HttpErrorResponse && isTokenExpiredError(error)) {
         return handle401(req, next, api, router);
       }
       return throwError(() => error);

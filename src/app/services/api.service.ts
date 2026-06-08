@@ -9,6 +9,10 @@ export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
 
+  healthCheck(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/health`, { responseType: 'text' as const });
+  }
+
   // Auth
   register(data: {
     firstName: string;
@@ -78,6 +82,11 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/v1/profiles/${id}`);
   }
 
+  
+  getProfileByCode(code: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/profiles/code/${code}`);
+  }
+
   updateNewProfile(data: UserProfile): Observable<any> {
     return this.http.patch(`${this.baseUrl}/v1/profiles/new`, data);
   }
@@ -92,10 +101,22 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/v1/profiles/profile/image`, formData);
   }
 
+  uploadAdmxPhoto(id: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post(`${this.baseUrl}/v1/profiles/profile/admx/image/${id}`, formData);
+  }
+
   uploadHoroscopeDoc(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file, file.name);
     return this.http.post(`${this.baseUrl}/v1/profiles/horoscope/document`, formData);
+  }
+
+  uploadHoroscopeDocAdmx(id: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post(`${this.baseUrl}/v1/profiles/horoscope/admx/document/${id}`, formData);
   }
 
   addPhoto(url: string, isPrimary = false): Observable<any> {
@@ -269,11 +290,11 @@ export class ApiService {
   }
 
   blockUser(userId: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/v1/users/${userId}/block`, {});
+    return this.http.post(`${this.baseUrl}/v1/user/${userId}/block`, {});
   }
 
   reportUser(userId: string, reason: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/v1/users/${userId}/report`, { reason });
+    return this.http.post(`${this.baseUrl}/v1/user/${userId}/report`, { reason });
   }
 
   // Premium
@@ -351,4 +372,23 @@ export class ApiService {
   deleteUser(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/v1/users/${id}`);
   }
+
+  //admin - profile management
+  adminUpdateProfile(userId: string, data: Partial<UserProfile>): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/admin/users/${userId}/profile`, data);
+  }
+
+  getProfileByIdAdmx(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/profiles/admx/${id}`);
+  }
+
+  updateNewProfileAdmx(id: string, data: UserProfile): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/profiles/admx/${id}`, data);
+  }
+
+  // Contact
+  createContact(data: { firstName: string; lastName: string; email: string; mobile?: string; message: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/contact`, data);
+  }
+
 }

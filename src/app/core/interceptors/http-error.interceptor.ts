@@ -1,22 +1,28 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 
+const SERVICE_DOWN_STATUSES = new Set([0, 503, 504]);
+
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
+  const router = inject(Router);
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      let errorMsg = '';
-      if (error.error instanceof ErrorEvent) {
-        // Client-side error
-        errorMsg = `Error: ${error.error.message}`;
-      } else if (error.error instanceof Object) {
-        errorMsg = error.error.message || error.message || 'An error occurred';
+      if (SERVICE_DOWN_STATUSES.has(error.status)) {
+        if (!router.url.startsWith('/service-unavailable')) {
+          router.navigate(['/service-unavailable']);
+        }
       } else {
-        // Server-side error
-        errorMsg = `Error Code: ${error.status},  Message: ${error.message}`;
+        // Log for diagnostics — preserve original error so callers can inspect status/body
+        const msg =
+          error.error?.message ?? error.message ?? `HTTP ${error.status}`;
+        console.error(`[HTTP] ${error.status}: ${msg}`);
       }
-      console.error(errorMsg);
-      // Re-throw the error to be caught by the subscription's error block
-      return throwError(() => new Error(errorMsg));
+      // Always re-throw the original HttpErrorResponse so authInterceptor
+      // and individual components can still check error.status and error.error
+      return throwError(() => error);
     })
   );
 };

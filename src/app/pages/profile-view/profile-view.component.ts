@@ -51,6 +51,7 @@ export class ProfileViewComponent implements OnInit {
   protected readonly matchedDetail = signal<MatchResult | undefined>(undefined);
   protected readonly gallery        = signal<GalleryImage[]>([]);
   protected readonly activeTabIdx  = signal(0);
+  protected readonly profileType = signal<'profile' | 'view'>(this.route.snapshot.data['profileType'] === 'view' ? 'view' : 'profile');
 
   // ── Derived ──────────────────────────────────────────────────────────────
   protected readonly primaryPhoto = computed<string>(() => {
@@ -82,32 +83,42 @@ export class ProfileViewComponent implements OnInit {
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    const routePath = this.route.routeConfig?.path?.includes('/') ? this.route.routeConfig?.path?.split('/:')[0] : 'profile-view';
     if (!id) {
       this.error.set('No profile ID provided.');
       this.isLoading.set(false);
       return;
     }
-    void this.loadProfile(id);
+    void this.loadProfile(id, routePath);
   }
 
-  private async loadProfile(id: string): Promise<void> {
+  private async loadProfile(id: string, routePath: string = 'profile-view'): Promise<void> {
     try {
-      const profile = await this.profileSvc.getProfileById(id);
+      const profile = await this.profileSvc.getProfileById(id, routePath);
       this.profile.set(profile);
-      const matchedDetail = await this.matchSvc.getMatchByUserId(profile.user?.id ?? '');
-      this.matchedDetail.set(matchedDetail);
 
-      await this.interestService.loadInterests();
+      if (this.profileType() === 'profile') {
+        const matchedDetail = await this.matchSvc.getMatchByUserId(profile.user?.id ?? '');
+        this.matchedDetail.set(matchedDetail);
 
-      const interestSentDetail = this.interestService.getSentStatus(profile.user?.id ?? '');
-      this.interestSent.set(interestSentDetail?.status === 'pending' || interestSentDetail?.status === 'accepted');
-      // this.interestSent.set(matchedDetail?.status === 'interested' || matchedDetail?.status === 'connected');
-      this.isShortlisted.set(matchedDetail?.status === 'shortlisted');
+        await this.interestService.loadInterests();
 
-      //get gallery to check if any photos are verified
+        const interestSentDetail = this.interestService.getSentStatus(profile.user?.id ?? '');
+        this.interestSent.set(interestSentDetail?.status === 'pending' || interestSentDetail?.status === 'accepted');
+        // this.interestSent.set(matchedDetail?.status === 'interested' || matchedDetail?.status === 'connected');
+        this.isShortlisted.set(matchedDetail?.status === 'shortlisted');
 
-      const res = await firstValueFrom(this.gallerySvc.getProfileGallery(profile.userId));
-      this.gallery.set(res?.data ?? []);
+        //get gallery to check if any photos are verified
+
+        const res = await firstValueFrom(this.gallerySvc.getProfileGallery(profile.userId));
+        this.gallery.set(res?.data ?? []);
+      }
+      else {
+        this.interestSent.set(false);
+        this.isShortlisted.set(false);
+        const res = await firstValueFrom(this.gallerySvc.getProfileGalleryView(profile.userId));
+        this.gallery.set(res?.data ?? []);
+      }
 
     } catch {
       this.error.set('Unable to load this profile. Please try again.');
@@ -124,6 +135,12 @@ export class ProfileViewComponent implements OnInit {
     const isSelf = this.isSelf();
     if (isSelf) {
       this.snackBar.open('You cannot send interest to your own profile.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    if(this.profileType() === 'view') {
+      this.snackBar.open('You cannot send interest from a view-only profile.', 'OK', { duration: 3000 });
+      this.router.navigateByUrl('/login');
       return;
     }
 
@@ -188,8 +205,20 @@ export class ProfileViewComponent implements OnInit {
   }
 
 
-  protected reportProfile(): void {
-    this.snackBar.open('Report submitted. Our team will review it shortly.', 'OK', {
+  protected async reportProfile(): Promise<void> {
+    if(this.profileType() === 'view') {
+      this.snackBar.open('You cannot report this profile from a view-only profile.', 'OK', { duration: 3000 });
+      //this.router.navigateByUrl('/login');
+      return;
+    }    
+
+    const res = await this.profileSvc.reportProfile(this.profile()?.user?.id ?? '', 'Inappropriate content');
+    if (!res) {
+      this.snackBar.open('Unable to report this profile. Please try again.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    this.snackBar.open( res || 'Report submitted. Our team will review it shortly.', 'OK', {
       duration: 4000,
     });
   }
@@ -249,4 +278,21 @@ export class ProfileViewComponent implements OnInit {
     if (pct >= 50) return '#ff9800';
     return '#f44336';
   }
+
+  protected horoscopeDocIcon(url: string): string {
+    const ext = url.split('?')[0].split('.').pop()?.toLowerCase() ?? '';
+    if (ext === 'pdf') return 'picture_as_pdf';
+    if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'].includes(ext)) return 'image';
+    return 'description';
+  }
+
+  protected horoscopeDocBadge(url: string): string {
+    return url.split('?')[0].split('.').pop()?.toUpperCase() ?? 'DOC';
+  }
+
+  protected horoscopeDocFileName(url: string): string {
+    return decodeURIComponent(url.split('?')[0].split('/').pop() ?? 'document');
+  }  
+
+
 }

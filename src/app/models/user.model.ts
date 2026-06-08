@@ -235,6 +235,8 @@ export interface AdminStats {
   reportedProfiles: number;
   premiumUsers: number;
   newRegistrationsToday: number;
+  pendingProfiles?: number;
+  blockedProfiles?: number;
 }
 
 export interface BannerSlide {

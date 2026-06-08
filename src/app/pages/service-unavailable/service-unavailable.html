@@ -1,0 +1,121 @@
+<div class="error-page">
+
+  <div class="error-card">
+
+    <div class="error-card__band"></div>
+
+    <div class="error-card__body">
+
+      <!-- Icon -->
+      <div class="error-icon-wrap error-icon-wrap--pulse">
+        <mat-icon class="error-icon">cloud_off</mat-icon>
+      </div>
+      <div class="error-code">503</div>
+      <h1 class="error-title">Service Temporarily Unavailable</h1>
+      <p class="error-desc">
+        We're currently experiencing technical difficulties and our services are temporarily
+        unavailable. Our engineering team has been notified and is working to restore service
+        as quickly as possible. We apologize for the inconvenience.
+      </p>
+
+      <!-- Status indicator -->
+      <div class="error-status-banner">
+        <span class="error-status-dot"></span>
+        <span>Incident in progress — engineers are actively investigating</span>
+      </div>
+
+      <!-- Retry section -->
+      <div class="error-retry">
+        @if (isChecking()) {
+          <div class="error-retry__checking">
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Checking service status…</span>
+          </div>
+        } @else {
+          <p class="error-retry__label">
+            Automatically retrying in <strong>{{ countdown() }}s</strong>
+          </p>
+          <div class="error-retry__bar">
+            <div class="error-retry__fill" [style.width.%]="((30 - countdown()) / 30) * 100"></div>
+          </div>
+        }
+      </div>
+
+      <!-- Actions -->
+      <div class="error-actions">
+        <button mat-raised-button class="suhana-btn-primary" (click)="retryNow()" [disabled]="isChecking()">
+          <mat-icon>refresh</mat-icon> Try Again Now
+        </button>
+        <button mat-stroked-button class="error-btn-outline" (click)="goHome()">
+          <mat-icon>home</mat-icon> Go to Home
+        </button>
+      </div>
+
+      <!-- What to do -->
+      <div class="error-tips">
+        <p class="error-tips__heading"><mat-icon>lightbulb_outline</mat-icon> While you wait</p>
+        <ul class="error-tips__list">
+          <li><mat-icon>check_circle_outline</mat-icon> Check your internet connection</li>
+          <li><mat-icon>check_circle_outline</mat-icon> Try refreshing the page in a few minutes</li>
+          <li><mat-icon>check_circle_outline</mat-icon> Clear your browser cache if the issue persists</li>
+          <li><mat-icon>check_circle_outline</mat-icon> Contact our support team if the problem continues</li>
+        </ul>
+      </div>
+
+      <mat-divider class="error-divider"></mat-divider>
+
+      <!-- Contact -->
+      <div class="error-contact">
+        <p class="error-contact__heading">
+          <mat-icon>support_agent</mat-icon> Contact Support
+        </p>
+        <div class="error-contact__grid">
+          <a class="error-contact__item" href="mailto:support@suhanamatch.com">
+            <mat-icon>email</mat-icon>
+            <span>
+              <strong>Email Support</strong>
+              <span>support&#64;suhanamatch.com</span>
+              <span class="error-contact__sla">Response within 2 hours</span>
+            </span>
+          </a>
+          <a class="error-contact__item" href="tel:18001237842">
+            <mat-icon>phone_in_talk</mat-icon>
+            <span>
+              <strong>Customer Care</strong>
+              <span>1800-123-7842 (Toll-Free)</span>
+              <span class="error-contact__sla">Mon – Sat, 9 AM – 6 PM IST</span>
+            </span>
+          </a>
+          <a class="error-contact__item" href="https://wa.me/911234567890" target="_blank" rel="noopener">
+            <mat-icon>chat</mat-icon>
+            <span>
+              <strong>WhatsApp Support</strong>
+              <span>+91 12345 67890</span>
+              <span class="error-contact__sla">Quick response</span>
+            </span>
+          </a>
+          <a class="error-contact__item" href="mailto:urgent@suhanamatch.com">
+            <mat-icon>priority_high</mat-icon>
+            <span>
+              <strong>Urgent Issues</strong>
+              <span>urgent&#64;suhanamatch.com</span>
+              <span class="error-contact__sla">Monitored 24/7</span>
+            </span>
+          </a>
+        </div>
+        <p class="error-contact__hours">
+          <mat-icon>schedule</mat-icon>
+          Business hours: Mon – Sat, 9:00 AM – 6:00 PM IST
+        </p>
+      </div>
+
+    </div>
+
+    <div class="error-card__footer">
+      <span>Error Code: 503 &nbsp;·&nbsp; Service Unavailable</span>
+      <span>Suhana Matrimony &copy; {{ year }}</span>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,405 @@
+<div class="contact-page">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       1. HERO SECTION
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="cu-hero" aria-labelledby="contact-hero-title">
+
+    <!-- Decorative background circles -->
+    <div class="cu-hero__decor" aria-hidden="true">
+      <span class="cu-hero__circle cu-hero__circle--1"></span>
+      <span class="cu-hero__circle cu-hero__circle--2"></span>
+      <span class="cu-hero__circle cu-hero__circle--3"></span>
+    </div>
+
+    <div class="cu-hero__content suhana-container">
+      <div class="cu-hero__badge animate-fade-in">
+        <mat-icon aria-hidden="true">support_agent</mat-icon>
+        <span>Suhana Support</span>
+      </div>
+
+      <h1 id="contact-hero-title" class="cu-hero__title animate-fade-in-up">
+        Contact Us
+      </h1>
+
+      <p class="cu-hero__subtitle animate-fade-in-up">
+        We're here to help. Reach out to our support team for assistance with
+        memberships, profiles, payments, or general inquiries.
+      </p>
+
+      <div class="cu-hero__actions animate-fade-in-up">
+        <a mat-raised-button class="suhana-btn-primary cu-hero__btn" (click)="scrollToContact()"
+           aria-label="Jump to contact form">
+          <mat-icon aria-hidden="true">send</mat-icon> Send a Message
+        </a>
+        <a mat-stroked-button class="suhana-btn-outline cu-hero__btn" href="tel:+919876543210"
+           aria-label="Call our support line">
+          <mat-icon aria-hidden="true">call</mat-icon> Call Now
+        </a>
+      </div>
+    </div>
+
+    <!-- Wave transition to page body -->
+    <div class="cu-hero__wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,40 C180,100 360,0 540,50 C720,100 900,10 1080,55 C1260,100 1380,20 1440,50 L1440,120 L0,120 Z"
+              fill="#fdf8f4"/>
+      </svg>
+    </div>
+
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       2. CONTACT INFORMATION CARDS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="cu-info-section suhana-section" aria-label="Contact information">
+    <div class="suhana-container">
+
+      <h2 class="suhana-section-title">Get in Touch</h2>
+      <p class="suhana-section-subtitle">Multiple ways to reach our dedicated support team</p>
+
+      <div class="cu-info-grid">
+
+        <!-- Email -->
+        <mat-card class="cu-info-card" appearance="outlined" tabindex="0">
+          <mat-card-content>
+            <div class="cu-info-card__icon cu-info-card__icon--email">
+              <mat-icon aria-hidden="true">mail</mat-icon>
+            </div>
+            <h3 class="cu-info-card__title">Email Us</h3>
+            <a class="cu-info-card__value" href="mailto:support@suhanamatrimony.com"
+               aria-label="Send email to support@suhanamatrimony.com">
+              support&#64;suhanamatrimony.com
+            </a>
+            <p class="cu-info-card__desc">Send us your questions anytime.</p>
+            <span class="cu-info-card__badge">
+              <mat-icon aria-hidden="true">schedule</mat-icon> Replies within 24 hrs
+            </span>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Phone -->
+        <mat-card class="cu-info-card cu-info-card--featured" appearance="outlined" tabindex="0">
+          <mat-card-content>
+            <div class="cu-info-card__icon cu-info-card__icon--phone">
+              <mat-icon aria-hidden="true">call</mat-icon>
+            </div>
+            <h3 class="cu-info-card__title">Call Us</h3>
+            <a class="cu-info-card__value" href="tel:+919876543210"
+               aria-label="Call +91 98765 43210">
+              +91 98765 43210
+            </a>
+            <p class="cu-info-card__desc">Available Monday to Saturday.</p>
+            <span class="cu-info-card__badge cu-info-card__badge--active">
+              <mat-icon aria-hidden="true">circle</mat-icon> Lines Open Now
+            </span>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Hours -->
+        <mat-card class="cu-info-card" appearance="outlined" tabindex="0">
+          <mat-card-content>
+            <div class="cu-info-card__icon cu-info-card__icon--hours">
+              <mat-icon aria-hidden="true">schedule</mat-icon>
+            </div>
+            <h3 class="cu-info-card__title">Working Hours</h3>
+            <p class="cu-info-card__value cu-info-card__value--plain">9:00 AM – 6:00 PM</p>
+            <p class="cu-info-card__desc">Indian Standard Time</p>
+            <span class="cu-info-card__badge">
+              <mat-icon aria-hidden="true">event</mat-icon> Mon – Sat
+            </span>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       3. CONTACT FORM
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="cu-form-section suhana-section" id="contact-form" aria-label="Contact form">
+    <div class="suhana-container cu-form-section__inner">
+
+      <!-- Left: illustration / info panel -->
+      <aside class="cu-form-aside" aria-hidden="true">
+        <div class="cu-form-aside__icon-wrap">
+          <mat-icon>forum</mat-icon>
+        </div>
+        <h2 class="cu-form-aside__title">Drop Us a Message</h2>
+        <p class="cu-form-aside__text">
+          Fill in the form and our support team will get back to you within one business day.
+        </p>
+        <ul class="cu-form-aside__list">
+          <li><mat-icon>check_circle</mat-icon> Membership queries</li>
+          <li><mat-icon>check_circle</mat-icon> Profile assistance</li>
+          <li><mat-icon>check_circle</mat-icon> Payment issues</li>
+          <li><mat-icon>check_circle</mat-icon> Technical support</li>
+          <li><mat-icon>check_circle</mat-icon> General feedback</li>
+        </ul>
+      </aside>
+
+      <!-- Right: form card or success card -->
+      <div class="cu-form-card-wrap">
+
+        @if (!isSuccess()) {
+
+          <!-- ─── Contact Form Card ─── -->
+          <mat-card class="cu-form-card" appearance="outlined">
+            <div class="cu-form-card__band" aria-hidden="true"></div>
+
+            <mat-card-header class="cu-form-card__header">
+              <mat-card-title>Send a Message</mat-card-title>
+              <mat-card-subtitle>All fields marked * are required</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <form [formGroup]="form" (ngSubmit)="onSubmit()" class="cu-form" novalidate
+                    aria-label="Contact form">
+
+                <!-- Row 1: First Name + Last Name -->
+                <div class="cu-form__row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>First Name *</mat-label>
+                    <input matInput formControlName="firstName" autocomplete="given-name"
+                           placeholder="e.g. Ananya" aria-required="true" />
+                    <mat-icon matPrefix aria-hidden="true">person_outline</mat-icon>
+                    @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+                      <mat-error>
+                        @if (form.controls.firstName.errors?.['required']) { First name is required. }
+                        @else { Minimum 2 characters. }
+                      </mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Last Name *</mat-label>
+                    <input matInput formControlName="lastName" autocomplete="family-name"
+                           placeholder="e.g. Sharma" aria-required="true" />
+                    <mat-icon matPrefix aria-hidden="true">person_outline</mat-icon>
+                    @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+                      <mat-error>
+                        @if (form.controls.lastName.errors?.['required']) { Last name is required. }
+                        @else { Minimum 2 characters. }
+                      </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <!-- Row 2: Email + Mobile -->
+                <div class="cu-form__row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Email Address *</mat-label>
+                    <input matInput formControlName="email" type="email" autocomplete="email"
+                           placeholder="you@example.com" aria-required="true" />
+                    <mat-icon matPrefix aria-hidden="true">mail_outline</mat-icon>
+                    @if (form.controls.email.invalid && form.controls.email.touched) {
+                      <mat-error>
+                        @if (form.controls.email.errors?.['required']) { Email is required. }
+                        @else { Please enter a valid email address. }
+                      </mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Mobile Number</mat-label>
+                    <input matInput formControlName="mobile" type="tel" autocomplete="tel"
+                           placeholder="10-digit mobile number" inputmode="tel" />
+                    <mat-icon matPrefix aria-hidden="true">phone_iphone</mat-icon>
+                    <mat-hint>Indian 10-digit number (optional)</mat-hint>
+                    @if (form.controls.mobile.invalid && form.controls.mobile.touched) {
+                      <mat-error>Enter a valid 10-digit Indian mobile number.</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <!-- Row 3: Message -->
+                <mat-form-field appearance="outline" class="cu-form__full">
+                  <mat-label>Message *</mat-label>
+                  <textarea matInput formControlName="message" rows="6" maxlength="1000"
+                            placeholder="Describe your query in detail…"
+                            aria-required="true" aria-describedby="msg-hint"></textarea>
+                  <mat-icon matPrefix aria-hidden="true">chat_bubble_outline</mat-icon>
+                  <mat-hint id="msg-hint" align="end">
+                    {{ messageLength }}<span aria-hidden="true">/1000</span>
+                    <span class="sr-only"> characters used of 1000</span>
+                  </mat-hint>
+                  @if (form.controls.message.invalid && form.controls.message.touched) {
+                    <mat-error>
+                      @if (form.controls.message.errors?.['required']) { Message is required. }
+                      @else if (form.controls.message.errors?.['minlength']) { Minimum 20 characters. }
+                      @else { Maximum 1000 characters allowed. }
+                    </mat-error>
+                  }
+                </mat-form-field>
+
+                <!-- Submit -->
+                <div class="cu-form__footer">
+                  <p class="cu-form__privacy">
+                    <mat-icon aria-hidden="true">lock_outline</mat-icon>
+                    Your information is kept private and will not be shared.
+                  </p>
+                  <button mat-raised-button type="submit"
+                          class="suhana-btn-primary cu-form__submit"
+                          [disabled]="isSubmitting()"
+                          aria-label="Submit contact form">
+                    @if (isSubmitting()) {
+                      <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
+                      <span>Sending…</span>
+                    } @else {
+                      <mat-icon aria-hidden="true">send</mat-icon>
+                      <span>Send Message</span>
+                    }
+                  </button>
+                </div>
+
+              </form>
+            </mat-card-content>
+          </mat-card>
+
+        } @else {
+
+          <!-- ─── Success Card ─── -->
+          <mat-card class="cu-success-card" appearance="outlined" role="alert"
+                    aria-live="polite" aria-label="Message sent successfully">
+            <mat-card-content>
+
+              <div class="cu-success__icon-wrap" aria-hidden="true">
+                <mat-icon class="cu-success__icon">check_circle</mat-icon>
+              </div>
+
+              <h2 class="cu-success__title">Thank You for Contacting Us</h2>
+              <p class="cu-success__message">
+                Your message has been successfully submitted. Our support team will review
+                your inquiry and get back to you shortly.
+              </p>
+              <div class="cu-success__detail">
+                <mat-icon aria-hidden="true">schedule</mat-icon>
+                <span>We typically respond within <strong>24 hours</strong>.</span>
+              </div>
+
+              <mat-divider class="cu-success__divider"></mat-divider>
+
+              <div class="cu-success__actions">
+                <button mat-raised-button class="suhana-btn-primary" (click)="resetForm()"
+                        aria-label="Submit another contact request">
+                  <mat-icon aria-hidden="true">refresh</mat-icon> Submit Another Request
+                </button>
+                <button mat-stroked-button class="suhana-btn-outline" (click)="goHome()"
+                        aria-label="Return to home page">
+                  <mat-icon aria-hidden="true">home</mat-icon> Return Home
+                </button>
+              </div>
+
+            </mat-card-content>
+          </mat-card>
+
+        }
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       4. SOCIAL MEDIA SECTION
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="cu-social-section" aria-label="Social media links">
+    <div class="suhana-container cu-social-section__inner">
+
+      <h2 class="suhana-section-title">Connect With Us</h2>
+      <p class="suhana-section-subtitle">
+        Follow Suhana Matrimony for the latest updates, success stories, and more.
+      </p>
+
+      <div class="cu-social-grid" role="list">
+
+        <!-- Facebook -->
+        <button mat-fab class="cu-social-btn cu-social-btn--facebook" role="listitem"
+                (click)="openSocial(socialLinks.facebookUrl)"
+                aria-label="Follow us on Facebook (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+          <span class="cu-social-btn__label">Facebook</span>
+        </button>
+
+        <!-- Instagram -->
+        <button mat-fab class="cu-social-btn cu-social-btn--instagram" role="listitem"
+                (click)="openSocial(socialLinks.instagramUrl)"
+                aria-label="Follow us on Instagram (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+          </svg>
+          <span class="cu-social-btn__label">Instagram</span>
+        </button>
+
+        <!-- YouTube -->
+        <button mat-fab class="cu-social-btn cu-social-btn--youtube" role="listitem"
+                (click)="openSocial(socialLinks.youtubeUrl)"
+                aria-label="Subscribe on YouTube (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
+          </svg>
+          <span class="cu-social-btn__label">YouTube</span>
+        </button>
+
+        <!-- X (Twitter) -->
+        <button mat-fab class="cu-social-btn cu-social-btn--twitter" role="listitem"
+                (click)="openSocial(socialLinks.twitterUrl)"
+                aria-label="Follow us on X / Twitter (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.75l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          <span class="cu-social-btn__label">X / Twitter</span>
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       5. FOOTER CTA SECTION
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="cu-cta-section suhana-section" aria-label="Immediate assistance">
+    <div class="suhana-container">
+
+      <mat-card class="cu-cta-card" appearance="outlined">
+        <div class="cu-cta-card__glow" aria-hidden="true"></div>
+        <mat-card-content class="cu-cta-card__content">
+
+          <div class="cu-cta-card__icon-wrap" aria-hidden="true">
+            <mat-icon>headset_mic</mat-icon>
+          </div>
+
+          <div class="cu-cta-card__text">
+            <h2 class="cu-cta-card__title">Need Immediate Assistance?</h2>
+            <p class="cu-cta-card__subtitle">
+              Our dedicated matrimony support team is ready to assist you.
+            </p>
+          </div>
+
+          <div class="cu-cta-card__actions">
+            <a mat-raised-button class="suhana-btn-primary" href="tel:+919876543210"
+               aria-label="Call our support line now">
+              <mat-icon aria-hidden="true">call</mat-icon> Call Now
+            </a>
+            <a mat-stroked-button class="suhana-btn-outline" href="mailto:support@suhanamatrimony.com"
+               aria-label="Send email to support">
+              <mat-icon aria-hidden="true">mail_outline</mat-icon> Email Support
+            </a>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  </section>
+
+</div>
+
+<!-- Screen-reader only utility -->
+<style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}</style>
