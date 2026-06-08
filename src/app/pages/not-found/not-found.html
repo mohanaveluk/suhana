@@ -1,0 +1,89 @@
+<div class="error-page">
+
+  <div class="error-card">
+
+    <!-- Decorative top band -->
+    <div class="error-card__band"></div>
+
+    <div class="error-card__body">
+
+      <!-- Icon + Code -->
+      <div class="error-icon-wrap">
+        <mat-icon class="error-icon">search_off</mat-icon>
+      </div>
+      <div class="error-code">404</div>
+      <h1 class="error-title">Page Not Found</h1>
+      <p class="error-desc">
+        The page you're looking for doesn't exist, has been moved, or the link may be broken.
+        Double-check the URL or navigate to a page below.
+      </p>
+
+      <!-- Actions -->
+      <div class="error-actions">
+        <button mat-raised-button class="suhana-btn-primary" (click)="goHome()">
+          <mat-icon>home</mat-icon> Go to Home
+        </button>
+        <button mat-stroked-button class="error-btn-outline" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon> Go Back
+        </button>
+      </div>
+
+      <!-- Quick links -->
+      <div class="error-links">
+        <p class="error-links__label">Try one of these instead:</p>
+        <div class="error-links__grid">
+          <a class="error-link-chip" href="/search">
+            <mat-icon>search</mat-icon> Search Profiles
+          </a>
+          <a class="error-link-chip" href="/matchmaking">
+            <mat-icon>favorite</mat-icon> Matchmaking
+          </a>
+          <a class="error-link-chip" href="/profile">
+            <mat-icon>person</mat-icon> My Profile
+          </a>
+          <a class="error-link-chip" href="/chat">
+            <mat-icon>chat_bubble_outline</mat-icon> Messages
+          </a>
+        </div>
+      </div>
+
+      <mat-divider class="error-divider"></mat-divider>
+
+      <!-- Contact -->
+      <div class="error-contact">
+        <p class="error-contact__heading">
+          <mat-icon>support_agent</mat-icon> Need help?
+        </p>
+        <div class="error-contact__grid">
+          <a class="error-contact__item" href="mailto:support@suhanamatch.com">
+            <mat-icon>email</mat-icon>
+            <span>
+              <strong>Email Support</strong>
+              <span>support&#64;suhanamatch.com</span>
+            </span>
+          </a>
+          <a class="error-contact__item" href="tel:18001237842">
+            <mat-icon>phone_in_talk</mat-icon>
+            <span>
+              <strong>Customer Care</strong>
+              <span>1800-123-7842 (Toll-Free)</span>
+            </span>
+          </a>
+        </div>
+        <p class="error-contact__hours">
+          <mat-icon>schedule</mat-icon>
+          Available Mon – Sat, 9:00 AM – 6:00 PM IST
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="error-card__footer">
+      <span>Error Code: 404 &nbsp;·&nbsp; Page Not Found</span>
+      <span>Suhana Matrimony &copy; {{ year }}</span>
+    </div>
+
+  </div>
+
+</div>

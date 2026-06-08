@@ -147,6 +147,9 @@ export class MatchService {
       location: 50 + ((seed * 13) % 50), familyValues: 65 + ((seed * 3) % 35),
       interests: 58 + ((seed * 17) % 42), career: 62 + ((seed * 5) % 38),
       emotional: 55 + ((seed * 19) % 45), horoscope: 50 + ((seed * 23) % 50),
+      religion: 50 + ((seed * 29) % 50), motherTongue: 50 + ((seed * 31) % 50),
+      ageGap: 50 + ((seed * 37) % 50), income: 50 + ((seed * 41) % 50),
+      
     };
   }
 
@@ -181,6 +184,10 @@ export class MatchService {
     if (breakdown.interests >= 75) factors.push('shared interests');
     if (breakdown.career >= 75) factors.push('career ambitions');
     if (breakdown.emotional >= 75) factors.push('emotional compatibility');
+    if (breakdown.religion >= 75) factors.push('religion compatibility');
+    if (breakdown.motherTongue >= 75) factors.push('mother tongue');
+    
+
     if (factors.length === 0) factors.push('overall profile compatibility');
     return `You and ${profile.firstName} match well on ${factors.join(', ')}.`;
   }

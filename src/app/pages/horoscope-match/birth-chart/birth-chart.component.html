@@ -1,0 +1,165 @@
+<mat-tab-group animationDuration="200ms" class="bc-tab-group" mat-stretch-tabs="false">
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!--  TAB 1 — Birth Charts (South Indian 4×4 grid)                    -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="bc-tab-icon">grid_on</mat-icon> Charts
+    </ng-template>
+
+    <div class="bc-charts-wrap">
+      @for (chart of [
+        { name: personOneName, dob: personOneDob, time: personOneTime, place: personOnePlace, cells: cellsOne,
+          lagna: personOne.lagna, rasi: personOne.rasi, nakshatra: personOne.nakshatra },
+        { name: personTwoName, dob: personTwoDob, time: personTwoTime, place: personTwoPlace, cells: cellsTwo,
+          lagna: personTwo.lagna, rasi: personTwo.rasi, nakshatra: personTwo.nakshatra }
+      ]; track chart.name) {
+        <div class="bc-chart-col">
+
+          <!-- Person name + DOB -->
+          <div class="bc-person-header">
+            <h4 class="bc-person-name">{{ chart.name }}</h4>
+            <!-- @if (chart.dob) {
+              <span class="bc-dob">{{ formatDob(chart.dob) }}</span>
+            } -->
+          </div>
+
+          <!-- Lagna / Rasi / Nakshatra strip -->
+          <div class="bc-astro-strip">
+            <div class="bc-astro-col">
+              <span class="bc-astro-label">Lagna</span>
+              <span class="bc-astro-value">{{ formatLagna(chart.lagna) }}</span>
+            </div>
+            <div class="bc-astro-divider"></div>
+            <div class="bc-astro-col">
+              <span class="bc-astro-label">Rasi</span>
+              <span class="bc-astro-value">{{ chart.rasi }}</span>
+            </div>
+            <div class="bc-astro-divider"></div>
+            <div class="bc-astro-col">
+              <span class="bc-astro-label">Nakshatra</span>
+              <span class="bc-astro-value">{{ chart.nakshatra }}</span>
+            </div>
+          </div>
+
+          <!-- South Indian 4×4 Grid -->
+          <div class="bc-grid">
+            @for (cell of chart.cells; track cell.sign) {
+              <div class="bc-cell"
+                [class.bc-cell--lagna]="cell.isLagna"
+                [style.grid-row]="cell.gridRow"
+                [style.grid-column]="cell.gridCol"
+                [matTooltip]="cell.tooltip"
+                matTooltipPosition="above">
+
+                <div class="bc-cell-head">
+                  <span class="bc-sign">{{ cell.signAbbr }}</span>
+                  <span class="bc-house">{{ cell.houseLabel }}</span>
+                </div>
+                <div class="bc-planet-row">
+                  @for (pl of cell.planets; track pl.key) {
+                    <span class="bc-pl-tag" [ngClass]="getPlanetClass(pl.key)">
+                      {{ pl.abbr }}{{ pl.isRetrograde ? '℞' : '' }}
+                    </span>
+                  }
+                </div>
+                @if (cell.isLagna) {
+                  <div class="bc-lagna-badge" matTooltip="Lagna (Ascendant)">L</div>
+                }
+              </div>
+            }
+
+            <!-- Merged 2×2 center decoration -->
+            <div class="bc-center-cell">
+              <mat-icon>auto_awesome</mat-icon>
+              <span class="bc-center-name">{{ chart.name }}</span>
+              <span class="bc-center-date">{{ formatDob(chart.dob) }} {{ chart.time }}</span>
+              <span class="bc-center-date">{{ chart.place }}</span>
+            </div>
+          </div>
+
+          <!-- Planet colour legend -->
+          <div class="bc-legend">
+            @for (entry of [
+              ['sun','Sun'],['moon','Moon'],['mars','Mars'],['mercury','Mercury'],
+              ['venus','Venus'],['jupiter','Jupiter'],['saturn','Saturn'],['rahu','Rahu'],['ketu','Ketu']
+            ]; track entry[0]) {
+              <span class="bc-pl-tag bc-legend-tag" [ngClass]="getPlanetClass(entry[0])">{{ entry[1] }}</span>
+            }
+          </div>
+
+        </div>
+      }
+    </div>
+  </mat-tab>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!--  TAB 2 — Planet Comparison                                       -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="bc-tab-icon">compare</mat-icon> Comparison
+    </ng-template>
+
+    <div class="bc-compare-wrap">
+      <table class="bc-comp-table">
+        <thead>
+          <tr>
+            <th>Planet</th>
+            <th>{{ personOneName }}</th>
+            <th>{{ personTwoName }}</th>
+            <th class="bc-th-match">Match</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of compRows; track row.planet) {
+            <tr [class.bc-row-match]="row.sameSign">
+              <td>
+                <div class="bc-planet-cell">
+                  <span class="bc-pl-tag" [ngClass]="getPlanetClass(row.planet)">{{ row.abbr }}</span>
+                  <span class="bc-planet-name">{{ row.planet | titlecase }}</span>
+                </div>
+              </td>
+              <td>{{ row.p1 }}</td>
+              <td>{{ row.p2 }}</td>
+              <td class="bc-td-match">
+                @if (row.sameSign) {
+                  <mat-icon class="icon-match">check_circle</mat-icon>
+                } @else {
+                  <mat-icon class="icon-diff">remove_circle_outline</mat-icon>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </mat-tab>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!--  TAB 3 — How to Read                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="bc-tab-icon">help_outline</mat-icon> Guide
+    </ng-template>
+
+    <div class="bc-howto-wrap">
+      <div class="bc-howto-grid">
+        @for (item of HOW_TO_READ; track item.title) {
+          <mat-card class="bc-howto-card" appearance="outlined">
+            <mat-card-content>
+              <div class="bc-howto-icon-wrap">
+                <mat-icon>{{ item.icon }}</mat-icon>
+              </div>
+              <h4 class="bc-howto-title">{{ item.title }}</h4>
+              <p class="bc-howto-text">{{ item.text }}</p>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </div>
+  </mat-tab>
+
+</mat-tab-group>

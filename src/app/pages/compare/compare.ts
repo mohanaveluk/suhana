@@ -20,10 +20,10 @@ export class CompareComponent implements OnInit {
   private readonly snackBar        = inject(MatSnackBar);
 
   protected readonly compareList = signal<MatchResult[]>([]);
-  protected readonly categories = ['lifestyle', 'education', 'location', 'familyValues', 'interests', 'career', 'emotional'] as const;
-  protected readonly categoryLabels: Record<string, string> = {
+  protected readonly categories = ['ageGap', 'income', 'education', 'location', 'familyValues', 'religion', 'motherTongue', 'career'] as const;
+  protected readonly categoryLabels: Record<string, string> = {ageGap: 'Age Gap', income: 'Income',
     lifestyle: 'Lifestyle', education: 'Education', location: 'Location',
-    familyValues: 'Family Values', interests: 'Interests', career: 'Career', emotional: 'Emotional',
+    familyValues: 'Family Values', interests: 'Interests', career: 'Career', emotional: 'Emotional', religion: 'Religion', motherTongue: 'Mother Tongue',
   };
 
   protected readonly isLoading = signal(true);

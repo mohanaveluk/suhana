@@ -1,0 +1,935 @@
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  TOOLBAR                                                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<mat-toolbar class="hm-toolbar">
+  <button mat-icon-button (click)="goBack()" matTooltip="Go back">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span class="hm-toolbar-title">Horoscope Compatibility Report</span>
+  <span class="hm-flex-spacer"></span>
+  @if (data()?.fromCache) {
+    <mat-chip class="hm-cache-chip" [disableRipple]="true">
+      <mat-icon matChipAvatar>cached</mat-icon>Cached
+    </mat-chip>
+  }
+</mat-toolbar>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  LOADING                                                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+@if (isLoading()) {
+  <div class="hm-loading-state">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Analysing horoscope compatibility…</p>
+  </div>
+}
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  ERROR                                                                -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+@else if (error()) {
+  <div class="hm-state-wrap">
+    <mat-card class="hm-error-card" appearance="outlined">
+      <mat-card-content>
+        <mat-icon class="hm-state-icon state-error">error_outline</mat-icon>
+        <h3>Unable to load report</h3>
+        <p>{{ error() }}</p>
+        <button mat-raised-button color="primary" (click)="loadData()">
+          <mat-icon>refresh</mat-icon> Retry
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+}
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  MAIN CONTENT                                                         -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+@else if (data(); as resp) {
+  @let hr = resp.horoscopeReport;
+  @let p1 = resp.profiles.userOne;
+  @let p2 = resp.profiles.userTwo;
+
+  @if (!hr) {
+    <div class="hm-state-wrap">
+      <mat-card class="hm-empty-card" appearance="outlined">
+        <mat-card-content>
+          <mat-icon class="hm-state-icon state-empty">hourglass_empty</mat-icon>
+          <h3>No Report Available</h3>
+          <p>A compatibility report has not been generated for this match yet.</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  } @else {
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--  HERO — Score ring + flanking profiles                           -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="hm-hero">
+      <div class="hm-hero-content suhana-container">
+
+        <!-- Profile 1 -->
+        <div class="hm-hero-profile hm-hero-profile--left">
+          <div class="hm-hero-photo-wrap">
+            @if (getPrimaryPhoto(p1)) {
+              <img [src]="getPrimaryPhoto(p1)" [alt]="p1.firstName" class="hm-hero-photo" />
+            } @else {
+              <div class="hm-hero-photo hm-hero-photo--placeholder">
+                <mat-icon>person</mat-icon>
+              </div>
+            }
+            @if (isPrimaryPhotoVerified(p1)) {
+              <span class="hm-verified-badge" matTooltip="Verified photo">
+                <mat-icon>verified</mat-icon>
+              </span>
+            }
+          </div>
+          <h3 class="hm-hero-name">{{ p1.firstName }} {{ p1.lastName }}</h3>
+          <p class="hm-hero-age">{{ p1.age }} yrs &bull; {{ p1.location.city }}</p>
+          <mat-chip class="hm-gender-chip chip-bride" [disableRipple]="true">Bride</mat-chip>
+          <div class="hm-hero-astro">
+            <span>{{ p1.horoscope.rashi }}</span>
+            <span class="hm-astro-dot">•</span>
+            <span>{{ p1.horoscope.nakshatra }}</span>
+          </div>
+        </div>
+
+        <!-- Central score ring -->
+        <div class="hm-hero-center">
+          <div class="hm-ring-wrap">
+            <svg class="hm-ring-svg" viewBox="0 0 180 180">
+              <circle class="hm-ring-track" cx="90" cy="90" [attr.r]="RADIUS"
+                fill="none" stroke-width="12"/>
+              <circle class="hm-ring-progress" cx="90" cy="90" [attr.r]="RADIUS"
+                fill="none" stroke-width="12"
+                [attr.stroke]="scoreColor()"
+                [attr.stroke-dasharray]="CIRCUMFERENCE"
+                [style.stroke-dashoffset]="ringDashOffset()"/>
+            </svg>
+            <div class="hm-ring-label">
+              <span class="hm-ring-value" [style.color]="scoreColor()">{{ overallScore() }}</span>
+              <span class="hm-ring-pct">%</span>
+              <span class="hm-ring-sub">Match</span>
+            </div>
+          </div>
+
+          <div class="hm-category-badge" [ngClass]="categoryClass()">
+            {{ overallCategory() }}
+          </div>
+
+          <div class="hm-hero-hearts">
+            <mat-icon>favorite</mat-icon>
+            <mat-icon class="hm-heart-sm">favorite</mat-icon>
+            <mat-icon>favorite</mat-icon>
+          </div>
+        </div>
+
+        <!-- Profile 2 -->
+        <div class="hm-hero-profile hm-hero-profile--right">
+          <div class="hm-hero-photo-wrap">
+            @if (getPrimaryPhoto(p2)) {
+              <img [src]="getPrimaryPhoto(p2)" [alt]="p2.firstName" class="hm-hero-photo" />
+            } @else {
+              <div class="hm-hero-photo hm-hero-photo--placeholder">
+                <mat-icon>person</mat-icon>
+              </div>
+            }
+            @if (isPrimaryPhotoVerified(p2)) {
+              <span class="hm-verified-badge" matTooltip="Verified photo">
+                <mat-icon>verified</mat-icon>
+              </span>
+            }
+          </div>
+          <h3 class="hm-hero-name">{{ p2.firstName }} {{ p2.lastName }}</h3>
+          <p class="hm-hero-age">{{ p2.age }} yrs &bull; {{ p2.location.city }}</p>
+          <mat-chip class="hm-gender-chip chip-groom" [disableRipple]="true">Groom</mat-chip>
+          <div class="hm-hero-astro">
+            <span>{{ p2.horoscope.rashi }}</span>
+            <span class="hm-astro-dot">•</span>
+            <span>{{ p2.horoscope.nakshatra }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Summary text -->
+      @if (hr.compatibilityDashboard.summary) {
+        <div class="hm-hero-summary suhana-container">
+          <mat-icon>format_quote</mat-icon>
+          <p>{{ hr.compatibilityDashboard.summary }}</p>
+        </div>
+      }
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--  QUICK STATS STRIP                                                -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="hm-stats-strip">
+      <div class="suhana-container hm-stats-inner">
+        <div class="hm-stat-item">
+          <mat-icon>grid_view</mat-icon>
+          <div>
+            <span class="hm-stat-label">Guna Score</span>
+            <strong class="hm-stat-value">
+              {{ hr.kundliMatching.totalScore }} / {{ hr.kundliMatching.maxScore }}
+            </strong>
+          </div>
+        </div>
+        <div class="hm-stat-divider"></div>
+        <div class="hm-stat-item">
+          <mat-icon>percent</mat-icon>
+          <div>
+            <span class="hm-stat-label">Ashtakoot</span>
+            <strong class="hm-stat-value"
+              [style.color]="getScoreColor(hr.kundliMatching.compatibilityPercentage)">
+              {{ hr.kundliMatching.compatibilityPercentage }}%
+            </strong>
+          </div>
+        </div>
+        <div class="hm-stat-divider"></div>
+        <div class="hm-stat-item">
+          <mat-icon [style.color]="hr.doshaAnalysis.manglik.detected ? '#f44336' : '#4caf50'">
+            {{ hr.doshaAnalysis.manglik.detected ? 'cancel' : 'check_circle' }}
+          </mat-icon>
+          <div>
+            <span class="hm-stat-label">Manglik</span>
+            <strong class="hm-stat-value"
+              [style.color]="hr.doshaAnalysis.manglik.detected ? '#f44336' : '#4caf50'">
+              {{ hr.doshaAnalysis.manglik.detected ? 'Detected' : 'No Dosha' }}
+            </strong>
+          </div>
+        </div>
+        <div class="hm-stat-divider"></div>
+        <div class="hm-stat-item">
+          <mat-icon>verified</mat-icon>
+          <div>
+            <span class="hm-stat-label">Confidence</span>
+            <strong class="hm-stat-value"
+              [style.color]="getScoreColor(hr.planetaryCompatibility.confidenceScore)">
+              {{ hr.planetaryCompatibility.confidenceScore }}%
+            </strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--  TAB GROUP                                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="hm-tabs-wrapper suhana-container">
+      <mat-tab-group animationDuration="300ms" class="hm-tab-group"
+        [disableRipple]="false" mat-stretch-tabs="false">
+
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!--  TAB 1 — Overview (Compatibility Dashboard)                  -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="hm-tab-icon">dashboard</mat-icon>Overview
+          </ng-template>
+
+          <div class="hm-tab-content">
+            <!-- Dashboard title -->
+            <div class="hm-section-header">
+              <mat-icon>bar_chart</mat-icon>
+              <h2>Compatibility Dashboard</h2>
+            </div>
+
+            <!-- Overall score bar (prominent) -->
+            <mat-card class="hm-overall-bar-card" appearance="outlined">
+              <mat-card-content>
+                <div class="hm-overall-row">
+                  <div class="hm-overall-left">
+                    <div class="hm-overall-icon">
+                      <mat-icon [style.color]="scoreColor()">stars</mat-icon>
+                    </div>
+                    <div>
+                      <p class="hm-overall-label">Overall Compatibility</p>
+                      <p class="hm-overall-category">{{ overallCategory() }}</p>
+                    </div>
+                  </div>
+                  <span class="hm-overall-pct" [style.color]="scoreColor()">
+                    {{ overallScore() | number:'1.0-1' }}%
+                  </span>
+                </div>
+                <div class="hm-prog-outer hm-prog-overall">
+                  <div class="hm-prog-inner"
+                    [style.width]="overallScore() + '%'"
+                    [style.background-color]="scoreColor()">
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- 7 Aspect cards -->
+            <div class="hm-aspects-grid">
+              @for (aspect of dashboardAspects(); track aspect.key) {
+                <mat-card class="hm-aspect-card" appearance="outlined">
+                  <mat-card-content>
+                    <div class="hm-aspect-header-row">
+                      <div class="hm-aspect-icon-wrap"
+                        [style.background-color]="getScoreColor(aspect.score) + '18'">
+                        <mat-icon [style.color]="getScoreColor(aspect.score)">
+                          {{ aspect.icon }}
+                        </mat-icon>
+                      </div>
+                      <div class="hm-aspect-title-wrap">
+                        <span class="hm-aspect-label">{{ aspect.label }}</span>
+                        <strong class="hm-aspect-pct" [style.color]="getScoreColor(aspect.score)">
+                          {{ aspect.score }}%
+                        </strong>
+                      </div>
+                    </div>
+                    <div class="hm-prog-outer">
+                      <div class="hm-prog-inner"
+                        [style.width]="aspect.score + '%'"
+                        [style.background-color]="getScoreColor(aspect.score)">
+                      </div>
+                    </div>
+                    <p class="hm-aspect-exp">{{ aspect.explanation }}</p>
+                  </mat-card-content>
+                </mat-card>
+              }
+            </div>
+
+            <!-- Match Strengths -->
+            @if (hr.matchStrengths.length) {
+              <mat-card class="hm-list-card hm-list-card--green" appearance="outlined">
+                <mat-card-header>
+                  <mat-icon mat-card-avatar class="icon-green">thumb_up</mat-icon>
+                  <mat-card-title>Match Strengths</mat-card-title>
+                  <mat-card-subtitle>{{ hr.matchStrengths.length }} positive indicators</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <ul class="hm-bullet-list">
+                    @for (s of hr.matchStrengths; track $index) {
+                      <li class="hm-bullet-item hm-bullet-item--green">
+                        <mat-icon>check_circle</mat-icon><span>{{ s }}</span>
+                      </li>
+                    }
+                  </ul>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Areas for Understanding -->
+            @if (hr.areasForUnderstanding.length) {
+              <mat-card class="hm-list-card hm-list-card--amber" appearance="outlined">
+                <mat-card-header>
+                  <mat-icon mat-card-avatar class="icon-amber">lightbulb</mat-icon>
+                  <mat-card-title>Areas for Understanding</mat-card-title>
+                  <mat-card-subtitle>Awareness helps navigate these gracefully</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <ul class="hm-bullet-list">
+                    @for (a of hr.areasForUnderstanding; track $index) {
+                      <li class="hm-bullet-item hm-bullet-item--amber">
+                        <mat-icon>warning_amber</mat-icon><span>{{ a }}</span>
+                      </li>
+                    }
+                  </ul>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!--  TAB 2 — AI Summary                                          -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="hm-tab-icon">psychology</mat-icon>AI Summary
+          </ng-template>
+
+          <div class="hm-tab-content">
+
+            <!-- AI Match Summary -->
+            <mat-card class="hm-ai-card" appearance="outlined">
+              <mat-card-header>
+                <div mat-card-avatar class="hm-ai-avatar">
+                  <mat-icon>auto_awesome</mat-icon>
+                </div>
+                <mat-card-title>AI Match Analysis</mat-card-title>
+                <mat-card-subtitle>Generated by Vedic Astrology AI Engine</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="hm-ai-text">{{ hr.aiMatchSummary }}</p>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Final Recommendation -->
+            @if (hr.finalRecommendation) {
+              <div class="hm-rec-card"
+                [ngClass]="getRecommendationClass(hr.finalRecommendation.category)">
+                <div class="hm-rec-header">
+                  <div class="hm-rec-icon-wrap">
+                    <mat-icon>emoji_events</mat-icon>
+                  </div>
+                  <div>
+                    <h2 class="hm-rec-title">Final Recommendation</h2>
+                    <p class="hm-rec-category">{{ hr.finalRecommendation.category }}</p>
+                  </div>
+                </div>
+                <div class="hm-rec-body">
+                  <p>{{ hr.finalRecommendation.justification }}</p>
+                </div>
+              </div>
+            }
+
+            <!-- Side-by-side snapshot -->
+            @if (hr.sideByComparison) {
+              <mat-card class="hm-snapshot-card" appearance="outlined">
+                <mat-card-header>
+                  <mat-icon mat-card-avatar class="icon-rose">compare_arrows</mat-icon>
+                  <mat-card-title>Astrological Profile Snapshot</mat-card-title>
+                  <mat-card-subtitle>Key metrics at a glance</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="hm-snapshot-grid">
+                    @for (person of [hr.sideByComparison.personOne, hr.sideByComparison.personTwo]; track person.name) {
+                      <div class="hm-snapshot-col">
+                        <div class="hm-snapshot-name-row">
+                          <h4 class="hm-snapshot-name">{{ person.name }}</h4>
+                          <span class="hm-snapshot-score"
+                            [style.color]="getScoreColor(person.compatibilityScore)">
+                            {{ person.compatibilityScore }}%
+                          </span>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <div class="hm-snapshot-details">
+                          <div class="hm-snap-row">
+                            <mat-icon>public</mat-icon><span>{{ person.rasi }}</span>
+                          </div>
+                          <div class="hm-snap-row">
+                            <mat-icon>place</mat-icon><span>Lagna: {{ person.lagna }}</span>
+                          </div>
+                          <div class="hm-snap-row">
+                            <mat-icon>stars</mat-icon><span>{{ person.nakshatra }}</span>
+                          </div>
+                          <div class="hm-snap-row">
+                            <mat-icon>calculate</mat-icon>
+                            <span>Guna: {{ person.gunaScore }} / 36</span>
+                          </div>
+                          <div class="hm-snap-row">
+                            <mat-icon [style.color]="person.manglikStatus === 'No' ? '#4caf50' : '#f44336'">
+                              {{ person.manglikStatus === 'No' ? 'check_circle' : 'cancel' }}
+                            </mat-icon>
+                            <span>Manglik: {{ person.manglikStatus }}</span>
+                          </div>
+                        </div>
+                        @if (person.doshas.length) {
+                          <div class="hm-snap-doshas">
+                            @for (d of person.doshas; track $index) {
+                              <mat-chip class="hm-dosha-chip" [disableRipple]="true">{{ d }}</mat-chip>
+                            }
+                          </div>
+                        } @else {
+                          <div class="hm-snap-no-dosha">
+                            <mat-icon>shield</mat-icon> No major doshas
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+
+          </div>
+        </mat-tab>
+
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!--  TAB 3 — Horoscope (Kundli + Doshas + Profiles)             -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="hm-tab-icon">auto_awesome</mat-icon>Horoscope
+          </ng-template>
+
+          <div class="hm-tab-content">
+            <mat-accordion multi>
+
+              <!-- Kundli Matching -->
+              <mat-expansion-panel class="hm-panel" expanded>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon class="hm-panel-icon">grid_view</mat-icon>
+                    Kundli Matching — Ashtakoot
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{ hr.kundliMatching.totalScore }} / {{ hr.kundliMatching.maxScore }}
+                    &nbsp;•&nbsp; {{ hr.kundliMatching.compatibilityCategory }}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <div class="hm-kootas-grid">
+                  @for (koota of kootasArray(); track koota.key) {
+                    <mat-card class="hm-koota-card" appearance="outlined">
+                      <div class="hm-koota-top">
+                        <span class="hm-koota-name">{{ koota.label }}</span>
+                        <span class="hm-koota-score"
+                          [style.color]="getScoreColor((koota.score / koota.maxScore) * 100)">
+                          {{ koota.score }} / {{ koota.maxScore }}
+                        </span>
+                      </div>
+                      <div class="hm-prog-outer hm-prog-sm">
+                        <div class="hm-prog-inner"
+                          [style.width]="(koota.score / koota.maxScore) * 100 + '%'"
+                          [style.background-color]="getScoreColor((koota.score / koota.maxScore) * 100)">
+                        </div>
+                      </div>
+                      <p class="hm-koota-desc">{{ koota.description }}</p>
+                    </mat-card>
+                  }
+                </div>
+
+                <!-- Kundli footer -->
+                <div class="hm-kundli-footer">
+                  <mat-icon>calculate</mat-icon>
+                  <span>
+                    Total: <strong>{{ hr.kundliMatching.totalScore }} / {{ hr.kundliMatching.maxScore }}</strong>
+                    &nbsp;&mdash;&nbsp;
+                    <strong [style.color]="getScoreColor(hr.kundliMatching.compatibilityPercentage)">
+                      {{ hr.kundliMatching.compatibilityPercentage | number:'1.0-1' }}% Compatible
+                    </strong>
+                    &nbsp;&mdash;&nbsp; {{ hr.kundliMatching.compatibilityCategory }}
+                  </span>
+                </div>
+              </mat-expansion-panel>
+
+              <!-- Dosha Analysis -->
+              <mat-expansion-panel class="hm-panel" expanded>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon class="hm-panel-icon">warning_amber</mat-icon>
+                    Dosha Analysis
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div class="hm-doshas-grid">
+                  @for (dosha of doshasArray(); track dosha.key) {
+                    <mat-card class="hm-dosha-card"
+                      [ngClass]="dosha.entry.detected ? 'dosha-detected' : 'dosha-clear'"
+                      appearance="outlined">
+                      <mat-card-header>
+                        <mat-icon mat-card-avatar
+                          [ngClass]="dosha.entry.detected ? 'icon-red' : 'icon-green'">
+                          {{ dosha.entry.detected ? 'cancel' : 'check_circle' }}
+                        </mat-icon>
+                        <mat-card-title>{{ dosha.label }}</mat-card-title>
+                        <mat-card-subtitle>
+                          <mat-chip class="hm-severity-chip"
+                            [ngClass]="getSeverityClass(dosha.entry.severity)"
+                            [disableRipple]="true">
+                            {{ dosha.entry.severity }}
+                          </mat-chip>
+                        </mat-card-subtitle>
+                      </mat-card-header>
+                      <mat-card-content>
+                        @if (!dosha.entry.detected) {
+                          <p class="hm-no-dosha">
+                            <mat-icon>check_circle</mat-icon> No Dosha Detected
+                          </p>
+                        }
+                        <p class="hm-dosha-impact">{{ dosha.entry.marriageImpact }}</p>
+                        @if (dosha.entry.remedies.length) {
+                          <div class="hm-remedies">
+                            <p class="hm-remedies-title">
+                              <mat-icon>healing</mat-icon> Remedies
+                            </p>
+                            <ul>
+                              @for (r of dosha.entry.remedies; track $index) {
+                                <li>{{ r }}</li>
+                              }
+                            </ul>
+                          </div>
+                        }
+                      </mat-card-content>
+                    </mat-card>
+                  }
+                </div>
+              </mat-expansion-panel>
+
+              <!-- Profile Details -->
+              <mat-expansion-panel class="hm-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon class="hm-panel-icon">people</mat-icon>
+                    Full Profile Details
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div class="hm-profiles-grid">
+                  @for (profile of [p1, p2]; track profile.userId) {
+                    <mat-card class="hm-profile-card" appearance="outlined">
+                      <div class="hm-photo-wrap">
+                        @if (getPrimaryPhoto(profile)) {
+                          <img [src]="getPrimaryPhoto(profile)" [alt]="profile.firstName"
+                            class="hm-photo"/>
+                        } @else {
+                          <div class="hm-photo hm-photo-placeholder">
+                            <mat-icon>person</mat-icon>
+                          </div>
+                        }
+                        @if (isPrimaryPhotoVerified(profile)) {
+                          <span class="hm-photo-verified" matTooltip="Verified">
+                            <mat-icon>verified</mat-icon>
+                          </span>
+                        }
+                      </div>
+
+                      <div class="hm-profile-header">
+                        <h3 class="hm-profile-name">{{ profile.firstName }} {{ profile.lastName }}</h3>
+                        <mat-chip [disableRipple]="true"
+                          [ngClass]="profile.gender === 'bride' ? 'chip-bride' : 'chip-groom'">
+                          {{ profile.gender | titlecase }}
+                        </mat-chip>
+                      </div>
+
+                      <mat-divider></mat-divider>
+                      <div class="hm-profile-body">
+                        <div class="hm-detail-row">
+                          <mat-icon>cake</mat-icon>
+                          <span>{{ profile.age }} yrs &bull; {{ profile.dateOfBirth }}</span>
+                        </div>
+                        <div class="hm-detail-row">
+                          <mat-icon>temple_hindu</mat-icon>
+                          <span>{{ profile.religion }} &bull; {{ profile.motherTongue }}</span>
+                        </div>
+                        <div class="hm-detail-row">
+                          <mat-icon>height</mat-icon>
+                          <span>{{ profile.height }} &bull; {{ profile.weight }}</span>
+                        </div>
+                        <div class="hm-detail-row">
+                          <mat-icon>school</mat-icon>
+                          <span>{{ profile.education.level }}, {{ profile.education.field }}</span>
+                        </div>
+                        <div class="hm-detail-row">
+                          <mat-icon>work</mat-icon>
+                          <span>{{ profile.occupation.title }} @ {{ profile.occupation.company }}</span>
+                        </div>
+                        <div class="hm-detail-row">
+                          <mat-icon>location_on</mat-icon>
+                          <span>{{ profile.location.city }}, {{ profile.location.state }}
+                            @if (profile.location.willingToRelocate) {
+                              <mat-chip class="hm-relocate-chip" [disableRipple]="true">
+                                Relocatable
+                              </mat-chip>
+                            }
+                          </span>
+                        </div>
+                      </div>
+
+                      <mat-divider></mat-divider>
+                      <div class="hm-horoscope-body">
+                        <p class="hm-sub-label">Horoscope</p>
+                        <div class="hm-detail-row">
+                          <mat-icon>auto_awesome</mat-icon>
+                          <span>{{ profile.horoscope.rashi }} &bull; {{ profile.horoscope.nakshatra }}</span>
+                        </div>
+                        <div class="hm-detail-row">
+                          <mat-icon>flare</mat-icon>
+                          <span>Manglik:&nbsp;
+                            <mat-chip [disableRipple]="true"
+                              [ngClass]="profile.horoscope.manglikStatus === 'No' ? 'chip-green' : 'chip-red'">
+                              {{ profile.horoscope.manglikStatus }}
+                            </mat-chip>
+                          </span>
+                        </div>
+                        <div class="hm-detail-row">
+                          <mat-icon>schedule</mat-icon>
+                          <span>{{ profile.horoscope.timeOfBirth }} &bull; {{ profile.horoscope.placeOfBirth }}</span>
+                        </div>
+                        @if (profile.horoscope.documentUrl) {
+                          <a mat-stroked-button class="hm-doc-btn suhana-btn-outline"
+                            [href]="profile.horoscope.documentUrl" target="_blank"
+                            rel="noopener noreferrer">
+                            <mat-icon>picture_as_pdf</mat-icon> View Horoscope
+                          </a>
+                        }
+                      </div>
+                    </mat-card>
+                  }
+                </div>
+
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+        </mat-tab>
+
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!--  TAB 4 — Planets                                             -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="hm-tab-icon">nights_stay</mat-icon>Planets
+          </ng-template>
+
+          <div class="hm-tab-content">
+
+            <!-- Marriage Prospects — always visible above sub-tabs -->
+            @if (hr.planetaryCompatibility.marriageProspects) {
+              <mat-card class="hm-marriage-card" appearance="outlined">
+                <mat-card-header>
+                  <mat-icon mat-card-avatar class="icon-rose">church</mat-icon>
+                  <mat-card-title>Marriage Prospects</mat-card-title>
+                  <mat-card-subtitle>
+                    Confidence:
+                    <strong [style.color]="getScoreColor(hr.planetaryCompatibility.confidenceScore)">
+                      {{ hr.planetaryCompatibility.confidenceScore }}%
+                    </strong>
+                  </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>{{ hr.planetaryCompatibility.marriageProspects }}</p>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- ── Inner sub-tabs ────────────────────────────────────────── -->
+            <mat-tab-group animationDuration="250ms" class="hm-inner-tab-group"
+              mat-stretch-tabs="false">
+
+              <!-- ── Sub-tab 1: Birth Charts ──────────────────────────── -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="hm-inner-tab-icon">grid_on</mat-icon>Birth Charts
+                </ng-template>
+                <div class="hm-inner-tab-content">
+                  <app-birth-chart
+                    [personOne]="hr.horoscopeGeneration.personOne"
+                    [personTwo]="hr.horoscopeGeneration.personTwo"
+                    [personOneName]="p1.firstName"
+                    [personTwoName]="p2.firstName"
+                    [personOneDob]="p1.dateOfBirth"
+                    [personTwoDob]="p2.dateOfBirth"
+                    [personOneTime]="p1.horoscope.timeOfBirth ? p1.horoscope.timeOfBirth : ''"
+                    [personTwoTime]="p2.horoscope.timeOfBirth ? p2.horoscope.timeOfBirth : ''"
+                    [personOnePlace]="p1.horoscope.placeOfBirth ? p1.horoscope.placeOfBirth : ''"
+                    [personTwoPlace]="p2.horoscope.placeOfBirth ? p2.horoscope.placeOfBirth : ''"
+                    >
+                  </app-birth-chart>
+                </div>
+              </mat-tab>
+
+              <!-- ── Sub-tab 2: Rasi Analysis ──────────────────────────── -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="hm-inner-tab-icon">language</mat-icon>Rasi
+                </ng-template>
+                <div class="hm-inner-tab-content">
+                  <div class="hm-analysis-grid">
+                    @for (person of [
+                      { label: p1.firstName, text: hr.advancedAstrologyDetails.rasiAnalysis.personOne },
+                      { label: p2.firstName, text: hr.advancedAstrologyDetails.rasiAnalysis.personTwo }
+                    ]; track person.label) {
+                      <mat-card class="hm-analysis-card" appearance="outlined">
+                        <mat-card-header>
+                          <mat-icon mat-card-avatar class="icon-rose">person</mat-icon>
+                          <mat-card-title>{{ person.label }}</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <p class="hm-analysis-text">{{ person.text }}</p>
+                        </mat-card-content>
+                      </mat-card>
+                    }
+                  </div>
+                </div>
+              </mat-tab>
+
+              <!-- ── Sub-tab 3: Navamsa Analysis ───────────────────────── -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="hm-inner-tab-icon">blur_circular</mat-icon>Navamsa
+                </ng-template>
+                <div class="hm-inner-tab-content">
+                  <div class="hm-analysis-grid">
+                    @for (person of [
+                      { label: p1.firstName, text: hr.advancedAstrologyDetails.navamsaAnalysis.personOne },
+                      { label: p2.firstName, text: hr.advancedAstrologyDetails.navamsaAnalysis.personTwo }
+                    ]; track person.label) {
+                      <mat-card class="hm-analysis-card" appearance="outlined">
+                        <mat-card-header>
+                          <mat-icon mat-card-avatar class="icon-rose">person</mat-icon>
+                          <mat-card-title>{{ person.label }}</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <p class="hm-analysis-text">{{ person.text }}</p>
+                        </mat-card-content>
+                      </mat-card>
+                    }
+                  </div>
+                </div>
+              </mat-tab>
+
+              <!-- ── Sub-tab 4: Planet Positions ───────────────────────── -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="hm-inner-tab-icon">public</mat-icon>Planets
+                </ng-template>
+                <div class="hm-inner-tab-content">
+                  <div class="hm-planets-grid">
+                    @for (person of [
+                      { label: p1.firstName, planets: planetsPersonOne(), gen: hr.horoscopeGeneration.personOne },
+                      { label: p2.firstName, planets: planetsPersonTwo(), gen: hr.horoscopeGeneration.personTwo }
+                    ]; track person.label) {
+                      <mat-card class="hm-planet-col-card" appearance="outlined">
+                        <mat-card-header>
+                          <mat-icon mat-card-avatar class="icon-rose">person</mat-icon>
+                          <mat-card-title>{{ person.label }}</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <div class="hm-chips-row">
+                            <mat-chip [disableRipple]="true" class="chip-position">
+                              Rasi: {{ person.gen.rasi }}
+                            </mat-chip>
+                            <mat-chip [disableRipple]="true" class="chip-position">
+                              Lagna: {{ person.gen.lagna }}
+                            </mat-chip>
+                            <mat-chip [disableRipple]="true" class="chip-position">
+                              Nakshatra: {{ person.gen.nakshatra }}
+                            </mat-chip>
+                            <mat-chip [disableRipple]="true" class="chip-position">
+                              Navamsa: {{ person.gen.navamsaLagna }}
+                            </mat-chip>
+                          </div>
+                          <table class="hm-planet-table">
+                            <thead>
+                              <tr><th>Planet</th><th>Position</th></tr>
+                            </thead>
+                            <tbody>
+                              @for (p of person.planets; track p.planet) {
+                                <tr>
+                                  <td class="hm-planet-name">{{ p.planet }}</td>
+                                  <td class="hm-planet-pos">
+                                    {{ p.position }}
+                                    @if (p.isRetrograde) {
+                                      <mat-chip class="chip-retro" [disableRipple]="true">℞</mat-chip>
+                                    }
+                                  </td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </mat-card-content>
+                      </mat-card>
+                    }
+                  </div>
+                </div>
+              </mat-tab>
+
+              <!-- ── Sub-tab 5: Planet-by-Planet Compatibility ──────────── -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="hm-inner-tab-icon">compare</mat-icon>Compatibility
+                </ng-template>
+                <div class="hm-inner-tab-content">
+                  @if (planetaryComparison().length) {
+                    <mat-card class="hm-planet-compare-card" appearance="outlined">
+                      <mat-card-content>
+                        <div class="hm-compare-table-wrap">
+                          <table class="hm-compare-table">
+                            <thead>
+                              <tr>
+                                <th>Planet</th>
+                                <th>{{ p1.firstName }}</th>
+                                <th>{{ p2.firstName }}</th>
+                                <th>Compatibility</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (row of planetaryComparison(); track row.planet) {
+                                <tr>
+                                  <td class="hm-cmp-planet">{{ row.planet }}</td>
+                                  <td class="hm-cmp-pos">{{ row.personOnePos }}</td>
+                                  <td class="hm-cmp-pos">{{ row.personTwoPos }}</td>
+                                  <td class="hm-cmp-compat">{{ row.compatibility }}</td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                  }
+                </div>
+              </mat-tab>
+
+              <!-- ── Sub-tab 6: House Placements ───────────────────────── -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="hm-inner-tab-icon">home</mat-icon>Houses
+                </ng-template>
+                <div class="hm-inner-tab-content">
+                  <div class="hm-house-grid">
+                    @for (person of [
+                      { label: p1.firstName, houses: housePlacementsOne() },
+                      { label: p2.firstName, houses: housePlacementsTwo() }
+                    ]; track person.label) {
+                      <mat-card class="hm-house-card" appearance="outlined">
+                        <mat-card-header>
+                          <mat-icon mat-card-avatar class="icon-rose">account_circle</mat-icon>
+                          <mat-card-title>{{ person.label }}</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <table class="hm-house-table">
+                            <thead>
+                              <tr><th>House</th><th>Placement</th></tr>
+                            </thead>
+                            <tbody>
+                              @for (h of person.houses; track h.house) {
+                                <tr [ngClass]="h.placement.includes('Empty') ? 'house-empty' : 'house-occupied'">
+                                  <td class="hm-house-num">{{ h.house }}</td>
+                                  <td class="hm-house-val">{{ h.placement }}</td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </mat-card-content>
+                      </mat-card>
+                    }
+                  </div>
+                </div>
+              </mat-tab>
+
+            </mat-tab-group>
+
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--  DISCLAIMER                                                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="suhana-container hm-disclaimer-wrap">
+      <mat-card class="hm-disclaimer" appearance="outlined">
+        <mat-card-content>
+          <div class="hm-disclaimer-inner">
+            <mat-icon class="hm-disclaimer-icon">warning_amber</mat-icon>
+            <p class="hm-disclaimer-text">
+              <strong>Disclaimer:</strong> This horoscope compatibility report is generated by AI and is
+              intended for informational purposes only. Results may not be 100% accurate. Please consult a
+              certified Vedic astrologer for a detailed and personalised analysis before making any important
+              life decisions.
+            </p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+  }
+  <!-- end @else (report exists) -->
+}
+<!-- end @else if (data()) -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  SCROLL-TO-TOP FAB                                                    -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+@if (showScrollTop()) {
+  <button mat-fab class="hm-fab-top" (click)="scrollToTop()" matTooltip="Back to top">
+    <mat-icon>keyboard_arrow_up</mat-icon>
+  </button>
+}

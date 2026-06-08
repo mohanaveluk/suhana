@@ -1,0 +1,749 @@
+// ─── Shared tokens (mirrors global :root) ────────────────────────────────────
+$maroon        : var(--suhana-maroon, #800020);
+$rose-gold     : var(--suhana-rose-gold, #b76e79);
+$rose-lighter  : var(--suhana-rose-gold-lighter, #f0d4d8);
+$rose-light    : var(--suhana-rose-gold-light, #d4a0a7);
+$ivory-warm    : var(--suhana-ivory-warm, #fdf8f4);
+$gold          : var(--suhana-gold, #c9a84c);
+$text-primary  : var(--suhana-text-primary, #3d2c2e);
+$text-secondary: var(--suhana-text-secondary, #6b5557);
+$shadow        : var(--suhana-shadow, rgba(183,110,121,.15));
+$gradient      : var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
+
+// ─── Keyframes ────────────────────────────────────────────────────────────────
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-18px) rotate(6deg); }
+}
+
+@keyframes successPop {
+  0%   { opacity: 0; transform: scale(0.82) translateY(28px); }
+  60%  { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: scale(1); }
+  40%       { transform: scale(1.18); }
+  70%       { transform: scale(0.95); }
+}
+
+@keyframes socialPulse {
+  0%, 100% { box-shadow: 0 4px 24px rgba(0,0,0,.18); }
+  50%       { box-shadow: 0 8px 36px rgba(0,0,0,.28); }
+}
+
+// ─── Page wrapper ─────────────────────────────────────────────────────────────
+.contact-page {
+  background: $ivory-warm;
+  overflow-x: hidden;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 1. HERO
+// ══════════════════════════════════════════════════════════════════════════════
+.cu-hero {
+  position: relative;
+  background: linear-gradient(135deg, #5c0018 0%, #800020 30%, #b76e79 70%, #c9a84c 100%);
+  min-height: 460px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 80px 0 120px;
+
+  @media (max-width: 768px) {
+    min-height: 360px;
+    padding: 60px 0 100px;
+  }
+
+  // Decorative floating circles
+  &__decor { position: absolute; inset: 0; pointer-events: none; }
+
+  &__circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255, .06);
+    animation: heroFloat linear infinite;
+
+    &--1 {
+      width: 340px; height: 340px;
+      top: -80px; right: -60px;
+      animation-duration: 12s;
+    }
+    &--2 {
+      width: 220px; height: 220px;
+      bottom: 40px; left: 8%;
+      animation-duration: 9s;
+      animation-delay: -4s;
+      background: rgba(201,168,76,.12);
+    }
+    &--3 {
+      width: 140px; height: 140px;
+      top: 30%; right: 22%;
+      animation-duration: 7s;
+      animation-delay: -2s;
+    }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    backdrop-filter: blur(8px);
+    color: white;
+    border-radius: 24px;
+    padding: 6px 18px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+
+    mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+  }
+
+  &__title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    color: white;
+    margin: 0 0 16px;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 12px rgba(0,0,0,.25);
+  }
+
+  &__subtitle {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: rgba(255,255,255,.88);
+    max-width: 600px;
+    margin: 0 auto 36px;
+    line-height: 1.65;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    height: 48px;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.3px;
+
+    mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; margin-right: 4px; }
+
+    &.suhana-btn-outline {
+      background: rgba(255,255,255,.12) !important;
+      border-color: rgba(255,255,255,.55) !important;
+      color: white !important;
+      backdrop-filter: blur(6px);
+      &:hover { background: rgba(255,255,255,.22) !important; }
+    }
+  }
+
+  &__wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+
+    svg { width: 100%; display: block; }
+  }
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 2. INFO CARDS
+// ══════════════════════════════════════════════════════════════════════════════
+.cu-info-section {
+  background: $ivory-warm;
+}
+
+.cu-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+
+  @media (max-width: 900px)  { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+  @media (min-width: 600px) and (max-width: 900px) { grid-template-columns: repeat(2, 1fr); max-width: 100%; }
+}
+
+.cu-info-card {
+  border-radius: 18px !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  cursor: default;
+  outline: none;
+
+  &:hover, &:focus {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px $shadow !important;
+  }
+
+  &--featured {
+    background: linear-gradient(160deg, #fff9fb 0%, #fff4f7 100%) !important;
+    border-color: $rose-gold !important;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: $gradient;
+    }
+  }
+
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 32px 24px !important;
+    gap: 8px;
+  }
+
+  &__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+
+    mat-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+      color: white;
+    }
+
+    &--email { background: linear-gradient(135deg, #b76e79, #800020); }
+    &--phone { background: linear-gradient(135deg, #800020, #5c0018); }
+    &--hours { background: linear-gradient(135deg, #c9a84c, #a07828); }
+  }
+
+  &__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $maroon;
+    margin: 4px 0 0;
+  }
+
+  &__value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $rose-gold;
+    text-decoration: none;
+    transition: color 0.18s;
+    display: block;
+
+    &:hover { color: $maroon; text-decoration: underline; }
+
+    &--plain {
+      color: $text-primary;
+      pointer-events: none;
+    }
+  }
+
+  &__desc {
+    font-size: 0.88rem;
+    color: $text-secondary;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: $rose-lighter;
+    color: $maroon;
+    font-size: 0.76rem;
+    font-weight: 600;
+
+    mat-icon { font-size: 0.8rem; width: 0.8rem; height: 0.8rem; }
+
+    &--active {
+      background: #e8f5e9;
+      color: #2e7d32;
+
+      mat-icon { color: #43a047; font-size: 0.65rem !important; width: 0.65rem; height: 0.65rem; }
+    }
+  }
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 3. FORM SECTION
+// ══════════════════════════════════════════════════════════════════════════════
+.cu-form-section {
+  background: linear-gradient(180deg, $ivory-warm 0%, #fff 100%);
+
+  &__inner {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 48px;
+    align-items: start;
+
+    @media (max-width: 960px) { grid-template-columns: 1fr; gap: 32px; }
+  }
+}
+
+// ── Aside panel ───────────────────────────────────────────────────────────────
+.cu-form-aside {
+  position: sticky;
+  top: 84px;
+  padding: 40px 32px;
+  background: $gradient;
+  border-radius: 20px;
+  color: white;
+
+  @media (max-width: 960px) {
+    position: static;
+    padding: 28px 24px;
+    border-radius: 16px;
+  }
+
+  &__icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    mat-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+      color: white;
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 12px;
+  }
+
+  &__text {
+    font-size: 0.92rem;
+    color: rgba(255,255,255,.85);
+    line-height: 1.65;
+    margin: 0 0 24px;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,.9);
+
+      mat-icon {
+        font-size: 1.1rem;
+        width: 1.1rem;
+        height: 1.1rem;
+        color: #c9f0cc;
+      }
+    }
+  }
+}
+
+// ── Form card ─────────────────────────────────────────────────────────────────
+.cu-form-card-wrap { min-width: 0; }
+
+.cu-form-card {
+  border-radius: 20px !important;
+  box-shadow: 0 8px 40px $shadow !important;
+  overflow: hidden;
+
+  &__band {
+    height: 5px;
+    background: $gradient;
+  }
+
+  &__header {
+    padding: 24px 32px 8px !important;
+
+    .mat-mdc-card-title {
+      font-size: 1.35rem !important;
+      font-weight: 700;
+      color: $maroon !important;
+    }
+    .mat-mdc-card-subtitle {
+      color: $text-secondary !important;
+    }
+  }
+
+  mat-card-content { padding: 0 32px 32px !important; }
+
+  @media (max-width: 600px) {
+    &__header { padding: 20px 20px 4px !important; }
+    mat-card-content { padding: 0 20px 24px !important; }
+  }
+}
+
+// ── Reactive form layout ──────────────────────────────────────────────────────
+.cu-form {
+  padding-top: 16px;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 4px;
+
+    mat-form-field { width: 100%; }
+
+    @media (max-width: 600px) { grid-template-columns: 1fr; }
+  }
+
+  &__full {
+    width: 100%;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  &__privacy {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: $text-secondary;
+    margin: 0;
+
+    mat-icon { font-size: 1rem; width: 1rem; height: 1rem; color: $rose-gold; }
+  }
+
+  &__submit {
+    height: 48px;
+    min-width: 180px;
+    font-size: 0.95rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+
+    mat-spinner { --mdc-circular-progress-active-indicator-color: white; }
+    mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; margin: 0 5px -4px 0;}
+  }
+}
+
+// ── Success card ──────────────────────────────────────────────────────────────
+.cu-success-card {
+  border-radius: 20px !important;
+  box-shadow: 0 8px 40px $shadow !important;
+  animation: successPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+  mat-card-content {
+    padding: 48px 40px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    @media (max-width: 600px) { padding: 32px 24px !important; }
+  }
+}
+
+.cu-success {
+  &__icon-wrap {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    animation: iconBounce 0.8s ease 0.4s both;
+  }
+
+  &__icon {
+    font-size: 3rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    color: #2e7d32 !important;
+  }
+
+  &__title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: $maroon;
+    margin: 0 0 12px;
+  }
+
+  &__message {
+    font-size: 0.98rem;
+    color: $text-secondary;
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 0 20px;
+  }
+
+  &__detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 24px;
+    background: rgba(201,168,76,.1);
+    border: 1px solid rgba(201,168,76,.35);
+    font-size: 0.88rem;
+    color: #6d4800;
+    font-weight: 500;
+    margin-bottom: 24px;
+
+    mat-icon { font-size: 1rem; width: 1rem; height: 1rem; color: $gold; }
+  }
+
+  &__divider {
+    width: 100%;
+    margin: 8px 0 28px !important;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    button mat-icon {
+      font-size: 1.1rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      margin-right: 4px;
+    }
+  }
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 4. SOCIAL SECTION
+// ══════════════════════════════════════════════════════════════════════════════
+.cu-social-section {
+  background: linear-gradient(180deg, #fff 0%, $ivory-warm 100%);
+  padding: 64px 0;
+
+  &__inner { text-align: center; }
+
+  @media (max-width: 768px) { padding: 40px 0; }
+}
+
+.cu-social-grid {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+
+  @media (max-width: 480px) { gap: 16px; }
+}
+
+.cu-social-btn {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 72px !important;
+  height: 72px !important;
+  border-radius: 50% !important;
+  color: white !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.18) !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease !important;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.08);
+    box-shadow: 0 12px 36px rgba(0,0,0,.28) !important;
+  }
+
+  svg { flex-shrink: 0; }
+
+  &__label {
+    display: none; // visually hidden but present for semantics via aria-label
+  }
+
+  &--facebook  { background: #1877f2 !important; }
+  &--instagram {
+    background: linear-gradient(45deg, #f09433, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888) !important;
+  }
+  &--youtube   { background: #ff0000 !important; }
+  &--twitter   { background: #000000 !important; }
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 5. FOOTER CTA
+// ══════════════════════════════════════════════════════════════════════════════
+.cu-cta-section {
+  background: $ivory-warm;
+}
+
+.cu-cta-card {
+  border-radius: 24px !important;
+  background: $gradient !important;
+  border: none !important;
+  overflow: hidden;
+  position: relative;
+
+  &__glow {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.07);
+    top: -140px;
+    right: -80px;
+    pointer-events: none;
+  }
+
+  &__content {
+    padding: 48px 48px !important;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      text-align: center;
+      padding: 36px 28px !important;
+      gap: 24px;
+    }
+  }
+
+  &__icon-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 2.4rem;
+      width: 2.4rem;
+      height: 2.4rem;
+      color: white;
+    }
+  }
+
+  &__text { flex: 1; }
+
+  &__title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px;
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: rgba(255,255,255,.85);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) { justify-content: center; }
+
+    a {
+      height: 48px;
+      mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; margin-right: 4px; }
+    }
+
+    .suhana-btn-primary {
+      background: white !important;
+      color: $maroon !important;
+      &:hover { background: $rose-lighter !important; }
+    }
+
+    .suhana-btn-outline {
+      border-color: rgba(255,255,255,.7) !important;
+      color: white !important;
+      &:hover { background: rgba(255,255,255,.15) !important; }
+    }
+  }
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ══════════════════════════════════════════════════════════════════════════════
+@media (prefers-color-scheme: dark) {
+  .contact-page { background: #1a1218; }
+
+  .cu-info-section,
+  .cu-form-section,
+  .cu-cta-section { background: #1a1218; }
+
+  .cu-social-section { background: linear-gradient(180deg, #221820 0%, #1a1218 100%); }
+
+  .cu-info-card {
+    background: #261e22 !important;
+    border-color: #3d2d33 !important;
+
+    &--featured { background: #2e2026 !important; }
+  }
+
+  .cu-form-card { background: #261e22 !important; border-color: #3d2d33 !important; }
+  .cu-success-card { background: #261e22 !important; }
+
+  .cu-form-aside {
+    background: linear-gradient(135deg, #5c0018 0%, #800020 100%);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SNACKBAR OVERRIDE
+// ══════════════════════════════════════════════════════════════════════════════
+:host ::ng-deep .cu-snack-error {
+  background: #b3261e;
+  color: white;
+  border-radius: 10px;
+
+  .mat-mdc-snack-bar-action { color: #ffcdd2 !important; }
+}

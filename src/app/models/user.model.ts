@@ -128,6 +128,8 @@ export interface MatchResult {
 }
 
 export interface CompatibilityBreakdown {
+  ageGap: number;
+  income: number;
   lifestyle: number;
   education: number;
   location: number;
@@ -136,6 +138,8 @@ export interface CompatibilityBreakdown {
   career: number;
   emotional: number;
   horoscope?: number;
+  religion: number;
+  motherTongue: number;
 }
 
 export interface CompatibilityBadge {
@@ -231,6 +235,8 @@ export interface AdminStats {
   reportedProfiles: number;
   premiumUsers: number;
   newRegistrationsToday: number;
+  pendingProfiles?: number;
+  blockedProfiles?: number;
 }
 
 export interface BannerSlide {

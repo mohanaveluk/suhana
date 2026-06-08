@@ -21,9 +21,10 @@ export class ProfileService {
       const list = res.data ?? res;
       this.profiles.set(Array.isArray(list) ? list : []);
     } catch {
-      if (!this.initialized) {
-        this.profiles.set(this.generateMockProfiles());
-      }
+      // if (!this.initialized) {
+      //   this.profiles.set(this.generateMockProfiles());
+      // }
+      throw new Error('Failed to load profiles');
     }
     this.initialized = true;
   }
@@ -40,14 +41,17 @@ export class ProfileService {
    * Checks the in-memory cache first (instant). Falls back to the API.
    * The API result is merged into the cache for subsequent lookups.
    */
-  async getProfileById(id: string): Promise<UserProfile> {
+  async getProfileById(id: string, routePath:  string = 'profile-view'): Promise<UserProfile> {
     // 1 — local cache hit
     const cached = this.getProfile(id);
     if (cached) return cached;
 
     // 2 — API fetch with fallback to mock
     try {
-      const result = await firstValueFrom(this.api.getProfileById(id));
+      const result = routePath === 'profile-view'
+        ? await firstValueFrom(this.api.getProfileById(id))
+        : await firstValueFrom(this.api.getProfileByCode(id));
+
       const profile: UserProfile = result?.data ?? result;
       // Store in cache
       this.profiles.update(list => {
@@ -69,6 +73,12 @@ export class ProfileService {
 
   getProfile(userId: string): UserProfile | undefined {
     return this.profiles().find(p => p.userId === userId);
+  }
+
+  patchProfileStatus(userId: string, status: import('../models/user.model').ProfileStatus): void {
+    this.profiles.update(list =>
+      list.map(p => p.user?.id === userId ? { ...p, status } : p)
+    );
   }
 
   getProfiles(filters?: Partial<MatchPreferences>): UserProfile[] {
@@ -108,6 +118,20 @@ export class ProfileService {
     return url;
   }
 
+  async uploadAdmxPhoto(id: string, file: File): Promise<string> {
+    const res = await firstValueFrom(this.api.uploadAdmxPhoto(id, file));
+    const url: string = res?.data?.url ?? res?.imageUrl ?? '';
+    if (url) {
+      const current = this.userProfile();
+      if (current) {
+        const newPhoto = { id: res?.profileId ?? `photo_${Date.now()}`, url, isPrimary: true, isVerified: false };
+        const rest = (current.photos ?? []).map(p => ({ ...p, isPrimary: false }));
+        this.userProfile.set({ ...current, photos: [newPhoto, ...rest] });
+      }
+    }
+    return url;
+  }  
+
   async updateProfile(profile: Partial<UserProfile>): Promise<void> {
     try {
       const updated = await firstValueFrom(this.api.updateProfile(profile as Record<string, unknown>));
@@ -136,6 +160,21 @@ export class ProfileService {
     this.profiles.update(list => [...list, profile]);
     //this.api.updateNewProfile(profile);
   }
+
+  async reportProfile(userId: string, reason: string): Promise<string> {
+    // In a real app, this would call an API endpoint to report the profile.
+    try {
+      const res = await firstValueFrom(this.api.reportUser(userId, reason));
+      if (res?.status === 'success') {
+        return res?.message.toString() ?? 'Profile reported successfully.';
+      }
+      return res?.message.toString() ?? 'Failed to report profile.';
+    } catch (error) {
+      console.error(`Error reporting user ${userId}:`, error);
+      return 'Failed to report profile.';
+    }
+  }  
+
 
   private generateMockProfiles(): UserProfile[] {
     const brideNames = [

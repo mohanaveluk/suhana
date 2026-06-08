@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, Signal } from '@angular/core';
 import { ProfileService } from './profile.service';
 import { ApiService } from './api.service';
 import { AdminStats, ProfileStatus } from '../models/user.model';
@@ -12,8 +12,25 @@ export class AdminService {
   private readonly statsSignal = signal<AdminStats>({
     totalUsers: 0, activeUsers: 0, totalMatches: 0,
     successfulConnections: 0, reportedProfiles: 0,
+    pendingProfiles: 0, blockedProfiles: 0,
     premiumUsers: 0, newRegistrationsToday: 0,
   });
+
+  private readonly matchAnalyticsSignal = signal<{ labels: string[]; data: number[] } | null>(null);
+  readonly matchAnalytics = this.matchAnalyticsSignal.asReadonly();
+
+  private readonly registrationTrendsSignal = signal<{ labels: string[]; data: number[] } | null>(null);
+  readonly registrationTrends = this.registrationTrendsSignal.asReadonly();
+
+  updateProfileStatus(userId: string, status: ProfileStatus): void {
+    const previous = this.profileService.getProfile(userId)?.status;
+    this.profileService.patchProfileStatus(userId, status);
+    this.api.updateUserStatus(userId, status).subscribe({
+      error: () => {
+        if (previous) this.profileService.patchProfileStatus(userId, previous);
+      },
+    });
+  }
 
   readonly stats = computed<AdminStats>(() => {
     const s = this.statsSignal();
@@ -40,31 +57,31 @@ export class AdminService {
     } catch { /* use fallback */ }
   }
 
-  updateProfileStatus(userId: string, status: ProfileStatus): void {
-    this.api.updateUserStatus(userId, status).subscribe({ error: () => {} });
+  async loadMatchAnalytics(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.api.getMatchAnalytics());
+      if (Array.isArray(res)) {
+        this.matchAnalyticsSignal.set({
+          labels: res.map(r => r.month),
+          data: res.map(r => r.matches),
+        });
+      }
+    } catch { /* use fallback */ }
   }
 
-  getMatchAnalytics(): { labels: string[]; data: number[] } {
-    // Try to load from API asynchronously; return defaults for now
-    this.api.getMatchAnalytics().subscribe({
-      next: (res) => {
-        if (Array.isArray(res)) {
-          // Could emit via signal if needed
-        }
-      },
-      error: () => {},
-    });
-    return {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      data: [45, 62, 78, 95, 112, 134],
-    };
+  getMatchAnalytics(): Signal<{ labels: string[]; data: number[] } | null> {
+    return this.matchAnalytics;
   }
 
-  getRegistrationTrends(): { labels: string[]; data: number[] } {
-    this.api.getRegistrationTrends().subscribe({ error: () => {} });
-    return {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      data: [12, 19, 15, 22, 18, 25, 20],
-    };
+  async loadRegistrationTrends(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.api.getRegistrationTrends());
+      if (Array.isArray(res)) {
+        this.registrationTrendsSignal.set({
+          labels: res.map(r => r.day ?? r.date ?? r.week ?? r.label),
+          data: res.map(r => r.registrations ?? r.count ?? r.value ?? 0),
+        });
+      }
+    } catch { /* use fallback */ }
   }
 }

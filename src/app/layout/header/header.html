@@ -9,6 +9,7 @@
     <!-- Desktop Navigation -->
     <nav class="desktop-nav" aria-label="Main navigation">
       <a mat-button routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a mat-button routerLink="/about" routerLinkActive="active-link">About us</a>
       <a mat-button routerLink="/search" routerLinkActive="active-link">Search</a>
       <a mat-button routerLink="/matchmaking" routerLinkActive="active-link">Matches</a>
       @if (auth.authenticated()) {

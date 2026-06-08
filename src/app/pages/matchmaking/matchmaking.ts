@@ -101,4 +101,8 @@ export class MatchmakingComponent implements OnInit {
     if (score >= 70) return '#ff9800';
     return '#f44336';
   }
+
+  navigateToProfile(profileId: string): void {
+    window.location.href = `/profile-view/${profileId}`;
+  }
 }

@@ -46,7 +46,7 @@
           </div>
 
           <!-- Profile Image -->
-          <div class="match-image" [style.background-image]="'url(' + match.profile.photos[0]?.url + ')'">
+          <div class="match-image" [style.background-image]="'url(' + match.profile.photos[0]?.url + ')'" (click)="navigateToProfile(match.profile.userId)" matTooltip="View {{ match.profile.firstName }}'s profile" matTooltipPosition="above">
             <div class="match-image-overlay"></div>
             @if (match.status === 'shortlisted') {
               <div class="shortlisted-badge">
@@ -92,26 +92,57 @@
 
             <!-- Compatibility Bars -->
             <div class="compat-bars">
+            
+              @if (match.compatibilityBreakdown.lifestyle) {
               <div class="compat-bar-item">
                 <span>Lifestyle</span>
                 <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.lifestyle"></mat-progress-bar>
                 <span class="bar-value">{{ match.compatibilityBreakdown.lifestyle }}%</span>
               </div>
+              }
+              @if (match.compatibilityBreakdown.familyValues) {
               <div class="compat-bar-item">
                 <span>Family Values</span>
                 <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.familyValues"></mat-progress-bar>
                 <span class="bar-value">{{ match.compatibilityBreakdown.familyValues }}%</span>
               </div>
+              }
+              @if (match.compatibilityBreakdown.education) {
               <div class="compat-bar-item">
                 <span>Education</span>
                 <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.education"></mat-progress-bar>
                 <span class="bar-value">{{ match.compatibilityBreakdown.education }}%</span>
               </div>
+              }
+              @if (match.compatibilityBreakdown.ageGap) {
               <div class="compat-bar-item">
-                <span>Interests</span>
-                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.interests"></mat-progress-bar>
-                <span class="bar-value">{{ match.compatibilityBreakdown.interests }}%</span>
+                <span>Age Gap</span>
+                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.ageGap"></mat-progress-bar>
+                <span class="bar-value">{{ match.compatibilityBreakdown.ageGap }}%</span>
               </div>
+              }
+              @if (match.compatibilityBreakdown.income) {
+              <div class="compat-bar-item">
+                <span>Income</span>
+                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.income"></mat-progress-bar>
+                <span class="bar-value">{{ match.compatibilityBreakdown.income }}%</span>
+              </div>
+              }
+              @if (match.compatibilityBreakdown.religion) {
+              <div class="compat-bar-item">
+                <span>Religion</span>
+                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.religion"></mat-progress-bar>
+                <span class="bar-value">{{ match.compatibilityBreakdown.religion }}%</span>
+              </div>
+              }
+              @if (match.compatibilityBreakdown.career) {
+              <div class="compat-bar-item">
+                <span>Career</span>
+                <mat-progress-bar mode="determinate" [value]="match.compatibilityBreakdown.career"></mat-progress-bar>
+                <span class="bar-value">{{ match.compatibilityBreakdown.career }}%</span>
+              </div>
+              }
+            
             </div>
           </mat-card-content>
 

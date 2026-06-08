@@ -50,7 +50,7 @@
 
   .breadcrumb-current {
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--suhana-text-primary);
     white-space: nowrap;
     overflow: hidden;
@@ -329,7 +329,7 @@
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     font-size: 0.68rem;
-    font-weight: 700;
+    font-weight: 500;
     color: white;
   }
 
@@ -362,7 +362,7 @@
 
 .hero-name {
   font-size: clamp(1.6rem, 4vw, 2.4rem);
-  font-weight: 700;
+  font-weight: 600;
   color: white;
   margin: 0;
   line-height: 1.15;
@@ -479,7 +479,7 @@
     .hstat-value {
       display: block;
       font-size: 0.92rem;
-      font-weight: 600;
+      font-weight: 500;
       color: white;
     }
   }
@@ -499,7 +499,7 @@
     height: 44px;
     border-radius: 22px !important;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 500;
     box-shadow: 0 4px 20px rgba(128, 0, 32, 0.3) !important;
     transition: transform 0.2s, box-shadow 0.2s !important;
 
@@ -659,7 +659,7 @@
 
     mat-card-title {
       font-size: 1rem !important;
-      font-weight: 600 !important;
+      font-weight: 500 !important;
       color: var(--suhana-maroon) !important;
       margin: 0 !important;
     }
@@ -688,7 +688,7 @@
   padding: 2px 10px;
   border-radius: 12px;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 .yes-badge { background: #e8f5e9; color: #2e7d32; }
 .no-badge  { background: #fce4ec; color: #c62828; }
@@ -704,7 +704,7 @@
   padding: 3px 12px;
   border-radius: 14px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 // ── Info icon grid (About → Personal Details, Family) ────
@@ -774,7 +774,7 @@
 
 .info-value {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--suhana-text-primary);
   line-height: 1.4;
 }
@@ -807,7 +807,7 @@
 
     .showcase-title {
       font-size: 1.1rem;
-      font-weight: 700;
+      font-weight: 500;
       color: var(--suhana-text-primary);
       margin: 0 0 4px;
     }
@@ -844,7 +844,7 @@
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.82rem;
-    font-weight: 600;
+    font-weight: 500;
     mat-icon { font-size: 13px; width: 13px; height: 13px; }
   }
 
@@ -945,6 +945,115 @@
   }
 }
 
+.horo-doc-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  margin-top: 20px;
+  border-radius: 12px;
+  //border: 1.5px solid var(--suhana-rose-gold, #c08080);
+  border: 1px solid rgba(123, 31, 162, 0.12);
+  //background: linear-gradient(135deg, rgba(192, 128, 128, 0.07) 0%, rgba(107, 26, 26, 0.04) 100%);
+  background: linear-gradient(135deg, #ede7f6, #f3e5f5);
+  text-decoration: none;
+  cursor: pointer;
+  transition: box-shadow 0.18s, border-color 0.18s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(107, 26, 26, 0.14);
+    border-color: var(--suhana-maroon, #6b1a1a);
+  }
+
+  &__icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: var(--suhana-maroon, #6b1a1a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    color: #fff;
+    font-size: 1.8rem;
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--suhana-maroon);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--suhana-maroon, #6b1a1a);
+    color: #fff;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-size: 0.8rem;
+    color: var(--suhana-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    background: var(--suhana-maroon, #6b1a1a);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    flex-shrink: 0;
+    transition: background 0.18s;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &:hover &__btn {
+    background: var(--suhana-rose-gold, #c08080);
+  }
+
+  @media (max-width: 500px) {
+    flex-wrap: wrap;
+
+    &__btn { width: 100%; justify-content: center; }
+  }
+}
+
 // Text inside each horoscope item
 .horo-body {
   flex: 1;
@@ -959,12 +1068,12 @@
   color: #6a1b9a;
   text-transform: uppercase;
   letter-spacing: 0.65px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .horo-value {
   font-size: 0.97rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #4a148c;
 
   &.manglik-yes {
@@ -1024,7 +1133,7 @@
 
     .pref-value {
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--suhana-text-primary);
     }
   }
@@ -1115,7 +1224,7 @@
         background: var(--suhana-blush) !important;
         color: var(--suhana-maroon) !important;
         border-color: var(--suhana-maroon) !important;
-        font-weight: 600;
+        font-weight: 500;
       }
     }
   }
@@ -1165,7 +1274,7 @@
       padding: 3px 12px;
       border-radius: 14px;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 500;
 
       &.green  { background: #e8f5e9; color: #2e7d32; }
       &.amber  { background: #fff8e1; color: #e65100; }
@@ -1209,7 +1318,7 @@
     .qfv {
       display: block;
       font-size: 0.88rem;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--suhana-text-primary);
       white-space: nowrap;
       overflow: hidden;
@@ -1247,7 +1356,7 @@
 
     h2 {
       font-size: 1.45rem;
-      font-weight: 700;
+      font-weight: 500;
       color: var(--suhana-maroon);
       margin: 0;
     }
@@ -1258,7 +1367,7 @@
       color: var(--suhana-maroon);
       padding: 3px 12px;
       border-radius: 14px;
-      font-weight: 600;
+      font-weight: 500;
     }
 
     // Decorative line after
@@ -1345,7 +1454,7 @@
     padding: 3px 10px;
     border-radius: 14px;
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 3px;
@@ -1412,7 +1521,7 @@
   .cta-banner-text {
     h3 {
       font-size: 1.65rem;
-      font-weight: 700;
+      font-weight: 500;
       color: white;
       margin: 0 0 8px;
     }
@@ -1438,7 +1547,7 @@
     border-radius: 28px !important;
     height: 48px;
     font-size: 0.95rem;
-    font-weight: 700;
+    font-weight: 500;
     box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
     transition: transform 0.2s, box-shadow 0.2s !important;
     min-width: 160px;

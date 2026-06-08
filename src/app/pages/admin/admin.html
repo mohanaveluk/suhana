@@ -6,57 +6,77 @@
 
   <!-- Stats Cards -->
   <div class="stats-grid">
-    <mat-card class="stat-card" appearance="outlined">
+    <mat-card class="stat-card" appearance="outlined"  matTooltip="Total Users" matTooltipPosition="above">
       <mat-card-content>
         <div class="stat-icon users"><mat-icon>people</mat-icon></div>
         <div class="stat-data">
           <span class="stat-value">{{ adminService.stats().totalUsers }}</span>
-          <span class="stat-label">Total Users</span>
+          <span class="stat-label">Total</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card" appearance="outlined">
+    <mat-card class="stat-card" appearance="outlined" matTooltip="Active Users" matTooltipPosition="above">
       <mat-card-content>
         <div class="stat-icon active"><mat-icon>person_check</mat-icon></div>
         <div class="stat-data">
           <span class="stat-value">{{ adminService.stats().activeUsers }}</span>
-          <span class="stat-label">Active Users</span>
+          <span class="stat-label">Active</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card" appearance="outlined">
+    <mat-card class="stat-card" appearance="outlined" matTooltip="Pending Profiles" matTooltipPosition="above">
+      <mat-card-content>
+        <div class="stat-icon pending"><mat-icon>pending_actions</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ adminService.stats().pendingProfiles }}</span>
+          <span class="stat-label">Pending</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card" appearance="outlined" matTooltip="Blocked Profiles" matTooltipPosition="above">
+      <mat-card-content>
+        <div class="stat-icon blocked"><mat-icon>block</mat-icon></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ adminService.stats().blockedProfiles }}</span>
+          <span class="stat-label">Blocked</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card" appearance="outlined" matTooltip="Total Matches" matTooltipPosition="above">
       <mat-card-content>
         <div class="stat-icon matches"><mat-icon>favorite</mat-icon></div>
         <div class="stat-data">
           <span class="stat-value">{{ adminService.stats().totalMatches }}</span>
-          <span class="stat-label">Total Matches</span>
+          <span class="stat-label">Matches</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card" appearance="outlined">
+    <mat-card class="stat-card" appearance="outlined" matTooltip="Successful Connections" matTooltipPosition="above">
       <mat-card-content>
         <div class="stat-icon connections"><mat-icon>handshake</mat-icon></div>
         <div class="stat-data">
           <span class="stat-value">{{ adminService.stats().successfulConnections }}</span>
-          <span class="stat-label">Connections</span>
+          <span class="stat-label">Connex</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card" appearance="outlined">
+    <mat-card class="stat-card" appearance="outlined" matTooltip="Premium Profiles" matTooltipPosition="above">
       <mat-card-content>
         <div class="stat-icon premium"><mat-icon>star</mat-icon></div>
         <div class="stat-data">
           <span class="stat-value">{{ adminService.stats().premiumUsers }}</span>
-          <span class="stat-label">Premium Users</span>
+          <span class="stat-label">Premium</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card" appearance="outlined">
+    <mat-card class="stat-card" appearance="outlined" matTooltip="New Registrations Today" matTooltipPosition="above">
       <mat-card-content>
         <div class="stat-icon new-reg"><mat-icon>person_add</mat-icon></div>
         <div class="stat-data">
@@ -78,7 +98,8 @@
             <ng-container matColumnDef="photo">
               <th mat-header-cell *matHeaderCellDef>Photo</th>
               <td mat-cell *matCellDef="let profile">
-                <img [src]="profile.photos[0]?.url || '/avatar-default.svg'" [alt]="profile.firstName" class="table-avatar" />
+                <img [src]="profile.photos[0]?.url || '/avatar-default.svg'" [alt]="profile.firstName"
+                  class="table-avatar" />
               </td>
             </ng-container>
 
@@ -126,16 +147,16 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #actionMenu="matMenu">
-                  <button mat-menu-item>
+                  <button mat-menu-item (click)="navigateToProfile(profile.userId)" [matTooltip]="'View ' + profile.firstName + '\'s profile'" matTooltipPosition="above" >
                     <mat-icon>visibility</mat-icon> View Profile
                   </button>
-                  <button mat-menu-item>
+                  <button mat-menu-item (click)="navigateToAdminEdit(profile.user.id)">
                     <mat-icon>edit</mat-icon> Edit Profile
                   </button>
-                  <button mat-menu-item (click)="adminService.updateProfileStatus(profile.userId, 'blocked')">
+                  <button mat-menu-item (click)="adminService.updateProfileStatus(profile.user.id, 'blocked')">
                     <mat-icon>block</mat-icon> Block User
                   </button>
-                  <button mat-menu-item (click)="adminService.updateProfileStatus(profile.userId, 'active')">
+                  <button mat-menu-item (click)="adminService.updateProfileStatus(profile.user.id, 'active')">
                     <mat-icon>check_circle</mat-icon> Activate
                   </button>
                 </mat-menu>
@@ -159,13 +180,24 @@
             </mat-card-header>
             <mat-card-content>
               <div class="bar-chart">
-                @for (label of matchAnalytics.labels; track label; let i = $index) {
-                  <div class="bar-item">
-                    <div class="bar" [style.height.%]="(matchAnalytics.data[i] / 150) * 100">
-                      <span class="bar-value">{{ matchAnalytics.data[i] }}</span>
-                    </div>
-                    <span class="bar-label">{{ label }}</span>
+                @if (matchAnalytics(); as analytics) {
+                @for (label of analytics.labels; track label; let i = $index) {
+                <div class="bar-item">
+
+                  @if (analytics.data === undefined || analytics.data[i] === 0) {
+                  <div class="bar" [style.height.%]="0">
+                    <span class="bar-value">0</span>
                   </div>
+                  } @else {
+                  <div class="bar" [style.height.%]="(analytics.data[i] / (getMax(analytics.data) || 1)) * 100">
+                    <span class="bar-value">{{ analytics.data[i] }}</span>
+                  </div>
+                  }
+                  <span class="bar-label">{{ label }}</span>
+                </div>
+                }
+                } @else {
+                <p class="no-data">Loading analytics...</p>
                 }
               </div>
             </mat-card-content>
@@ -177,13 +209,23 @@
             </mat-card-header>
             <mat-card-content>
               <div class="bar-chart">
-                @for (label of registrationTrends.labels; track label; let i = $index) {
-                  <div class="bar-item">
-                    <div class="bar trend" [style.height.%]="(registrationTrends.data[i] / 30) * 100">
-                      <span class="bar-value">{{ registrationTrends.data[i] }}</span>
-                    </div>
-                    <span class="bar-label">{{ label }}</span>
+                @if (registrationTrends(); as trends) {
+                @for (label of trends.labels; track label; let i = $index) {
+                <div class="bar-item">
+                  @if (trends.data === undefined || trends.data[i] === 0) {
+                  <div class="bar trend" [style.height.%]="0">
+                    <span class="bar-value">0</span>
                   </div>
+                  } @else {
+                  <div class="bar trend" [style.height.%]="(trends.data[i] / (getMax(trends.data) || 1)) * 100">
+                    <span class="bar-value">{{ trends.data[i] }}</span>
+                  </div>
+                  }
+                  <span class="bar-label">{{ label }}</span>
+                </div>
+                }
+                } @else {
+                <p class="no-data">Loading trends...</p>
                 }
               </div>
             </mat-card-content>
@@ -203,22 +245,22 @@
           <mat-card-content>
             <div class="weight-settings">
               @for (item of [
-                {label: 'Lifestyle', value: 15},
-                {label: 'Education', value: 15},
-                {label: 'Location', value: 10},
-                {label: 'Family Values', value: 20},
-                {label: 'Interests', value: 15},
-                {label: 'Career', value: 10},
-                {label: 'Emotional', value: 10},
-                {label: 'Horoscope', value: 5}
+              {label: 'Lifestyle', value: 15},
+              {label: 'Education', value: 15},
+              {label: 'Location', value: 10},
+              {label: 'Family Values', value: 20},
+              {label: 'Interests', value: 15},
+              {label: 'Career', value: 10},
+              {label: 'Emotional', value: 10},
+              {label: 'Horoscope', value: 5}
               ]; track item.label) {
-                <div class="weight-item">
-                  <span class="weight-label">{{ item.label }}</span>
-                  <div class="weight-bar">
-                    <div class="weight-fill" [style.width.%]="item.value * 5"></div>
-                  </div>
-                  <span class="weight-value">{{ item.value }}%</span>
+              <div class="weight-item">
+                <span class="weight-label">{{ item.label }}</span>
+                <div class="weight-bar">
+                  <div class="weight-fill" [style.width.%]="item.value * 5"></div>
                 </div>
+                <span class="weight-value">{{ item.value }}%</span>
+              </div>
               }
             </div>
           </mat-card-content>
