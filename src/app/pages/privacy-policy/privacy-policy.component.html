@@ -1,0 +1,799 @@
+<div class="pp-page">
+
+  <!-- ═══════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════ -->
+  <section class="pp-hero" aria-labelledby="pp-hero-title">
+    <div class="pp-hero__decor" aria-hidden="true">
+      <span class="pp-hero__circle pp-hero__circle--1"></span>
+      <span class="pp-hero__circle pp-hero__circle--2"></span>
+      <span class="pp-hero__circle pp-hero__circle--3"></span>
+    </div>
+
+    <div class="pp-hero__content suhana-container">
+      <div class="pp-hero__badge animate-fade-in">
+        <mat-icon aria-hidden="true">shield</mat-icon>
+        <span>Your Privacy Matters</span>
+      </div>
+
+      <h1 id="pp-hero-title" class="pp-hero__title animate-fade-in-up">Privacy Policy</h1>
+
+      <p class="pp-hero__subtitle animate-fade-in-up">
+        Learn how Suhana Matrimony collects, uses, protects, and manages
+        your personal information.
+      </p>
+
+      <div class="pp-hero__meta animate-fade-in-up" aria-label="Policy dates">
+        <span class="pp-meta-chip">
+          <mat-icon aria-hidden="true">event</mat-icon>
+          Effective: {{ effectiveDate }}
+        </span>
+        <span class="pp-meta-chip">
+          <mat-icon aria-hidden="true">update</mat-icon>
+          Last updated: {{ lastUpdated }}
+        </span>
+      </div>
+
+      <div class="pp-hero__actions animate-fade-in-up">
+        <button mat-raised-button class="suhana-btn-primary pp-hero__btn"
+                (click)="printPage()" aria-label="Print this policy">
+          <mat-icon aria-hidden="true">print</mat-icon> Print
+        </button>
+        <button mat-stroked-button class="pp-hero__btn pp-hero__btn--ghost"
+                (click)="downloadPdf()" aria-label="Download PDF">
+          <mat-icon aria-hidden="true">download</mat-icon> Download PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="pp-hero__wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,40 C200,100 400,0 600,50 C800,100 1000,10 1200,55 C1350,85 1420,30 1440,50 L1440,100 L0,100 Z"
+              fill="#fdf8f4"/>
+      </svg>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       BODY: TOC sidebar + content
+  ═══════════════════════════════════════════════ -->
+  <div class="pp-body suhana-container">
+
+    <!-- ─── Sticky Table of Contents ─── -->
+    <aside class="pp-toc" aria-label="Table of contents">
+      <div class="pp-toc__header">
+        <mat-icon aria-hidden="true">list</mat-icon>
+        <span>Contents</span>
+      </div>
+      <nav>
+        <ul class="pp-toc__list" role="list">
+          @for (item of toc; track item.id) {
+            <li>
+              <button class="pp-toc__link"
+                      [class.pp-toc__link--active]="activeSection() === item.id"
+                      (click)="scrollTo(item.id)"
+                      [attr.aria-current]="activeSection() === item.id ? 'true' : null">
+                {{ item.label }}
+              </button>
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <div class="pp-toc__actions">
+        <button mat-stroked-button class="pp-toc__action-btn" (click)="printPage()"
+                aria-label="Print policy">
+          <mat-icon>print</mat-icon> Print
+        </button>
+        <button mat-stroked-button class="pp-toc__action-btn" (click)="downloadPdf()"
+                aria-label="Download PDF">
+          <mat-icon>download</mat-icon> PDF
+        </button>
+      </div>
+    </aside>
+
+    <!-- ─── Main Content ─── -->
+    <main class="pp-content" aria-label="Privacy policy content">
+
+      <!-- 1. Introduction -->
+      <section id="introduction" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--primary">
+                <mat-icon aria-hidden="true">info</mat-icon>
+              </div>
+              <h2 class="pp-section__title">1. Introduction</h2>
+            </div>
+            <p>
+              Welcome to <strong>Suhana Matrimony</strong> ("Suhana", "we", "us", or "our"). We are
+              committed to protecting your privacy and ensuring the security of your personal information.
+              This Privacy Policy describes how we collect, use, disclose, and safeguard your information
+              when you use our website, mobile application, and services (collectively, the "Platform").
+            </p>
+            <p>
+              By registering or using our Platform, you acknowledge that you have read, understood, and
+              agree to the practices described in this Privacy Policy. If you do not agree with the terms,
+              please discontinue use of the Platform immediately.
+            </p>
+            <div class="pp-highlight-box">
+              <mat-icon aria-hidden="true">shield</mat-icon>
+              <span>
+                Suhana Matrimony is a privacy-first platform. We never sell your personal data
+                to third parties and use your information solely to improve your matchmaking experience.
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 2. Information We Collect -->
+      <section id="information-collect" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--rose">
+                <mat-icon aria-hidden="true">folder_open</mat-icon>
+              </div>
+              <h2 class="pp-section__title">2. Information We Collect</h2>
+            </div>
+
+            <mat-accordion multi>
+
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>person</mat-icon> Personal Information
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Full name (first and last)</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Date of birth and age</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Gender</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Nationality and residential address</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Religion, caste, and community</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Education and occupation details</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Annual income range</mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>contact_phone</mat-icon> Contact Information
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Email address (used for login and notifications)</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Mobile number (used for OTP verification and support)</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>WhatsApp number (optional, for member communication)</mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>favorite</mat-icon> Partner Preferences
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  We collect your partner preference details — including preferred age range, height,
+                  religion, caste, education, occupation, income, and location — to power our
+                  AI-driven match recommendations.
+                </p>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>auto_awesome</mat-icon> Horoscope Information
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  If you choose to provide horoscope details (Rashi, Nakshatra, birth time, birth place,
+                  Manglik status), this information is used solely for horoscope compatibility
+                  matching within the Platform and is never shared with third parties.
+                </p>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>photo_library</mat-icon> Gallery Photos
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  Profile photos and gallery images you upload are stored on our secure servers.
+                  You control photo visibility — choose between Public, Matches Only, or Hidden.
+                  Photos are used for profile display and face verification; they are never used for
+                  training external AI models.
+                </p>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>credit_card</mat-icon> Subscription & Payment Information
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  We collect subscription plan details (Silver, Gold, or Platinum). Payment
+                  processing is handled by PCI-DSS compliant third-party payment processors.
+                  We store only the last four digits of your card, expiry month/year, and payment
+                  method type — never full card numbers or CVV codes.
+                </p>
+              </mat-expansion-panel>
+
+            </mat-accordion>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 3. How We Use Your Information -->
+      <section id="how-we-use" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--gold">
+                <mat-icon aria-hidden="true">settings</mat-icon>
+              </div>
+              <h2 class="pp-section__title">3. How We Use Your Information</h2>
+            </div>
+            <div class="pp-usage-grid">
+              <div class="pp-usage-item">
+                <mat-icon>auto_awesome</mat-icon>
+                <div>
+                  <strong>Matchmaking Services</strong>
+                  <p>Your profile data powers our AI engine to generate compatibility scores and meaningful partner recommendations.</p>
+                </div>
+              </div>
+              <div class="pp-usage-item">
+                <mat-icon>recommend</mat-icon>
+                <div>
+                  <strong>Profile Recommendations</strong>
+                  <p>We curate daily match suggestions based on your preferences, behaviour patterns, and compatibility data.</p>
+                </div>
+              </div>
+              <div class="pp-usage-item">
+                <mat-icon>support_agent</mat-icon>
+                <div>
+                  <strong>Customer Support</strong>
+                  <p>Contact information allows our support team to assist you with account, profile, or payment queries.</p>
+                </div>
+              </div>
+              <div class="pp-usage-item">
+                <mat-icon>trending_up</mat-icon>
+                <div>
+                  <strong>Service Improvements</strong>
+                  <p>Anonymised, aggregated analytics help us understand usage patterns and improve our platform features.</p>
+                </div>
+              </div>
+              <div class="pp-usage-item">
+                <mat-icon>security</mat-icon>
+                <div>
+                  <strong>Security Monitoring</strong>
+                  <p>Activity logs and device data are used to detect unauthorised access, fraud, and abuse on the platform.</p>
+                </div>
+              </div>
+              <div class="pp-usage-item">
+                <mat-icon>notifications</mat-icon>
+                <div>
+                  <strong>Communication</strong>
+                  <p>We send match alerts, interest notifications, and service updates via email, SMS, and push notifications.</p>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 4. Photo & Profile Visibility -->
+      <section id="photo-visibility" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--primary">
+                <mat-icon aria-hidden="true">visibility</mat-icon>
+              </div>
+              <h2 class="pp-section__title">4. Photo & Profile Visibility</h2>
+            </div>
+            <p>
+              You have full control over who can view your profile and photos. Three visibility
+              levels are available:
+            </p>
+            <div class="pp-visibility-grid">
+              <mat-card class="pp-visibility-card" appearance="outlined">
+                <mat-card-content>
+                  <mat-icon class="pp-visibility-card__icon pp-visibility-card__icon--public">public</mat-icon>
+                  <h3>Public</h3>
+                  <p>All registered members can view your profile and photos.</p>
+                </mat-card-content>
+              </mat-card>
+              <mat-card class="pp-visibility-card pp-visibility-card--featured" appearance="outlined">
+                <mat-card-content>
+                  <mat-icon class="pp-visibility-card__icon pp-visibility-card__icon--match">favorite</mat-icon>
+                  <h3>Matches Only</h3>
+                  <p>Only members you have expressed mutual interest with can view your full profile.</p>
+                </mat-card-content>
+              </mat-card>
+              <mat-card class="pp-visibility-card" appearance="outlined">
+                <mat-card-content>
+                  <mat-icon class="pp-visibility-card__icon pp-visibility-card__icon--hidden">lock</mat-icon>
+                  <h3>Hidden</h3>
+                  <p>Photos are hidden from all members until you choose to share them directly.</p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+            <p class="pp-note">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              Profile name, age, and location may still be partially visible to other members
+              regardless of photo visibility settings, to facilitate matchmaking.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 5. Cookies -->
+      <section id="cookies" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--rose">
+                <mat-icon aria-hidden="true">cookie</mat-icon>
+              </div>
+              <h2 class="pp-section__title">5. Cookies & Tracking Technologies</h2>
+            </div>
+            <p>
+              We use cookies and similar tracking technologies to provide and improve our services.
+              Cookies we use fall into three categories:
+            </p>
+            <mat-accordion multi>
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>settings</mat-icon> Essential Cookies</mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  Required for platform operation — session tokens, authentication state, security
+                  CSRF tokens. These cannot be disabled without breaking core functionality.
+                </p>
+              </mat-expansion-panel>
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>analytics</mat-icon> Analytics Cookies</mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  Help us understand how members use the platform — page visits, feature usage, session
+                  duration. Data is anonymised and never linked to individual profiles.
+                </p>
+              </mat-expansion-panel>
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>tune</mat-icon> Preference Cookies</mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  Remember your UI preferences — language, display settings, and filter choices —
+                  so you don't need to reconfigure on each visit.
+                </p>
+              </mat-expansion-panel>
+            </mat-accordion>
+            <p class="pp-note">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              You can manage cookie preferences from your browser settings. Disabling non-essential
+              cookies will not affect your access to core matchmaking features.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 6. Account Security -->
+      <section id="account-security" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--gold">
+                <mat-icon aria-hidden="true">lock</mat-icon>
+              </div>
+              <h2 class="pp-section__title">6. Account Security</h2>
+            </div>
+            <p>
+              We implement enterprise-grade security measures to protect your account and personal data:
+            </p>
+            <div class="pp-security-grid">
+              <div class="pp-security-item">
+                <mat-icon>https</mat-icon>
+                <span>TLS 1.3 encryption for all data in transit</span>
+              </div>
+              <div class="pp-security-item">
+                <mat-icon>storage</mat-icon>
+                <span>AES-256 encryption for data at rest</span>
+              </div>
+              <div class="pp-security-item">
+                <mat-icon>verified_user</mat-icon>
+                <span>Face verification for identity authentication</span>
+              </div>
+              <div class="pp-security-item">
+                <mat-icon>phone_iphone</mat-icon>
+                <span>OTP-based two-factor authentication</span>
+              </div>
+              <div class="pp-security-item">
+                <mat-icon>manage_accounts</mat-icon>
+                <span>Automatic session expiry and secure token refresh</span>
+              </div>
+              <div class="pp-security-item">
+                <mat-icon>monitor_heart</mat-icon>
+                <span>24/7 automated security monitoring and intrusion detection</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 7. Data Sharing -->
+      <section id="data-sharing" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--primary">
+                <mat-icon aria-hidden="true">share</mat-icon>
+              </div>
+              <h2 class="pp-section__title">7. Data Sharing Policy</h2>
+            </div>
+            <div class="pp-highlight-box pp-highlight-box--success">
+              <mat-icon aria-hidden="true">gpp_good</mat-icon>
+              <span>
+                <strong>We do not sell, rent, or trade your personal data.</strong>
+                Your information is shared only in the limited circumstances described below.
+              </span>
+            </div>
+            <mat-accordion multi>
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>people</mat-icon> With Other Members</mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  Your profile information is shared with other registered members in accordance with
+                  your visibility settings. You control what is public, restricted, or private.
+                </p>
+              </mat-expansion-panel>
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>business</mat-icon> Service Providers</mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  We share data with trusted vendors who operate under strict data processing agreements —
+                  including cloud hosting (AWS/Azure), payment processors, email delivery services,
+                  and analytics providers. These parties may not use your data for any independent purpose.
+                </p>
+              </mat-expansion-panel>
+              <mat-expansion-panel class="pp-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>gavel</mat-icon> Legal Obligations</mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  We may disclose information when required by applicable law, court order, or government
+                  regulation, or when necessary to protect the rights, property, or safety of Suhana
+                  Matrimony, our members, or the public.
+                </p>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 8. Third-Party -->
+      <section id="third-party" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--rose">
+                <mat-icon aria-hidden="true">link</mat-icon>
+              </div>
+              <h2 class="pp-section__title">8. Third-Party Services</h2>
+            </div>
+            <p>
+              Our Platform may contain links to external websites or integrate with third-party services.
+              We are not responsible for the privacy practices of those services. We encourage you to
+              review the privacy policies of any third-party sites you visit.
+            </p>
+            <p>
+              Payment processing is performed by our PCI-DSS Level 1 certified payment partners.
+              We accept Visa, MasterCard, PayPal, Google Pay, Apple Pay, Amazon Pay, and bank transfer.
+              Your full card details are never stored on Suhana servers.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 9. Children's Privacy -->
+      <section id="childrens-privacy" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--gold">
+                <mat-icon aria-hidden="true">child_care</mat-icon>
+              </div>
+              <h2 class="pp-section__title">9. Children's Privacy</h2>
+            </div>
+            <p>
+              Suhana Matrimony is intended exclusively for adults who are legally eligible for marriage.
+              We do not knowingly collect personal information from individuals under the age of 18.
+              If we discover that a minor has registered on our Platform, we will immediately deactivate
+              the account and delete all associated data.
+            </p>
+            <p>
+              If you believe a minor has created an account, please contact us at
+              <a href="mailto:support@suhanamatrimony.com">support&#64;suhanamatrimony.com</a> immediately.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 10. Your Rights -->
+      <section id="user-rights" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--primary">
+                <mat-icon aria-hidden="true">manage_accounts</mat-icon>
+              </div>
+              <h2 class="pp-section__title">10. Your Rights</h2>
+            </div>
+            <p>You have the following rights with respect to your personal data:</p>
+            <div class="pp-rights-grid">
+              <div class="pp-right-card">
+                <mat-icon>visibility</mat-icon>
+                <strong>Access</strong>
+                <p>Request a copy of all personal data we hold about you.</p>
+              </div>
+              <div class="pp-right-card">
+                <mat-icon>edit</mat-icon>
+                <strong>Update</strong>
+                <p>Correct or update inaccurate or incomplete information.</p>
+              </div>
+              <div class="pp-right-card">
+                <mat-icon>delete_forever</mat-icon>
+                <strong>Delete</strong>
+                <p>Request permanent deletion of your account and all associated data.</p>
+              </div>
+              <div class="pp-right-card">
+                <mat-icon>download</mat-icon>
+                <strong>Portability</strong>
+                <p>Download your data in a structured, machine-readable format.</p>
+              </div>
+            </div>
+            <p class="pp-note">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              To exercise any of these rights, contact us at
+              <a href="mailto:support@suhanamatrimony.com">support&#64;suhanamatrimony.com</a>.
+              We will respond within 30 days.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 11. Data Retention -->
+      <section id="data-retention" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--rose">
+                <mat-icon aria-hidden="true">schedule</mat-icon>
+              </div>
+              <h2 class="pp-section__title">11. Data Retention</h2>
+            </div>
+            <p>
+              We retain your personal data for as long as your account is active or as needed to
+              provide our services. Specific retention periods:
+            </p>
+            <mat-list class="pp-retention-list">
+              <mat-list-item>
+                <mat-icon matListItemIcon>account_circle</mat-icon>
+                <span matListItemTitle>Active Profiles</span>
+                <span matListItemLine>Retained for the duration of your membership plus 2 years.</span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item>
+                <mat-icon matListItemIcon>payment</mat-icon>
+                <span matListItemTitle>Payment Records</span>
+                <span matListItemLine>Retained for 7 years as required under Indian financial regulations.</span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item>
+                <mat-icon matListItemIcon>chat</mat-icon>
+                <span matListItemTitle>Messages</span>
+                <span matListItemLine>Retained for 1 year after account deletion for legal compliance.</span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item>
+                <mat-icon matListItemIcon>delete</mat-icon>
+                <span matListItemTitle>Deleted Accounts</span>
+                <span matListItemLine>All personal data removed within 30 days of deletion request.</span>
+              </mat-list-item>
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 12. International Users -->
+      <section id="international" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--gold">
+                <mat-icon aria-hidden="true">public</mat-icon>
+              </div>
+              <h2 class="pp-section__title">12. International Users</h2>
+            </div>
+            <p>
+              Suhana Matrimony is operated from India and is primarily intended for Indian nationals
+              and the Indian diaspora worldwide. If you access the Platform from outside India, your
+              information will be transferred to and processed in India under the applicable provisions
+              of the Digital Personal Data Protection Act (DPDPA), 2023.
+            </p>
+            <p>
+              By using our Platform from any location, you consent to the transfer of your personal
+              data to India and acknowledge that Indian data protection law will govern the processing
+              of your information.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 13. Policy Updates -->
+      <section id="policy-updates" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card" appearance="outlined">
+          <div class="pp-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--primary">
+                <mat-icon aria-hidden="true">update</mat-icon>
+              </div>
+              <h2 class="pp-section__title">13. Policy Updates</h2>
+            </div>
+            <p>
+              We may update this Privacy Policy from time to time to reflect changes in our practices,
+              technology, legal requirements, or other factors. When we make material changes, we will:
+            </p>
+            <mat-list class="pp-bullet-list">
+              <mat-list-item><mat-icon matListItemIcon>notifications</mat-icon>Notify you via email and in-app notification</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>event</mat-icon>Display the updated "Last Updated" date at the top of this page</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>info</mat-icon>Provide a 30-day notice period before significant changes take effect</mat-list-item>
+            </mat-list>
+            <p>
+              Your continued use of the Platform after the effective date of the revised Policy
+              constitutes your acceptance of the updated terms.
+            </p>
+            <div class="pp-dates-row">
+              <span class="pp-date-badge">
+                <mat-icon aria-hidden="true">event_available</mat-icon>
+                Effective Date: {{ effectiveDate }}
+              </span>
+              <span class="pp-date-badge">
+                <mat-icon aria-hidden="true">edit_calendar</mat-icon>
+                Last Updated: {{ lastUpdated }}
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 14. Contact -->
+      <section id="contact" class="pp-section" tabindex="-1">
+        <mat-card class="pp-card pp-card--contact" appearance="outlined">
+          <mat-card-content>
+            <div class="pp-section__heading">
+              <div class="pp-section__icon pp-section__icon--rose">
+                <mat-icon aria-hidden="true">contact_support</mat-icon>
+              </div>
+              <h2 class="pp-section__title pp-section__title--white">14. Contact Us</h2>
+            </div>
+            <p class="pp-contact-intro">
+              For any privacy-related questions, data requests, or concerns, please reach out to
+              our Privacy Officer:
+            </p>
+            <div class="pp-contact-grid">
+              <a class="pp-contact-item" href="mailto:support@suhanamatrimony.com"
+                 aria-label="Email our privacy team">
+                <mat-icon>mail</mat-icon>
+                <div>
+                  <strong>Email</strong>
+                  <span>support&#64;suhanamatrimony.com</span>
+                </div>
+              </a>
+              <a class="pp-contact-item" href="tel:18001237842"
+                 aria-label="Call our toll-free helpline">
+                <mat-icon>call</mat-icon>
+                <div>
+                  <strong>Toll-Free</strong>
+                  <span>1800-123-7842</span>
+                </div>
+              </a>
+            </div>
+            <mat-divider class="pp-contact-divider"></mat-divider>
+            <p class="pp-contact-address">
+              <mat-icon aria-hidden="true">location_on</mat-icon>
+              Suhana Matrimony Pvt. Ltd., Data Privacy Office,
+              Chennai, Tamil Nadu – 600 001, India.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════
+       SOCIAL FOOTER
+  ═══════════════════════════════════════════════ -->
+  <section class="pp-social suhana-section" aria-label="Social media links">
+    <div class="suhana-container pp-social__inner">
+      <h2 class="suhana-section-title">Stay Connected</h2>
+      <p class="suhana-section-subtitle">Follow us for updates, success stories, and tips.</p>
+      <div class="pp-social__grid" role="list">
+        <button mat-fab class="pp-social-btn pp-social-btn--facebook" role="listitem"
+                (click)="openSocial(socialLinks.facebookUrl)"
+                aria-label="Facebook (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </button>
+        <button mat-fab class="pp-social-btn pp-social-btn--instagram" role="listitem"
+                (click)="openSocial(socialLinks.instagramUrl)"
+                aria-label="Instagram (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+          </svg>
+        </button>
+        <button mat-fab class="pp-social-btn pp-social-btn--youtube" role="listitem"
+                (click)="openSocial(socialLinks.youtubeUrl)"
+                aria-label="YouTube (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
+          </svg>
+        </button>
+        <button mat-fab class="pp-social-btn pp-social-btn--twitter" role="listitem"
+                (click)="openSocial(socialLinks.twitterUrl)"
+                aria-label="X / Twitter (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.75l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Links Footer -->
+  <div class="pp-footer suhana-container">
+    <span>
+      <a routerLink="/terms-of-service">Terms of Service</a>
+      <mat-divider [vertical]="true" class="pp-footer__divider"></mat-divider>
+      <a routerLink="/contact">Contact Us</a>
+      <mat-divider [vertical]="true" class="pp-footer__divider"></mat-divider>
+      <a routerLink="/">Home</a>
+    </span>
+    <span class="pp-footer__copy">&copy; {{ year }} Suhana Matrimony. All rights reserved.</span>
+  </div>
+
+</div>
+
+<!-- Back to top -->
+@if (showBackToTop()) {
+  <button mat-mini-fab class="pp-back-to-top suhana-btn-primary"
+          (click)="backToTop()" aria-label="Back to top">
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
+}

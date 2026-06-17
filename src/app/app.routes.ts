@@ -132,6 +132,16 @@ export const routes: Routes = [
       import('./pages/contact/contact.component').then(m => m.ContactComponent),
   },
   {
+    path: 'privacy-policy',
+    loadComponent: () =>
+      import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent),
+  },
+  {
+    path: 'terms-of-service',
+    loadComponent: () =>
+      import('./pages/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent),
+  },
+  {
     path: '**',
     loadComponent: () =>
       import('./pages/not-found/not-found').then(m => m.NotFoundComponent),

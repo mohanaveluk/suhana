@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import {
   UserProfile, Gender, MatchPreferences,
 } from '../models/user.model';
@@ -12,21 +12,47 @@ export class ProfileService {
   private readonly userProfile = signal<UserProfile | null>(null);
   private initialized = false;
 
+  private readonly _currentPage = signal(1);
+  private readonly _totalPages = signal(1);
+  private readonly _isLoadingMore = signal(false);
+
   readonly allProfiles = this.profiles.asReadonly();
   readonly myProfile = this.userProfile.asReadonly();
+  readonly currentPage = this._currentPage.asReadonly();
+  readonly totalPages = this._totalPages.asReadonly();
+  readonly isLoadingMore = this._isLoadingMore.asReadonly();
+  readonly hasMoreProfiles = computed(() => this._currentPage() < this._totalPages());
 
   async loadProfiles(params?: Record<string, string | number>): Promise<void> {
     try {
       const res = await firstValueFrom(this.api.getProfiles(params));
       const list = res.data ?? res;
       this.profiles.set(Array.isArray(list) ? list : []);
+      if (res.page != null) this._currentPage.set(res.page);
+      if (res.totalPages != null) this._totalPages.set(res.totalPages);
     } catch {
-      // if (!this.initialized) {
-      //   this.profiles.set(this.generateMockProfiles());
-      // }
       throw new Error('Failed to load profiles');
     }
     this.initialized = true;
+  }
+
+  async loadMoreProfiles(): Promise<void> {
+    if (!this.hasMoreProfiles() || this._isLoadingMore()) return;
+    this._isLoadingMore.set(true);
+    try {
+      const nextPage = this._currentPage() + 1;
+      const res = await firstValueFrom(this.api.getProfiles({ page: nextPage }));
+      const list = res.data ?? res;
+      if (Array.isArray(list) && list.length > 0) {
+        this.profiles.update(existing => [...existing, ...list]);
+      }
+      if (res.page != null) this._currentPage.set(res.page);
+      if (res.totalPages != null) this._totalPages.set(res.totalPages);
+    } catch {
+      throw new Error('Failed to load more profiles');
+    } finally {
+      this._isLoadingMore.set(false);
+    }
   }
 
   async loadMyProfile(): Promise<void> {
@@ -99,6 +125,9 @@ export class ProfileService {
       }
       if (filters.education?.length) {
         results = results.filter(p => filters.education!.includes(p.education.level));
+      }
+      if (filters.occupations?.length) {
+        results = results.filter(p => filters.occupations!.includes(p.occupation.title));
       }
     }
     return results;

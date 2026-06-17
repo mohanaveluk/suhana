@@ -19,7 +19,7 @@ import { CommonService } from '../../services/common.service';
   styleUrl: './search.scss',
 })
 export class SearchComponent implements OnInit {
-  private readonly profileService = inject(ProfileService);
+  protected readonly profileService = inject(ProfileService);
   private readonly matchService   = inject(MatchService);
   private readonly snackBar       = inject(MatSnackBar);
   protected readonly searchService  = inject(SearchService);
@@ -60,6 +60,10 @@ export class SearchComponent implements OnInit {
     if (alreadyShortlisted.length) {
       this.shortlistedIds.set(new Set(alreadyShortlisted));
     }
+  }
+
+  async loadMoreProfiles(): Promise<void> {
+    await this.profileService.loadMoreProfiles();
   }
 
   setGender(gender: 'bride' | 'groom' | 'all'): void {
