@@ -1,0 +1,874 @@
+<div class="tos-page">
+
+  <!-- ═══════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════ -->
+  <section class="tos-hero" aria-labelledby="tos-hero-title">
+    <div class="tos-hero__decor" aria-hidden="true">
+      <span class="tos-hero__circle tos-hero__circle--1"></span>
+      <span class="tos-hero__circle tos-hero__circle--2"></span>
+      <span class="tos-hero__circle tos-hero__circle--3"></span>
+    </div>
+
+    <div class="tos-hero__content suhana-container">
+      <div class="tos-hero__badge animate-fade-in">
+        <mat-icon aria-hidden="true">gavel</mat-icon>
+        <span>Legal Agreement</span>
+      </div>
+
+      <h1 id="tos-hero-title" class="tos-hero__title animate-fade-in-up">Terms of Service</h1>
+
+      <p class="tos-hero__subtitle animate-fade-in-up">
+        Please read these terms carefully before using Suhana Matrimony services.
+      </p>
+
+      <div class="tos-hero__meta animate-fade-in-up">
+        <span class="tos-meta-chip">
+          <mat-icon aria-hidden="true">event</mat-icon>
+          Effective: {{ effectiveDate }}
+        </span>
+        <span class="tos-meta-chip">
+          <mat-icon aria-hidden="true">update</mat-icon>
+          Last updated: {{ lastUpdated }}
+        </span>
+      </div>
+
+      <div class="tos-hero__actions animate-fade-in-up">
+        <button mat-raised-button class="suhana-btn-primary tos-hero__btn"
+                (click)="printPage()" aria-label="Print these terms">
+          <mat-icon aria-hidden="true">print</mat-icon> Print
+        </button>
+        <button mat-stroked-button class="tos-hero__btn tos-hero__btn--ghost"
+                (click)="downloadPdf()" aria-label="Download PDF">
+          <mat-icon aria-hidden="true">download</mat-icon> Download PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="tos-hero__wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,50 C180,100 360,0 540,45 C720,90 900,5 1100,50 C1280,90 1380,25 1440,55 L1440,100 L0,100 Z"
+              fill="#fdf8f4"/>
+      </svg>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       BODY: sidebar + content
+  ═══════════════════════════════════════════════ -->
+  <div class="tos-body suhana-container">
+
+    <!-- ─── Sticky TOC ─── -->
+    <aside class="tos-toc" aria-label="Table of contents">
+      <div class="tos-toc__header">
+        <mat-icon aria-hidden="true">list</mat-icon>
+        <span>Contents</span>
+      </div>
+      <nav>
+        <ul class="tos-toc__list" role="list">
+          @for (item of toc; track item.id) {
+            <li>
+              <button class="tos-toc__link"
+                      [class.tos-toc__link--active]="activeSection() === item.id"
+                      (click)="scrollTo(item.id)"
+                      [attr.aria-current]="activeSection() === item.id ? 'true' : null">
+                {{ item.label }}
+              </button>
+            </li>
+          }
+        </ul>
+      </nav>
+      <div class="tos-toc__actions">
+        <button mat-stroked-button class="tos-toc__action-btn" (click)="printPage()">
+          <mat-icon>print</mat-icon> Print
+        </button>
+        <button mat-stroked-button class="tos-toc__action-btn" (click)="downloadPdf()">
+          <mat-icon>download</mat-icon> PDF
+        </button>
+      </div>
+    </aside>
+
+    <!-- ─── Main content ─── -->
+    <main class="tos-content" aria-label="Terms of service content">
+
+      <!-- 1. Acceptance -->
+      <section id="acceptance" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--primary">
+                <mat-icon aria-hidden="true">handshake</mat-icon>
+              </div>
+              <h2 class="tos-section__title">1. Acceptance of Terms</h2>
+            </div>
+            <p>
+              By accessing, registering on, or using the Suhana Matrimony platform ("Platform"),
+              you agree to be bound by these Terms of Service ("Terms"), our
+              <a routerLink="/privacy-policy">Privacy Policy</a>, and all applicable laws and
+              regulations. These Terms constitute a legally binding agreement between you and
+              Suhana Matrimony Pvt. Ltd.
+            </p>
+            <p>
+              If you do not agree to these Terms, you must immediately discontinue all use of the
+              Platform. We reserve the right to modify these Terms at any time, and your continued
+              use after notification of changes constitutes acceptance.
+            </p>
+            <div class="tos-highlight-box">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              <span>
+                These Terms were last updated on <strong>{{ lastUpdated }}</strong> and are
+                effective from <strong>{{ effectiveDate }}</strong>.
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 2. Eligibility -->
+      <section id="eligibility" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--rose">
+                <mat-icon aria-hidden="true">verified_user</mat-icon>
+              </div>
+              <h2 class="tos-section__title">2. Eligibility Requirements</h2>
+            </div>
+            <p>To use Suhana Matrimony, you must:</p>
+            <div class="tos-eligibility-grid">
+              <div class="tos-eligibility-item">
+                <mat-icon>how_to_reg</mat-icon>
+                <div>
+                  <strong>Legal Eligibility for Marriage</strong>
+                  <p>Be legally eligible for marriage under the laws of your jurisdiction. In India, this means you must be at least 18 years of age (women) or 21 years of age (men).</p>
+                </div>
+              </div>
+              <div class="tos-eligibility-item">
+                <mat-icon>fact_check</mat-icon>
+                <div>
+                  <strong>Accurate Information</strong>
+                  <p>Provide complete, accurate, and truthful information about yourself, including your marital status, identity, and personal details.</p>
+                </div>
+              </div>
+              <div class="tos-eligibility-item">
+                <mat-icon>lock_person</mat-icon>
+                <div>
+                  <strong>Account Security</strong>
+                  <p>Maintain the confidentiality of your login credentials and immediately notify us of any unauthorised access to your account.</p>
+                </div>
+              </div>
+              <div class="tos-eligibility-item">
+                <mat-icon>person_search</mat-icon>
+                <div>
+                  <strong>Marriage Intent</strong>
+                  <p>Use the Platform exclusively for genuine matrimonial purposes. Suhana is not a dating platform and does not permit casual or non-matrimonial use.</p>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 3. Account Registration -->
+      <section id="registration" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--gold">
+                <mat-icon aria-hidden="true">person_add</mat-icon>
+              </div>
+              <h2 class="tos-section__title">3. Account Registration Rules</h2>
+            </div>
+            <mat-accordion multi>
+              <mat-expansion-panel class="tos-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>badge</mat-icon> Identity Requirements</mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>You must register using your real name and valid identity</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>One account per person — duplicate accounts are not permitted</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Account sharing with other individuals is strictly prohibited</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>You are solely responsible for all activity on your account</mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+              <mat-expansion-panel class="tos-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>verified</mat-icon> Verification</mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>
+                  Suhana Matrimony employs face verification to confirm your identity. A valid
+                  government-issued photo ID may be requested for enhanced verification. Accounts
+                  that fail or refuse verification may be restricted or removed.
+                </p>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 4. User Responsibilities -->
+      <section id="user-responsibilities" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--primary">
+                <mat-icon aria-hidden="true">assignment_turned_in</mat-icon>
+              </div>
+              <h2 class="tos-section__title">4. User Responsibilities</h2>
+            </div>
+            <p>
+              As a member of Suhana Matrimony, you are expected to behave with courtesy,
+              honesty, and respect toward all other members. You are responsible for:
+            </p>
+            <div class="tos-responsibility-list">
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Keeping all profile information accurate and up to date</span>
+              </div>
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Communicating with other members in a respectful and professional manner</span>
+              </div>
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Reporting suspicious or inappropriate behaviour to our support team</span>
+              </div>
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Not misrepresenting your marital status, qualifications, or intentions</span>
+              </div>
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Maintaining the confidentiality of any information shared by other members</span>
+              </div>
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Complying with all applicable Indian laws and regulations</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 5. Profile Guidelines -->
+      <section id="profile-guidelines" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--rose">
+                <mat-icon aria-hidden="true">account_circle</mat-icon>
+              </div>
+              <h2 class="tos-section__title">5. Profile & Photo Guidelines</h2>
+            </div>
+            <mat-accordion multi>
+              <mat-expansion-panel class="tos-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>person</mat-icon> Profile Content</mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>All profile information must be truthful and current</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Profiles must represent a single individual seeking a life partner</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Contact details (phone, email, social media) may not appear in profile text</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Religious or caste information must be provided honestly</mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+              <mat-expansion-panel class="tos-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>photo_camera</mat-icon> Photo Upload Guidelines</mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Photos must be recent, clear, and genuinely represent you</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Group photos, celebrity images, or graphics are not permitted</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>No watermarks, text overlays, or contact information in photos</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Explicit, offensive, or inappropriate images are strictly prohibited</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Maximum file size: 10 MB per image; accepted formats: JPG, PNG, WebP</mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 6. Prohibited Activities -->
+      <section id="prohibited" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--gold">
+                <mat-icon aria-hidden="true">block</mat-icon>
+              </div>
+              <h2 class="tos-section__title">6. Prohibited Activities</h2>
+            </div>
+            <p>The following activities are strictly prohibited and will result in immediate account termination:</p>
+            <div class="tos-prohibited-grid">
+              <div class="tos-prohibited-item">
+                <mat-icon>person_off</mat-icon>
+                <strong>Fake Profiles</strong>
+                <p>Creating profiles with false identity, using another person's photos, or misrepresenting personal details.</p>
+              </div>
+              <div class="tos-prohibited-item">
+                <mat-icon>report</mat-icon>
+                <strong>Harassment</strong>
+                <p>Sending unsolicited messages, engaging in stalking, threatening behaviour, or any form of member harassment.</p>
+              </div>
+              <div class="tos-prohibited-item">
+                <mat-icon>money_off</mat-icon>
+                <strong>Fraudulent Activities</strong>
+                <p>Scamming members, soliciting money, engaging in dowry-related fraud, or any financial deception.</p>
+              </div>
+              <div class="tos-prohibited-item">
+                <mat-icon>manage_accounts</mat-icon>
+                <strong>Impersonation</strong>
+                <p>Pretending to be another person, a Suhana employee, or any other individual or entity.</p>
+              </div>
+              <div class="tos-prohibited-item">
+                <mat-icon>data_thresholding</mat-icon>
+                <strong>Unauthorised Data Collection</strong>
+                <p>Scraping, harvesting, or collecting other members' personal data using automated tools or manual extraction.</p>
+              </div>
+              <div class="tos-prohibited-item">
+                <mat-icon>no_adult_content</mat-icon>
+                <strong>Offensive Content</strong>
+                <p>Uploading or sharing explicit, obscene, discriminatory, or otherwise offensive content in any form.</p>
+              </div>
+              <div class="tos-prohibited-item">
+                <mat-icon>ads_click</mat-icon>
+                <strong>Commercial Solicitation</strong>
+                <p>Using the Platform to advertise products or services, recruit for organisations, or conduct any commercial activity.</p>
+              </div>
+              <div class="tos-prohibited-item">
+                <mat-icon>security</mat-icon>
+                <strong>Platform Interference</strong>
+                <p>Attempting to hack, disrupt, or reverse-engineer the Platform, or introducing malware or harmful code.</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 7. Premium Membership -->
+      <section id="membership" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--primary">
+                <mat-icon aria-hidden="true">workspace_premium</mat-icon>
+              </div>
+              <h2 class="tos-section__title">7. Premium Membership Terms</h2>
+            </div>
+            <p>
+              Suhana Matrimony offers three premium membership tiers. Paid memberships provide
+              access to enhanced features beyond the free tier.
+            </p>
+            <div class="tos-plan-grid">
+              <mat-card class="tos-plan-card" appearance="outlined">
+                <mat-card-content>
+                  <mat-icon class="tos-plan-card__icon tos-plan-card__icon--silver">star_outline</mat-icon>
+                  <h3>Silver</h3>
+                  <mat-list dense>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>View up to 50 profiles/day</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Send up to 20 interests/month</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Basic search filters</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Email support</mat-list-item>
+                  </mat-list>
+                </mat-card-content>
+              </mat-card>
+              <mat-card class="tos-plan-card tos-plan-card--featured" appearance="outlined">
+                <div class="tos-plan-card__badge">Most Popular</div>
+                <mat-card-content>
+                  <mat-icon class="tos-plan-card__icon tos-plan-card__icon--gold">star</mat-icon>
+                  <h3>Gold</h3>
+                  <mat-list dense>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Unlimited profile views</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Unlimited interests</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Advanced AI matchmaking</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Horoscope compatibility</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Priority support</mat-list-item>
+                  </mat-list>
+                </mat-card-content>
+              </mat-card>
+              <mat-card class="tos-plan-card tos-plan-card--platinum" appearance="outlined">
+                <mat-card-content>
+                  <mat-icon class="tos-plan-card__icon tos-plan-card__icon--platinum">diamond</mat-icon>
+                  <h3>Platinum</h3>
+                  <mat-list dense>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>All Gold features</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Dedicated relationship manager</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Profile boosting</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>Verified badge</mat-list-item>
+                    <mat-list-item><mat-icon matListItemIcon>check</mat-icon>24/7 phone support</mat-list-item>
+                  </mat-list>
+                </mat-card-content>
+              </mat-card>
+            </div>
+            <p class="tos-note">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              Features and pricing are subject to change. Existing subscribers will be notified
+              30 days in advance of any material changes to their plan.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 8. Payment Terms -->
+      <section id="payment" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--rose">
+                <mat-icon aria-hidden="true">credit_card</mat-icon>
+              </div>
+              <h2 class="tos-section__title">8. Payment Terms</h2>
+            </div>
+            <p>
+              All subscription fees are charged in advance for the selected billing period (monthly,
+              quarterly, or annually). Prices are displayed inclusive of applicable taxes.
+            </p>
+            <div class="tos-payment-methods">
+              <div class="tos-payment-item"><mat-icon>credit_card</mat-icon><span>Visa</span></div>
+              <div class="tos-payment-item"><mat-icon>credit_card</mat-icon><span>MasterCard</span></div>
+              <div class="tos-payment-item"><mat-icon>account_balance_wallet</mat-icon><span>PayPal</span></div>
+              <div class="tos-payment-item"><mat-icon>g_mobiledata</mat-icon><span>Google Pay</span></div>
+              <div class="tos-payment-item"><mat-icon>phone_iphone</mat-icon><span>Apple Pay</span></div>
+              <div class="tos-payment-item"><mat-icon>shopping_bag</mat-icon><span>Amazon Pay</span></div>
+              <div class="tos-payment-item"><mat-icon>account_balance</mat-icon><span>Bank Transfer</span></div>
+            </div>
+            <p>
+              By providing payment information, you authorise Suhana Matrimony to charge the
+              applicable fees. All payments are processed through PCI-DSS Level 1 compliant
+              payment gateways. We do not store full card numbers on our servers.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 9. Refund Policy -->
+      <section id="refund" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--gold">
+                <mat-icon aria-hidden="true">currency_rupee</mat-icon>
+              </div>
+              <h2 class="tos-section__title">9. Refund Policy</h2>
+            </div>
+            <div class="tos-highlight-box tos-highlight-box--info">
+              <mat-icon>info</mat-icon>
+              <span>
+                All subscription fees are <strong>non-refundable</strong> except as described below
+                or as required by applicable Indian consumer protection law.
+              </span>
+            </div>
+            <mat-accordion multi>
+              <mat-expansion-panel class="tos-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>check_circle</mat-icon> Eligible Refund Situations</mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Duplicate payment for the same subscription period</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Technical failure preventing access to paid features for more than 7 consecutive days</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Cancellation within 24 hours of the first-ever subscription purchase (cooling-off period)</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Service permanently discontinued by Suhana Matrimony</mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+              <mat-expansion-panel class="tos-panel">
+                <mat-expansion-panel-header>
+                  <mat-panel-title><mat-icon>cancel</mat-icon> Non-Eligible Situations</mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Account suspension or termination due to Terms violations</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Dissatisfaction with match quality or platform experience</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Voluntary cancellation after the 24-hour cooling-off period</mat-list-item>
+                  <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Renewal payments not cancelled prior to the renewal date</mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+            </mat-accordion>
+            <p>
+              To request a refund, contact
+              <a href="mailto:support@suhanamatrimony.com">support&#64;suhanamatrimony.com</a>
+              within 7 days of the relevant charge with your order details.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 10. Communication -->
+      <section id="communication" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--primary">
+                <mat-icon aria-hidden="true">forum</mat-icon>
+              </div>
+              <h2 class="tos-section__title">10. Communication Features</h2>
+            </div>
+            <p>
+              Messaging, interest expressions, and profile interactions are available to registered
+              members in accordance with their subscription tier. By using our communication features,
+              you agree that:
+            </p>
+            <div class="tos-responsibility-list">
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>All communications must be respectful and relevant to matrimonial intent</span>
+              </div>
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Sharing of contact information is at your own discretion and risk</span>
+              </div>
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Suhana may monitor communications for safety and policy compliance</span>
+              </div>
+              <div class="tos-responsibility-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>Messages may not contain promotional content, links to external sites, or offensive material</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 11. IP -->
+      <section id="intellectual" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--rose">
+                <mat-icon aria-hidden="true">copyright</mat-icon>
+              </div>
+              <h2 class="tos-section__title">11. Intellectual Property</h2>
+            </div>
+            <p>
+              The Suhana Matrimony name, logo, website design, software, and all platform content
+              (excluding member-submitted content) are the exclusive property of Suhana Matrimony
+              Pvt. Ltd. and are protected by Indian and international intellectual property laws.
+            </p>
+            <p>
+              By uploading photos or content to the Platform, you grant Suhana Matrimony a
+              non-exclusive, royalty-free, worldwide licence to display and use that content solely
+              within the Platform for the purpose of providing matchmaking services. You retain full
+              ownership of all content you upload.
+            </p>
+            <p>
+              You may not reproduce, distribute, modify, or create derivative works of any Platform
+              content without our prior written consent.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 12. Privacy -->
+      <section id="privacy" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--gold">
+                <mat-icon aria-hidden="true">shield</mat-icon>
+              </div>
+              <h2 class="tos-section__title">12. Privacy & Data Protection</h2>
+            </div>
+            <p>
+              Your use of the Platform is also governed by our
+              <a routerLink="/privacy-policy">Privacy Policy</a>, which is incorporated into
+              these Terms by reference. We comply with the Digital Personal Data Protection Act
+              (DPDPA), 2023, and applicable international data protection standards.
+            </p>
+            <p>
+              We do not sell your personal data to third parties. All data processing is conducted
+              as described in our Privacy Policy. You may request access to, correction of, or
+              deletion of your personal data at any time by contacting our Privacy Officer.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 13. Suspension -->
+      <section id="suspension" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--primary">
+                <mat-icon aria-hidden="true">block</mat-icon>
+              </div>
+              <h2 class="tos-section__title">13. Account Suspension & Termination</h2>
+            </div>
+            <p>
+              Suhana Matrimony reserves the right to suspend, restrict, or permanently terminate
+              any account at our sole discretion, with or without prior notice, for any of the
+              following reasons:
+            </p>
+            <mat-list class="tos-bullet-list">
+              <mat-list-item><mat-icon matListItemIcon>warning</mat-icon>Violation of these Terms of Service or our Community Guidelines</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>warning</mat-icon>Provision of false, misleading, or fraudulent information</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>warning</mat-icon>Engaging in harassment, abuse, or threatening behaviour toward other members</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>warning</mat-icon>Attempting to compromise platform security or other members' accounts</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>warning</mat-icon>Legal or regulatory requirements necessitating removal</mat-list-item>
+            </mat-list>
+            <p>
+              Upon termination, your right to access the Platform ceases immediately. Subscription
+              fees paid for any remaining period are non-refundable unless required by applicable law.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 14. Liability -->
+      <section id="liability" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--rose">
+                <mat-icon aria-hidden="true">balance</mat-icon>
+              </div>
+              <h2 class="tos-section__title">14. Limitation of Liability</h2>
+            </div>
+            <div class="tos-highlight-box">
+              <mat-icon>info</mat-icon>
+              <span>
+                The Platform is provided on an "as is" and "as available" basis. We do not guarantee
+                that use of the Platform will result in a successful matrimonial match.
+              </span>
+            </div>
+            <p>
+              To the maximum extent permitted by applicable law, Suhana Matrimony and its directors,
+              employees, and agents shall not be liable for any indirect, incidental, special,
+              consequential, or punitive damages, including but not limited to:
+            </p>
+            <mat-list class="tos-bullet-list">
+              <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Loss of data, revenue, profits, or business opportunities</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Emotional distress or personal injury arising from member interactions</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Unauthorised access to your account by a third party</mat-list-item>
+              <mat-list-item><mat-icon matListItemIcon>chevron_right</mat-icon>Actions or omissions of other members on the Platform</mat-list-item>
+            </mat-list>
+            <p>
+              Our total aggregate liability to you for any cause of action shall not exceed the
+              total subscription fees paid by you in the three months immediately preceding the event
+              giving rise to the claim.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 15. Availability -->
+      <section id="availability" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--gold">
+                <mat-icon aria-hidden="true">cloud</mat-icon>
+              </div>
+              <h2 class="tos-section__title">15. Service Availability</h2>
+            </div>
+            <p>
+              We strive to maintain 99.9% Platform availability. However, we do not warrant that
+              the Platform will be uninterrupted, error-free, or free from harmful components. We
+              may perform scheduled maintenance with advance notice, or emergency maintenance as
+              required. Service disruptions beyond our reasonable control (force majeure events)
+              do not constitute a breach of these Terms.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 16. Dispute Resolution -->
+      <section id="dispute" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--primary">
+                <mat-icon aria-hidden="true">gavel</mat-icon>
+              </div>
+              <h2 class="tos-section__title">16. Dispute Resolution</h2>
+            </div>
+            <p>
+              In the event of any dispute, controversy, or claim arising from or relating to these
+              Terms or the Platform, the parties agree to first attempt informal resolution by
+              contacting our support team at
+              <a href="mailto:support@suhanamatrimony.com">support&#64;suhanamatrimony.com</a>.
+            </p>
+            <p>
+              If the dispute cannot be resolved informally within 30 days, it shall be submitted to
+              binding arbitration under the Arbitration and Conciliation Act, 1996 of India.
+              Arbitration proceedings shall be conducted in Chennai, Tamil Nadu, in the English language.
+            </p>
+            <p>
+              Notwithstanding the above, either party may seek injunctive or other equitable relief
+              in any court of competent jurisdiction to prevent irreparable harm.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 17. Governing Law -->
+      <section id="governing-law" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--rose">
+                <mat-icon aria-hidden="true">account_balance</mat-icon>
+              </div>
+              <h2 class="tos-section__title">17. Governing Law</h2>
+            </div>
+            <p>
+              These Terms shall be governed by and construed in accordance with the laws of the
+              Republic of India, without regard to its conflict of law provisions. The courts of
+              Chennai, Tamil Nadu, India shall have exclusive jurisdiction over any legal proceedings
+              arising from or relating to these Terms.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 18. Changes -->
+      <section id="changes" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card" appearance="outlined">
+          <div class="tos-card__band" aria-hidden="true"></div>
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--gold">
+                <mat-icon aria-hidden="true">update</mat-icon>
+              </div>
+              <h2 class="tos-section__title">18. Changes to Terms</h2>
+            </div>
+            <p>
+              We reserve the right to modify these Terms at any time. When we make material changes,
+              we will notify you via email and prominent in-app notice at least 30 days before the
+              changes take effect. Your continued use of the Platform after the effective date
+              constitutes acceptance of the revised Terms.
+            </p>
+            <div class="tos-dates-row">
+              <span class="tos-date-badge">
+                <mat-icon aria-hidden="true">event_available</mat-icon>
+                Effective: {{ effectiveDate }}
+              </span>
+              <span class="tos-date-badge">
+                <mat-icon aria-hidden="true">edit_calendar</mat-icon>
+                Last Updated: {{ lastUpdated }}
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <!-- 19. Contact -->
+      <section id="contact" class="tos-section" tabindex="-1">
+        <mat-card class="tos-card tos-card--contact" appearance="outlined">
+          <mat-card-content>
+            <div class="tos-section__heading">
+              <div class="tos-section__icon tos-section__icon--rose">
+                <mat-icon aria-hidden="true">contact_support</mat-icon>
+              </div>
+              <h2 class="tos-section__title tos-section__title--white">19. Contact Us</h2>
+            </div>
+            <p class="tos-contact-intro">
+              For questions about these Terms, to report violations, or for any legal inquiries,
+              please contact us:
+            </p>
+            <div class="tos-contact-grid">
+              <a class="tos-contact-item" href="mailto:support@suhanamatrimony.com"
+                 aria-label="Email our legal team">
+                <mat-icon>mail</mat-icon>
+                <div>
+                  <strong>Email</strong>
+                  <span>support&#64;suhanamatrimony.com</span>
+                </div>
+              </a>
+              <a class="tos-contact-item" href="tel:18001237842"
+                 aria-label="Call toll-free">
+                <mat-icon>call</mat-icon>
+                <div>
+                  <strong>Toll-Free</strong>
+                  <span>1800-123-7842</span>
+                </div>
+              </a>
+            </div>
+            <mat-divider class="tos-contact-divider"></mat-divider>
+            <p class="tos-contact-address">
+              <mat-icon aria-hidden="true">location_on</mat-icon>
+              Suhana Matrimony Pvt. Ltd., Legal Department,
+              Chennai, Tamil Nadu – 600 001, India.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════
+       SOCIAL FOOTER
+  ═══════════════════════════════════════════════ -->
+  <section class="tos-social suhana-section" aria-label="Social media links">
+    <div class="suhana-container tos-social__inner">
+      <h2 class="suhana-section-title">Stay Connected</h2>
+      <p class="suhana-section-subtitle">Follow us for updates, success stories, and community highlights.</p>
+      <div class="tos-social__grid" role="list">
+        <button mat-fab class="tos-social-btn tos-social-btn--facebook" role="listitem"
+                (click)="openSocial(socialLinks.facebookUrl)" aria-label="Facebook (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </button>
+        <button mat-fab class="tos-social-btn tos-social-btn--instagram" role="listitem"
+                (click)="openSocial(socialLinks.instagramUrl)" aria-label="Instagram (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+          </svg>
+        </button>
+        <button mat-fab class="tos-social-btn tos-social-btn--youtube" role="listitem"
+                (click)="openSocial(socialLinks.youtubeUrl)" aria-label="YouTube (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
+          </svg>
+        </button>
+        <button mat-fab class="tos-social-btn tos-social-btn--twitter" role="listitem"
+                (click)="openSocial(socialLinks.twitterUrl)" aria-label="X / Twitter (opens in new tab)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.75l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer row -->
+  <div class="tos-footer suhana-container">
+    <span>
+      <a routerLink="/privacy-policy">Privacy Policy</a>
+      <mat-divider [vertical]="true" class="tos-footer__divider"></mat-divider>
+      <a routerLink="/contact">Contact Us</a>
+      <mat-divider [vertical]="true" class="tos-footer__divider"></mat-divider>
+      <a routerLink="/">Home</a>
+    </span>
+    <span class="tos-footer__copy">&copy; {{ year }} Suhana Matrimony. All rights reserved.</span>
+  </div>
+
+</div>
+
+<!-- Back to top -->
+@if (showBackToTop()) {
+  <button mat-mini-fab class="tos-back-to-top suhana-btn-primary"
+          (click)="backToTop()" aria-label="Back to top">
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
+}

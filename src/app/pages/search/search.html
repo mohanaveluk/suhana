@@ -84,6 +84,9 @@
   <!-- Results Count -->
   <div class="results-info">
     <span>{{ filteredResults().length }} profiles found</span>
+    @if (profileService.hasMoreProfiles() && !searchService.isSearchActive()) {
+      <span class="more-available">Page {{ profileService.currentPage() }} of {{ profileService.totalPages() }}</span>
+    }
   </div>
 
   <!-- Profile Grid -->
@@ -129,4 +132,17 @@
       </div>
     }
   </div>
+
+  <!-- Load More -->
+  @if (profileService.hasMoreProfiles() && !searchService.isSearchActive()) {
+    <div class="load-more-section">
+      <button mat-stroked-button class="load-more-btn"
+              (click)="loadMoreProfiles()"
+              [disabled]="profileService.isLoadingMore()">
+        <mat-spinner [hidden]="!profileService.isLoadingMore()" diameter="20" class="inline-spinner"></mat-spinner>
+        <mat-icon [hidden]="profileService.isLoadingMore()">expand_more</mat-icon>
+        {{ profileService.isLoadingMore() ? 'Loading...' : 'Load More Profiles' }}
+      </button>
+    </div>
+  }
 </div>

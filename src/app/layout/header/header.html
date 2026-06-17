@@ -19,6 +19,7 @@
           Messages
         </a>
       }
+      <a mat-button routerLink="/contact" routerLinkActive="active-link">Contact</a>
       @if (auth.isAdmin() || auth.isTester()) {
         <a mat-button routerLink="/admin" routerLinkActive="active-link">
           <mat-icon>admin_panel_settings</mat-icon>
@@ -80,6 +81,9 @@
     <a routerLink="/" (click)="toggleMobileMenu()">
       <mat-icon>home</mat-icon> Home
     </a>
+    <a routerLink="/about" (click)="toggleMobileMenu()">
+      <mat-icon>info</mat-icon> About Us
+    </a>
     <a routerLink="/search" (click)="toggleMobileMenu()">
       <mat-icon>search</mat-icon> Search
     </a>
@@ -97,6 +101,9 @@
         <mat-icon>person</mat-icon> Profile
       </a>
     }
+    <a routerLink="/contact" (click)="toggleMobileMenu()">
+      <mat-icon>info</mat-icon> Contact
+    </a>    
     @if (auth.isAdmin() || auth.isTester()) {
       <a routerLink="/admin" (click)="toggleMobileMenu()">
         <mat-icon>admin_panel_settings</mat-icon> Admin

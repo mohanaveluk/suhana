@@ -19,6 +19,7 @@ export class SearchService {
   readonly query = this.searchQuery.asReadonly();
   readonly filters = this.activeFilters.asReadonly();
   readonly currentViewMode = this.viewMode.asReadonly();
+  readonly isSearchActive = this.useApiResults.asReadonly();
 
   readonly searchResults = computed(() => {
     if (this.useApiResults() && this.apiResults().length > 0) {
