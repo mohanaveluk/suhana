@@ -1,0 +1,206 @@
+<div class="notif-page">
+
+  <!-- ── Page Header ─────────────────────────────────────────────────────── -->
+  <div class="notif-page-header">
+    <div class="page-title-row">
+      <h1 class="page-title">
+        <mat-icon>notifications</mat-icon>
+        Notifications
+        @if (svc.unreadCount() > 0) {
+          <span class="title-badge">{{ svc.unreadCount() }}</span>
+        }
+      </h1>
+      <div class="header-actions">
+        <button mat-icon-button (click)="refresh()" [disabled]="svc.isLoading()"
+                matTooltip="Refresh" aria-label="Refresh notifications">
+          <mat-icon [class.spin]="svc.isLoading()">refresh</mat-icon>
+        </button>
+        @if (svc.unreadCount() > 0) {
+          <button mat-stroked-button class="mark-all-btn"
+                  (click)="markAllRead()" [disabled]="markingAll()">
+            <mat-spinner [hidden]="!markingAll()" diameter="16" class="btn-spinner"></mat-spinner>
+            <mat-icon [hidden]="markingAll()">done_all</mat-icon>
+            Mark All Read
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Search -->
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search notifications by subject or type…"
+             (input)="onSearch($event)" [value]="searchQuery()" />
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button aria-label="Clear search"
+                (click)="searchQuery.set(''); $any($event.target).blur()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs" role="tablist" aria-label="Notification filters">
+      @for (tab of filterTabs; track tab.value) {
+        <button class="filter-tab"
+                [class.filter-tab--active]="activeFilter() === tab.value"
+                (click)="setFilter(tab.value)"
+                role="tab"
+                [attr.aria-selected]="activeFilter() === tab.value">
+          {{ tab.label }}
+          @let count = filterCount()[tab.value];
+          @if (count > 0) {
+            <span class="tab-count"
+                  [class.tab-count--unread]="tab.value === 'unread'">{{ count }}</span>
+          }
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Content ─────────────────────────────────────────────────────────── -->
+  <div class="notif-content">
+
+    <!-- Loading skeleton -->
+    @if (svc.isLoading() && svc.notifications().length === 0) {
+      <div class="skeleton-list">
+        @for (i of [1,2,3,4,5]; track i) {
+          <div class="skeleton-item">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-body">
+              <div class="skeleton-line skeleton-line--title"></div>
+              <div class="skeleton-line skeleton-line--sub"></div>
+              <div class="skeleton-line skeleton-line--time"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Error state -->
+    @else if (svc.error()) {
+      <div class="state-card state-card--error">
+        <mat-icon>wifi_off</mat-icon>
+        <h3>{{ svc.error() }}</h3>
+        <button mat-raised-button class="suhana-btn-primary" (click)="refresh()">
+          <mat-icon>refresh</mat-icon> Try Again
+        </button>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @else if (!svc.isLoading() && filteredNotifications().length === 0) {
+      <div class="state-card state-card--empty">
+        <mat-icon>notifications_off</mat-icon>
+        <h3>No Notifications Available</h3>
+        <p>
+          @if (activeFilter() !== 'all' || searchQuery()) {
+            No notifications match your current filter.
+            <button mat-button (click)="setFilter('all'); searchQuery.set('')">Clear filters</button>
+          } @else {
+            You're all caught up! Check back later.
+          }
+        </p>
+      </div>
+    }
+
+    <!-- Notification list -->
+    @else {
+      <mat-accordion class="notif-accordion" multi="false">
+        @for (notif of displayedNotifications(); track notif.id; let i = $index) {
+          <mat-expansion-panel
+            class="notif-panel"
+            [class.notif-panel--unread]="!notif.readAt"
+            [hideToggle]="false"
+            (opened)="onPanelOpened(notif)"
+            [@.disabled]="i > 5">
+
+            <!-- ── Collapsed header ── -->
+            <mat-expansion-panel-header class="panel-header">
+              <mat-panel-title class="panel-title">
+
+                <!-- Icon circle -->
+                <span class="notif-icon-circle notif-icon-circle--{{ notif.emailType.toLowerCase() }}">
+                  <mat-icon>{{ svc.getIcon(notif.emailType) }}</mat-icon>
+                </span>
+
+                <!-- Text block -->
+                <span class="panel-text">
+                  <span class="panel-type">
+                    {{ svc.getTitle(notif.emailType) }}
+                    @if (!notif.readAt) {
+                      <span class="new-badge" aria-label="Unread">NEW</span>
+                    }
+                  </span>
+                  <span class="panel-subject">{{ notif.subject }}</span>
+                  <span class="panel-time">
+                    <mat-icon class="time-icon">schedule</mat-icon>
+                    {{ svc.timeAgo(notif.sentAt) }}
+                  </span>
+                </span>
+
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <!-- ── Expanded body ── -->
+            <div class="panel-detail">
+
+              <!-- Loading -->
+              @if (detailMap()[notif.id]?.loading) {
+                <div class="detail-loading">
+                  <mat-spinner diameter="36"></mat-spinner>
+                  <span>Loading email content…</span>
+                </div>
+              }
+
+              <!-- Error -->
+              @else if (detailMap()[notif.id]?.error) {
+                <div class="detail-error">
+                  <mat-icon>error_outline</mat-icon>
+                  <p>Failed to load email content.</p>
+                  <button mat-stroked-button (click)="retryDetail(notif)">
+                    <mat-icon>refresh</mat-icon> Retry
+                  </button>
+                </div>
+              }
+
+              <!-- Email HTML -->
+              @else if (detailMap()[notif.id]?.safeHtml) {
+                <div class="email-meta">
+                  <span><mat-icon>calendar_today</mat-icon>
+                    {{ notif.sentAt | date:'MMM d, y, h:mm a' }}
+                  </span>
+                  @if (notif.readAt) {
+                    <span class="read-stamp">
+                      <mat-icon>visibility</mat-icon> Read
+                    </span>
+                  }
+                </div>
+                <div class="email-html-wrapper">
+                  <div class="email-body" [innerHTML]="detailMap()[notif.id]!.safeHtml"></div>
+                </div>
+              }
+
+            </div>
+
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+
+      <!-- Load more -->
+      @if (hasMore()) {
+        <div class="load-more-row">
+          <button mat-stroked-button class="load-more-btn" (click)="loadMore()">
+            <mat-icon>expand_more</mat-icon>
+            Show More
+            <span class="load-more-count">
+              ({{ filteredNotifications().length - pageSize() }} remaining)
+            </span>
+          </button>
+        </div>
+      }
+    }
+
+  </div><!-- /notif-content -->
+
+</div><!-- /notif-page -->

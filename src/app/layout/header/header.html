@@ -28,13 +28,29 @@
       }
     </nav>
 
-    <!-- Auth Buttons -->
+    <!-- Auth Buttons & Notification Bell -->
     <div class="auth-actions">
       @if (!auth.authenticated()) {
         <a mat-button routerLink="/login" class="login-btn">Login</a>
         <a mat-raised-button routerLink="/register" class="register-btn suhana-btn-primary">Register Free</a>
       } @else {
-        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu" [matTooltip]="displayName()" placement="below">
+        <!-- ── Notification Bell ── -->
+        <button mat-icon-button
+                (click)="openNotifications()"
+                aria-label="Notifications"
+                matTooltip="Notifications"
+                class="notif-bell">
+          <mat-icon
+            [matBadge]="emailHistoryService.unreadCount() || null"
+            matBadgeColor="warn"
+            matBadgeSize="small"
+            [matBadgeHidden]="emailHistoryService.unreadCount() === 0">
+            notifications
+          </mat-icon>
+        </button>
+
+        <!-- ── User Menu ── -->
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu" [matTooltip]="displayName()" placement="below" class="profile-rnd">
           <mat-icon>account_circle</mat-icon>
         </button>
         <mat-menu #userMenu="matMenu">
@@ -60,6 +76,10 @@
             <span>Match Tracker</span>
           </a>
           <mat-divider></mat-divider>
+          <a mat-menu-item routerLink="/feedback">
+            <mat-icon>rate_review</mat-icon>
+            <span>Share Feedback</span>
+          </a>
           <button mat-menu-item (click)="logout()">
             <mat-icon>logout</mat-icon>
             <span>Logout</span>
@@ -91,6 +111,16 @@
       <mat-icon>favorite</mat-icon> Matches
     </a>
     @if (auth.authenticated()) {
+      <a routerLink="/notifications" (click)="toggleMobileMenu()">
+        <mat-icon
+          [matBadge]="emailHistoryService.unreadCount() || null"
+          matBadgeColor="warn"
+          matBadgeSize="small"
+          [matBadgeHidden]="emailHistoryService.unreadCount() === 0">
+          notifications
+        </mat-icon>
+        Notifications
+      </a>
       <a routerLink="/shortlist" (click)="toggleMobileMenu()">
         <mat-icon>bookmark</mat-icon> Shortlist
       </a>
@@ -100,10 +130,16 @@
       <a routerLink="/profile" (click)="toggleMobileMenu()">
         <mat-icon>person</mat-icon> Profile
       </a>
+      <a routerLink="/feedback" (click)="toggleMobileMenu()">
+        <mat-icon>rate_review</mat-icon> Share Feedback
+      </a>
     }
+    <a routerLink="/faq" (click)="toggleMobileMenu()">
+      <mat-icon>help_outline</mat-icon> FAQs
+    </a>
     <a routerLink="/contact" (click)="toggleMobileMenu()">
-      <mat-icon>info</mat-icon> Contact
-    </a>    
+      <mat-icon>contact_support</mat-icon> Contact
+    </a>
     @if (auth.isAdmin() || auth.isTester()) {
       <a routerLink="/admin" (click)="toggleMobileMenu()">
         <mat-icon>admin_panel_settings</mat-icon> Admin

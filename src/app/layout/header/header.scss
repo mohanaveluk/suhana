@@ -84,7 +84,7 @@
 .auth-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
 
   .login-btn {
     color: var(--suhana-maroon);
@@ -118,6 +118,14 @@
     width: 40px;
     height: 40px;
     /*color: var(--suhana-maroon);*/
+
+    ::ng-deep span {
+      font-size: 15px !important;
+      line-height: 20px !important;
+      width: 20px !important;
+      height: 20px !important;
+      margin: -18px;
+    }
   }    
 }
 
@@ -190,4 +198,191 @@
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-rnd{
+  color: var(--suhana-text-secondary);
+  transition: color 0.2s;
+
+  &:hover { color: var(--suhana-maroon); }
+}
+// ─── Notification Bell ───────────────────────────────────────────────────────
+.notif-bell {
+  color: var(--suhana-text-secondary);
+  transition: color 0.2s;
+
+  &:hover { color: var(--suhana-maroon); }
+}
+
+// ─── Notification Panel (mat-menu override) ──────────────────────────────────
+::ng-deep .notif-panel-menu {
+  .mat-mdc-menu-panel {
+    width: 380px;
+    max-width: 95vw;
+    max-height: 520px;
+    border-radius: 16px !important;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .mat-mdc-menu-content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.notif-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 12px;
+  min-height: 52px;
+  flex-shrink: 0;
+
+  .notif-panel-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--suhana-maroon);
+  }
+
+  .mark-all-btn {
+    font-size: 0.8rem;
+    line-height: 1;
+    padding: 4px 8px;
+    min-width: unset;
+    height: auto;
+    color: var(--suhana-rose-gold);
+  }
+}
+
+.notif-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px;
+  padding: 12px 16px !important;
+  height: auto !important;
+  min-height: 64px;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+
+  &--unread {
+    background: var(--suhana-blush);
+    border-left-color: var(--suhana-rose-gold);
+  }
+
+  // Override mat-menu-item flex layout
+  ::ng-deep .mdc-list-item__content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+  }
+}
+
+.notif-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: var(--suhana-blush);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--suhana-rose-gold);
+  }
+
+  &--message         mat-icon { color: #1976d2; }
+  &--interest_received mat-icon { color: #7b1fa2; }
+  &--interest_accepted mat-icon { color: #388e3c; }
+  &--email_sent      mat-icon { color: #f57c00; }
+  &--profile_view    mat-icon { color: var(--suhana-maroon); }
+
+  &--message         { background: #e3f2fd; }
+  &--interest_received { background: #f3e5f5; }
+  &--interest_accepted { background: #e8f5e9; }
+  &--email_sent      { background: #fff3e0; }
+  &--profile_view    { background: var(--suhana-rose-gold-lighter); }
+}
+
+.notif-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.4;
+
+  .notif-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--suhana-text-primary);
+  }
+
+  .notif-body {
+    font-size: 0.8rem;
+    color: var(--suhana-text-secondary);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .notif-time {
+    font-size: 0.72rem;
+    color: var(--suhana-rose-gold);
+    margin-top: 4px;
+  }
+}
+
+.notif-unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--suhana-rose-gold);
+  flex-shrink: 0;
+  margin-top: 6px;
+  align-self: flex-start;
+}
+
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 24px;
+  color: var(--suhana-text-secondary);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    opacity: 0.4;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+:ng-deep .mat-badge-content {
+    font-size: 15px !important;
+    line-height: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin: -18px;
+}
+
+.notif-footer-link {
+  color: var(--suhana-rose-gold) !important;
+  font-size: 0.85rem !important;
 }

@@ -1,0 +1,101 @@
+<div class="feedback-page suhana-container">
+
+  <div class="feedback-hero">
+    <mat-icon class="hero-icon">rate_review</mat-icon>
+    <h1>Share Your Feedback</h1>
+    <p>Help us improve Suhana for everyone. Your thoughts matter to us.</p>
+  </div>
+
+  @if (submitted()) {
+    <!-- Success state -->
+    <div class="feedback-success">
+      <mat-icon class="success-icon">check_circle</mat-icon>
+      <h2>Thank you for your feedback!</h2>
+      <p>We truly appreciate you taking the time to help us improve. Our team reads every submission.</p>
+      <div class="success-actions">
+        <button mat-raised-button class="suhana-btn-primary" (click)="reset()">
+          <mat-icon>add_comment</mat-icon> Submit Another
+        </button>
+        <a mat-stroked-button class="suhana-btn-outline" routerLink="/">
+          <mat-icon>home</mat-icon> Back to Home
+        </a>
+      </div>
+    </div>
+  } @else {
+    <!-- Feedback form -->
+    <div class="feedback-card">
+      <form class="feedback-form" (ngSubmit)="submit()" #feedbackForm="ngForm">
+
+        <!-- Category -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Category <span class="required">*</span></mat-label>
+          <mat-select [(ngModel)]="feedbackData.category" name="category" required>
+            @for (cat of categories; track cat) {
+              <mat-option [value]="cat">{{ cat }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint>What area is your feedback about?</mat-hint>
+        </mat-form-field>
+
+        <!-- Star rating -->
+        <div class="rating-section">
+          <label class="rating-label">Overall Rating <span class="required">*</span></label>
+          <div class="star-row">
+            @for (s of [1,2,3,4,5]; track s) {
+              <mat-icon
+                class="star"
+                [class.star--filled]="(hoverRating || feedbackData.rating) >= s"
+                (click)="setRating(s)"
+                (mouseenter)="hoverRating = s"
+                (mouseleave)="hoverRating = 0">
+                {{ (hoverRating || feedbackData.rating) >= s ? 'star' : 'star_border' }}
+              </mat-icon>
+            }
+            @if (feedbackData.rating) {
+              <span class="rating-text">{{ ratingLabel(feedbackData.rating) }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Subject -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Subject</mat-label>
+          <input matInput [(ngModel)]="feedbackData.subject" name="subject"
+                 placeholder="Brief summary of your feedback" maxlength="120" />
+          <mat-hint align="end">{{ feedbackData.subject.length }} / 120</mat-hint>
+        </mat-form-field>
+
+        <!-- Message -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Your Feedback <span class="required">*</span></mat-label>
+          <textarea matInput [(ngModel)]="feedbackData.message" name="message"
+                    rows="6" required
+                    placeholder="Tell us what you love, what could be better, or report an issue...">
+          </textarea>
+          <mat-hint>Be as specific as possible — it helps us act on your feedback faster.</mat-hint>
+        </mat-form-field>
+
+        <!-- Error message -->
+        @if (errorMsg()) {
+          <div class="error-banner">
+            <mat-icon>error_outline</mat-icon>
+            {{ errorMsg() }}
+          </div>
+        }
+
+        <!-- Submit -->
+        <div class="form-actions">
+          <button mat-raised-button class="suhana-btn-primary submit-btn"
+                  type="submit"
+                  [disabled]="isSubmitting()">
+            <mat-spinner [hidden]="!isSubmitting()" diameter="20" class="btn-spinner"></mat-spinner>
+            <mat-icon [hidden]="isSubmitting()">send</mat-icon>
+            {{ isSubmitting() ? 'Submitting...' : 'Submit Feedback' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  }
+
+</div>

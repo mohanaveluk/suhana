@@ -1,0 +1,110 @@
+<div class="accept-page">
+  <div class="accept-container">
+
+    <!-- ── Loading ── -->
+    @if (state() === 'loading') {
+      <div class="state-card state-card--loading">
+        <mat-spinner diameter="56" class="loading-spinner"></mat-spinner>
+        <h2>Processing your request…</h2>
+        <p>Please wait while we confirm your response.</p>
+      </div>
+    }
+
+    <!-- ── Success ── -->
+    @if (state() === 'success') {
+      <div class="state-card state-card--success">
+        <div class="icon-circle icon-circle--success">
+          <mat-icon>favorite</mat-icon>
+        </div>
+        <h1>Interest Accepted Successfully ❤️</h1>
+        <p class="primary-msg">
+          You have accepted the interest request
+          @if (requesterName()) {
+            from <strong>{{ requesterName() }}</strong>.
+          } @else {
+            .
+          }
+        </p>
+        <p class="secondary-msg">
+          The requester has been notified about your acceptance.<br />
+          You may now continue your conversation and explore compatibility.
+        </p>
+        <div class="action-row">
+          @if (auth.authenticated()) {
+            <a mat-raised-button routerLink="/" class="suhana-btn-primary">
+              <mat-icon>home</mat-icon>
+              Go To Home
+            </a>
+            <a mat-stroked-button routerLink="/chat" class="suhana-btn-outline">
+              <mat-icon>chat</mat-icon>
+              Open Messages
+            </a>
+          } @else {
+            <a mat-raised-button routerLink="/login" class="suhana-btn-primary">
+              <mat-icon>login</mat-icon>
+              Login
+            </a>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── Already Accepted ── -->
+    @if (state() === 'already_accepted') {
+      <div class="state-card state-card--already">
+        <div class="icon-circle icon-circle--already">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <h1>Interest Already Accepted</h1>
+        <p class="primary-msg">
+          You have already accepted this interest request.
+        </p>
+        <p class="secondary-msg">
+          You can head to your messages to continue the conversation.
+        </p>
+        <div class="action-row">
+          @if (auth.authenticated()) {
+            <a mat-raised-button routerLink="/" class="suhana-btn-primary">
+              <mat-icon>home</mat-icon>
+              Go To Home
+            </a>
+          } @else {
+            <a mat-raised-button routerLink="/login" class="suhana-btn-primary">
+              <mat-icon>login</mat-icon>
+              Login
+            </a>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── Invalid / Expired ── -->
+    @if (state() === 'invalid') {
+      <div class="state-card state-card--invalid">
+        <div class="icon-circle icon-circle--invalid">
+          <mat-icon>error</mat-icon>
+        </div>
+        <h1>Invalid or Expired Interest Link</h1>
+        <p class="primary-msg">This request is no longer available.</p>
+        <p class="secondary-msg">
+          The link may have expired or already been used. Please check your
+          notifications for any pending requests.
+        </p>
+        <div class="action-row">
+          @if (auth.authenticated()) {
+            <a mat-raised-button routerLink="/" class="suhana-btn-primary">
+              <mat-icon>home</mat-icon>
+              Go To Home
+            </a>
+          } @else {
+            <a mat-raised-button routerLink="/login" class="suhana-btn-primary">
+              <mat-icon>login</mat-icon>
+              Login
+            </a>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

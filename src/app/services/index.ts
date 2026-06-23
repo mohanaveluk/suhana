@@ -9,3 +9,5 @@ export { GalleryService } from './gallery.service';
 export { WebSocketService } from './websocket.service';
 export { InterestService } from './interest.service';
 export { HeartbeatService } from './heartbeat.service';
+export { NotificationService } from './notification.service';
+export type { AppNotification, NotificationType } from './notification.service';

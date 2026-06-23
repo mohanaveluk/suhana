@@ -59,6 +59,19 @@ export class InterestService {
     );
   }
 
+  async acceptInterestByLink(interestId: string, guid: string): Promise<{
+    success: boolean;
+    message: string;
+    requesterName: string;
+    requesterUserId: number;
+  }> {
+    const res = await firstValueFrom(this.api.acceptInterestByLink(interestId, guid));
+    this.receivedInterests.update(list =>
+      list.map(i => i.id === interestId ? { ...i, status: 'accepted' as const, respondedAt: new Date() } : i),
+    );
+    return res;
+  }
+
   async declineInterest(interestId: string): Promise<void> {
     await firstValueFrom(this.api.declineInterest(interestId));
     this.receivedInterests.update(list =>
