@@ -85,7 +85,7 @@ export class MatchmakingComponent implements OnInit {
 
     try {
       this.matchService.expressInterest(match.id);
-      await this.interestService.sendInterest(match.userId, defaultMessage);
+      //await this.interestService.sendInterest(match.userId, defaultMessage);
       this.snackBar.open(`Interest sent to ${match.profile.firstName}! 💌`, 'Dismiss', { duration: 3500 });
     } catch {
       // Roll back on failure

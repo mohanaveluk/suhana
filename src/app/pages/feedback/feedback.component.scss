@@ -1,0 +1,161 @@
+.feedback-page {
+  padding-top: 48px;
+  padding-bottom: 80px;
+  max-width: 680px;
+}
+
+// ─── Hero ───────────────────────────────────────────────────────────────────
+.feedback-hero {
+  text-align: center;
+  margin-bottom: 40px;
+
+  .hero-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    color: var(--suhana-rose-gold);
+    margin-bottom: 16px;
+    display: block;
+    margin-inline: auto;
+  }
+
+  h1 {
+    font-size: 2rem;
+    color: var(--suhana-maroon);
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: var(--suhana-text-secondary);
+    font-size: 1.05rem;
+  }
+}
+
+// ─── Form card ──────────────────────────────────────────────────────────────
+.feedback-card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  padding: 36px 40px;
+  box-shadow: 0 4px 24px var(--suhana-shadow);
+
+  @media (max-width: 600px) { padding: 24px 16px; }
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.full-width { width: 100%; }
+
+.required { color: var(--suhana-maroon); }
+
+// ─── Star rating ─────────────────────────────────────────────────────────────
+.rating-section {
+  .rating-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--suhana-text-primary);
+    margin-bottom: 10px;
+  }
+
+  .star-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .star {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    color: var(--suhana-rose-gold-lighter);
+    transition: color 0.15s, transform 0.15s;
+
+    &--filled { color: var(--suhana-gold, #c9a84c); }
+
+    &:hover { transform: scale(1.15); }
+  }
+
+  .rating-text {
+    margin-left: 12px;
+    font-size: 0.9rem;
+    color: var(--suhana-text-secondary);
+    font-style: italic;
+  }
+}
+
+// ─── Error banner ─────────────────────────────────────────────────────────────
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff0f0;
+  border: 1px solid #f9a0a0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  color: #c0392b;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+// ─── Submit ───────────────────────────────────────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+
+  .submit-btn {
+    min-width: 180px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .btn-spinner { display: inline-flex; }
+  }
+}
+
+// ─── Success state ────────────────────────────────────────────────────────────
+.feedback-success {
+  text-align: center;
+  background: white;
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  border-radius: 20px;
+  padding: 64px 40px;
+  box-shadow: 0 4px 24px var(--suhana-shadow);
+
+  .success-icon {
+    font-size: 72px;
+    width: 72px;
+    height: 72px;
+    color: #4caf50;
+    margin-bottom: 20px;
+    display: block;
+    margin-inline: auto;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    color: var(--suhana-maroon);
+    margin-bottom: 12px;
+  }
+
+  p {
+    color: var(--suhana-text-secondary);
+    max-width: 400px;
+    margin: 0 auto 28px;
+    line-height: 1.6;
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}

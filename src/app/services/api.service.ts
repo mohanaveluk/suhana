@@ -252,6 +252,15 @@ export class ApiService {
     return this.http.patch(`${this.baseUrl}/v1/interests/${interestId}/accept`, {});
   }
 
+  acceptInterestByLink(interestId: string, guid: string): Observable<{
+    success: boolean;
+    message: string;
+    requesterName: string;
+    requesterUserId: number;
+  }> {
+    return this.http.patch<any>(`${this.baseUrl}/v1/interests/${interestId}/accept/${guid}`, {});
+  }
+
   declineInterest(interestId: string): Observable<any> {
     return this.http.patch(`${this.baseUrl}/v1/interests/${interestId}/decline`, {});
   }
@@ -333,6 +342,54 @@ export class ApiService {
 
   updateMatchWeights(weights: Record<string, number>): Observable<any> {
     return this.http.patch(`${this.baseUrl}/v1/admin/match-weights`, weights);
+  }
+
+  // Email history / notification center
+  getEmailNotifications(): Observable<any> {
+    return this.http.get<any[]>(`${this.baseUrl}/v1/email-history/notifications`);
+  }
+
+  getEmailNotificationDetail(guid: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/v1/email-history/${guid}`);
+  }
+
+  markEmailOpened(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/v1/email-history/${id}/open`, {});
+  }
+
+  markEmailRead(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/v1/email-history/${id}/read`, {});
+  }
+
+  markAllEmailRead(): Observable<any> {
+    return this.http.put(`${this.baseUrl}/v1/email-history/read-all`, {});
+  }
+
+  // Lookup values (cities, occupations, educationLevels)
+  getLookupValues(): Observable<{
+    cities: { id: number; name: string }[];
+    occupations: { id: number; name: string }[];
+    educationLevels: { id: number; name: string }[];
+  }> {
+    return this.http.get<any>(`${this.baseUrl}/v1/lookup/values`);
+  }
+
+  // Notifications
+  getNotifications(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/notifications`);
+  }
+
+  markNotificationRead(id: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/notifications/${id}/read`, {});
+  }
+
+  markAllNotificationsRead(): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/notifications/read-all`, {});
+  }
+
+  // Feedback
+  submitFeedback(data: { category: string; rating: number; subject: string; message: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/feedback`, data);
   }
 
   // Settings

@@ -1,0 +1,67 @@
+<div class="faq-page suhana-container">
+
+  <!-- Hero -->
+  <div class="faq-hero">
+    <mat-icon class="hero-icon">help_outline</mat-icon>
+    <h1>Frequently Asked Questions</h1>
+    <p>Everything you need to know about finding your perfect match on Suhana</p>
+  </div>
+
+  <!-- Category filter chips -->
+  <div class="category-chips">
+    <button mat-stroked-button
+            class="chip-btn"
+            [class.chip-btn--active]="activeCategory() === 'all'"
+            (click)="setCategory('all')">
+      All Topics
+    </button>
+    @for (cat of categories; track cat.id) {
+      <button mat-stroked-button
+              class="chip-btn"
+              [class.chip-btn--active]="activeCategory() === cat.id"
+              (click)="setCategory(cat.id)">
+        <mat-icon>{{ cat.icon }}</mat-icon>
+        {{ cat.title }}
+      </button>
+    }
+  </div>
+
+  <!-- FAQ Sections -->
+  <div class="faq-sections">
+    @for (cat of displayedCategories; track cat.id) {
+      <div class="faq-section">
+        <div class="section-header">
+          <mat-icon>{{ cat.icon }}</mat-icon>
+          <h2>{{ cat.title }}</h2>
+        </div>
+
+        <mat-accordion displayMode="flat">
+          @for (item of cat.items; track item.question) {
+            <mat-expansion-panel class="faq-panel">
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ item.question }}</mat-panel-title>
+              </mat-expansion-panel-header>
+              <p>{{ item.answer }}</p>
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+      </div>
+    }
+  </div>
+
+  <!-- Still need help CTA -->
+  <div class="faq-cta">
+    <mat-icon>support_agent</mat-icon>
+    <h3>Still have questions?</h3>
+    <p>Our support team is happy to help you.</p>
+    <div class="cta-actions">
+      <a mat-raised-button class="suhana-btn-primary" routerLink="/contact">
+        <mat-icon class="cta-actions-cs">email</mat-icon> Contact Support
+      </a>
+      <a mat-stroked-button class="suhana-btn-outline" routerLink="/feedback">
+        <mat-icon class="cta-actions-sf">rate_review</mat-icon> Share Feedback
+      </a>
+    </div>
+  </div>
+
+</div>

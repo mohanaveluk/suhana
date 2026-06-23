@@ -142,6 +142,26 @@ export const routes: Routes = [
       import('./pages/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent),
   },
   {
+    path: 'notifications',
+    loadComponent: () =>
+      import('./pages/notifications/notification.component').then(m => m.NotificationComponent),
+  },
+  {
+    path: 'accept/:interestId/:guid',
+    loadComponent: () =>
+      import('./pages/accept-interest/accept-interest.component').then(m => m.AcceptInterestComponent),
+  },
+  {
+    path: 'faq',
+    loadComponent: () =>
+      import('./pages/faq/faq.component').then(m => m.FaqComponent),
+  },
+  {
+    path: 'feedback',
+    loadComponent: () =>
+      import('./pages/feedback/feedback.component').then(m => m.FeedbackComponent),
+  },
+  {
     path: '**',
     loadComponent: () =>
       import('./pages/not-found/not-found').then(m => m.NotFoundComponent),

@@ -1,11 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, signal, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, ViewChild, OnInit, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 import { MaterialModule } from '../../shared/modules/material.module';
-import { AuthService } from '../../services';
+import { ApiService, AuthService } from '../../services';
 import { ProfileService } from '../../services';
 import { Gender } from '../../models/user.model';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -16,9 +17,11 @@ import { Gender } from '../../models/user.model';
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-export class RegisterComponent {
+export class RegisterComponent  implements OnInit  {
   @ViewChild('stepper') private readonly stepper!: MatStepper;
 
+  private readonly api = inject(ApiService);
+  
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly profileService = inject(ProfileService);
@@ -30,9 +33,23 @@ export class RegisterComponent {
   protected readonly profileError = signal<string | null>(null);
   protected readonly registeredUserId = signal<string | null>(null);
 
+  private readonly _availableCities       = signal<string[]>([]);
+  private readonly _availableOccupations  = signal<string[]>([]);
+  private readonly _availableEducation    = signal<string[]>([]);
+
+  protected readonly availableCities      = this._availableCities.asReadonly();
+  protected readonly availableOccupations = this._availableOccupations.asReadonly();
+  protected readonly availableEducation   = this._availableEducation.asReadonly();
+
   protected readonly religions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist', 'Other'];
   protected readonly educationLevels = ['High School', 'Bachelor\'s', 'Master\'s', 'PhD', 'MBA', 'Medical', 'Engineering', 'Other'];
-  protected readonly occupations = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Government', 'Other'];
+  protected readonly occupations1 = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Government', 'Other'];
+
+  protected readonly occupations = computed(() => {
+    const all = this.availableOccupations();
+    return all;
+  });
+
 
   // Step 1: Account
   protected readonly accountForm = this.fb.group({
@@ -77,6 +94,24 @@ export class RegisterComponent {
     preferredEducation: [[] as string[]],
     aboutMe: ['', [Validators.required, Validators.minLength(50)]],
   });
+
+  async ngOnInit(): Promise<void> {
+    await this.loadLookupValues();
+  }
+
+  private async loadLookupValues(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.api.getLookupValues());
+      if (res.cities?.length)         this._availableCities.set(res.cities.map(c => c.name));
+      if (res.occupations?.length)    this._availableOccupations.set(res.occupations.map(o => o.name));
+      if (res.educationLevels?.length) this._availableEducation.set(res.educationLevels.map(e => e.name));
+    } catch {
+      this._availableCities.set(['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Surat']);
+      this._availableOccupations.set(['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Architect', 'AI Engineer']);
+      this._availableEducation.set(['Bachelor', 'Master', 'PhD', 'MBA', 'Medical', 'Engineering', 'Diploma', 'B.Tech', 'M.Tech']);
+    }
+  }
+
 
   async onStep1Next(): Promise<void> {
     this.accountForm.markAllAsTouched();

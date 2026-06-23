@@ -1,94 +1,135 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { ProfileService } from './profile.service';
+import { firstValueFrom } from 'rxjs';
+import { UserProfile } from '../models/user.model';
 import { ApiService } from './api.service';
-import { UserProfile, MatchPreferences } from '../models/user.model';
-import { CommonService } from './common.service';
+
+export interface SearchFilters {
+  query?: string;
+  gender?: 'bride' | 'groom' | '';
+  religions?: string[];
+  locations?: string[];
+  education?: string[];
+  occupations?: string[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
-  private readonly profileService = inject(ProfileService);
   private readonly api = inject(ApiService);
-  
 
-  private readonly searchQuery = signal('');
-  private readonly activeFilters = signal<Partial<MatchPreferences>>({});
-  private readonly viewMode = signal<'grid' | 'list' | 'swipe'>('grid');
-  private readonly apiResults = signal<UserProfile[]>([]);
-  private readonly useApiResults = signal(false);
+  private readonly _filters = signal<SearchFilters>({});
+  private readonly _results = signal<UserProfile[]>([]);
+  private readonly _isLoading = signal(false);
+  private readonly _currentPage = signal(1);
+  private readonly _totalPages = signal(1);
+  private readonly _viewMode = signal<'grid' | 'list'>('grid');
+  private debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
-  readonly query = this.searchQuery.asReadonly();
-  readonly filters = this.activeFilters.asReadonly();
-  readonly currentViewMode = this.viewMode.asReadonly();
-  readonly isSearchActive = this.useApiResults.asReadonly();
+  readonly filters = this._filters.asReadonly();
+  readonly results = this._results.asReadonly();
+  readonly isLoading = this._isLoading.asReadonly();
+  readonly currentPage = this._currentPage.asReadonly();
+  readonly totalPages = this._totalPages.asReadonly();
+  readonly viewMode = this._viewMode.asReadonly();
+  readonly currentViewMode = this._viewMode.asReadonly();
+  readonly hasMore = computed(() => this._currentPage() < this._totalPages());
+  readonly query = computed(() => this._filters().query ?? '');
 
-  readonly searchResults = computed(() => {
-    if (this.useApiResults() && this.apiResults().length > 0) {
-      return this.apiResults();
-    }
+  readonly availableReligions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist', 'Zoroastrian', 'Jewish', 'Other'];
 
-    const q = this.searchQuery().toLowerCase();
-    const filters = this.activeFilters();
-    let profiles = this.profileService.getProfiles(filters);
+  private readonly _availableCities       = signal<string[]>([]);
+  private readonly _availableOccupations  = signal<string[]>([]);
+  private readonly _availableEducation    = signal<string[]>([]);
 
-    if (q) {
-      profiles = profiles.filter(p =>
-        p.firstName.toLowerCase().includes(q) ||
-        p.lastName.toLowerCase().includes(q) ||
-        p.location.city.toLowerCase().includes(q) ||
-        p.occupation.title.toLowerCase().includes(q) ||
-        p.religion.toLowerCase().includes(q) ||
-        p.education.level.toLowerCase().includes(q)
-      );
-    }
-    return profiles;
-  });
+  readonly availableCities      = this._availableCities.asReadonly();
+  readonly availableOccupations = this._availableOccupations.asReadonly();
+  readonly availableEducation   = this._availableEducation.asReadonly();
 
-  setSearchQuery(query: string): void {
-    this.searchQuery.set(query);
-    this.searchViaApi(query);
+  async initialLoad(): Promise<void> {
+    await Promise.all([
+      this.loadLookupValues(),
+      this.executeSearch(this._filters(), false),
+    ]);
   }
 
-  setFilters(filters: Partial<MatchPreferences>): void {
-    this.activeFilters.set(filters);
+  private async loadLookupValues(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.api.getLookupValues());
+      if (res.cities?.length)         this._availableCities.set(res.cities.map(c => c.name));
+      if (res.occupations?.length)    this._availableOccupations.set(res.occupations.map(o => o.name));
+      if (res.educationLevels?.length) this._availableEducation.set(res.educationLevels.map(e => e.name));
+    } catch {
+      this._availableCities.set(['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Surat']);
+      this._availableOccupations.set(['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Architect', 'AI Engineer']);
+      this._availableEducation.set(['Bachelor', 'Master', 'PhD', 'MBA', 'Medical', 'Engineering', 'Diploma', 'B.Tech', 'M.Tech']);
+    }
   }
 
-  updateFilter<K extends keyof MatchPreferences>(key: K, value: MatchPreferences[K]): void {
-    this.activeFilters.update(f => ({ ...f, [key]: value }));
+  setQuery(q: string): void {
+    this._filters.update(f => ({ ...f, query: q }));
+    this.triggerDebounced();
+  }
+
+  updateFilter<K extends keyof SearchFilters>(key: K, value: SearchFilters[K]): void {
+    this._filters.update(f => ({ ...f, [key]: value }));
+    this.triggerDebounced();
   }
 
   clearFilters(): void {
-    this.activeFilters.set({});
-    this.searchQuery.set('');
-    this.useApiResults.set(false);
-    this.apiResults.set([]);
+    clearTimeout(this.debounceTimer);
+    this._filters.set({});
+    this.executeSearch({}, false);
   }
 
-  setViewMode(mode: 'grid' | 'list' | 'swipe'): void {
-    this.viewMode.set(mode);
+  setViewMode(mode: 'grid' | 'list'): void {
+    this._viewMode.set(mode);
   }
 
-  readonly availableReligions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist'];
-  readonly availableCities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Jaipur'];
-  readonly availableEducation = ["Bachelor", "Master", 'PhD', 'MBA', 'Medical', 'Engineering'];
-  readonly availableOccupations = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA'];
+  async loadMore(): Promise<void> {
+    if (!this.hasMore() || this._isLoading()) return;
+    await this.executeSearch(this._filters(), true);
+  }
 
-  private searchViaApi(query: string): void {
-    if (!query) {
-      this.useApiResults.set(false);
-      this.apiResults.set([]);
-      return;
+  private triggerDebounced(): void {
+    clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => {
+      this.executeSearch(this._filters(), false);
+    }, 300);
+  }
+
+  private async executeSearch(filters: SearchFilters, append: boolean): Promise<void> {
+    this._isLoading.set(true);
+    // Reset pagination metadata on new search so "Load More" hides while loading
+    if (!append) {
+      this._currentPage.set(1);
+      this._totalPages.set(1);
     }
-    this.api.getProfiles({ query }).subscribe({
-      next: (res) => {
-        const list = res.data ?? res;
-        if (Array.isArray(list) && list.length > 0) {
-          this.apiResults.set(list);
-          this.useApiResults.set(true);
-        }
-      },
-      error: () => {
-        this.useApiResults.set(false);
-      },
-    });
+    const page = append ? this._currentPage() + 1 : 1;
+    try {
+      const res = await firstValueFrom(this.api.getProfiles(this.toParams(filters, page)));
+      const list = res.data ?? res;
+      const profiles = Array.isArray(list) ? list : [];
+      if (append) {
+        this._results.update(existing => [...existing, ...profiles]);
+      } else {
+        this._results.set(profiles);
+      }
+      if (res.page != null) this._currentPage.set(res.page);
+      if (res.totalPages != null) this._totalPages.set(res.totalPages);
+    } catch {
+      // keep existing results on error
+    } finally {
+      this._isLoading.set(false);
+    }
+  }
+
+  private toParams(filters: SearchFilters, page: number): Record<string, string | number> {
+    const params: Record<string, string | number> = { page };
+    if (filters.query) params['query'] = filters.query;
+    if (filters.gender) params['gender'] = filters.gender;
+    if (filters.religions?.length) params['religion'] = filters.religions.join(',');
+    if (filters.locations?.length) params['city'] = filters.locations.join(',');
+    if (filters.education?.length) params['educationLevel'] = filters.education.join(',');
+    if (filters.occupations?.length) params['occupation'] = filters.occupations.join(',');
+    return params;
   }
 }

@@ -78,7 +78,7 @@
                 @if (isSubmitting()) {
                   Processing...
                 } @else {
-                  <ng-container>Next <mat-icon>arrow_forward</mat-icon></ng-container>
+                  <ng-container>Next <mat-icon class="next1">arrow_forward</mat-icon></ng-container>
                 }
               </button>
             </div>
@@ -205,7 +205,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Education Level</mat-label>
                 <mat-select formControlName="educationLevel">
-                  @for (e of educationLevels; track e) {
+                  @for (e of availableEducation(); track e) {
                     <mat-option [value]="e">{{ e }}</mat-option>
                   }
                 </mat-select>
@@ -231,7 +231,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Occupation</mat-label>
                 <mat-select formControlName="occupation">
-                  @for (o of occupations; track o) {
+                  @for (o of availableOccupations(); track o) {
                     <mat-option [value]="o">{{ o }}</mat-option>
                   }
                 </mat-select>
@@ -301,7 +301,7 @@
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Preferred Education</mat-label>
               <mat-select formControlName="preferredEducation" multiple>
-                @for (e of educationLevels; track e) {
+                @for (e of availableEducation(); track e) {
                   <mat-option [value]="e">{{ e }}</mat-option>
                 }
               </mat-select>
@@ -327,7 +327,7 @@
                 @if (isSubmitting()) {
                   Creating Profile...
                 } @else {
-                  <ng-container>Complete Registration <mat-icon>check</mat-icon></ng-container>
+                  <ng-container>Complete Registration <mat-icon class="icon-tick">check</mat-icon></ng-container>
                 }
               </button>
             </div>

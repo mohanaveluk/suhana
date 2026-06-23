@@ -1,0 +1,135 @@
+// ─── Page shell ──────────────────────────────────────────────────────────────
+.accept-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--suhana-bg, #faf8f8);
+  padding: 32px 16px;
+}
+
+.accept-container {
+  width: 100%;
+  max-width: 520px;
+}
+
+// ─── State card ──────────────────────────────────────────────────────────────
+.state-card {
+  background: white;
+  border-radius: 24px;
+  padding: 56px 48px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  animation: fadeUp 0.4s ease both;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+    line-height: 1.3;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--suhana-text-primary);
+    margin: 20px 0 8px;
+  }
+
+  .primary-msg {
+    font-size: 1rem;
+    color: var(--suhana-text-primary);
+    margin: 0 0 12px;
+    line-height: 1.6;
+
+    strong { color: var(--suhana-maroon); }
+  }
+
+  .secondary-msg {
+    font-size: 0.9rem;
+    color: var(--suhana-text-secondary);
+    line-height: 1.7;
+    margin: 0 0 36px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 40px 24px;
+    h1 { font-size: 1.25rem; }
+  }
+}
+
+// ─── State-specific colours ──────────────────────────────────────────────────
+.state-card--loading {
+  p { color: var(--suhana-text-secondary); font-size: 0.95rem; margin: 0; }
+}
+
+.state-card--success  h1 { color: var(--suhana-maroon); }
+.state-card--already  h1 { color: #388e3c; }
+.state-card--invalid  h1 { color: #c62828; }
+
+// ─── Icon circle ─────────────────────────────────────────────────────────────
+.icon-circle {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+
+  mat-icon {
+    font-size: 44px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.icon-circle--success {
+  background: linear-gradient(135deg, #fff0f3 0%, #ffe0e8 100%);
+  mat-icon { color: var(--suhana-maroon); }
+}
+
+.icon-circle--already {
+  background: #e8f5e9;
+  mat-icon { color: #388e3c; }
+}
+
+.icon-circle--invalid {
+  background: #ffebee;
+  mat-icon { color: #c62828; }
+}
+
+// ─── Loading spinner ─────────────────────────────────────────────────────────
+.loading-spinner {
+  margin: 0 auto 20px;
+  display: block;
+
+  ::ng-deep circle {
+    stroke: var(--suhana-rose-gold);
+  }
+}
+
+// ─── Action row ──────────────────────────────────────────────────────────────
+.action-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 24px !important;
+    padding: 0 24px;
+    height: 44px;
+    font-size: 0.95rem;
+  }
+}
+
+// ─── Animation ───────────────────────────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
