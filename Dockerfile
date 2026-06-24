@@ -12,4 +12,4 @@ COPY ./web.config /app/dist/suhana-app
 FROM nginx:1.23.0-alpine
 EXPOSE 80
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
-COPY --from=node /app/dist/suhana-app/browser /usr/share/nginx/html
+COPY --from=node /app/dist/suhana/browser /usr/share/nginx/html
