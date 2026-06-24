@@ -90,6 +90,15 @@
       <mat-step [stepControl]="personalForm" label="Personal">
         <form [formGroup]="personalForm">
           <div class="step-content">
+            @if (prefillNotice()) {
+              <div class="prefill-notice" role="status">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>{{ prefillNotice() }}</span>
+                <button mat-icon-button (click)="prefillNotice.set(null)" aria-label="Dismiss">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
             <h2>Personal Details</h2>
 
             <div class="form-row">
@@ -274,6 +283,12 @@
                         (click)="profileError.set(null)">
                   <mat-icon>close</mat-icon>
                 </button>
+              </div>
+            }
+            @if (prefillNotice()) {
+              <div class="prefill-notice" role="status">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>{{ prefillNotice() }}</span>
               </div>
             }
             <h2>Partner Preferences</h2>

@@ -87,11 +87,15 @@ export class AuthService {
   }
 
   updateMembership(tier: MembershipTier): void {
+    this.patchUser({ membership: tier });
+  }
+
+  patchUser(partial: Partial<User>): void {
     const user = this.currentUser();
-    if (user) {
-      this.currentUser.set({ ...user, membership: tier });
-      localStorage.setItem('suhana_user', JSON.stringify({ ...user, membership: tier }));
-    }
+    if (!user) return;
+    const updated = { ...user, ...partial };
+    this.currentUser.set(updated);
+    localStorage.setItem('suhana_user', JSON.stringify(updated));
   }
 
   async requestPasswordReset(email: string): Promise<void> {
