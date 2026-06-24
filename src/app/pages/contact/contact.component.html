@@ -249,8 +249,10 @@
                       <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
                       <span>Sending…</span>
                     } @else {
-                      <mat-icon aria-hidden="true">send</mat-icon>
-                      <span>Send Message</span>
+                      <ng-container>
+                        <mat-icon aria-hidden="true">send</mat-icon>
+                        <span>Send Message</span>
+                      </ng-container>
                     }
                   </button>
                 </div>
