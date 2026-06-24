@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.suhana.com/api',
+  apiUrl: 'https://survey-app-886135112987.us-central1.run.app/api',
 };
