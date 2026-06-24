@@ -87,6 +87,40 @@
   }
 }
 
+// Pre-fill notice banner (shown on steps 2-4 when existing profile data was found)
+.prefill-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 12px 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: #e8f5e9;
+  border-left: 4px solid #43a047;
+  color: #1b5e20;
+
+  mat-icon {
+    flex-shrink: 0;
+    color: #43a047;
+    margin-top: 1px;
+  }
+
+  span {
+    flex: 1;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  button {
+    flex-shrink: 0;
+    color: #43a047 !important;
+    width: 28px;
+    height: 28px;
+
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  }
+}
+
 .gender-select {
   margin-bottom: 24px;
 

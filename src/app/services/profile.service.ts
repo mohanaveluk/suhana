@@ -3,11 +3,13 @@ import {
   UserProfile, Gender, MatchPreferences,
 } from '../models/user.model';
 import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
-  private readonly api = inject(ApiService);
+  private readonly api  = inject(ApiService);
+  private readonly auth = inject(AuthService);
   private readonly profiles = signal<UserProfile[]>([]);
   private readonly userProfile = signal<UserProfile | null>(null);
   private initialized = false;
@@ -165,6 +167,12 @@ export class ProfileService {
     try {
       const updated = await firstValueFrom(this.api.updateProfile(profile as Record<string, unknown>));
       this.userProfile.set(updated);
+      
+      this.auth.patchUser({
+        firstName: profile.firstName,
+        lastName:  profile.lastName,
+      });
+
     } catch (err) {
       const current = this.userProfile();
       if (current) {
