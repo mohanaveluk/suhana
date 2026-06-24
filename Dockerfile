@@ -1,5 +1,5 @@
 #stage 1
-FROM node:20-alpine as node
+FROM node:24-alpine as node
 WORKDIR /app
 COPY . .
 RUN npm install --legacy-peer-deps
