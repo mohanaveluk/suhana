@@ -24,7 +24,7 @@ interface DetailState {
 @Component({
   selector: 'app-notification',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, FormsModule, MaterialModule, DatePipe],
+  imports: [FormsModule, MaterialModule, DatePipe],
   templateUrl: './notification.component.html',
   styleUrl:    './notification.component.scss',
 })

@@ -12,7 +12,7 @@ import { ContactService } from './contact.service';
 @Component({
   selector: 'app-contact',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, MaterialModule],
+  imports: [ReactiveFormsModule, MaterialModule],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })

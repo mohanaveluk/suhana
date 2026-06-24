@@ -21,7 +21,7 @@ import {
 @Component({
   selector: 'app-premium-payment',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, MaterialModule, MatAutocompleteModule, DatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, MaterialModule, MatAutocompleteModule, DatePipe, DecimalPipe], //RouterLink
   templateUrl: './premium-payment.html',
   styleUrl: './premium-payment.scss',
 })
