@@ -1,5 +1,5 @@
 #stage 1
-FROM node:24-alpine as node
+FROM node:22-alpine as node
 WORKDIR /app
 COPY . .
 RUN npm install --legacy-peer-deps
@@ -10,6 +10,11 @@ COPY ./web.config /app/dist/suhana-app
 
 #stage 2
 FROM nginx:alpine
+
+# Remove default nginx files
+RUN rm -rf /usr/share/nginx/html/*
+
 EXPOSE 80
 COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=node /app/dist/suhana/browser /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]
