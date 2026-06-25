@@ -186,7 +186,7 @@ export class RegisterComponent implements OnInit {
     try {
       const res     = await firstValueFrom(this.api.getMyProfile());
       const profile = res?.data ?? res;
-      if (profile && (profile.firstName || profile.location?.city || profile.education?.level)) {
+      if (profile && (profile.firstName && profile.firstName !== 'unknown') && (profile.firstName || profile.location?.city || profile.education?.level)) {
         this.prefillFormsFromProfile(profile);
         return true;
       }
@@ -199,7 +199,7 @@ export class RegisterComponent implements OnInit {
   private prefillFormsFromProfile(p: any): void {
     // ── Step 2: Personal ──────────────────────────────────────────────────────
     this.personalForm.patchValue({
-      firstName:    p.firstName    ?? '',
+      firstName:    p.firstName ?? '',
       lastName:     p.lastName     ?? '',
       dateOfBirth:  p.dateOfBirth  ? new Date(p.dateOfBirth) : null,
       religion:     p.religion     ?? '',
