@@ -163,6 +163,20 @@ export class ProfileService {
     return url;
   }  
 
+async updateNewProfile(profile: Partial<UserProfile>): Promise<void> {
+    try {
+      const updated = await firstValueFrom(this.api.updateNewProfile(profile as Record<string, unknown>));
+      this.userProfile.set(updated);
+
+    } catch (err) {
+      const current = this.userProfile();
+      if (current) {
+        this.userProfile.set({ ...current, ...profile });
+      }
+      throw err;
+    }
+  }
+
   async updateProfile(profile: Partial<UserProfile>): Promise<void> {
     try {
       const updated = await firstValueFrom(this.api.updateProfile(profile as Record<string, unknown>));

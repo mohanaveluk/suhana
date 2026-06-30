@@ -1,0 +1,193 @@
+// ─── Page shell ──────────────────────────────────────────────────────────────
+.rs-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--suhana-gradient-light);
+  padding: 32px 16px;
+}
+
+// ─── Card ────────────────────────────────────────────────────────────────────
+.rs-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 56px 48px 48px;
+  max-width: 580px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 40px var(--suhana-shadow);
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  animation: fadeUp 0.4s ease both;
+
+  @media (max-width: 600px) {
+    padding: 40px 24px 36px;
+    border-radius: 18px;
+  }
+}
+
+// ─── Icon circle ─────────────────────────────────────────────────────────────
+.rs-icon-wrap {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+
+  &--success {
+    background: #e0fde9; //linear-gradient(135deg, #fff0f3 0%, #ffe0e8 100%);
+
+    .rs-icon { color: #2e7d32; }
+  }
+
+  &--error {
+    background: #ffebee;
+
+    .rs-icon { color: #c62828; }
+  }
+}
+
+.rs-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+// ─── Typography ──────────────────────────────────────────────────────────────
+.rs-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--suhana-maroon);
+  margin: 0 0 16px;
+  line-height: 1.3;
+
+  &--error { color: #c62828; }
+
+  @media (max-width: 600px) { font-size: 1.35rem; }
+}
+
+.rs-lead {
+  font-size: 0.975rem;
+  color: var(--suhana-text-primary);
+  line-height: 1.75;
+  margin: 0 0 20px;
+}
+
+.rs-body {
+  font-size: 0.9rem;
+  color: var(--suhana-text-secondary);
+  line-height: 1.75;
+  margin: 20px 0 0;
+}
+
+// ─── Email highlight box ──────────────────────────────────────────────────────
+.rs-email-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--suhana-blush);
+  border: 1px solid var(--suhana-rose-gold-light);
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--suhana-maroon);
+  word-break: break-all;
+  max-width: 100%;
+  letter-spacing: 1px;
+
+  .rs-email-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--suhana-rose-gold);
+  }
+}
+
+// ─── Action buttons ───────────────────────────────────────────────────────────
+.rs-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 32px;
+  flex-wrap: wrap;
+
+  a {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    border-radius: 24px !important;
+    padding: 0 28px !important;
+    height: 44px;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+
+    a { justify-content: center; }
+  }
+}
+
+// ─── Resend row ───────────────────────────────────────────────────────────────
+.rs-resend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--suhana-rose-gold-lighter);
+  font-size: 0.875rem;
+  color: var(--suhana-text-secondary);
+
+  &__btn {
+    font-size: 0.875rem !important;
+    color: var(--suhana-rose-gold) !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__done {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #388e3c;
+    font-weight: 500;
+    font-size: 0.875rem;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.rs-spinner {
+  display: inline-block;
+  vertical-align: middle;
+
+  ::ng-deep circle { stroke: var(--suhana-rose-gold); }
+}
+
+// ─── Animation ────────────────────────────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

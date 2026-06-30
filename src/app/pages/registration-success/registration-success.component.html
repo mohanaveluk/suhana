@@ -1,0 +1,85 @@
+<div class="rs-page">
+  <div class="rs-card">
+
+    @if (state() === 'success') {
+
+      <!-- Icon -->
+      <div class="rs-icon-wrap rs-icon-wrap--success">
+        <mat-icon class="rs-icon">check_circle</mat-icon>
+      </div>
+
+      <h1 class="rs-title">Registration Successful!</h1>
+
+      <p class="rs-lead">
+        Thank you for registering with <strong>Suhana Matrimony</strong>.<br />
+        We have sent a verification email to:
+      </p>
+
+      <div class="rs-email-box">
+        <mat-icon class="rs-email-icon">mail_outline</mat-icon>
+        <span>{{ email() }}</span>
+      </div>
+
+      <p class="rs-body">
+        Please open your email and click the verification link to activate your profile.
+        You will be able to login after verifying your email address.
+      </p>
+
+      <!-- Action buttons -->
+      <div class="rs-actions">
+        <a mat-raised-button class="suhana-btn-primary" routerLink="/login">
+          <mat-icon>login</mat-icon> Login
+        </a>
+        <a mat-stroked-button class="suhana-btn-outline" routerLink="/">
+          <mat-icon>home</mat-icon> Home
+        </a>
+      </div>
+
+      <!-- Resend -->
+      <div class="rs-resend">
+        <span>Didn't receive the email?</span>
+        @if (resendDone()) {
+          <span class="rs-resend__done">
+            <mat-icon>check</mat-icon> Email sent!
+          </span>
+        } @else {
+          <button mat-button class="rs-resend__btn"
+                  [disabled]="resendSending()"
+                  (click)="resendVerification()">
+            @if (resendSending()) {
+              <mat-progress-spinner diameter="16" mode="indeterminate" class="rs-spinner"></mat-progress-spinner>
+              Sending...
+            } @else {
+              Resend Verification Email
+            }
+          </button>
+        }
+      </div>
+
+    } @else {
+
+      <!-- Invalid state -->
+      <div class="rs-icon-wrap rs-icon-wrap--error">
+        <mat-icon class="rs-icon">error_outline</mat-icon>
+      </div>
+
+      <h1 class="rs-title rs-title--error">Invalid Link</h1>
+
+      <p class="rs-body">
+        The registration information could not be read.<br />
+        Please register again or contact support if the problem persists.
+      </p>
+
+      <div class="rs-actions">
+        <a mat-raised-button class="suhana-btn-primary" routerLink="/register">
+          <mat-icon>app_registration</mat-icon> Register Again
+        </a>
+        <a mat-stroked-button class="suhana-btn-outline" routerLink="/">
+          <mat-icon>home</mat-icon> Home
+        </a>
+      </div>
+
+    }
+
+  </div>
+</div>

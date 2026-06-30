@@ -57,7 +57,7 @@ export class AuthService {
     };
     const res = await firstValueFrom(this.api.register(payload));
     if (res?.data?.access_token) {
-      this.setSession(res.data);
+      //this.setSession(res.data);
     }
     return res?.data?.userId ?? res?.data?.user?.id ?? res?.user?.id ?? '';
   }

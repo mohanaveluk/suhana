@@ -53,6 +53,14 @@ export class EditProfileComponent implements OnInit {
   protected readonly user = signal<User | null>(null);
   protected readonly profileId = signal<string | null>(null);
 
+  private readonly _availableCities       = signal<string[]>([]);
+  private readonly _availableOccupations  = signal<string[]>([]);
+  private readonly _availableEducation    = signal<string[]>([]);
+
+  protected readonly availableCities      = this._availableCities.asReadonly();
+  protected readonly availableOccupations = this._availableOccupations.asReadonly();
+  protected readonly availableEducation   = this._availableEducation.asReadonly();
+
   protected membershipIcon(tier: string): string {
     if (tier === 'platinum') return 'diamond';
     if (tier === 'gold')     return 'star';
@@ -230,6 +238,7 @@ export class EditProfileComponent implements OnInit {
   ];
 
   async ngOnInit(): Promise<void> {
+    await this.loadLookupValues();
     await this.profileService.loadMyProfile();
     const profile = this.profileService.myProfile();
     if (profile) this.patchForms(profile);
@@ -303,7 +312,22 @@ export class EditProfileComponent implements OnInit {
       createdAt: p.user?.createdAt ? new Date(p.user.createdAt) : new Date(),
       lastActive: p.user?.lastActive ? new Date(p.user.lastActive) : new Date(),
       isVerified: p.user?.isVerified ?? true,
+      tempGuid: p.user?.tempGuid,
       } as User );
+  }
+
+  
+  private async loadLookupValues(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.api.getLookupValues());
+      if (res.cities?.length)          this._availableCities.set(res.cities.map(c => c.name));
+      if (res.occupations?.length)     this._availableOccupations.set(res.occupations.map(o => o.name));
+      if (res.educationLevels?.length) this._availableEducation.set(res.educationLevels.map(e => e.name));
+    } catch {
+      this._availableCities.set(['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Surat']);
+      this._availableOccupations.set(['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Architect', 'AI Engineer']);
+      this._availableEducation.set(['Bachelor', 'Master', 'PhD', 'MBA', 'Medical', 'Engineering', 'Diploma', 'B.Tech', 'M.Tech']);
+    }
   }
 
   async saveAll(): Promise<void> {
@@ -326,6 +350,7 @@ export class EditProfileComponent implements OnInit {
       userId: basic.userId ?? '',
       firstName: basic.firstName ?? '',
       lastName:  basic.lastName ?? '',
+      tempGuid: this.user()?.tempGuid,
       dateOfBirth: dob,
       age: Math.floor((Date.now() - new Date(dob).getTime()) / 31557600000),
       height: basic.height ?? '',
@@ -336,6 +361,7 @@ export class EditProfileComponent implements OnInit {
       religion: rel.religion ?? '',
       caste: rel.caste || undefined,
       motherTongue: rel.motherTongue ?? '',
+
       location: {
         city: loc.city ?? '', state: loc.state ?? '',
         country: loc.country ?? 'India', willingToRelocate: loc.willingToRelocate ?? false,
