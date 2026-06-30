@@ -7,6 +7,7 @@ import { ApiService, AuthService } from '../../services';
 import { ProfileService } from '../../services';
 import { Gender } from '../../models/user.model';
 import { firstValueFrom } from 'rxjs';
+import { encryptValue } from '../../shared/utils/crypto.util';
 
 @Component({
   selector: 'app-register',
@@ -32,15 +33,17 @@ export class RegisterComponent implements OnInit {
   protected readonly profileError       = signal<string | null>(null);
   protected readonly registeredUserId   = signal<string | null>(null);
   protected readonly prefillNotice      = signal<string | null>(null);
-
+  
   private readonly _availableCities       = signal<string[]>([]);
   private readonly _availableOccupations  = signal<string[]>([]);
   private readonly _availableEducation    = signal<string[]>([]);
-
+  
   protected readonly availableCities      = this._availableCities.asReadonly();
   protected readonly availableOccupations = this._availableOccupations.asReadonly();
   protected readonly availableEducation   = this._availableEducation.asReadonly();
-
+  
+  protected readonly tempUserGuid      = signal<string | null>(null);
+  
   protected readonly religions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist', 'Other'];
   protected readonly educationLevels = ['High School', 'Bachelor\'s', 'Master\'s', 'PhD', 'MBA', 'Medical', 'Engineering', 'Other'];
   protected readonly occupations1 = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Government', 'Other'];
@@ -129,7 +132,7 @@ export class RegisterComponent implements OnInit {
       this.registeredUserId.set(userId);
 
       // Fetch any pre-existing profile (e.g. user partially registered before)
-      await this.tryPrefillFromProfile();
+      await this.tryPrefillFromProfile(email as string);
 
       this.stepper.next();
 
@@ -153,7 +156,7 @@ export class RegisterComponent implements OnInit {
           const user = this.auth.user();
           if (user) {
             this.registeredUserId.set(user.id ?? '');
-            const prefilled = await this.tryPrefillFromProfile();
+            const prefilled = await this.tryPrefillFromProfile(email as string);
             this.prefillNotice.set(
               prefilled
                 ? 'Welcome back! We found your existing profile and pre-filled your details below. Please review and complete your registration.'
@@ -182,9 +185,9 @@ export class RegisterComponent implements OnInit {
   }
 
   // Returns true if any profile data was actually found and applied
-  private async tryPrefillFromProfile(): Promise<boolean> {
+  private async tryPrefillFromProfile(id: string): Promise<boolean> {
     try {
-      const res     = await firstValueFrom(this.api.getMyProfile());
+      const res     = await firstValueFrom(this.api.getProfileByEmail(id));
       const profile = res?.data ?? res;
       if (profile && (profile.firstName && profile.firstName !== 'unknown') && (profile.firstName || profile.location?.city || profile.education?.level)) {
         this.prefillFormsFromProfile(profile);
@@ -230,6 +233,7 @@ export class RegisterComponent implements OnInit {
       preferredEducation: p.preferences?.education    ?? [],
       aboutMe:            p.aboutMe ?? '',
     });
+    this.tempUserGuid.set(p.user.tempGuid);
   }
 
   async onSubmit(): Promise<void> {
@@ -248,7 +252,7 @@ export class RegisterComponent implements OnInit {
       : 25;
 
     try {
-      await this.profileService.updateProfile({
+      await this.profileService.updateNewProfile({
         userId:       this.registeredUserId() ?? this.auth.user()?.id ?? '',
         firstName:    personal.firstName  || '',
         lastName:     personal.lastName   || '',
@@ -288,8 +292,10 @@ export class RegisterComponent implements OnInit {
         photoPrivacy:        'everyone',
         status:              'active',
         profileCompleteness: 75,
+        tempGuid: this.tempUserGuid() ?? '',
       });
-      this.router.navigate(['/profile']);
+      const paramKey = encryptValue(this.accountForm.getRawValue().email ?? '');
+      this.router.navigate(['/registration-success', paramKey]);
     } catch (err: any) {
       this.profileError.set(err?.error?.message ?? 'Failed to save profile. Please try again.');
     } finally {

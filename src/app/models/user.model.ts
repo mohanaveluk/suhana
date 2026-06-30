@@ -25,7 +25,7 @@ export interface User {
   lastActive: Date;
   isVerified?: boolean;
   profile?: UserProfile;
-
+  tempGuid?: string;
 }
 
 export interface UserProfile {
@@ -53,6 +53,7 @@ export interface UserProfile {
   photoPrivacy: PhotoPrivacy;
   status: ProfileStatus;
   profileCompleteness: number;
+  tempGuid?: string;
   user?: User;
 }
 

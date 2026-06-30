@@ -152,6 +152,13 @@ export const routes: Routes = [
       import('./pages/accept-interest/accept-interest.component').then(m => m.AcceptInterestComponent),
   },
   {
+    path: 'registration-success/:paramKey',
+    loadComponent: () =>
+      import('./pages/registration-success/registration-success.component').then(
+        m => m.RegistrationSuccessComponent,
+      ),
+  },
+  {
     path: 'faq',
     loadComponent: () =>
       import('./pages/faq/faq.component').then(m => m.FaqComponent),

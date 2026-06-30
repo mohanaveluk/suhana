@@ -310,7 +310,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Education Level</mat-label>
                 <mat-select formControlName="level">
-                  @for (e of educationLevels; track e) { <mat-option [value]="e">{{ e }}</mat-option> }
+                  @for (e of availableEducation(); track e) { <mat-option [value]="e">{{ e }}</mat-option> }
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
@@ -340,7 +340,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Job Title</mat-label>
                 <mat-select formControlName="title">
-                  @for (o of occupationList; track o) { <mat-option [value]="o">{{ o }}</mat-option> }
+                  @for (o of availableOccupations(); track o) { <mat-option [value]="o">{{ o }}</mat-option> }
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">

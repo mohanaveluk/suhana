@@ -78,6 +78,10 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/v1/profiles/me`);
   }
 
+  getProfileByEmail(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/profiles/email/${id}`);
+  }
+  
   getProfileById(id: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/v1/profiles/${id}`);
   }
@@ -87,7 +91,7 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/v1/profiles/code/${code}`);
   }
 
-  updateNewProfile(data: UserProfile): Observable<any> {
+  updateNewProfile(data: Record<string, unknown>): Observable<any> {
     return this.http.patch(`${this.baseUrl}/v1/profiles/new`, data);
   }
 
