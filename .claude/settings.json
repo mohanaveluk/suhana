@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/projects/matrimony/api/suhana-api/src/modules/match-fixed/**)"
+    ]
+  }
+}

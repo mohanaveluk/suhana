@@ -75,6 +75,10 @@
             <mat-icon>track_changes</mat-icon>
             <span>Match Tracker</span>
           </a>
+          <a mat-menu-item routerLink="/match-fixed/me">
+            <mat-icon>favorite</mat-icon>
+            <span>My Match Fixed</span>
+          </a>
           <mat-divider></mat-divider>
           <a mat-menu-item routerLink="/feedback">
             <mat-icon>rate_review</mat-icon>
@@ -129,6 +133,9 @@
       </a>
       <a routerLink="/profile" (click)="toggleMobileMenu()">
         <mat-icon>person</mat-icon> Profile
+      </a>
+      <a routerLink="/match-fixed/me" (click)="toggleMobileMenu()">
+        <mat-icon>favorite</mat-icon> My Match Fixed
       </a>
       <a routerLink="/feedback" (click)="toggleMobileMenu()">
         <mat-icon>rate_review</mat-icon> Share Feedback

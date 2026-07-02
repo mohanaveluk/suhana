@@ -252,6 +252,17 @@ $sidebar-w: 280px;
       margin: 0 0 3px;
     }
 
+    .result-header{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      span {
+        font-size: 0.75rem;
+        color: var(--suhana-text-secondary);
+      }
+    }
+
     .result-meta {
       font-size: 0.82rem;
       color: var(--suhana-text-secondary);

@@ -188,8 +188,15 @@
               }
             </div>
             <mat-card-content>
-              <h3>{{ profile.firstName }} {{ profile.lastName }}</h3>
+              <div class="result-header">
+                <h3>{{ profile.firstName }} {{ profile.lastName }}</h3>
+                <span> {{ profile.profileCode! }}</span>
+              </div>
               <p class="result-meta">{{ profile.age }} yrs &middot; {{ profile.height }}</p>
+              <div class="result-meta" >
+                <span>{{ profile.age }} yrs &middot; {{ profile.height }}</span>
+                <span>{{ profile.profileCode! }}</span>
+              </div>
               <div class="result-details">
                 <span><mat-icon>location_on</mat-icon> {{ profile.location.city }}</span>
                 <span><mat-icon>work</mat-icon> {{ profile.occupation.title }}</span>

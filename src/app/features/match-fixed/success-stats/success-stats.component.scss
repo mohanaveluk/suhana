@@ -1,0 +1,74 @@
+.sstat-section {
+  padding: 64px 24px;
+  background: linear-gradient(160deg, var(--suhana-maroon-dark) 0%, var(--suhana-maroon) 100%);
+}
+
+.sstat-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 40px;
+
+  &__icon {
+    font-size: 44px; width: 44px; height: 44px;
+    color: var(--suhana-rose-gold-lighter);
+    margin-bottom: 12px;
+  }
+
+  h2 { font-size: 1.9rem; font-weight: 700; margin: 0 0 8px; color: var(--suhana-blush) !important;}
+  p  { opacity: 0.8; margin: 0; font-size: 1rem; }
+}
+
+.sstat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  @media (max-width: 900px)  { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 380px)  { grid-template-columns: 1fr; }
+}
+
+.sstat-card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 18px;
+  padding: 28px 16px;
+  text-align: center;
+  transition: transform 0.25s ease, background 0.25s;
+
+  &:hover { transform: translateY(-4px); background: rgba(255,255,255,0.14); }
+
+  &__icon-ring {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+
+    mat-icon { font-size: 26px; width: 26px; height: 26px; }
+  }
+
+  &__num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.75);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  &--maroon  .sstat-card__icon-ring { background: rgba(183,110,121,0.3); mat-icon { color: var(--suhana-rose-gold-lighter); } }
+  &--gold    .sstat-card__icon-ring { background: rgba(201,168,76,0.3);  mat-icon { color: var(--suhana-gold-light); } }
+  &--rose    .sstat-card__icon-ring { background: rgba(255,210,220,0.2); mat-icon { color: #ffcdd2; } }
+  &--teal    .sstat-card__icon-ring { background: rgba(100,210,210,0.2); mat-icon { color: #80deea; } }
+  &--purple  .sstat-card__icon-ring { background: rgba(190,150,220,0.2); mat-icon { color: #ce93d8; } }
+}

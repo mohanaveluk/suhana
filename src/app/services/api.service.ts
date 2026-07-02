@@ -430,6 +430,61 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/v1/users/${id}`);
   }
 
+  // Match Fixed — profile-scoped (authenticated)
+  createMatchFixed(dto: Record<string, unknown>): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/profile/match-fixed`, dto);
+  }
+
+  getMyMatchFixed(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/profile/match-fixed/me`);
+  }
+
+  getMatchFixedById(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/profile/match-fixed/${id}`);
+  }
+
+  updateMatchFixed(id: string, dto: Record<string, unknown>): Observable<any> {
+    return this.http.put(`${this.baseUrl}/v1/profile/match-fixed/${id}`, dto);
+  }
+
+  deleteMatchFixed(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/v1/profile/match-fixed/${id}`);
+  }
+
+  // Match Fixed — public (no auth)
+  getPublicSuccessStories(params?: Record<string, string | number>): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/match-fixed/public`, { params: params as any });
+  }
+
+  getFeaturedSuccessStories(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/match-fixed/public/featured`);
+  }
+
+  getSuccessStats(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/match-fixed/public/stats`);
+  }
+
+  getSuccessStoryById(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/match-fixed/public/${id}`);
+  }
+
+  // Match Fixed — admin
+  getMatchFixedAdminDashboard(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/match-fixed/admin/dashboard`);
+  }
+
+  verifyMatchFixedPartner(id: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/match-fixed/${id}/verify-partner`, {});
+  }
+
+  uploadMatchFixedPhoto(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    formData.append('context', 'match-fixed');
+    //return this.http.post(`${this.baseUrl}/v1/profiles/profile/image`, formData);
+    return this.http.post(`${this.baseUrl}/v1/images/upload`, formData);
+  }
+
   deleteUser(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/v1/users/${id}`);
   }

@@ -1,0 +1,397 @@
+<div class="mff-page">
+  <div class="mff-container">
+
+    <!-- Page Header -->
+    <div class="mff-header">
+      <mat-icon class="mff-header__icon">favorite</mat-icon>
+      <h1 class="mff-header__title">Match Fixed</h1>
+      <p class="mff-header__sub">Share your journey and inspire thousands of hearts</p>
+    </div>
+
+    <mat-stepper linear #stepper class="mff-stepper" [animationDuration]="'300ms'">
+
+      <!-- ── STEP 1: Congratulations ─────────────────────────────────── -->
+      <mat-step label="Begin" state="heart">
+        <div class="mff-step">
+          <div class="mff-congrats">
+            <div class="mff-congrats__icon-ring">
+              <mat-icon>favorite</mat-icon>
+            </div>
+            <h2>Congratulations on Finding Your Match!</h2>
+            <p>
+              We're delighted to hear you've found someone truly special.<br />
+              Your love story is an inspiration to thousands of seekers on Suhana.
+            </p>
+            <p class="mff-congrats__sub">
+              Help us celebrate by sharing a few details about your journey.
+              It only takes a few minutes, and your story could inspire the next couple.
+            </p>
+          </div>
+          <div class="mff-step-actions">
+            <button mat-raised-button class="suhana-btn-primary" matStepperNext>
+              Begin <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- ── STEP 2: Match Source ────────────────────────────────────── -->
+      <mat-step [stepControl]="matchSourceForm" label="Source">
+        <form [formGroup]="matchSourceForm">
+          <div class="mff-step">
+            <h2 class="mff-step__title">How Did You Find Your Match?</h2>
+            <p class="mff-step__sub">Select the source that best describes how you met.</p>
+
+            <div class="mff-source-grid">
+              @for (opt of sourceOptions; track opt) {
+                <label class="mff-source-card"
+                       [class.mff-source-card--active]="matchSourceForm.get('matchSourceType')?.value === opt">
+                  <input type="radio" formControlName="matchSourceType" [value]="opt" />
+                  <mat-icon class="mff-source-card__icon">{{ sourceIcon(opt) }}</mat-icon>
+                  <span>{{ sourceLabels[opt] }}</span>
+                </label>
+              }
+            </div>
+
+            @if (matchSourceForm.get('matchSourceType')?.invalid && matchSourceForm.get('matchSourceType')?.touched) {
+              <mat-error class="mff-error">Please select how you found your match.</mat-error>
+            }
+
+            <div class="mff-step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-raised-button class="suhana-btn-primary"
+                      (click)="matchSourceForm.markAllAsTouched()"
+                      matStepperNext>
+                Next <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- ── STEP 3: Partner Details (conditional) ───────────────────── -->
+      <mat-step [stepControl]="partnerStep3Form()" label="Partner">
+        <div class="mff-step">
+          @if (isSuhana()) {
+            <!-- Partner registered on Suhana -->
+            <form [formGroup]="suhanaPartnerForm">
+              <h2 class="mff-step__title">Find Your Suhana Partner</h2>
+              <p class="mff-step__sub">Provide their Profile ID or Profile Code to link your match.</p>
+
+              <mat-form-field appearance="outline" class="mff-full-width">
+                <mat-label>Profile ID</mat-label>
+                <input matInput formControlName="matchedUserId" placeholder="e.g. usr_abc123" />
+                <mat-icon matPrefix>badge</mat-icon>
+              </mat-form-field>
+
+              <div class="mff-or-divider"><span>OR</span></div>
+
+              <mat-form-field appearance="outline" class="mff-full-width">
+                <mat-label>Profile Code / GUID</mat-label>
+                <input matInput formControlName="matchedUserGuid" placeholder="e.g. SHN-2024-XXXX" />
+                <mat-icon matPrefix>qr_code</mat-icon>
+              </mat-form-field>
+
+              @if (suhanaPartnerForm.hasError('suhanaPartnerRequired') && suhanaPartnerForm.touched) {
+                <mat-error class="mff-error">Please provide at least a Profile ID or Profile Code.</mat-error>
+              }
+            </form>
+          } @else {
+            <!-- External partner -->
+            <form [formGroup]="externalPartnerForm">
+              <h2 class="mff-step__title">Tell Us About Your Partner</h2>
+              <p class="mff-step__sub">Share some details about the person you're marrying.</p>
+
+              <div class="mff-form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Partner's Name</mat-label>
+                  <input matInput formControlName="partnerName" />
+                  <mat-icon matPrefix>person</mat-icon>
+                  @if (externalPartnerForm.controls.partnerName.hasError('required') && externalPartnerForm.controls.partnerName.touched) {
+                    <mat-error>Partner name is required.</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Partner's Age</mat-label>
+                  <input matInput type="number" formControlName="partnerAge" min="18" max="100" />
+                  <mat-icon matPrefix>cake</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <div class="mff-form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Partner's Profession</mat-label>
+                  <input matInput formControlName="partnerProfession" />
+                  <mat-icon matPrefix>work</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Partner's Location</mat-label>
+                  <input matInput formControlName="partnerLocation" />
+                  <mat-icon matPrefix>location_on</mat-icon>
+                </mat-form-field>
+              </div>
+            </form>
+          }
+
+          <div class="mff-step-actions">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-raised-button class="suhana-btn-primary"
+                    (click)="partnerStep3Form().markAllAsTouched()"
+                    matStepperNext>
+              Next <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- ── STEP 4: Photos ──────────────────────────────────────────── -->
+      <mat-step label="Photos">
+        <div class="mff-step">
+          <h2 class="mff-step__title">Share Your Photos</h2>
+          <p class="mff-step__sub">Upload your couple photos — all fields are optional.</p>
+
+          <div class="mff-photo-grid">
+            <!-- Partner Photo -->
+            <div class="mff-photo-slot">
+              <p class="mff-photo-slot__label">
+                <mat-icon>person_pin</mat-icon> Partner Photo
+              </p>
+              @if (partnerPhotoPreview()) {
+                <div class="mff-photo-preview">
+                  <img [src]="partnerPhotoPreview()" alt="Partner photo" />
+                  <button mat-icon-button class="mff-photo-remove" (click)="removePhoto('partner')" aria-label="Remove">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @else {
+                <label class="mff-drop-zone"
+                       (dragover)="preventDragover($event)"
+                       (drop)="onDropPhoto('partner', $event)">
+                  <mat-icon>cloud_upload</mat-icon>
+                  <span>Drag & drop or <u>browse</u></span>
+                  <span class="mff-drop-zone__hint">JPG, PNG — max 5 MB</span>
+                  <input type="file" accept="image/*" hidden (change)="onPhotoSelected('partner', $event)" />
+                </label>
+              }
+            </div>
+
+            <!-- Engagement Photo -->
+            <div class="mff-photo-slot">
+              <p class="mff-photo-slot__label">
+                <mat-icon>diamond</mat-icon> Engagement Photo
+              </p>
+              @if (engagementPhotoPreview()) {
+                <div class="mff-photo-preview">
+                  <img [src]="engagementPhotoPreview()" alt="Engagement photo" />
+                  <button mat-icon-button class="mff-photo-remove" (click)="removePhoto('engagement')" aria-label="Remove">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @else {
+                <label class="mff-drop-zone"
+                       (dragover)="preventDragover($event)"
+                       (drop)="onDropPhoto('engagement', $event)">
+                  <mat-icon>cloud_upload</mat-icon>
+                  <span>Drag & drop or <u>browse</u></span>
+                  <span class="mff-drop-zone__hint">JPG, PNG — max 5 MB</span>
+                  <input type="file" accept="image/*" hidden (change)="onPhotoSelected('engagement', $event)" />
+                </label>
+              }
+            </div>
+
+            <!-- Wedding Photo -->
+            <div class="mff-photo-slot">
+              <p class="mff-photo-slot__label">
+                <mat-icon>church</mat-icon> Wedding Photo
+              </p>
+              @if (weddingPhotoPreview()) {
+                <div class="mff-photo-preview">
+                  <img [src]="weddingPhotoPreview()" alt="Wedding photo" />
+                  <button mat-icon-button class="mff-photo-remove" (click)="removePhoto('wedding')" aria-label="Remove">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @else {
+                <label class="mff-drop-zone"
+                       (dragover)="preventDragover($event)"
+                       (drop)="onDropPhoto('wedding', $event)">
+                  <mat-icon>cloud_upload</mat-icon>
+                  <span>Drag & drop or <u>browse</u></span>
+                  <span class="mff-drop-zone__hint">JPG, PNG — max 5 MB</span>
+                  <input type="file" accept="image/*" hidden (change)="onPhotoSelected('wedding', $event)" />
+                </label>
+              }
+            </div>
+          </div>
+
+          <div class="mff-step-actions">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-raised-button class="suhana-btn-primary" matStepperNext>
+              Next <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- ── STEP 5: Success Story ───────────────────────────────────── -->
+      <mat-step [stepControl]="storyForm" label="Story">
+        <form [formGroup]="storyForm">
+          <div class="mff-step">
+            <h2 class="mff-step__title">Your Love Story</h2>
+            <p class="mff-step__sub">
+              Tell us how you met, what made them special, and your journey to this moment.
+            </p>
+
+            <mat-form-field appearance="outline" class="mff-full-width mff-textarea-field">
+              <mat-label>Your Success Story</mat-label>
+              <textarea matInput formControlName="successStory" rows="7"
+                        placeholder="We met through Suhana in 2023..."></textarea>
+              <mat-hint align="end">{{ storyLength() }} / 2000</mat-hint>
+              @if (storyForm.controls.successStory.hasError('maxlength')) {
+                <mat-error>Story cannot exceed 2000 characters.</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="mff-step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-raised-button class="suhana-btn-primary"
+                      (click)="storyForm.markAllAsTouched()"
+                      matStepperNext>
+                Next <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- ── STEP 6: Permissions ────────────────────────────────────── -->
+      <mat-step [stepControl]="permissionsForm" label="Permissions">
+        <form [formGroup]="permissionsForm">
+          <div class="mff-step">
+            <h2 class="mff-step__title">Publication Permissions</h2>
+            <p class="mff-step__sub">
+              Your story inspires others. Help us share it with the Suhana community.
+            </p>
+
+            <div class="mff-permission-cards">
+              <div class="mff-permission-card">
+                <div class="mff-permission-card__left">
+                  <mat-icon class="mff-permission-card__icon">article</mat-icon>
+                  <div>
+                    <p class="mff-permission-card__title">Publish Your Story</p>
+                    <p class="mff-permission-card__desc">Allow us to feature your success story on our platform and inspire future members.</p>
+                  </div>
+                </div>
+                <mat-slide-toggle formControlName="allowStoryPublish" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="mff-permission-card">
+                <div class="mff-permission-card__left">
+                  <mat-icon class="mff-permission-card__icon">photo_library</mat-icon>
+                  <div>
+                    <p class="mff-permission-card__title">Display Your Photos</p>
+                    <p class="mff-permission-card__desc">Allow us to showcase your couple photos on the success stories gallery.</p>
+                  </div>
+                </div>
+                <mat-slide-toggle formControlName="allowPhotoPublish" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <p class="mff-permission-note">
+              <mat-icon>info_outline</mat-icon>
+              You can change these preferences at any time from your profile settings.
+            </p>
+
+            <div class="mff-step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-raised-button class="suhana-btn-primary" matStepperNext>
+                Review <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- ── STEP 7: Review & Submit ────────────────────────────────── -->
+      <mat-step label="Submit">
+        <div class="mff-step">
+          <h2 class="mff-step__title">Review Your Details</h2>
+          <p class="mff-step__sub">Please review before submitting.</p>
+
+          <div class="mff-review-card">
+            <div class="mff-review-row">
+              <span class="mff-review-row__label">Match Source</span>
+              <span class="mff-review-row__value">{{ sourceLabels[reviewData().source] }}</span>
+            </div>
+            @if (reviewData().partnerName) {
+              <div class="mff-review-row">
+                <span class="mff-review-row__label">Partner</span>
+                <span class="mff-review-row__value">{{ reviewData().partnerName }}</span>
+              </div>
+            }
+            @if (reviewData().partnerAge) {
+              <div class="mff-review-row">
+                <span class="mff-review-row__label">Partner Age</span>
+                <span class="mff-review-row__value">{{ reviewData().partnerAge }} yrs</span>
+              </div>
+            }
+            @if (reviewData().partnerProfession) {
+              <div class="mff-review-row">
+                <span class="mff-review-row__label">Profession</span>
+                <span class="mff-review-row__value">{{ reviewData().partnerProfession }}</span>
+              </div>
+            }
+            @if (reviewData().partnerLocation) {
+              <div class="mff-review-row">
+                <span class="mff-review-row__label">Location</span>
+                <span class="mff-review-row__value">{{ reviewData().partnerLocation }}</span>
+              </div>
+            }
+            <div class="mff-review-row">
+              <span class="mff-review-row__label">Photos</span>
+              <span class="mff-review-row__value">
+                {{ [reviewData().hasPartnerPhoto ? 'Partner' : '', reviewData().hasEngagementPhoto ? 'Engagement' : '', reviewData().hasWeddingPhoto ? 'Wedding' : ''].filter(s => !!s).join(', ') || 'None' }}
+              </span>
+            </div>
+            <div class="mff-review-row">
+              <span class="mff-review-row__label">Story</span>
+              <span class="mff-review-row__value">{{ reviewData().successStory ? storyLength() + ' characters' : 'Not provided' }}</span>
+            </div>
+            <div class="mff-review-row">
+              <span class="mff-review-row__label">Publish Story</span>
+              <span class="mff-review-row__value">{{ reviewData().allowStoryPublish ? 'Yes' : 'No' }}</span>
+            </div>
+            <div class="mff-review-row">
+              <span class="mff-review-row__label">Publish Photos</span>
+              <span class="mff-review-row__value">{{ reviewData().allowPhotoPublish ? 'Yes' : 'No' }}</span>
+            </div>
+          </div>
+
+          @if (submitError()) {
+            <div class="mff-submit-error" role="alert">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ submitError() }}</span>
+            </div>
+          }
+
+          <div class="mff-step-actions">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-raised-button class="suhana-btn-primary"
+                    [disabled]="isSubmitting()"
+                    (click)="onSubmit()">
+              @if (isSubmitting()) {
+                <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                Submitting...
+              } @else {
+                <ng-container>
+                  <mat-icon>check_circle</mat-icon> Submit Match Details
+                </ng-container>
+              }
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+    </mat-stepper>
+  </div>
+</div>

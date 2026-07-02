@@ -292,6 +292,130 @@
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
 }
 
+// ── Match Fixed Status Card ───────────────────────────────────────────────────
+.mfs-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  border-radius: 16px;
+  padding: 1.1rem 1.5rem;
+  margin-bottom: 24px;
+  border: 1.5px solid transparent;
+  transition: box-shadow 0.2s;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+.mfs-card--active {
+  background: linear-gradient(135deg, #fff7f5 0%, #ffe8e0 100%);
+  border-color: rgba(192, 57, 90, 0.3);
+  box-shadow: 0 2px 12px rgba(192, 57, 90, 0.1);
+}
+
+.mfs-card--cta {
+  background: linear-gradient(135deg, #fff8f5 0%, #fef0ea 100%);
+  border-color: rgba(107, 28, 46, 0.15);
+  box-shadow: 0 2px 8px rgba(107, 28, 46, 0.06);
+}
+
+.mfs-card--cancelled {
+  background: #f8f8f8;
+  border-color: #e0e0e0;
+}
+
+.mfs-card--skeleton {
+  background: #f5f5f5;
+  border-color: #ebebeb;
+  pointer-events: none;
+}
+
+.mfs-card__icon-ring {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .mfs-card--active &     { background: rgba(192, 57, 90, 0.12); mat-icon { color: #c0395a; } }
+  .mfs-card--cta &        { background: rgba(107, 28, 46, 0.08); mat-icon { color: var(--suhana-maroon, #6b1c2e); } }
+  .mfs-card--cancelled &  { background: #ebebeb; mat-icon { color: #aaa; } }
+
+  mat-icon { font-size: 1.4rem; width: 1.4rem; height: 1.4rem; }
+}
+
+.mfs-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mfs-card__title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--suhana-maroon, #6b1c2e);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  .mfs-card--cancelled & { color: #777; }
+}
+
+.mfs-suhana-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--suhana-maroon, #6b1c2e);
+  color: #fff;
+  border-radius: 1rem;
+  padding: 0.15rem 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  mat-icon { font-size: 0.75rem; width: 0.75rem; height: 0.75rem; }
+}
+
+.mfs-card__sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.mfs-card__actions {
+  flex-shrink: 0;
+}
+
+// Skeleton shimmer
+@keyframes mfs-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.mfs-skeleton-bar {
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
+  background-size: 800px 100%;
+  animation: mfs-shimmer 1.4s infinite linear;
+}
+
+.mfs-skeleton-bar--icon  { width: 3rem; height: 3rem; border-radius: 50%; flex-shrink: 0; }
+.mfs-skeleton-bar--title { width: 180px; height: 1rem; margin-bottom: 0.5rem; }
+.mfs-skeleton-bar--sub   { width: 260px; height: 0.75rem; }
+
+.mfs-skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 .profile-tabs {
   background: white;
   border-radius: 16px;

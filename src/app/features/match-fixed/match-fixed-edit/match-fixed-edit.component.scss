@@ -1,0 +1,304 @@
+:host {
+  display: block;
+}
+
+.mfe-page {
+  min-height: 100vh;
+  background: var(--suhana-gradient-light, linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%));
+  padding: 2rem 1rem 4rem;
+}
+
+.mfe-container {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+.mfe-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 0;
+  color: var(--suhana-maroon, #6b1c2e);
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.mfe-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mfe-back-btn {
+  color: var(--suhana-maroon, #6b1c2e) !important;
+  flex-shrink: 0;
+}
+
+.mfe-header__text {
+  flex: 1;
+}
+
+.mfe-header__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--suhana-maroon, #6b1c2e);
+}
+
+.mfe-header__sub {
+  margin: 0.25rem 0 0;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+// ── Source chip ───────────────────────────────────────────────────────────────
+.mfe-source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--suhana-blush, #f9e4d4);
+  color: var(--suhana-maroon, #6b1c2e);
+  border: 1px solid rgba(107, 28, 46, 0.2);
+  border-radius: 2rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.875rem;
+  width: fit-content;
+
+  mat-icon { font-size: 1rem; width: 1rem; height: 1rem; color: #c0395a; }
+}
+
+// ── Cards ─────────────────────────────────────────────────────────────────────
+.mfe-card {
+  border-radius: 1rem !important;
+  box-shadow: 0 2px 12px rgba(107, 28, 46, 0.08) !important;
+  border: 1px solid rgba(107, 28, 46, 0.08);
+
+  mat-card-header { padding-bottom: 0.5rem; }
+}
+
+.mfe-card-avatar {
+  color: var(--suhana-maroon, #6b1c2e) !important;
+  background: var(--suhana-blush, #f9e4d4) !important;
+  border-radius: 50%;
+  padding: 6px;
+  font-size: 1.25rem;
+  width: 2rem !important;
+  height: 2rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ── Forms ─────────────────────────────────────────────────────────────────────
+.mfe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+}
+
+.mfe-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+
+.mfe-full-width { width: 100%; }
+
+// ── Permissions ───────────────────────────────────────────────────────────────
+.mfe-permissions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.mfe-permission-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.mfe-permission-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mfe-permission-row__label {
+  font-weight: 500;
+  color: #333;
+}
+
+.mfe-permission-row__hint {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+// ── Photos ────────────────────────────────────────────────────────────────────
+.mfe-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding-top: 0.75rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.mfe-photo-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mfe-photo-slot__label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--suhana-maroon, #6b1c2e);
+  margin: 0;
+
+  mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+}
+
+.mfe-photo-preview {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: #f0e8e0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.mfe-photo-preview--new {
+  border: 2px solid var(--suhana-maroon, #6b1c2e);
+}
+
+.mfe-photo-new-badge,
+.mfe-photo-existing-badge {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  z-index: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mfe-photo-new-badge {
+  background: var(--suhana-maroon, #6b1c2e);
+  color: #fff;
+}
+
+.mfe-photo-existing-badge {
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+}
+
+.mfe-photo-remove {
+  position: absolute !important;
+  top: 0.25rem;
+  right: 0.25rem;
+  background: rgba(0,0,0,0.5) !important;
+  color: #fff !important;
+  width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+
+  mat-icon { font-size: 1rem; }
+}
+
+.mfe-photo-replace-btn {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  background: rgba(107, 28, 46, 0.8);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+
+  &:hover { background: rgba(107, 28, 46, 0.95); }
+}
+
+.mfe-photo-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  aspect-ratio: 1;
+  border: 2px dashed rgba(107, 28, 46, 0.3);
+  border-radius: 0.75rem;
+  color: var(--suhana-maroon, #6b1c2e);
+  cursor: pointer;
+  background: rgba(107, 28, 46, 0.03);
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
+  padding: 1rem;
+
+  mat-icon { font-size: 2rem; width: 2rem; height: 2rem; opacity: 0.6; }
+  span { font-size: 0.8rem; font-weight: 500; }
+  small { font-size: 0.7rem; opacity: 0.6; }
+
+  &:hover {
+    border-color: var(--suhana-maroon, #6b1c2e);
+    background: rgba(107, 28, 46, 0.06);
+  }
+}
+
+// ── Error banner ──────────────────────────────────────────────────────────────
+.mfe-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff0f0;
+  border: 1px solid #f5c6cb;
+  color: #c0392b;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+
+  mat-icon { color: #c0392b; flex-shrink: 0; }
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+.mfe-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column-reverse;
+    button, a { width: 100%; }
+  }
+}

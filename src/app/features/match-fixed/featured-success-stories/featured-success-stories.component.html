@@ -1,0 +1,78 @@
+<section class="fss-section">
+  <div class="fss-header">
+    <h2><mat-icon>star</mat-icon> Featured Stories</h2>
+    <a mat-button routerLink="/success-stories" class="fss-all-link">
+      View All <mat-icon>arrow_forward</mat-icon>
+    </a>
+  </div>
+
+  @if (isLoading()) {
+    <div class="fss-loading">
+      <mat-spinner diameter="40" color="accent"></mat-spinner>
+    </div>
+  } @else if (stories().length === 0) {
+    <div class="fss-empty">
+      <mat-icon>favorite_border</mat-icon>
+      <p>Stories coming soon…</p>
+    </div>
+  } @else {
+    <div class="fss-carousel">
+      <!-- Slides -->
+      <div class="fss-track">
+        @for (story of stories(); track story.id; let i = $index) {
+          <div class="fss-slide" [class.fss-slide--active]="i === activeIndex()">
+
+            <div class="fss-slide__photo-side">
+              @if (displayPhoto(story)) {
+                <img [src]="displayPhoto(story)" [alt]="story.userName" class="fss-slide__img" />
+              } @else {
+                <div class="fss-slide__img-placeholder">
+                  <mat-icon>people</mat-icon>
+                </div>
+              }
+              @if (story.isVerified) {
+                <div class="fss-slide__verified"><mat-icon>verified</mat-icon></div>
+              }
+            </div>
+
+            <div class="fss-slide__content">
+              <div class="fss-slide__source">
+                <mat-icon>favorite</mat-icon>
+                {{ sourceLabels[story.matchSource] }}
+              </div>
+              <h3 class="fss-slide__names">{{ story.userName }} &amp; {{ story.partnerName }}</h3>
+              @if (story.marriageDate || story.engagementDate) {
+                <p class="fss-slide__date">
+                  <mat-icon>calendar_today</mat-icon>
+                  {{ (story.marriageDate ?? story.engagementDate) | date:'MMMM yyyy' }}
+                </p>
+              }
+              @if (story.successStory) {
+                <p class="fss-slide__snippet">"{{ story.successStory | slice:0:180 }}{{ story.successStory.length > 180 ? '…"' : '"' }}</p>
+              }
+              <button mat-raised-button class="suhana-btn-primary fss-cta" (click)="openStory(story)">
+                Read Full Story <mat-icon>auto_stories</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Prev / Next -->
+      <button mat-icon-button class="fss-nav fss-nav--prev" (click)="prev()" aria-label="Previous">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-icon-button class="fss-nav fss-nav--next" (click)="next()" aria-label="Next">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <!-- Dots -->
+      <div class="fss-dots">
+        @for (s of stories(); track s.id; let i = $index) {
+          <button class="fss-dot" [class.fss-dot--active]="i === activeIndex()"
+                  (click)="goTo(i)" [attr.aria-label]="'Go to slide ' + (i+1)"></button>
+        }
+      </div>
+    </div>
+  }
+</section>

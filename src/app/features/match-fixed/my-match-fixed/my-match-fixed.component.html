@@ -1,0 +1,201 @@
+<div class="mmf-page">
+  <div class="mmf-container">
+
+    @if (isLoading()) {
+      <div class="mmf-loading">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Loading your match details…</p>
+      </div>
+    } @else if (!record()) {
+      <div class="mmf-empty">
+        <div class="mmf-empty__icon-wrap">
+          <mat-icon>favorite_border</mat-icon>
+        </div>
+        <h2>No Match Fixed Yet</h2>
+        <p>When you find your perfect partner, mark your match here and share your story with the Suhana community.</p>
+        <a mat-raised-button class="suhana-btn-primary" routerLink="/match-fixed/new">
+          <mat-icon>add_circle</mat-icon> Mark My Match Fixed
+        </a>
+      </div>
+    } @else {
+
+      <div class="mmf-header">
+        <div class="mmf-header__icon-ring">
+          <mat-icon>favorite</mat-icon>
+        </div>
+        <h1>Your Match is Fixed!</h1>
+        <p>Congratulations — your love story is recorded on Suhana.</p>
+      </div>
+
+      <!-- Status badge -->
+      <div class="mmf-status-badge"
+           [class.mmf-status-badge--active]="record()!.status === 'ACTIVE'"
+           [class.mmf-status-badge--cancelled]="record()!.status === 'CANCELLED'">
+        <mat-icon>{{ record()!.status === 'ACTIVE' ? 'check_circle' : 'cancel' }}</mat-icon>
+        {{ record()!.status === 'ACTIVE' ? 'Active' : 'Cancelled' }}
+        @if (record()!.isMatchFromSuhana) {
+          <span class="mmf-suhana-badge">
+            <mat-icon>verified</mat-icon> Suhana Match
+          </span>
+        }
+      </div>
+
+      <!-- Partner Details card -->
+      <mat-card class="mmf-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="mmf-card-avatar">person</mat-icon>
+          <mat-card-title>Partner Details</mat-card-title>
+          <mat-card-subtitle>{{ sourceLabels[record()!.matchSourceType] }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="mmf-detail-grid">
+            @if (record()!.partnerName) {
+              <div class="mmf-detail-item">
+                <mat-icon>badge</mat-icon>
+                <div>
+                  <span class="mmf-detail-item__label">Partner Name</span>
+                  <span class="mmf-detail-item__value">{{ record()!.partnerName }}</span>
+                </div>
+              </div>
+            }
+            @if (record()!.matchedUserId) {
+              <div class="mmf-detail-item">
+                <mat-icon>fingerprint</mat-icon>
+                <div>
+                  <span class="mmf-detail-item__label">Profile ID</span>
+                  <span class="mmf-detail-item__value">{{ record()!.matchedUserId }}</span>
+                </div>
+              </div>
+            }
+            @if (record()!.partnerAge) {
+              <div class="mmf-detail-item">
+                <mat-icon>cake</mat-icon>
+                <div>
+                  <span class="mmf-detail-item__label">Age</span>
+                  <span class="mmf-detail-item__value">{{ record()!.partnerAge }} years</span>
+                </div>
+              </div>
+            }
+            @if (record()!.partnerProfession) {
+              <div class="mmf-detail-item">
+                <mat-icon>work</mat-icon>
+                <div>
+                  <span class="mmf-detail-item__label">Profession</span>
+                  <span class="mmf-detail-item__value">{{ record()!.partnerProfession }}</span>
+                </div>
+              </div>
+            }
+            @if (record()!.partnerLocation) {
+              <div class="mmf-detail-item">
+                <mat-icon>location_on</mat-icon>
+                <div>
+                  <span class="mmf-detail-item__label">Location</span>
+                  <span class="mmf-detail-item__value">{{ record()!.partnerLocation }}</span>
+                </div>
+              </div>
+            }
+            @if (record()!.engagementDate) {
+              <div class="mmf-detail-item">
+                <mat-icon>diamond</mat-icon>
+                <div>
+                  <span class="mmf-detail-item__label">Engagement Date</span>
+                  <span class="mmf-detail-item__value">{{ record()!.engagementDate | date:'longDate' }}</span>
+                </div>
+              </div>
+            }
+            @if (record()!.marriageDate) {
+              <div class="mmf-detail-item">
+                <mat-icon>church</mat-icon>
+                <div>
+                  <span class="mmf-detail-item__label">Wedding Date</span>
+                  <span class="mmf-detail-item__value">{{ record()!.marriageDate | date:'longDate' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Photos -->
+      @if (photos().length > 0) {
+        <mat-card class="mmf-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="mmf-card-avatar">photo_library</mat-icon>
+            <mat-card-title>Your Photos</mat-card-title>
+            <mat-card-subtitle>Click to view full size</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="mmf-photo-grid">
+              @for (url of photos(); track url; let i = $index) {
+                <div class="mmf-photo-thumb" (click)="openImage(photos(), i)" role="button" tabindex="0">
+                  <img [src]="url" [alt]="photoLabel(i)" loading="lazy" />
+                  <div class="mmf-photo-thumb__overlay">
+                    <mat-icon>zoom_in</mat-icon>
+                    <span>{{ photoLabel(i) }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Success Story -->
+      @if (record()!.successStory) {
+        <mat-card class="mmf-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="mmf-card-avatar">auto_stories</mat-icon>
+            <mat-card-title>Your Success Story</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="mmf-story-text">{{ record()!.successStory }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Publication Status -->
+      <mat-card class="mmf-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="mmf-card-avatar">public</mat-icon>
+          <mat-card-title>Publication Status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="mmf-pub-row">
+            <span>Story Published</span>
+            <mat-icon [class.mmf-yes]="record()!.allowStoryPublish" [class.mmf-no]="!record()!.allowStoryPublish">
+              {{ record()!.allowStoryPublish ? 'check_circle' : 'cancel' }}
+            </mat-icon>
+          </div>
+          <div class="mmf-pub-row">
+            <span>Photos Published</span>
+            <mat-icon [class.mmf-yes]="record()!.allowPhotoPublish" [class.mmf-no]="!record()!.allowPhotoPublish">
+              {{ record()!.allowPhotoPublish ? 'check_circle' : 'cancel' }}
+            </mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Actions -->
+      <div class="mmf-actions">
+        <a mat-stroked-button class="suhana-btn-outline" [routerLink]="['/match-fixed', record()!.id, 'edit']">
+          <mat-icon>edit</mat-icon> Edit Details
+        </a>
+
+        @if (!confirmCancel()) {
+          <button mat-stroked-button class="mmf-cancel-btn" (click)="confirmCancel.set(true)">
+            <mat-icon>cancel</mat-icon> Cancel Match Fixed
+          </button>
+        } @else {
+          <div class="mmf-confirm-cancel">
+            <p>Are you sure you want to cancel?</p>
+            <button mat-raised-button color="warn" [disabled]="cancelling()" (click)="cancelMatchFixed()">
+              @if (cancelling()) { <mat-spinner diameter="16"></mat-spinner> } Yes, Cancel
+            </button>
+            <button mat-button (click)="confirmCancel.set(false)">Keep It</button>
+          </div>
+        }
+      </div>
+
+    }
+  </div>
+</div>

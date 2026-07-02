@@ -78,6 +78,76 @@
       </div>
     </div>
 
+    <!-- ── Match Fixed Status ── -->
+    @if (matchRecord() === undefined) {
+      <!-- Loading skeleton -->
+      <div class="mfs-card mfs-card--skeleton">
+        <div class="mfs-skeleton-bar mfs-skeleton-bar--icon"></div>
+        <div class="mfs-skeleton-lines">
+          <div class="mfs-skeleton-bar mfs-skeleton-bar--title"></div>
+          <div class="mfs-skeleton-bar mfs-skeleton-bar--sub"></div>
+        </div>
+      </div>
+    } @else if (matchRecord(); as mf) {
+      @if (mf.status === 'ACTIVE') {
+        <!-- Active match-fixed record -->
+        <div class="mfs-card mfs-card--active">
+          <div class="mfs-card__icon-ring">
+            <mat-icon>favorite</mat-icon>
+          </div>
+          <div class="mfs-card__body">
+            <div class="mfs-card__title">
+              Match Fixed!
+              @if (mf.isMatchFromSuhana) {
+                <span class="mfs-suhana-badge"><mat-icon>verified</mat-icon> Suhana Match</span>
+              }
+            </div>
+            <p class="mfs-card__sub">
+              {{ sourceLabels[mf.matchSourceType] }}
+              @if (mf.partnerName) { &middot; Partner: <strong>{{ mf.partnerName }}</strong> }
+            </p>
+          </div>
+          <div class="mfs-card__actions">
+            <a mat-stroked-button class="suhana-btn-outline" routerLink="/match-fixed/me">
+              <mat-icon>visibility</mat-icon> View Details
+            </a>
+          </div>
+        </div>
+      } @else {
+        <!-- Cancelled record -->
+        <div class="mfs-card mfs-card--cancelled">
+          <div class="mfs-card__icon-ring">
+            <mat-icon>favorite_border</mat-icon>
+          </div>
+          <div class="mfs-card__body">
+            <div class="mfs-card__title">Match Fixed (Cancelled)</div>
+            <p class="mfs-card__sub">Your earlier match record was cancelled. You can record a new one anytime.</p>
+          </div>
+          <div class="mfs-card__actions">
+            <a mat-raised-button class="suhana-btn-primary" routerLink="/match-fixed/new">
+              <mat-icon>add_circle</mat-icon> Record New Match
+            </a>
+          </div>
+        </div>
+      }
+    } @else {
+      <!-- No record yet -->
+      <div class="mfs-card mfs-card--cta">
+        <div class="mfs-card__icon-ring">
+          <mat-icon>favorite_border</mat-icon>
+        </div>
+        <div class="mfs-card__body">
+          <div class="mfs-card__title">Found Your Perfect Match?</div>
+          <p class="mfs-card__sub">Mark your match fixed and inspire thousands of hearts with your love story.</p>
+        </div>
+        <div class="mfs-card__actions">
+          <a mat-raised-button class="suhana-btn-primary" routerLink="/match-fixed/new">
+            <mat-icon>favorite</mat-icon> Mark My Match Fixed
+          </a>
+        </div>
+      </div>
+    }
+
     <!-- Profile Tabs -->
     <mat-tab-group class="profile-tabs" animationDuration="300ms">
 

@@ -5,13 +5,19 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { BannerSlide, Testimonial, UserProfile } from '../../models/user.model';
 import { ProfileService } from '../../services';
+import { FeaturedSuccessStoriesComponent } from "../../features/match-fixed/featured-success-stories/featured-success-stories.component";
+import { SuccessStatsComponent } from "../../features/match-fixed/success-stats/success-stats.component";
+import { SuccessStoriesWallComponent } from "../../features/match-fixed/success-stories-wall/success-stories-wall.component";
 
 @Component({
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink, TitleCasePipe, MaterialModule,
-  ],
+    FeaturedSuccessStoriesComponent,
+    SuccessStatsComponent,
+    SuccessStoriesWallComponent
+],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

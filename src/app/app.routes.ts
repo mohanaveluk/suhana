@@ -151,6 +151,37 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/accept-interest/accept-interest.component').then(m => m.AcceptInterestComponent),
   },
+  // Match Fixed
+  {
+    path: 'match-fixed/new',
+    loadComponent: () =>
+      import('./features/match-fixed/match-fixed-form/match-fixed-form.component')
+        .then(m => m.MatchFixedFormComponent),
+  },
+  {
+    path: 'match-fixed/me',
+    loadComponent: () =>
+      import('./features/match-fixed/my-match-fixed/my-match-fixed.component')
+        .then(m => m.MyMatchFixedComponent),
+  },
+  {
+    path: 'match-fixed/:id/edit',
+    loadComponent: () =>
+      import('./features/match-fixed/match-fixed-edit/match-fixed-edit.component')
+        .then(m => m.MatchFixedEditComponent),
+  },
+  {
+    path: 'success-stories',
+    loadComponent: () =>
+      import('./features/match-fixed/success-stories/success-stories.component')
+        .then(m => m.SuccessStoriesComponent),
+  },
+  {
+    path: 'match-fixed/admin',
+    loadComponent: () =>
+      import('./features/match-fixed/match-fixed-admin-dashboard/match-fixed-admin-dashboard.component')
+        .then(m => m.MatchFixedAdminDashboardComponent),
+  },
   {
     path: 'registration-success/:paramKey',
     loadComponent: () =>

@@ -1,0 +1,70 @@
+<section class="ssw-section">
+  <div class="ssw-header">
+    <h2>Love Stories Wall</h2>
+    <p>Real couples. Real journeys. Real happiness.</p>
+    <a mat-button routerLink="/success-stories" class="ssw-view-all">
+      View All Stories <mat-icon>arrow_forward</mat-icon>
+    </a>
+  </div>
+
+  @if (isLoading()) {
+    <div class="ssw-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (stories().length === 0) {
+    <div class="ssw-empty">
+      <mat-icon>favorite_border</mat-icon>
+      <p>Be the first to share your love story!</p>
+    </div>
+  } @else {
+    <div class="ssw-masonry">
+      @for (story of stories(); track story.id; let i = $index) {
+        <div class="ssw-brick ssw-brick--{{ (i % 5) + 1 }}"
+             (click)="openStory(story)"
+             role="button" tabindex="0"
+             [attr.aria-label]="story.userName + ' and ' + story.partnerName + ' love story'">
+
+          <!-- Photo -->
+          @if (photo(story)) {
+            <div class="ssw-brick__img-wrap">
+              <img [src]="photo(story)" [alt]="story.userName" loading="lazy" class="ssw-brick__img" />
+              <div class="ssw-brick__img-overlay"></div>
+            </div>
+          } @else {
+            <div class="ssw-brick__placeholder">
+              <mat-icon>favorite</mat-icon>
+            </div>
+          }
+
+          <!-- Overlay content -->
+          <div class="ssw-brick__content">
+            <!-- Suhana badge -->
+            @if (isSuhana(story)) {
+              <div class="ssw-suhana-badge">
+                <mat-icon>verified</mat-icon> Met through Suhana
+              </div>
+            }
+
+            <div class="ssw-brick__body">
+              <p class="ssw-brick__quote">{{ quote(story) }}</p>
+              <div class="ssw-brick__meta">
+                <span class="ssw-brick__names">{{ story.userName }} &amp; {{ story.partnerName }}</span>
+                @if (story.marriageDate || story.engagementDate) {
+                  <span class="ssw-brick__date">
+                    <mat-icon>calendar_today</mat-icon>
+                    {{ (story.marriageDate ?? story.engagementDate) | date:'MMM yyyy' }}
+                  </span>
+                }
+              </div>
+              @if (story.isVerified) {
+                <div class="ssw-brick__verified">
+                  <mat-icon>workspace_premium</mat-icon> Verified Story
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>
