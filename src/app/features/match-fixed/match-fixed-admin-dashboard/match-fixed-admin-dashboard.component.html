@@ -1,0 +1,143 @@
+<div class="mad-page">
+  <div class="mad-container">
+
+    <div class="mad-page-header">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <h1>Match Fixed — Admin Dashboard</h1>
+    </div>
+
+    @if (isLoading()) {
+      <div class="mad-loading"><mat-spinner diameter="48"></mat-spinner></div>
+    } @else if (metrics()) {
+
+      <!-- Metric cards -->
+      <div class="mad-metrics-grid">
+        <div class="mad-metric-card mad-metric-card--primary">
+          <mat-icon>favorite</mat-icon>
+          <div class="mad-metric-card__num">{{ metrics()!.totalMatchesFixed | number }}</div>
+          <div class="mad-metric-card__label">Total Match Fixed</div>
+        </div>
+        <div class="mad-metric-card mad-metric-card--gold">
+          <mat-icon>verified</mat-icon>
+          <div class="mad-metric-card__num">{{ metrics()!.matchesThroughSuhana | number }}</div>
+          <div class="mad-metric-card__label">Through Suhana</div>
+        </div>
+        <div class="mad-metric-card mad-metric-card--teal">
+          <mat-icon>people</mat-icon>
+          <div class="mad-metric-card__num">{{ metrics()!.matchesOutsideSuhana | number }}</div>
+          <div class="mad-metric-card__label">External Matches</div>
+        </div>
+        <div class="mad-metric-card mad-metric-card--rose">
+          <mat-icon>diamond</mat-icon>
+          <div class="mad-metric-card__num">{{ metrics()!.engagedCount | number }}</div>
+          <div class="mad-metric-card__label">Engaged</div>
+        </div>
+        <div class="mad-metric-card mad-metric-card--green">
+          <mat-icon>church</mat-icon>
+          <div class="mad-metric-card__num">{{ metrics()!.marriedCount | number }}</div>
+          <div class="mad-metric-card__label">Married</div>
+        </div>
+        <div class="mad-metric-card mad-metric-card--purple">
+          <mat-icon>trending_up</mat-icon>
+          <div class="mad-metric-card__num">{{ metrics()!.successRate | number:'1.1-1' }}%</div>
+          <div class="mad-metric-card__label">Success Rate</div>
+        </div>
+        <div class="mad-metric-card mad-metric-card--orange">
+          <mat-icon>workspace_premium</mat-icon>
+          <div class="mad-metric-card__num">{{ metrics()!.verifiedSuccessStories | number }}</div>
+          <div class="mad-metric-card__label">Verified Stories</div>
+        </div>
+        <div class="mad-metric-card mad-metric-card--blue">
+          <mat-icon>public</mat-icon>
+          <div class="mad-metric-card__num">{{ metrics()!.publishedStories | number }}</div>
+          <div class="mad-metric-card__label">Published Stories</div>
+        </div>
+      </div>
+
+      <!-- Progress bars visual -->
+      <mat-card class="mad-card">
+        <mat-card-header>
+          <mat-card-title>Conversion Overview</mat-card-title>
+          <mat-card-subtitle>Funnel from match-fixed to married</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="mad-funnel-item">
+            <span>Total Match Fixed</span>
+            <mat-progress-bar mode="determinate" [value]="100" class="mad-bar mad-bar--primary"></mat-progress-bar>
+            <span>{{ metrics()!.totalMatchesFixed }}</span>
+          </div>
+          <div class="mad-funnel-item">
+            <span>Engaged</span>
+            <mat-progress-bar mode="determinate"
+              [value]="metrics()!.totalMatchesFixed ? (metrics()!.engagedCount / metrics()!.totalMatchesFixed) * 100 : 0"
+              class="mad-bar mad-bar--rose"></mat-progress-bar>
+            <span>{{ metrics()!.engagedCount }}</span>
+          </div>
+          <div class="mad-funnel-item">
+            <span>Married</span>
+            <mat-progress-bar mode="determinate"
+              [value]="metrics()!.totalMatchesFixed ? (metrics()!.marriedCount / metrics()!.totalMatchesFixed) * 100 : 0"
+              class="mad-bar mad-bar--green"></mat-progress-bar>
+            <span>{{ metrics()!.marriedCount }}</span>
+          </div>
+          <div class="mad-funnel-item">
+            <span>Published</span>
+            <mat-progress-bar mode="determinate"
+              [value]="metrics()!.totalMatchesFixed ? (metrics()!.publishedStories / metrics()!.totalMatchesFixed) * 100 : 0"
+              class="mad-bar mad-bar--gold"></mat-progress-bar>
+            <span>{{ metrics()!.publishedStories }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Verification queue -->
+      <mat-card class="mad-card">
+        <mat-card-header>
+          <mat-card-title>
+            Verification Queue
+            @if (queue().length > 0) {
+              <mat-chip class="mad-queue-badge">{{ queue().length }}</mat-chip>
+            }
+          </mat-card-title>
+          <mat-card-subtitle>Stories awaiting partner verification</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          @if (queue().length === 0) {
+            <div class="mad-queue-empty">
+              <mat-icon>check_circle</mat-icon>
+              <p>All stories have been verified!</p>
+            </div>
+          } @else {
+            <mat-accordion>
+              @for (story of queue(); track story.id) {
+                <mat-expansion-panel class="mad-queue-panel">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      {{ story.userName }} &amp; {{ story.partnerName }}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      {{ sourceLabels[story.matchSource] }} · {{ story.createdAt | date:'mediumDate' }}
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <div class="mad-queue-detail">
+                    @if (story.successStory) {
+                      <p class="mad-story-preview">{{ story.successStory | slice:0:300 }}{{ story.successStory.length > 300 ? '…' : '' }}</p>
+                    }
+                    <button mat-raised-button class="suhana-btn-primary"
+                            [disabled]="verifyingId() === story.id"
+                            (click)="verify(story.id)">
+                      @if (verifyingId() === story.id) { <mat-spinner diameter="16"></mat-spinner> }
+                      <mat-icon>verified</mat-icon> Verify Partner
+                    </button>
+                  </div>
+                </mat-expansion-panel>
+              }
+            </mat-accordion>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    }
+  </div>
+</div>

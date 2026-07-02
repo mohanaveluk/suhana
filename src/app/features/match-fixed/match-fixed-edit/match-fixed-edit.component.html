@@ -1,0 +1,285 @@
+<div class="mfe-page">
+  <div class="mfe-container">
+
+    @if (isLoading()) {
+      <div class="mfe-loading">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Loading your match details…</p>
+      </div>
+    } @else {
+
+      <!-- Page Header -->
+      <div class="mfe-header">
+        <a mat-icon-button routerLink="/match-fixed/me" class="mfe-back-btn" aria-label="Back">
+          <mat-icon>arrow_back</mat-icon>
+        </a>
+        <div class="mfe-header__text">
+          <h1 class="mfe-header__title">Edit Match Details</h1>
+          <p class="mfe-header__sub">Update your match record and story</p>
+        </div>
+      </div>
+
+      <!-- Source chip (read-only) -->
+      <div class="mfe-source-chip">
+        <mat-icon>favorite</mat-icon>
+        <span>Match Source: <strong>{{ sourceLabels[record()!.matchSourceType] }}</strong></span>
+      </div>
+
+      <!-- ── Partner Details ──────────────────────────────────────────────── -->
+      <mat-card class="mfe-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="mfe-card-avatar">person</mat-icon>
+          <mat-card-title>Partner Details</mat-card-title>
+          <mat-card-subtitle>{{ isSuhana() ? 'Linked Suhana profile' : 'External partner info' }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="partnerForm" class="mfe-form">
+            @if (isSuhana()) {
+              <mat-form-field appearance="outline" class="mfe-full-width">
+                <mat-label>Profile ID</mat-label>
+                <input matInput formControlName="matchedUserId" placeholder="e.g. usr_abc123" />
+                <mat-icon matPrefix>badge</mat-icon>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mfe-full-width">
+                <mat-label>Profile Code / GUID</mat-label>
+                <input matInput formControlName="matchedUserGuid" placeholder="e.g. SHN-2024-XXXX" />
+                <mat-icon matPrefix>qr_code</mat-icon>
+              </mat-form-field>
+            } @else {
+              <div class="mfe-form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Partner's Name</mat-label>
+                  <input matInput formControlName="partnerName" />
+                  <mat-icon matPrefix>person</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Partner's Age</mat-label>
+                  <input matInput type="number" formControlName="partnerAge" min="18" max="100" />
+                  <mat-icon matPrefix>cake</mat-icon>
+                  @if (partnerForm.controls.partnerAge.hasError('min') || partnerForm.controls.partnerAge.hasError('max')) {
+                    <mat-error>Age must be between 18 and 100.</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="mfe-form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Partner's Profession</mat-label>
+                  <input matInput formControlName="partnerProfession" />
+                  <mat-icon matPrefix>work</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Partner's Location</mat-label>
+                  <input matInput formControlName="partnerLocation" />
+                  <mat-icon matPrefix>location_on</mat-icon>
+                </mat-form-field>
+              </div>
+            }
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- ── Key Dates ────────────────────────────────────────────────────── -->
+      <mat-card class="mfe-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="mfe-card-avatar">calendar_today</mat-icon>
+          <mat-card-title>Key Dates</mat-card-title>
+          <mat-card-subtitle>Your engagement and wedding dates</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="datesForm" class="mfe-form">
+            <div class="mfe-form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Engagement Date</mat-label>
+                <input matInput type="date" formControlName="engagementDate" />
+                <mat-icon matPrefix>diamond</mat-icon>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Wedding Date</mat-label>
+                <input matInput type="date" formControlName="marriageDate" />
+                <mat-icon matPrefix>church</mat-icon>
+              </mat-form-field>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- ── Photos ───────────────────────────────────────────────────────── -->
+      <mat-card class="mfe-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="mfe-card-avatar">photo_library</mat-icon>
+          <mat-card-title>Photos</mat-card-title>
+          <mat-card-subtitle>Upload a new photo to replace the existing one</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="mfe-photo-grid">
+
+            <!-- Partner Photo -->
+            <div class="mfe-photo-slot">
+              <p class="mfe-photo-slot__label"><mat-icon>person_pin</mat-icon> Partner Photo</p>
+              @if (partnerPhotoPreview(); as preview) {
+                <div class="mfe-photo-preview mfe-photo-preview--new">
+                  <span class="mfe-photo-new-badge">New</span>
+                  <img [src]="preview" alt="Partner photo" />
+                  <button mat-icon-button class="mfe-photo-remove" (click)="removeNewPhoto('partner')" aria-label="Remove">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @else if (existingPhoto('partner'); as existing) {
+                <div class="mfe-photo-preview mfe-photo-preview--existing">
+                  <span class="mfe-photo-existing-badge">Current</span>
+                  <img [src]="existing" alt="Current partner photo" />
+                  <label class="mfe-photo-replace-btn">
+                    <mat-icon>upload</mat-icon> Replace
+                    <input type="file" accept="image/*" hidden (change)="onPhotoSelected('partner', $event)" />
+                  </label>
+                </div>
+              } @else {
+                <label class="mfe-photo-dropzone">
+                  <mat-icon>add_photo_alternate</mat-icon>
+                  <span>Upload photo</span>
+                  <small>JPG, PNG, WEBP — max 5 MB</small>
+                  <input type="file" accept="image/*" hidden (change)="onPhotoSelected('partner', $event)" />
+                </label>
+              }
+            </div>
+
+            <!-- Engagement Photo -->
+            <div class="mfe-photo-slot">
+              <p class="mfe-photo-slot__label"><mat-icon>diamond</mat-icon> Engagement Photo</p>
+              @if (engagementPhotoPreview(); as preview) {
+                <div class="mfe-photo-preview mfe-photo-preview--new">
+                  <span class="mfe-photo-new-badge">New</span>
+                  <img [src]="preview" alt="Engagement photo" />
+                  <button mat-icon-button class="mfe-photo-remove" (click)="removeNewPhoto('engagement')" aria-label="Remove">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @else if (existingPhoto('engagement'); as existing) {
+                <div class="mfe-photo-preview mfe-photo-preview--existing">
+                  <span class="mfe-photo-existing-badge">Current</span>
+                  <img [src]="existing" alt="Current engagement photo" />
+                  <label class="mfe-photo-replace-btn">
+                    <mat-icon>upload</mat-icon> Replace
+                    <input type="file" accept="image/*" hidden (change)="onPhotoSelected('engagement', $event)" />
+                  </label>
+                </div>
+              } @else {
+                <label class="mfe-photo-dropzone">
+                  <mat-icon>add_photo_alternate</mat-icon>
+                  <span>Upload photo</span>
+                  <small>JPG, PNG, WEBP — max 5 MB</small>
+                  <input type="file" accept="image/*" hidden (change)="onPhotoSelected('engagement', $event)" />
+                </label>
+              }
+            </div>
+
+            <!-- Wedding Photo -->
+            <div class="mfe-photo-slot">
+              <p class="mfe-photo-slot__label"><mat-icon>church</mat-icon> Wedding Photo</p>
+              @if (weddingPhotoPreview(); as preview) {
+                <div class="mfe-photo-preview mfe-photo-preview--new">
+                  <span class="mfe-photo-new-badge">New</span>
+                  <img [src]="preview" alt="Wedding photo" />
+                  <button mat-icon-button class="mfe-photo-remove" (click)="removeNewPhoto('wedding')" aria-label="Remove">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @else if (existingPhoto('wedding'); as existing) {
+                <div class="mfe-photo-preview mfe-photo-preview--existing">
+                  <span class="mfe-photo-existing-badge">Current</span>
+                  <img [src]="existing" alt="Current wedding photo" />
+                  <label class="mfe-photo-replace-btn">
+                    <mat-icon>upload</mat-icon> Replace
+                    <input type="file" accept="image/*" hidden (change)="onPhotoSelected('wedding', $event)" />
+                  </label>
+                </div>
+              } @else {
+                <label class="mfe-photo-dropzone">
+                  <mat-icon>add_photo_alternate</mat-icon>
+                  <span>Upload photo</span>
+                  <small>JPG, PNG, WEBP — max 5 MB</small>
+                  <input type="file" accept="image/*" hidden (change)="onPhotoSelected('wedding', $event)" />
+                </label>
+              }
+            </div>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- ── Success Story ─────────────────────────────────────────────────── -->
+      <mat-card class="mfe-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="mfe-card-avatar">auto_stories</mat-icon>
+          <mat-card-title>Your Success Story</mat-card-title>
+          <mat-card-subtitle>Share your love journey with the Suhana community</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="storyForm" class="mfe-form">
+            <mat-form-field appearance="outline" class="mfe-full-width">
+              <mat-label>Your Story</mat-label>
+              <textarea matInput formControlName="successStory" rows="6"
+                        placeholder="How did your love story unfold? Share the moments that led to your match…"></textarea>
+              <mat-hint align="end">{{ storyLength() }} / 2000</mat-hint>
+              @if (storyForm.controls.successStory.hasError('maxlength')) {
+                <mat-error>Story must be 2000 characters or fewer.</mat-error>
+              }
+            </mat-form-field>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- ── Permissions ───────────────────────────────────────────────────── -->
+      <mat-card class="mfe-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="mfe-card-avatar">public</mat-icon>
+          <mat-card-title>Publication Permissions</mat-card-title>
+          <mat-card-subtitle>Control what the Suhana community can see</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="permissionsForm" class="mfe-permissions">
+            <div class="mfe-permission-row">
+              <div class="mfe-permission-row__text">
+                <span class="mfe-permission-row__label">Publish Story</span>
+                <span class="mfe-permission-row__hint">Allow your success story to appear on the public stories page</span>
+              </div>
+              <mat-slide-toggle formControlName="allowStoryPublish" color="primary"></mat-slide-toggle>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="mfe-permission-row">
+              <div class="mfe-permission-row__text">
+                <span class="mfe-permission-row__label">Publish Photos</span>
+                <span class="mfe-permission-row__hint">Allow your couple photos to be shown publicly alongside the story</span>
+              </div>
+              <mat-slide-toggle formControlName="allowPhotoPublish" color="primary"></mat-slide-toggle>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- ── Error banner ──────────────────────────────────────────────────── -->
+      @if (submitError()) {
+        <div class="mfe-error-banner">
+          <mat-icon>error_outline</mat-icon>
+          {{ submitError() }}
+        </div>
+      }
+
+      <!-- ── Action buttons ─────────────────────────────────────────────────── -->
+      <div class="mfe-actions">
+        <a mat-stroked-button class="suhana-btn-outline" routerLink="/match-fixed/me">
+          Cancel
+        </a>
+        <button mat-raised-button class="suhana-btn-primary"
+                [disabled]="isSubmitting()"
+                (click)="onSave()">
+          @if (isSubmitting()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          }
+          Save Changes
+        </button>
+      </div>
+
+    }
+  </div>
+</div>

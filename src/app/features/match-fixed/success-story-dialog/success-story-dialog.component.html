@@ -1,0 +1,72 @@
+<div class="ssd-wrap">
+  <!-- Close button -->
+  <button mat-icon-button class="ssd-close" (click)="close()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <!-- Desktop: two-column | Mobile: stacked -->
+  <div class="ssd-layout">
+
+    <!-- Left: Photos -->
+    <div class="ssd-photos">
+      @if (story.profileImageUrl || story.partnerPhotoUrl) {
+        <div class="ssd-couple-photo">
+          <img [src]="story.profileImageUrl || story.partnerPhotoUrl"
+               [alt]="story.userName + ' & ' + story.partnerName"
+               class="ssd-couple-img" />
+          @if (story.isVerified) {
+            <div class="ssd-verified-badge">
+              <mat-icon>verified</mat-icon> Verified
+            </div>
+          }
+        </div>
+      }
+
+      @if (photos().length > 1) {
+        <div class="ssd-thumb-row">
+          @for (url of photos(); track url; let i = $index) {
+            <img [src]="url" alt="Photo {{ i+1 }}" class="ssd-thumb"
+                 (click)="openImage(i)" />
+          }
+        </div>
+      }
+
+      <!-- Source badge -->
+      <div class="ssd-source-badge">
+        <mat-icon>favorite</mat-icon>
+        {{ sourceLabels[story.matchSource] }}
+      </div>
+    </div>
+
+    <!-- Right: Story details -->
+    <div class="ssd-details">
+      <h2 class="ssd-names">{{ story.userName }} &amp; {{ story.partnerName }}</h2>
+
+      <div class="ssd-dates">
+        @if (story.engagementDate) {
+          <div class="ssd-date-item">
+            <mat-icon>diamond</mat-icon>
+            <span>Engaged: <strong>{{ story.engagementDate | date:'mediumDate' }}</strong></span>
+          </div>
+        }
+        @if (story.marriageDate) {
+          <div class="ssd-date-item">
+            <mat-icon>church</mat-icon>
+            <span>Married: <strong>{{ story.marriageDate | date:'mediumDate' }}</strong></span>
+          </div>
+        }
+        <div class="ssd-date-item">
+          <mat-icon>calendar_today</mat-icon>
+          <span>Shared: <strong>{{ story.createdAt | date:'mediumDate' }}</strong></span>
+        </div>
+      </div>
+
+      @if (story.successStory) {
+        <div class="ssd-story-section">
+          <mat-icon class="ssd-story-icon">format_quote</mat-icon>
+          <p class="ssd-story-text">{{ story.successStory }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

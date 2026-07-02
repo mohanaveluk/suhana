@@ -53,6 +53,15 @@ export interface UserProfile {
   photoPrivacy: PhotoPrivacy;
   status: ProfileStatus;
   profileCompleteness: number;
+  profileCode?: string;
+  isProfileVerified?: boolean;
+  isProfileLocked?: boolean;
+  isProfileReported?: boolean;
+  isProfileBlocked?: boolean;
+  isPremiumMember?: boolean;
+  lastActive?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   tempGuid?: string;
   user?: User;
 }

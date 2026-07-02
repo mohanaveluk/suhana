@@ -4,6 +4,8 @@ import { TitleCasePipe, DatePipe } from '@angular/common';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ProfileService, AuthService, MatchService } from '../../services';
 import { UserProfile, MatchResult, MembershipTier } from '../../models/user.model';
+import { MatchFixedService } from '../../features/match-fixed/match-fixed.service';
+import { MatchFixedResponse, MATCH_SOURCE_LABELS } from '../../features/match-fixed/models/match-fixed.model';
 
 @Component({
   selector: 'app-profile',
@@ -15,13 +17,16 @@ import { UserProfile, MatchResult, MembershipTier } from '../../models/user.mode
   styleUrl: './profile.scss',
 })
 export class ProfileComponent implements OnInit {
-  private readonly profileService = inject(ProfileService);
-  private readonly matchService  = inject(MatchService);
-  private readonly auth          = inject(AuthService);
+  private readonly profileService   = inject(ProfileService);
+  private readonly matchService     = inject(MatchService);
+  private readonly auth             = inject(AuthService);
+  private readonly matchFixedService = inject(MatchFixedService);
 
-  protected readonly isLoading = signal(true);
-  protected readonly profile   = signal<UserProfile | null>(null);
-  protected readonly topMatch  = signal<MatchResult | null>(null);
+  protected readonly isLoading    = signal(true);
+  protected readonly profile      = signal<UserProfile | null>(null);
+  protected readonly topMatch     = signal<MatchResult | null>(null);
+  protected readonly matchRecord  = signal<MatchFixedResponse | null | undefined>(undefined);
+  protected readonly sourceLabels = MATCH_SOURCE_LABELS;
 
   protected readonly membership = computed<MembershipTier>(() =>
     this.profile()?.user?.membership ?? this.auth.user()?.membership ?? 'free',
@@ -65,6 +70,11 @@ export class ProfileComponent implements OnInit {
       matches = this.matchService.generateMatches(gender, 4);
     }
     this.topMatch.set(matches[0] ?? null);
+
+    // Load match-fixed status (null = no record, undefined = loading)
+    const mf = await this.matchFixedService.getMyMatchFixed();
+    this.matchRecord.set(mf);
+
     this.isLoading.set(false);
   }
 

@@ -1,0 +1,63 @@
+<div class="ivd-overlay" (click)="close()">
+
+  <!-- Toolbar -->
+  <div class="ivd-toolbar" (click)="$event.stopPropagation()">
+    <span class="ivd-counter">{{ currentIndex() + 1 }} / {{ urls.length }}</span>
+    <div class="ivd-toolbar-actions">
+      <button mat-icon-button (click)="zoomOut()"  [disabled]="zoomLevel() <= 0.5"  matTooltip="Zoom out">
+        <mat-icon>zoom_out</mat-icon>
+      </button>
+      <span class="ivd-zoom-label">{{ (zoomLevel() * 100).toFixed(0) }}%</span>
+      <button mat-icon-button (click)="zoomIn()"  [disabled]="zoomLevel() >= 3"  matTooltip="Zoom in">
+        <mat-icon>zoom_in</mat-icon>
+      </button>
+      <button mat-icon-button (click)="resetZoom()" matTooltip="Reset zoom">
+        <mat-icon>fullscreen</mat-icon>
+      </button>
+      <button mat-icon-button (click)="download()" matTooltip="Download">
+        <mat-icon>download</mat-icon>
+      </button>
+      <button mat-icon-button (click)="close()" matTooltip="Close (Esc)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Image -->
+  <div class="ivd-image-wrap" (click)="$event.stopPropagation()">
+    <img
+      [src]="currentUrl()"
+      [style.transform]="'scale(' + zoomLevel() + ')'"
+      alt="Photo"
+      class="ivd-image"
+    />
+  </div>
+
+  <!-- Prev / Next -->
+  @if (hasPrev()) {
+    <button mat-icon-button class="ivd-nav ivd-nav--prev"
+            (click)="$event.stopPropagation(); prev()"
+            aria-label="Previous photo">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+  }
+  @if (hasNext()) {
+    <button mat-icon-button class="ivd-nav ivd-nav--next"
+            (click)="$event.stopPropagation(); next()"
+            aria-label="Next photo">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  }
+
+  <!-- Thumbnails -->
+  @if (urls.length > 1) {
+    <div class="ivd-thumbs" (click)="$event.stopPropagation()">
+      @for (url of urls; track url; let i = $index) {
+        <img [src]="url" [class.ivd-thumb--active]="i === currentIndex()"
+             (click)="currentIndex.set(i); zoomLevel.set(1)"
+             alt="Thumbnail {{ i + 1 }}" class="ivd-thumb" />
+      }
+    </div>
+  }
+
+</div>

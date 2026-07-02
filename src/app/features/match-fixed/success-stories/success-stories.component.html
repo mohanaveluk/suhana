@@ -1,0 +1,111 @@
+<div class="ss-page">
+
+  <!-- Hero -->
+  <div class="ss-hero">
+    <mat-icon class="ss-hero__icon">favorite</mat-icon>
+    <h1>Success Stories</h1>
+    <p>Real couples, real love — celebrating matches made through Suhana.</p>
+  </div>
+
+  <!-- Filter tabs -->
+  <div class="ss-filters">
+    <button mat-button class="ss-filter-btn"
+            [class.ss-filter-btn--active]="activeFilter() === null"
+            (click)="applyFilter(null)">
+      All Stories
+    </button>
+    @for (src of sourceOptions.slice(1); track src) {
+      <button mat-button class="ss-filter-btn"
+              [class.ss-filter-btn--active]="activeFilter() === src"
+              (click)="applyFilter(src)">
+        {{ sourceLabels[src!] }}
+      </button>
+    }
+  </div>
+
+  <!-- Loading skeletons -->
+  @if (isLoading() && stories().length === 0) {
+    <div class="ss-grid">
+      @for (n of [1,2,3,4,5,6,7,8]; track n) {
+        <div class="ss-skeleton">
+          <div class="ss-skeleton__img shimmer"></div>
+          <div class="ss-skeleton__body">
+            <div class="ss-skeleton__line shimmer" style="width:70%"></div>
+            <div class="ss-skeleton__line shimmer" style="width:50%"></div>
+            <div class="ss-skeleton__line shimmer" style="width:90%"></div>
+            <div class="ss-skeleton__line shimmer" style="width:60%"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Stories grid -->
+  @if (!isLoading() || stories().length > 0) {
+    @if (stories().length === 0) {
+      <div class="ss-empty">
+        <mat-icon>sentiment_neutral</mat-icon>
+        <p>No stories found. Check back soon!</p>
+      </div>
+    } @else {
+      <div class="ss-grid">
+        @for (story of stories(); track story.id) {
+          <mat-card class="ss-card" (click)="openStory(story)">
+            <!-- Photo -->
+            <div class="ss-card__photo-wrap">
+              @if (displayPhoto(story)) {
+                <img [src]="displayPhoto(story)" [alt]="story.userName" class="ss-card__photo" loading="lazy" />
+              } @else {
+                <div class="ss-card__photo-placeholder">
+                  <span class="ss-initials">{{ initials(story) }}</span>
+                </div>
+              }
+              @if (story.isVerified) {
+                <div class="ss-card__verified">
+                  <mat-icon>verified</mat-icon>
+                </div>
+              }
+              <div class="ss-card__source-chip">
+                <mat-icon>favorite</mat-icon>
+                {{ sourceLabels[story.matchSource] }}
+              </div>
+            </div>
+
+            <!-- Body -->
+            <mat-card-content class="ss-card__body">
+              <h3 class="ss-card__names">{{ story.userName }} &amp; {{ story.partnerName }}</h3>
+
+              @if (story.engagementDate || story.marriageDate) {
+                <p class="ss-card__date">
+                  <mat-icon>calendar_today</mat-icon>
+                  {{ (story.marriageDate ?? story.engagementDate) | date:'MMM yyyy' }}
+                </p>
+              }
+
+              @if (story.successStory) {
+                <p class="ss-card__snippet">{{ story.successStory | slice:0:120 }}{{ story.successStory.length > 120 ? '…' : '' }}</p>
+              }
+
+              <button mat-button class="ss-card__cta">
+                Read Story <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+
+      <!-- Load More -->
+      @if (hasMore()) {
+        <div class="ss-load-more">
+          <button mat-stroked-button class="suhana-btn-outline"
+                  [disabled]="loadingMore()"
+                  (click)="loadMore()">
+            @if (loadingMore()) { <mat-spinner diameter="18"></mat-spinner> }
+            Load More Stories
+          </button>
+        </div>
+      }
+    }
+  }
+
+</div>

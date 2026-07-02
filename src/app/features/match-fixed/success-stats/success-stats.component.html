@@ -1,0 +1,21 @@
+<section class="sstat-section">
+  <div class="sstat-header">
+    <mat-icon class="sstat-header__icon">analytics</mat-icon>
+    <h2>Our Success Numbers</h2>
+    <p>Every number represents a real love story.</p>
+  </div>
+
+  <div class="sstat-grid">
+    @for (card of statCards; track card.key) {
+      <div class="sstat-card sstat-card--{{ card.color }}">
+        <div class="sstat-card__icon-ring">
+          <mat-icon>{{ card.icon }}</mat-icon>
+        </div>
+        <div class="sstat-card__num">
+          {{ displayedNums()[card.key] | number }}
+        </div>
+        <div class="sstat-card__label">{{ card.label }}</div>
+      </div>
+    }
+  </div>
+</section>

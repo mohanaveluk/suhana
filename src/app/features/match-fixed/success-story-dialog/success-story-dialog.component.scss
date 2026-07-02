@@ -1,0 +1,157 @@
+.ssd-wrap {
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ssd-close {
+  position: absolute !important;
+  top: 8px; right: 8px;
+  z-index: 10;
+  background: rgba(255,255,255,0.9) !important;
+  color: var(--suhana-maroon) !important;
+}
+
+.ssd-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  min-height: 400px;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Photos pane ─────────────────────────────────────────────────────────────
+.ssd-photos {
+  background: linear-gradient(160deg, #fff0f3 0%, var(--suhana-blush) 100%);
+  padding: 32px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  border-right: 1px solid var(--suhana-rose-gold-lighter);
+
+  @media (max-width: 680px) {
+    border-right: none;
+    border-bottom: 1px solid var(--suhana-rose-gold-lighter);
+    padding: 28px 20px 20px;
+  }
+}
+
+.ssd-couple-photo {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px var(--suhana-shadow);
+  border: 3px solid var(--suhana-rose-gold-lighter);
+}
+
+.ssd-couple-img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  display: block;
+}
+
+.ssd-verified-badge {
+  position: absolute;
+  bottom: 10px; left: 10px;
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(46,125,50,0.9);
+  color: white;
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+}
+
+.ssd-thumb-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ssd-thumb {
+  width: 56px; height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid var(--suhana-rose-gold-lighter);
+  transition: border-color 0.2s;
+  &:hover { border-color: var(--suhana-maroon); }
+}
+
+.ssd-source-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: white;
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  color: var(--suhana-maroon);
+  font-weight: 600;
+  mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--suhana-rose-gold); }
+}
+
+// ─── Details pane ─────────────────────────────────────────────────────────────
+.ssd-details {
+  padding: 40px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @media (max-width: 680px) { padding: 24px 20px; }
+}
+
+.ssd-names {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--suhana-maroon);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.ssd-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ssd-date-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.875rem; color: var(--suhana-text-secondary);
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--suhana-rose-gold); flex-shrink: 0; }
+  strong { color: var(--suhana-text-primary); }
+}
+
+.ssd-story-section {
+  position: relative;
+  background: var(--suhana-ivory-warm);
+  border-left: 4px solid var(--suhana-rose-gold);
+  border-radius: 0 12px 12px 0;
+  padding: 16px 16px 16px 20px;
+}
+
+.ssd-story-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--suhana-rose-gold-light);
+  position: absolute;
+  top: -8px; left: -4px;
+  opacity: 0.5;
+}
+
+.ssd-story-text {
+  font-size: 0.925rem;
+  color: var(--suhana-text-primary);
+  line-height: 1.8;
+  margin: 0;
+  white-space: pre-line;
+  font-style: italic;
+}
