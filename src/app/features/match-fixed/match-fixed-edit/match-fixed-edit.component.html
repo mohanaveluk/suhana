@@ -273,10 +273,12 @@
         <button mat-raised-button class="suhana-btn-primary"
                 [disabled]="isSubmitting()"
                 (click)="onSave()">
-          @if (isSubmitting()) {
+          <span class="button-content">
+            @if (isSubmitting()) {
             <mat-spinner diameter="18"></mat-spinner>
-          }
-          Save Changes
+            }
+            <span>Save Changes</span>
+          </span>
         </button>
       </div>
 

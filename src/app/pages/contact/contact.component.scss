@@ -463,6 +463,18 @@ $gradient      : var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800
     mat-spinner { --mdc-circular-progress-active-indicator-color: white; }
     mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; margin: 0 5px -4px 0;}
   }
+
+  .button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; // space between spinner and text
+  }
+
+  .button-content ::ng-deep .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: white !important;
+  }
+    
 }
 
 // ── Success card ──────────────────────────────────────────────────────────────

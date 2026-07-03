@@ -507,4 +507,23 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/v1/contact`, data);
   }
 
+  // Safety Tips — public
+  getSafetyTips(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/safety-tips`);
+  }
+
+  // Safety Tips — admin
+  adminGetSafetyTips(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/admin/safety-tips`);
+  }
+  adminCreateSafetyTip(dto: Record<string, unknown>): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/admin/safety-tips`, dto);
+  }
+  adminUpdateSafetyTip(id: string, dto: Record<string, unknown>): Observable<any> {
+    return this.http.put(`${this.baseUrl}/v1/admin/safety-tips/${id}`, dto);
+  }
+  adminDeleteSafetyTip(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/v1/admin/safety-tips/${id}`);
+  }
+
 }
