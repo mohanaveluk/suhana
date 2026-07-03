@@ -19,6 +19,9 @@
           Messages
         </a>
       }
+      <a mat-button routerLink="/safety-tips" routerLinkActive="active-link">
+        <mat-icon>verified_user</mat-icon> Safety
+      </a>
       <a mat-button routerLink="/contact" routerLinkActive="active-link">Contact</a>
       @if (auth.isAdmin() || auth.isTester()) {
         <a mat-button routerLink="/admin" routerLinkActive="active-link">
@@ -141,6 +144,9 @@
         <mat-icon>rate_review</mat-icon> Share Feedback
       </a>
     }
+    <a routerLink="/safety-tips" (click)="toggleMobileMenu()">
+      <mat-icon>verified_user</mat-icon> Safety Tips
+    </a>
     <a routerLink="/faq" (click)="toggleMobileMenu()">
       <mat-icon>help_outline</mat-icon> FAQs
     </a>

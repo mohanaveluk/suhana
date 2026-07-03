@@ -183,6 +183,11 @@ export const routes: Routes = [
         .then(m => m.MatchFixedAdminDashboardComponent),
   },
   {
+    path: 'safety-tips',
+    loadComponent: () =>
+      import('./pages/safety-tips/safety-tips.component').then(m => m.SafetyTipsComponent),
+  },
+  {
     path: 'registration-success/:paramKey',
     loadComponent: () =>
       import('./pages/registration-success/registration-success.component').then(

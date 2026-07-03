@@ -246,8 +246,10 @@
                           [disabled]="isSubmitting()"
                           aria-label="Submit contact form">
                     @if (isSubmitting()) {
-                      <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-                      <span>Sending…</span>
+                      <span class="button-content">
+                        <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
+                        <span>Sending…</span>
+                      </span>
                     } @else {
                       <ng-container>
                         <mat-icon aria-hidden="true">send</mat-icon>

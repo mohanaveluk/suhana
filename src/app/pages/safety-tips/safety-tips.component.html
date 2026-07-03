@@ -1,0 +1,178 @@
+<div class="st-page">
+
+  <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+  <div class="st-hero">
+    <div class="st-hero__inner">
+      <div class="st-hero__icon-ring">
+        <mat-icon>verified_user</mat-icon>
+      </div>
+      <div class="st-hero__text">
+        <h1>Your Safety Is Our Priority</h1>
+        <p>Follow these safety guidelines while interacting with potential matches on Suhana Matrimony.</p>
+      </div>
+      <div class="st-hero__badges">
+        <span class="st-trust-badge"><mat-icon>lock</mat-icon> Secure Platform</span>
+        <span class="st-trust-badge"><mat-icon>support_agent</mat-icon> 24/7 Support</span>
+        <span class="st-trust-badge"><mat-icon>gpp_good</mat-icon> Verified Profiles</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="st-container">
+
+    @if (isLoading()) {
+      <!-- ── Skeleton ──────────────────────────────────────────────────────── -->
+      <div class="st-skeleton-wrap">
+        @for (_ of [1,2,3]; track $index) {
+          <div class="st-skeleton-card">
+            <div class="st-sk st-sk--title"></div>
+            <div class="st-sk st-sk--line"></div>
+            <div class="st-sk st-sk--line st-sk--short"></div>
+          </div>
+        }
+      </div>
+    } @else {
+
+      <!-- ── Featured Alerts ──────────────────────────────────────────────── -->
+      @if (featuredTips().length) {
+        <div class="st-featured-section">
+          <div class="st-featured-header">
+            <mat-icon class="st-featured-header__icon">warning_amber</mat-icon>
+            <h2>Important Safety Alerts</h2>
+          </div>
+          <div class="st-featured-grid">
+            @for (tip of featuredTips(); track tip.id) {
+              <div class="st-featured-card">
+                <div class="st-featured-card__cat">
+                  <mat-icon [style.color]="categoryMeta[tip.category].color">
+                    {{ categoryMeta[tip.category].icon }}
+                  </mat-icon>
+                  <span>{{ categoryMeta[tip.category].label }}</span>
+                </div>
+                <h3>{{ tip.title }}</h3>
+                <p>{{ tip.content }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── Search & Filter ──────────────────────────────────────────────── -->
+      <div class="st-filter-bar">
+        <div class="st-search-wrap">
+          <mat-icon class="st-search-icon">search</mat-icon>
+          <input
+            class="st-search-input"
+            type="text"
+            placeholder="Search safety tips…"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+            aria-label="Search safety tips" />
+          @if (searchQuery()) {
+            <button class="st-search-clear" (click)="searchQuery.set('')" aria-label="Clear search">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </div>
+
+        <div class="st-cat-chips">
+          <button class="st-chip" [class.st-chip--active]="!activeCategory()" (click)="setCategory(null)">
+            All
+          </button>
+          @for (cat of allCategories; track cat) {
+            <button class="st-chip"
+                    [class.st-chip--active]="activeCategory() === cat"
+                    [style.--chip-color]="categoryMeta[cat].color"
+                    [style.--chip-bg]="categoryMeta[cat].bgColor"
+                    (click)="setCategory(cat)">
+              <mat-icon class="st-chip__icon">{{ categoryMeta[cat].icon }}</mat-icon>
+              {{ categoryMeta[cat].label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- ── Result count / clear ──────────────────────────────────────────── -->
+      @if (hasActiveFilter()) {
+        <div class="st-result-bar">
+          <span>{{ resultCount() }} tip{{ resultCount() !== 1 ? 's' : '' }} found</span>
+          <button mat-button class="st-clear-btn" (click)="clearFilters()">
+            <mat-icon>filter_alt_off</mat-icon> Clear filters
+          </button>
+        </div>
+      }
+
+      <!-- ── Tips grouped by category ─────────────────────────────────────── -->
+      @if (filteredGroups().length === 0) {
+        <div class="st-empty">
+          <mat-icon>search_off</mat-icon>
+          <p>No safety tips match your search.</p>
+          <button mat-button (click)="clearFilters()">Clear filters</button>
+        </div>
+      } @else {
+        <div class="st-groups">
+          @for (group of filteredGroups(); track group.category) {
+            <div class="st-group">
+              <!-- Category header -->
+              <div class="st-group__header" [style.border-color]="group.meta.color">
+                <div class="st-group__icon-ring" [style.background]="group.meta.bgColor">
+                  <mat-icon [style.color]="group.meta.color">{{ group.meta.icon }}</mat-icon>
+                </div>
+                <h2 class="st-group__title" [style.color]="group.meta.color">{{ group.meta.label }}</h2>
+                <span class="st-group__count">{{ group.tips.length }} tip{{ group.tips.length !== 1 ? 's' : '' }}</span>
+              </div>
+
+              <!-- Accordion -->
+              <mat-accordion class="st-accordion" multi>
+                @for (tip of group.tips; track tip.id) {
+                  <mat-expansion-panel class="st-panel" [class.st-panel--featured]="tip.isFeatured" hideToggle>
+                    <mat-expansion-panel-header>
+                      <mat-panel-title class="st-panel__title">
+                        @if (tip.isFeatured) {
+                          <mat-icon class="st-panel__alert-icon">warning_amber</mat-icon>
+                        }
+                        {{ tip.title }}
+                      </mat-panel-title>
+                      <mat-panel-description class="st-panel__chevron">
+                        <mat-icon>expand_more</mat-icon>
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div class="st-panel__content">
+                      <p>{{ tip.content }}</p>
+                    </div>
+                  </mat-expansion-panel>
+                }
+              </mat-accordion>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Bottom CTA ────────────────────────────────────────────────────── -->
+      <div class="st-cta-row">
+        <div class="st-cta-card st-cta-card--report">
+          <mat-icon>report_problem</mat-icon>
+          <div class="st-cta-card__body">
+            <h3>Spotted Something Suspicious?</h3>
+            <p>Report a suspicious profile and help keep Suhana safe for everyone.</p>
+          </div>
+          <a mat-raised-button routerLink="/report-profile" class="st-cta-btn st-cta-btn--danger">
+            Report a Profile
+          </a>
+        </div>
+
+        <div class="st-cta-card st-cta-card--support">
+          <mat-icon>support_agent</mat-icon>
+          <div class="st-cta-card__body">
+            <h3>Need Help?</h3>
+            <p>Our trust and safety team is available to assist you at any time.</p>
+          </div>
+          <a mat-raised-button routerLink="/contact" class="st-cta-btn st-cta-btn--primary">
+            Contact Support
+          </a>
+        </div>
+      </div>
+
+    }
+  </div>
+</div>

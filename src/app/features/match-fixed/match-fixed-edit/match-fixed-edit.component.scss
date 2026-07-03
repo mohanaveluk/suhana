@@ -224,7 +224,7 @@
   height: 28px !important;
   line-height: 28px !important;
 
-  mat-icon { font-size: 1rem; }
+  mat-icon { font-size: 1rem; margin: -2px 0px 0px -6px;}
 }
 
 .mfe-photo-replace-btn {
@@ -300,5 +300,16 @@
   @media (max-width: 480px) {
     flex-direction: column-reverse;
     button, a { width: 100%; }
+  }
+
+  .button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; // space between spinner and text
+  }
+
+  .button-content ::ng-deep .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: white !important;
   }
 }
