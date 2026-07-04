@@ -280,7 +280,7 @@ export class EditProfileComponent implements OnInit {
     });
     if (p.horoscope) {
       this.horoscopeForm.patchValue({
-        dateOfBirth: p.horoscope.dateOfBirth ? new Date(p.horoscope.dateOfBirth) : null,
+        dateOfBirth: p.horoscope.dateOfBirth ? new Date(p.horoscope.dateOfBirth) : new Date(this.parseBackDateOnly(p.dateOfBirth.toString())),
         timeOfBirth: p.horoscope.timeOfBirth ?? '', 
         placeOfBirth: p.horoscope.placeOfBirth ?? '',
         rashi: p.horoscope.rashi ?? '', 
