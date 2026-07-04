@@ -123,13 +123,14 @@ export class RegisterComponent implements OnInit {
 
     try {
       // ── Normal registration path ──────────────────────────────────────────
-      const userId = await this.auth.register({
+      const userIdentity = await this.auth.register({
         email:    email    ?? '',
         password: password ?? '',
         gender:   gender   as string,
         mobile:   mobile   ?? '',
       });
-      this.registeredUserId.set(userId);
+      this.registeredUserId.set(userIdentity.userId);
+      this.tempUserGuid.set(userIdentity.tempGuid);
 
       // Fetch any pre-existing profile (e.g. user partially registered before)
       await this.tryPrefillFromProfile(email as string);
@@ -140,13 +141,22 @@ export class RegisterComponent implements OnInit {
       // ── Email already exists → try auto-login and pre-fill ─────────────────
       const status  = err?.status as number | undefined;
       const message = (err?.error?.message ?? err?.message ?? '').toLowerCase();
-      const isEmailTaken =
-        status === 409 ||
-        status === 400 ||
-        message.includes('already') ||
-        message.includes('exists') ||
-        message.includes('duplicate') ||
-        message.includes('taken');
+      const isPasswordValidationError =
+        message.includes('password') &&
+        (
+          message.includes('at least') ||
+          message.includes('minimum') ||
+          message.includes('length')
+        );
+      const isEmailTaken = !isPasswordValidationError &&
+        (
+          status === 409 ||
+          status === 400 ||
+          message.includes('already') ||
+          message.includes('exists') ||
+          message.includes('duplicate') ||
+          message.includes('taken')
+        );
 
       if (isEmailTaken) {
         try {
