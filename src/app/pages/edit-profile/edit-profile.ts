@@ -281,8 +281,10 @@ export class EditProfileComponent implements OnInit {
     if (p.horoscope) {
       this.horoscopeForm.patchValue({
         dateOfBirth: p.horoscope.dateOfBirth ? new Date(p.horoscope.dateOfBirth) : null,
-        timeOfBirth: p.horoscope.timeOfBirth ?? '', placeOfBirth: p.horoscope.placeOfBirth ?? '',
-        rashi: p.horoscope.rashi ?? '', nakshatra: p.horoscope.nakshatra ?? '',
+        timeOfBirth: p.horoscope.timeOfBirth ?? '', 
+        placeOfBirth: p.horoscope.placeOfBirth ?? '',
+        rashi: p.horoscope.rashi ?? '', 
+        nakshatra: p.horoscope.nakshatra ?? '',
         manglikStatus: p.horoscope.manglikStatus ?? '',
       });
       this.horoscopeDocUrl.set(p.horoscope.documentUrl ?? null);
