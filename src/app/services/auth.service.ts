@@ -43,7 +43,7 @@ export class AuthService {
     await firstValueFrom(this.api.sendVerificationEmail(email));
   }
 
-  async register(data: { email: string; password: string; gender: string; mobile: string; firstName?: string; lastName?: string }): Promise<string> {
+  async register(data: { email: string; password: string; gender: string; mobile: string; firstName?: string; lastName?: string }): Promise<{ userId: string; tempGuid: string }> {
     const payload = {
       firstName: data.firstName ?? 'unknown',
       lastName: data.lastName ?? 'unknown',
@@ -59,7 +59,9 @@ export class AuthService {
     if (res?.data?.access_token) {
       //this.setSession(res.data);
     }
-    return res?.data?.userId ?? res?.data?.user?.id ?? res?.user?.id ?? '';
+    const userId =  res?.data?.userId ?? res?.data?.user?.id ?? res?.user?.id ?? '';
+    const tempGuid =  res?.data?.temp_guid ?? res?.data?.user?.temp_guid ?? res?.user?.temp_guid ?? '';
+    return { userId, tempGuid };
   }
 
   async loginAsRole(role: UserRole): Promise<void> {
