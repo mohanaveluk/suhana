@@ -15,6 +15,12 @@ import { MatchService } from '../../services/match.service';
 import { AuthService } from '../../services/auth.service';
 import { InterestService } from '../../services/interest.service';
 import { UserProfile } from '../../models/user.model';
+import { GalleryService } from '../../services';
+import { firstValueFrom } from 'rxjs';
+import { GalleryImage } from '../../models';
+import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
+import { GalleryImageData } from '../../models/gallery.model';
+import { MatDialog } from '@angular/material/dialog';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Interfaces & Types
@@ -344,18 +350,22 @@ export class ProfileMatchComponent implements OnInit {
   private readonly profileSvc      = inject(ProfileService);
   private readonly authService     = inject(AuthService);
   private readonly matchSvc        = inject(MatchService);
+  private readonly gallerySvc  = inject(GalleryService);
   private readonly interestService = inject(InterestService);
   private readonly snackBar        = inject(MatSnackBar);
+  private readonly dialog         = inject(MatDialog);
 
   // ── State ────────────────────────────────────────────────────────────────
-  protected readonly myProfile    = signal<UserProfile | null>(null);
-  protected readonly theirProfile = signal<UserProfile | null>(null);
-  protected readonly report       = signal<ProfileMatchReport | null>(null);
-  protected readonly isLoading    = signal(true);
-  protected readonly error        = signal<string | null>(null);
-  protected readonly isFavorited  = signal(false);
-  protected readonly interestSent = signal(false);
-  protected readonly activeTab    = signal(0);
+  protected readonly myProfile       = signal<UserProfile | null>(null);
+  protected readonly theirProfile    = signal<UserProfile | null>(null);
+  protected readonly report          = signal<ProfileMatchReport | null>(null);
+  protected readonly gallery         = signal<GalleryImage[]>([]);
+  protected readonly isLoading       = signal(true);
+  protected readonly error           = signal<string | null>(null);
+  protected readonly isFavorited     = signal(false);
+  protected readonly interestSent    = signal(false);
+  protected readonly activeTab       = signal(0);
+  protected readonly validationError = signal<'same-profile' | 'same-gender' | null>(null);
 
   // SVG circle ring (r=54 → c≈339.3)
   protected readonly RADIUS = 54;
@@ -370,6 +380,8 @@ export class ProfileMatchComponent implements OnInit {
     !!this.authService.user()?.id && this.authService.user()?.id === this.theirProfile()?.user?.id,
   );
 
+  protected readonly gallaryImages = computed<GalleryImage[]>(() => this.gallery() ?? []);
+  
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
@@ -400,8 +412,20 @@ export class ProfileMatchComponent implements OnInit {
       const matchDetail = await this.matchSvc.getMatchByUserId(theirProfile.user?.id ?? '');
       this.isFavorited.set(matchDetail?.status === 'shortlisted');
 
+      //get gallery to check if any photos are verified
+      if (theirProfile) {
+        const res = await firstValueFrom(this.gallerySvc.getProfileGallery(theirProfile?.userId ?? ''));
+        this.gallery.set(res?.data ?? []);
+      }
+
       if (myProfile && theirProfile) {
-        this.report.set(generateMatchReport(myProfile, theirProfile));
+        if (myProfile.userId === theirProfile.userId) {
+          this.validationError.set('same-profile');
+        } else if (myProfile.gender === theirProfile.gender) {
+          this.validationError.set('same-gender');
+        } else {
+          this.report.set(generateMatchReport(myProfile, theirProfile));
+        }
       } else {
         this.error.set('Could not load your profile. Please ensure you are logged in.');
       }
@@ -413,6 +437,18 @@ export class ProfileMatchComponent implements OnInit {
   }
 
   // ── Template Helpers ──────────────────────────────────────────────────────
+  protected validationMessage(): string {
+    const v = this.validationError();
+    if (v === 'same-profile') {
+      return 'You have selected the same profile for both individuals. Please select a different profile to view compatibility and match details.';
+    }
+    if (v === 'same-gender') {
+      const g = this.myProfile()?.gender === 'bride' ? 'Bride' : 'Groom';
+      return `Both selected profiles are ${g} profiles. Compatibility can only be calculated between a Bride profile and a Groom profile. Please select one Bride profile and one Groom profile to view compatibility and match details.`;
+    }
+    return '';
+  }
+
   protected primaryPhoto(profile: UserProfile): string {
     const ph = profile.photos?.find(p => p.isPrimary) ?? profile.photos?.[0];
     return ph?.url ?? 'assets/avatar-default.svg';
@@ -497,6 +533,18 @@ export class ProfileMatchComponent implements OnInit {
     }
   }
 
+  protected openGalleryDialog(photos: GalleryImage[], index: number): void {
+
+    const gImages = photos.map(p => p.imageUrl).filter(Boolean) as string[];
+    
+    this.dialog.open(ImageViewerDialogComponent, {
+      data: { urls: gImages, index },
+      panelClass: 'image-viewer-panel',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+    });
+  }
+    
   protected startChat(): void {
     const isSelf = this.isSelf();
     if (isSelf) {

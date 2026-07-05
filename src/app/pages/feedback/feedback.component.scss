@@ -116,10 +116,22 @@
     align-items: center;
     gap: 8px;
 
-    .btn-spinner { display: inline-flex; }
+    .btn-spinner {
+      display: inline-flex;
+    }
+
+    .button-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px; // space between spinner and text
+    }
+
+    .button-content ::ng-deep .mdc-circular-progress__indeterminate-circle-graphic {
+      stroke: white !important;
+    }
   }
 }
-
 // ─── Success state ────────────────────────────────────────────────────────────
 .feedback-success {
   text-align: center;

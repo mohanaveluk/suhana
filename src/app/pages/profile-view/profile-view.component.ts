@@ -22,6 +22,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { GalleryImage } from '../../models';
 import { GalleryImageData } from '../../models/gallery.model';
+import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
 
 @Component({
   selector: 'app-profile-view',
@@ -244,13 +245,21 @@ export class ProfileViewComponent implements OnInit {
       currentIndex: index,
       profileName: `${this.profile()?.firstName ?? ''} ${this.profile()?.lastName ?? ''}`.trim(),
     };
+
+    const gImages = photos.map(p => p.imageUrl).filter(Boolean) as string[];
     
-    this.dialog.open(PhotoGalleryDialogComponent, {
-      data,
-      maxWidth: '95vw',
-      maxHeight: '96vh',
-      panelClass: 'photo-dialog-panel',
-      autoFocus: false,
+    // this.dialog.open(PhotoGalleryDialogComponent, {
+    //   data,
+    //   maxWidth: '95vw',
+    //   maxHeight: '96vh',
+    //   panelClass: 'photo-dialog-panel',
+    //   autoFocus: false,
+    // });
+    this.dialog.open(ImageViewerDialogComponent, {
+      data: { urls: gImages, index },
+      panelClass: 'image-viewer-panel',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
     });
   }
 

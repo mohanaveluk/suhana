@@ -58,6 +58,14 @@ export class SearchComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    const userGender = this.authService.user()?.gender;
+    const defaultGender: 'bride' | 'groom' | '' =
+      userGender === 'groom' ? 'bride' :
+      userGender === 'bride' ? 'groom' : '';
+    if (defaultGender) {
+      this.searchService.setDefaultFilters({ gender: defaultGender });
+    }
+
     await Promise.all([
       this.searchService.initialLoad(),
       this.matchService.loadMatchesFromApi(),

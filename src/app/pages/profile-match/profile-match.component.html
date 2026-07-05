@@ -62,6 +62,66 @@
     </div>
   }
 
+  <!-- ── Validation Block ──────────────────────────────────────────────────── -->
+  @else if (validationError()) {
+    <div class="pm-validation-wrap animate-fade-in">
+      <div class="pm-validation-card">
+
+        <!-- Decorative ring -->
+        <div class="pmv-icon-ring">
+          <div class="pmv-icon-ring__outer"></div>
+          <div class="pmv-icon-ring__inner">
+            <mat-icon class="pmv-icon">
+              {{ validationError() === 'same-profile' ? 'person_off' : 'people_alt' }}
+            </mat-icon>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <h2 class="pmv-title">Unable to Calculate Match</h2>
+
+        <!-- Sub-label -->
+        <div class="pmv-reason-chip">
+          <mat-icon>info_outline</mat-icon>
+          <span>
+            {{ validationError() === 'same-profile' ? 'Same Profile Selected' : 'Same Gender Selected' }}
+          </span>
+        </div>
+
+        <!-- Message -->
+        <p class="pmv-message">{{ validationMessage() }}</p>
+
+        <!-- Divider -->
+        <mat-divider class="pmv-divider"></mat-divider>
+
+        <!-- Tip -->
+        <div class="pmv-tip">
+          <mat-icon class="pmv-tip__icon">lightbulb_outline</mat-icon>
+          <span>
+            @if (validationError() === 'same-profile') {
+              Use the <strong>Search</strong> page to find a different profile and open its match report.
+            } @else {
+              Select one <strong>Bride</strong> profile and one <strong>Groom</strong> profile to generate a meaningful compatibility report.
+            }
+          </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="pmv-actions">
+          <a mat-raised-button class="suhana-btn-primary pmv-primary-btn" routerLink="/search">
+            <mat-icon>manage_search</mat-icon>
+            Select Different Profiles
+          </a>
+          <button mat-stroked-button class="suhana-btn-outline pmv-secondary-btn" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to Search
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
   <!-- ── Main Report ───────────────────────────────────────────────────────── -->
   @else if (report() && myProfile() && theirProfile()) {
     <div class="pm-content animate-fade-in">
@@ -553,5 +613,53 @@
 
     </div>
   }
+  
+      <!-- ── Image GALLERY ──────────────────────────────── -->
+      @if (gallaryImages().length > 0) {
+        <section class="gallery-section animate-fade-in-up" aria-label="Photo gallery">
+          <div class="section-heading">
+            <mat-icon>photo_library</mat-icon>
+            <h2>Photo Gallery</h2>
+            <span class="photo-count">{{ gallaryImages().length }} Photos</span>
+          </div>
+
+          <div class="gallery-grid">
+            @for (photo of gallaryImages(); track photo.id; let i = $index) {
+              <div
+                class="gallery-item"
+                [class.primary-item]="photo.isPrimary"
+                (click)="openGalleryDialog(gallaryImages(), i)"
+                matRipple
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'View photo ' + (i + 1)"
+                (keydown.enter)="openGalleryDialog(gallaryImages(), i)"
+                (keydown.space)="openGalleryDialog(gallaryImages(), i)">
+
+                <img
+                  [src]="photo.imageUrl"
+                  [alt]="theirProfile()!.firstName + ' photo ' + (i + 1)"
+                  loading="lazy"
+                  (error)="onImageError($event)" />
+
+                <div class="gallery-overlay">
+                  <mat-icon class="zoom-icon">zoom_in</mat-icon>
+                </div>
+
+                @if (photo.isPrimary) {
+                  <span class="gallery-primary-label">
+                    <mat-icon>star</mat-icon> Primary
+                  </span>
+                }
+                @if (photo.isVerified) {
+                  <span class="gallery-verified-label">
+                    <mat-icon>verified</mat-icon>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
 
 </div>

@@ -31,6 +31,7 @@ import { firstValueFrom } from 'rxjs';
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { Component as AngularComponent, Inject } from '@angular/core';
+import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
 
 export interface DeleteDialogData {
   image: GalleryImage;
@@ -515,16 +516,28 @@ export class GalleryManagementComponent implements OnInit, OnDestroy {
     this.pendingItems.update(cur => cur.filter(i => i.status === 'pending' || i.status === 'uploading'));
   }
 
+  photos(): string[] {
+    return this.gallery().map(g => g.imageUrl).filter(Boolean) as string[];
+  }
+
   // ── Gallery Actions ───────────────────────────────────────────────────────
   protected openLightbox(images: GalleryImage[], index: number): void {
-    this.dialog.open(GalleryLightboxDialogComponent, {
-      data:          { images, currentIndex: index } satisfies LightboxDialogData,
-      maxWidth:      '95vw',
-      maxHeight:     '96vh',
-      panelClass:    'lightbox-dialog-panel',
-      autoFocus:     false,
-      backdropClass: 'lightbox-backdrop',
+    // this.dialog.open(GalleryLightboxDialogComponent, {
+    //   data:          { images, currentIndex: index } satisfies LightboxDialogData,
+    //   maxWidth:      '95vw',
+    //   maxHeight:     '96vh',
+    //   panelClass:    'lightbox-dialog-panel',
+    //   autoFocus:     false,
+    //   backdropClass: 'lightbox-backdrop',
+    // });
+
+    this.dialog.open(ImageViewerDialogComponent, {
+      data: { urls: this.photos(), index },
+      panelClass: 'image-viewer-panel',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
     });
+    
   }
 
   protected async confirmDelete(image: GalleryImage): Promise<void> {

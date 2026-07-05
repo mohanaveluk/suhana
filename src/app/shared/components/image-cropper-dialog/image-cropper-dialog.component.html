@@ -1,0 +1,299 @@
+<!-- icd = Image Cropper Dialog -->
+
+<!-- ── Header ──────────────────────────────────────────────────────────────── -->
+<div class="icd-header">
+  <div class="icd-header__icon-wrap">
+    <mat-icon>crop</mat-icon>
+  </div>
+  <div class="icd-header__text">
+    <h2 class="icd-header__title">Adjust Profile Photo</h2>
+    <p class="icd-header__sub">Drag · zoom · rotate — preview before saving</p>
+  </div>
+  <button mat-icon-button class="icd-header__close" (click)="cancel()" aria-label="Close dialog">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- ── Content ─────────────────────────────────────────────────────────────── -->
+<mat-dialog-content class="icd-dialog-content">
+  <div class="icd-layout">
+
+    <!-- ════════════════ LEFT: Cropper + toolbar ════════════════ -->
+    <div class="icd-left">
+
+      <!-- Cropper area -->
+      <div class="icd-cropper-wrap" #cropperWrap>
+        @if (isLoadFailed()) {
+          <div class="icd-state icd-state--error">
+            <mat-icon>broken_image</mat-icon>
+            <p>Could not load image</p>
+          </div>
+        } @else {
+          <image-cropper
+            class="icd-cropper"
+            [imageFile]="data.imageFile"
+            [output]="'base64'"
+            [maintainAspectRatio]="true"
+            [aspectRatio]="1"
+            [roundCropper]="isCircle()"
+            [resizeToWidth]="resizeToWidth()"
+            [format]="'jpeg'"
+            [imageQuality]="92"
+            [backgroundColor]="'#ffffff'"
+            [transform]="transform()"
+            [allowMoveImage]="true"
+            [onlyScaleDown]="false"
+            [containWithinAspectRatio]="false"
+            (imageCropped)="onImageCropped($event)"
+            (imageLoaded)="onImageReady($event)"
+            (loadImageFailed)="onLoadFailed()">
+          </image-cropper>
+
+          @if (!isImageLoaded()) {
+            <div class="icd-state icd-state--loading">
+              <mat-progress-spinner mode="indeterminate" [diameter]="36" color="primary"></mat-progress-spinner>
+              <p>Loading image…</p>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- ── Transform Toolbar ──────────────────────────────── -->
+      <div class="icd-toolbar">
+
+        <!-- Zoom row -->
+        <div class="icd-toolbar__row icd-toolbar__row--zoom">
+          <mat-icon class="icd-toolbar__icon">search</mat-icon>
+          <button mat-icon-button class="icd-tb-btn" (click)="zoomOut()" matTooltip="Zoom Out">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <mat-slider class="icd-zoom-slider" min="0.1" max="5" step="0.05" discrete>
+            <input matSliderThumb [(ngModel)]="zoomScaleValue">
+          </mat-slider>
+          <button mat-icon-button class="icd-tb-btn" (click)="zoomIn()" matTooltip="Zoom In">
+            <mat-icon>add</mat-icon>
+          </button>
+          <span class="icd-toolbar__zoom-label">{{ zoomPercent() }}</span>
+        </div>
+
+        <!-- Action row -->
+        <div class="icd-toolbar__row icd-toolbar__row--actions">
+          <div class="icd-toolbar__group">
+            <button mat-icon-button class="icd-tb-btn" (click)="rotateLeft()" matTooltip="Rotate Left">
+              <mat-icon>rotate_left</mat-icon>
+            </button>
+            <button mat-icon-button class="icd-tb-btn" (click)="rotateRight()" matTooltip="Rotate Right">
+              <mat-icon>rotate_right</mat-icon>
+            </button>
+          </div>
+
+          <div class="icd-toolbar__divider"></div>
+
+          <div class="icd-toolbar__group">
+            <button mat-icon-button class="icd-tb-btn"
+                    [class.icd-tb-btn--on]="flipH()"
+                    (click)="flipHorizontal()"
+                    matTooltip="Flip Horizontal">
+              <mat-icon>flip</mat-icon>
+            </button>
+            <button mat-icon-button class="icd-tb-btn icd-tb-btn--flip-v"
+                    [class.icd-tb-btn--on]="flipV()"
+                    (click)="flipVertical()"
+                    matTooltip="Flip Vertical">
+              <mat-icon>flip</mat-icon>
+            </button>
+          </div>
+
+          <div class="icd-toolbar__divider"></div>
+
+          <button mat-stroked-button class="icd-reset-btn" (click)="resetAll()" matTooltip="Reset all adjustments">
+            <mat-icon>refresh</mat-icon>
+            Reset
+          </button>
+        </div>
+
+        <!-- Hint -->
+        <p class="icd-toolbar__hint">
+          <mat-icon>info_outline</mat-icon>
+          Scroll over image to zoom · Drag image to reposition
+        </p>
+      </div>
+    </div>
+
+    <!-- ════════════════ RIGHT: Settings + Preview ════════════════ -->
+    <div class="icd-right">
+
+      <!-- ── Crop Shape ─────────────────────────────────────── -->
+      <div class="icd-section">
+        <h3 class="icd-section__title">
+          <mat-icon>crop_free</mat-icon>
+          Crop Shape
+        </h3>
+        <div class="icd-shape-grid">
+          <button class="icd-shape-btn" [class.icd-shape-btn--active]="cropShape() === 'circle'"
+                  (click)="cropShape.set('circle')">
+            <span class="icd-shape-btn__icon icd-shape-btn__icon--circle"></span>
+            <span class="icd-shape-btn__name">Circle</span>
+            <small class="icd-shape-btn__hint">Profile photo</small>
+          </button>
+          <button class="icd-shape-btn" [class.icd-shape-btn--active]="cropShape() === 'square'"
+                  (click)="cropShape.set('square')">
+            <span class="icd-shape-btn__icon icd-shape-btn__icon--square"></span>
+            <span class="icd-shape-btn__name">Square</span>
+            <small class="icd-shape-btn__hint">Posts & gallery</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Output Size ────────────────────────────────────── -->
+      <div class="icd-section">
+        <h3 class="icd-section__title">
+          <mat-icon>photo_size_select_large</mat-icon>
+          Output Size
+        </h3>
+        <div class="icd-size-grid">
+          @for (opt of sizeOptions; track opt.value) {
+            <button class="icd-size-btn" [class.icd-size-btn--active]="outputSize() === opt.value"
+                    (click)="outputSize.set(opt.value)">
+              <span class="icd-size-btn__label">{{ opt.label }}</span>
+              <span class="icd-size-btn__desc">{{ opt.desc }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- ── Platform Preview ───────────────────────────────── -->
+      <div class="icd-section">
+        <h3 class="icd-section__title">
+          <mat-icon>preview</mat-icon>
+          Platform Preview
+        </h3>
+        <p class="icd-preview-note">
+          This is exactly how other members will see your profile picture.
+        </p>
+
+        @if (croppedBase64()) {
+          <div class="icd-previews">
+
+            <!-- Search Results Card -->
+            <div class="icd-preview">
+              <div class="icd-preview__card icd-preview__card--light">
+                <img [src]="croppedBase64()!" alt="Search result preview"
+                     class="icd-preview__avatar"
+                     [class.icd-preview__avatar--circle]="isCircle()"
+                     style="width:48px;height:48px">
+                <div class="icd-preview__lines">
+                  <div class="icd-preview__line icd-preview__line--name"></div>
+                  <div class="icd-preview__line icd-preview__line--sub"></div>
+                  <div class="icd-preview__line icd-preview__line--tag"></div>
+                </div>
+              </div>
+              <span class="icd-preview__label">Search Results</span>
+            </div>
+
+            <!-- Match Recommendation Card -->
+            <div class="icd-preview">
+              <div class="icd-preview__card icd-preview__card--blush">
+                <img [src]="croppedBase64()!" alt="Match card preview"
+                     class="icd-preview__avatar"
+                     [class.icd-preview__avatar--circle]="isCircle()"
+                     style="width:60px;height:60px">
+                <div class="icd-preview__lines">
+                  <div class="icd-preview__line icd-preview__line--name"></div>
+                  <div class="icd-preview__line icd-preview__line--sub"></div>
+                  <div class="icd-preview__line icd-preview__line--sub icd-preview__line--short"></div>
+                </div>
+              </div>
+              <span class="icd-preview__label">Match Card</span>
+            </div>
+
+            <!-- Profile Detail Page -->
+            <div class="icd-preview">
+              <div class="icd-preview__card icd-preview__card--profile">
+                <div class="icd-preview__profile-banner"></div>
+                <img [src]="croppedBase64()!" alt="Profile detail preview"
+                     class="icd-preview__avatar icd-preview__avatar--profile-hero"
+                     [class.icd-preview__avatar--circle]="isCircle()"
+                     style="width:72px;height:72px">
+                <div class="icd-preview__lines icd-preview__lines--center">
+                  <div class="icd-preview__line icd-preview__line--name"></div>
+                  <div class="icd-preview__line icd-preview__line--sub icd-preview__line--short"></div>
+                </div>
+              </div>
+              <span class="icd-preview__label">Profile Page</span>
+            </div>
+
+            <!-- Mobile App -->
+            <div class="icd-preview">
+              <div class="icd-preview__card icd-preview__card--mobile">
+                <div class="icd-preview__phone">
+                  <div class="icd-preview__phone-statusbar"></div>
+                  <div class="icd-preview__phone-row">
+                    <img [src]="croppedBase64()!" alt="Mobile app preview"
+                         class="icd-preview__avatar"
+                         [class.icd-preview__avatar--circle]="isCircle()"
+                         style="width:40px;height:40px">
+                    <div class="icd-preview__lines icd-preview__lines--flex">
+                      <div class="icd-preview__line icd-preview__line--name"></div>
+                      <div class="icd-preview__line icd-preview__line--sub"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="icd-preview__label">Mobile App</span>
+            </div>
+
+          </div>
+        } @else {
+          <div class="icd-preview-empty">
+            <div class="icd-preview-empty__icon">
+              <mat-icon>crop_free</mat-icon>
+            </div>
+            <p>Adjust your crop to see<br>how it looks across the platform</p>
+          </div>
+        }
+      </div>
+
+      <!-- ── Crop Info ──────────────────────────────────────── -->
+      @if (croppedSizeKB() > 0) {
+        <div class="icd-crop-info">
+          <div class="icd-crop-info__item">
+            <mat-icon>straighten</mat-icon>
+            <span>{{ croppedWidth() }} × {{ croppedHeight() }} px</span>
+          </div>
+          <div class="icd-crop-info__sep"></div>
+          <div class="icd-crop-info__item">
+            <mat-icon>data_usage</mat-icon>
+            <span>{{ formatSize(croppedSizeKB()) }}</span>
+          </div>
+          <div class="icd-crop-info__sep"></div>
+          <div class="icd-crop-info__item">
+            <mat-icon>{{ isCircle() ? 'radio_button_unchecked' : 'crop_square' }}</mat-icon>
+            <span>{{ cropShape() | titlecase }}</span>
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+</mat-dialog-content>
+
+<!-- ── Actions ─────────────────────────────────────────────────────────────── -->
+<mat-dialog-actions class="icd-actions">
+  <button mat-button class="icd-actions__cancel" (click)="cancel()">
+    <mat-icon>close</mat-icon>
+    Cancel
+  </button>
+  <div class="icd-actions__right">
+    <button mat-stroked-button class="icd-actions__reset" (click)="resetAll()" matTooltip="Reset all adjustments">
+      <mat-icon>refresh</mat-icon>
+      Re-Crop
+    </button>
+    <button mat-raised-button class="icd-actions__save suhana-btn-primary"
+            (click)="savePhoto()"
+            [disabled]="!canSave()">
+      <mat-icon>check_circle</mat-icon>
+      Save Photo
+    </button>
+  </div>
+</mat-dialog-actions>

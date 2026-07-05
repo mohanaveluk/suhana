@@ -64,6 +64,11 @@ export class SearchService {
     }
   }
 
+  /** Set filters before the first search without triggering a redundant API call. */
+  setDefaultFilters(filters: Partial<SearchFilters>): void {
+    this._filters.update(f => ({ ...f, ...filters }));
+  }
+
   setQuery(q: string): void {
     this._filters.update(f => ({ ...f, query: q }));
     this.triggerDebounced();

@@ -88,9 +88,13 @@
           <button mat-raised-button class="suhana-btn-primary submit-btn"
                   type="submit"
                   [disabled]="isSubmitting()">
-            <mat-spinner [hidden]="!isSubmitting()" diameter="20" class="btn-spinner"></mat-spinner>
-            <mat-icon [hidden]="isSubmitting()">send</mat-icon>
-            {{ isSubmitting() ? 'Submitting...' : 'Submit Feedback' }}
+            <span class="button-content">
+              @if (isSubmitting()) {
+              <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+              }
+              <mat-icon [hidden]="isSubmitting()">send</mat-icon>
+              {{ isSubmitting() ? 'Submitting...' : 'Submit Feedback' }}
+            </span>
           </button>
         </div>
 

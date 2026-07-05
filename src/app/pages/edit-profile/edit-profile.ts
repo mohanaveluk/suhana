@@ -2,9 +2,15 @@ import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@ang
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ProfileService } from '../../services';
 import { ApiService } from '../../services/api.service';
+import {
+  ImageCropperDialogComponent,
+  ImageCropperDialogData,
+  ImageCropperDialogResult,
+} from '../../shared/components/image-cropper-dialog/image-cropper-dialog.component';
 import {
   UserProfile, Gender, PhotoPrivacy, ProfileStatus,
   FamilyType, FoodPreference,
@@ -27,10 +33,11 @@ const MAX_HOROSCOPE_MB = 10;
   styleUrl: './edit-profile.scss',
 })
 export class EditProfileComponent implements OnInit {
-  private readonly fb = inject(FormBuilder);
+  private readonly fb             = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
-  private readonly api = inject(ApiService);
-  private readonly router = inject(Router);
+  private readonly api            = inject(ApiService);
+  private readonly router         = inject(Router);
+  private readonly dialog         = inject(MatDialog);
   protected readonly isLoading = signal(true);
   protected readonly isSaving = signal(false);
   protected readonly saveError = signal<string | null>(null);
@@ -89,29 +96,41 @@ export class EditProfileComponent implements OnInit {
       return;
     }
     this.avatarError.set(null);
-    const prev = this.avatarPreview();
-    if (prev) URL.revokeObjectURL(prev);
-    this.avatarFile.set(file);
-    this.avatarPreview.set(URL.createObjectURL(file));
 
+    // Open the image cropper dialog
+    const dialogRef = this.dialog.open(ImageCropperDialogComponent, {
+      data:          { imageFile: file } satisfies ImageCropperDialogData,
+      width:         '95vw',
+      maxWidth:      '960px',
+      height:        '90vh',
+      maxHeight:     '700px',
+      panelClass:    'suhana-image-cropper-panel',
+      disableClose:  true,
+    });
+
+    const result: ImageCropperDialogResult | null = await firstValueFrom(dialogRef.afterClosed());
+    if (!result) return; // user cancelled
+
+    // Show cropped base64 as instant preview while uploading
+    const prev = this.avatarPreview();
+    if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+    this.avatarPreview.set(result.base64);
+
+    this.isSaving.set(true);
+    this.saveError.set(null);
     try {
-      const file = this.avatarFile();
-      if (file) {
-        const url = await this.profileService.uploadPhoto(file);
-        if (url) {
-          this.currentAvatarUrl.set(url);
-          const prev = this.avatarPreview();
-          if (prev) URL.revokeObjectURL(prev);
-          this.avatarPreview.set(null);
-          this.avatarFile.set(null);
-        }
+      const croppedFile = new File([result.blob], file.name, { type: 'image/jpeg' });
+      const url = await this.profileService.uploadPhoto(croppedFile);
+      if (url) {
+        this.currentAvatarUrl.set(url);
+        this.avatarPreview.set(null);
+        this.avatarFile.set(null);
       }
     } catch (err: any) {
-      this.saveError.set(err?.error?.message ?? 'Failed to save. Please try again.');
+      this.saveError.set(err?.error?.message ?? 'Failed to upload photo. Please try again.');
     } finally {
       this.isSaving.set(false);
     }
-
   }
 
   protected onRemovePhoto(): void {

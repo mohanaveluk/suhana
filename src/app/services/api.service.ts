@@ -392,7 +392,7 @@ export class ApiService {
   }
 
   // Feedback
-  submitFeedback(data: { category: string; rating: number; subject: string; message: string }): Observable<any> {
+  submitFeedback(data: { category: string; rating: number; subject: string; message: string, isAnonymous: boolean }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/feedback`, data);
   }
 
