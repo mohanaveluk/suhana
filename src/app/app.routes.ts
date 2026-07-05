@@ -82,6 +82,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/admin').then(m => m.AdminComponent),
   },
   {
+    path: 'admin/feedback',
+    loadComponent: () =>
+      import('./admin/feedback/admin-feedback.component').then(m => m.AdminFeedbackComponent),
+  },
+  {
     path: 'admin/edit-profile/:id',
     loadComponent: () =>
       import('./pages/admin-edit-profile/admin-edit-profile').then(m => m.AdminEditProfileComponent),

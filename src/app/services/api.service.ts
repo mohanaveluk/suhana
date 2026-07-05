@@ -391,9 +391,36 @@ export class ApiService {
     return this.http.patch(`${this.baseUrl}/v1/notifications/read-all`, {});
   }
 
-  // Feedback
+  // Feedback (user)
   submitFeedback(data: { category: string; rating: number; subject: string; message: string, isAnonymous: boolean }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/feedback`, data);
+  }
+
+  // Feedback (admin)
+  getAdminFeedbacks(filter: { status?: string; search?: string; category?: string; page?: number; limit?: number } = {}): Observable<any> {
+    const params: Record<string, string | number> = {};
+    if (filter.status)   params['status']   = filter.status;
+    if (filter.search)   params['search']   = filter.search;
+    if (filter.category) params['category'] = filter.category;
+    if (filter.page)     params['page']     = filter.page;
+    if (filter.limit)    params['limit']    = filter.limit;
+    return this.http.get(`${this.baseUrl}/v1/feedback`, { params });
+  }
+
+  approveAdminFeedback(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/v1/feedback/${id}/approve`, {});
+  }
+
+  rejectAdminFeedback(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/v1/feedback/${id}/reject`, {});
+  }
+
+  resolveAdminFeedback(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/v1/feedback/${id}/resolve`, {});
+  }
+
+  deleteAdminFeedback(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/v1/feedback/${id}`);
   }
 
   // Settings

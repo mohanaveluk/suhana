@@ -1,0 +1,351 @@
+<!-- af = Admin Feedback -->
+<mat-sidenav-container class="af-container" [hasBackdrop]="true">
+
+  <!-- ════ Detail Drawer ════════════════════════════════════════════════════ -->
+  <mat-sidenav class="af-drawer" position="end" mode="over"
+               [opened]="drawerOpen()" (closedStart)="closeDrawer()">
+    @if (selectedFeedback(); as fb) {
+      <div class="af-drawer__header">
+        <h3 class="af-drawer__title">Feedback Detail</h3>
+        <button mat-icon-button (click)="closeDrawer()" aria-label="Close drawer">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="af-drawer__body">
+        <!-- Status badge -->
+        <div class="af-drawer__status-row">
+          <span class="af-status-chip"
+                [style.color]="statusCfg(fb.status).color"
+                [style.background]="statusCfg(fb.status).bgColor"
+                [style.border-color]="statusCfg(fb.status).borderColor">
+            <mat-icon>{{ statusCfg(fb.status).icon }}</mat-icon>
+            {{ statusCfg(fb.status).label }}
+          </span>
+        </div>
+
+        <!-- Subject -->
+        <div class="af-drawer__field">
+          <span class="af-drawer__field-label">Subject</span>
+          <p class="af-drawer__field-value af-drawer__subject">{{ fb.subject || '(No subject)' }}</p>
+        </div>
+
+        <!-- Message -->
+        <div class="af-drawer__field">
+          <span class="af-drawer__field-label">Message</span>
+          <p class="af-drawer__field-value af-drawer__message">{{ fb.message }}</p>
+        </div>
+
+        <mat-divider class="af-drawer__divider"></mat-divider>
+
+        <!-- Rating -->
+        <div class="af-drawer__field">
+          <span class="af-drawer__field-label">Rating</span>
+          <div class="af-drawer__stars">
+            @for (s of stars(fb.rating); track s) {
+              <mat-icon class="af-star" [class.af-star--filled]="s <= fb.rating">star</mat-icon>
+            }
+            <span class="af-drawer__rating-num">({{ fb.rating }}/5)</span>
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="af-drawer__field">
+          <span class="af-drawer__field-label">Category</span>
+          <span class="af-drawer__field-value">{{ categoryLabel(fb.category) }}</span>
+        </div>
+
+        <mat-divider class="af-drawer__divider"></mat-divider>
+
+        <!-- Submitted by -->
+        <div class="af-drawer__field">
+          <span class="af-drawer__field-label">Submitted By</span>
+          <div class="af-drawer__user">
+            <div class="af-drawer__user-avatar">{{ (fb.createdByName || 'A')[0].toUpperCase() }}</div>
+            <div>
+              <p class="af-drawer__user-name">{{ fb.createdByName || 'Anonymous' }}</p>
+              <p class="af-drawer__user-email">{{ fb.createdByEmail }}</p>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider class="af-drawer__divider"></mat-divider>
+
+        <!-- Dates -->
+        <div class="af-drawer__field-row">
+          <div class="af-drawer__field">
+            <span class="af-drawer__field-label">Created</span>
+            <span class="af-drawer__field-value">{{ fb.createdAt | date:'dd MMM yyyy, h:mm a' }}</span>
+          </div>
+          <div class="af-drawer__field">
+            <span class="af-drawer__field-label">Updated</span>
+            <span class="af-drawer__field-value">{{ fb.updatedAt | date:'dd MMM yyyy, h:mm a' }}</span>
+          </div>
+        </div>
+
+        <mat-divider class="af-drawer__divider"></mat-divider>
+
+        <!-- Drawer actions -->
+        <div class="af-drawer__actions">
+          @if (fb.status === 'PENDING') {
+            <button mat-raised-button class="af-drawer__btn af-drawer__btn--approve"
+                    [disabled]="isProcessing(fb.id)" (click)="approve(fb)">
+              <mat-icon>check_circle</mat-icon> Approve
+            </button>
+            <button mat-stroked-button class="af-drawer__btn af-drawer__btn--reject"
+                    [disabled]="isProcessing(fb.id)" (click)="reject(fb)">
+              <mat-icon>cancel</mat-icon> Reject
+            </button>
+          }
+          @if (fb.status === 'APPROVED') {
+            <button mat-raised-button class="af-drawer__btn af-drawer__btn--resolve"
+                    [disabled]="isProcessing(fb.id)" (click)="resolve(fb)">
+              <mat-icon>task_alt</mat-icon> Resolve
+            </button>
+          }
+          <button mat-stroked-button class="af-drawer__btn af-drawer__btn--delete"
+                  [disabled]="isProcessing(fb.id)" (click)="remove(fb)">
+            <mat-icon>delete_outline</mat-icon> Delete
+          </button>
+        </div>
+      </div>
+    }
+  </mat-sidenav>
+
+  <!-- ════ Main Content ════════════════════════════════════════════════════ -->
+  <mat-sidenav-content class="af-main">
+
+    <!-- ── Page Header ────────────────────────────────────────────── -->
+    <div class="af-header">
+      <div class="af-header__breadcrumb">
+        <a routerLink="/admin" class="af-header__crumb">
+          <mat-icon>admin_panel_settings</mat-icon> Admin
+        </a>
+        <mat-icon class="af-header__sep">chevron_right</mat-icon>
+        <span class="af-header__crumb af-header__crumb--active">Feedback Management</span>
+      </div>
+      <div class="af-header__title-row">
+        <div>
+          <h1 class="af-header__title">Feedback Management</h1>
+          <p class="af-header__sub">Review, approve, reject and resolve member feedback submissions</p>
+        </div>
+        <button mat-icon-button class="af-header__refresh" (click)="loadFeedbacks()"
+                matTooltip="Refresh data" [disabled]="isLoading()">
+          <mat-icon [class.af-spinning]="isLoading()">refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Stats Cards ─────────────────────────────────────────────── -->
+    <div class="af-stats">
+      @for (card of statCards; track card.key) {
+        <div class="af-stat" [class]="'af-stat ' + card.cls">
+          <div class="af-stat__icon-wrap">
+            <mat-icon class="af-stat__icon">{{ card.icon }}</mat-icon>
+          </div>
+          <div class="af-stat__body">
+            <span class="af-stat__value">{{ stats()[card.key] }}</span>
+            <span class="af-stat__label">{{ card.label }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── Filter Bar ──────────────────────────────────────────────── -->
+    <div class="af-filter-bar">
+      <!-- Status toggle -->
+      <mat-button-toggle-group class="af-status-toggle"
+                               [value]="selectedStatus()"
+                               (change)="onStatusChange($event.value)">
+        @for (tab of statusTabs; track tab.value) {
+          <mat-button-toggle [value]="tab.value" class="af-toggle-btn">
+            <mat-icon>{{ tab.icon }}</mat-icon>
+            {{ tab.label }}
+          </mat-button-toggle>
+        }
+      </mat-button-toggle-group>
+
+      <!-- Search -->
+      <mat-form-field class="af-search" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Search feedback</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [value]="searchQuery()" (input)="onSearchInput($any($event.target).value)"
+               placeholder="Subject, message, name, email…">
+        @if (searchQuery()) {
+          <button matSuffix mat-icon-button (click)="onSearchInput('')" aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- ── Progress bar ────────────────────────────────────────────── -->
+    @if (isLoading()) {
+      <mat-progress-bar mode="indeterminate" class="af-progress"></mat-progress-bar>
+    }
+
+    <!-- ── Table ───────────────────────────────────────────────────── -->
+    <div class="af-table-wrap">
+      <table mat-table [dataSource]="pagedFeedbacks()" class="af-table">
+
+        <!-- # column -->
+        <ng-container matColumnDef="index">
+          <th mat-header-cell *matHeaderCellDef class="af-col-index">#</th>
+          <td mat-cell *matCellDef="let fb; let i = index" class="af-col-index">
+            {{ pageIndex() * pageSize() + i + 1 }}
+          </td>
+        </ng-container>
+
+        <!-- Category column -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Category</th>
+          <td mat-cell *matCellDef="let fb">
+            <span class="af-category-chip">{{ categoryLabel(fb.category) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Rating column -->
+        <ng-container matColumnDef="rating">
+          <th mat-header-cell *matHeaderCellDef>Rating</th>
+          <td mat-cell *matCellDef="let fb">
+            <div class="af-stars-inline">
+              @for (s of stars(fb.rating); track s) {
+                <mat-icon class="af-star-sm" [class.af-star--filled]="s <= fb.rating">star</mat-icon>
+              }
+              <span class="af-star-num">{{ fb.rating }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Subject column -->
+        <ng-container matColumnDef="subject">
+          <th mat-header-cell *matHeaderCellDef>Subject</th>
+          <td mat-cell *matCellDef="let fb">
+            <button class="af-subject-link" (click)="openDetail(fb)">
+              {{ fb.subject || '(No subject)' }}
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Submitted By column -->
+        <ng-container matColumnDef="submittedBy">
+          <th mat-header-cell *matHeaderCellDef>Submitted By</th>
+          <td mat-cell *matCellDef="let fb">
+            <div class="af-user-cell">
+              <div class="af-user-avatar">{{ (fb.createdByName || 'A')[0].toUpperCase() }}</div>
+              <span>{{ fb.createdByName || 'Anonymous' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let fb" class="af-email-cell">
+            {{ fb.createdByEmail }}
+          </td>
+        </ng-container>
+
+        <!-- Status column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let fb">
+            <span class="af-status-chip"
+                  [style.color]="statusCfg(fb.status).color"
+                  [style.background]="statusCfg(fb.status).bgColor"
+                  [style.border-color]="statusCfg(fb.status).borderColor">
+              <mat-icon>{{ statusCfg(fb.status).icon }}</mat-icon>
+              {{ statusCfg(fb.status).label }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Created Date column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Submitted</th>
+          <td mat-cell *matCellDef="let fb" class="af-date-cell">
+            {{ fb.createdAt | date:'dd MMM yyyy' }}<br>
+            <span class="af-time">{{ fb.createdAt | date:'h:mm a' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="af-col-actions">Actions</th>
+          <td mat-cell *matCellDef="let fb" class="af-col-actions">
+            <div class="af-action-btns">
+
+              @if (isProcessing(fb.id)) {
+                <mat-progress-spinner mode="indeterminate" [diameter]="20" color="primary"></mat-progress-spinner>
+              } @else {
+                @if (fb.status === 'PENDING') {
+                  <button mat-icon-button class="af-action-btn af-action-btn--approve"
+                          (click)="approve(fb)" matTooltip="Approve">
+                    <mat-icon>check_circle_outline</mat-icon>
+                  </button>
+                  <button mat-icon-button class="af-action-btn af-action-btn--reject"
+                          (click)="reject(fb)" matTooltip="Reject">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                }
+                @if (fb.status === 'APPROVED') {
+                  <button mat-icon-button class="af-action-btn af-action-btn--resolve"
+                          (click)="resolve(fb)" matTooltip="Mark Resolved">
+                    <mat-icon>task_alt</mat-icon>
+                  </button>
+                }
+                <button mat-icon-button class="af-action-btn af-action-btn--delete"
+                        (click)="remove(fb)" matTooltip="Delete">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+                <button mat-icon-button class="af-action-btn af-action-btn--view"
+                        (click)="openDetail(fb)" matTooltip="View Detail">
+                  <mat-icon>open_in_new</mat-icon>
+                </button>
+              }
+
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="af-header-row"></tr>
+        <tr mat-row *matRowDef="let fb; columns: displayedColumns;"
+            [class]="rowClass(fb)" class="af-data-row"></tr>
+
+      </table>
+
+      <!-- ── Empty state ──────────────────────────────────────── -->
+      @if (!isLoading() && feedbacks().length === 0) {
+        <div class="af-empty">
+          <div class="af-empty__icon">
+            <mat-icon>inbox</mat-icon>
+          </div>
+          <h3 class="af-empty__title">No feedback found</h3>
+          <p class="af-empty__sub">
+            @if (searchQuery()) {
+              No results for "{{ searchQuery() }}". Try a different search term.
+            } @else {
+              There are no {{ selectedStatus() !== 'ALL' ? (selectedStatus() | lowercase) : '' }} feedback submissions yet.
+            }
+          </p>
+          @if (searchQuery()) {
+            <button mat-stroked-button (click)="onSearchInput('')">Clear Search</button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Paginator ───────────────────────────────────────────────── -->
+    @if (feedbacks().length > 0) {
+      <mat-paginator class="af-paginator"
+                     [length]="totalCount()"
+                     [pageSize]="pageSize()"
+                     [pageIndex]="pageIndex()"
+                     [pageSizeOptions]="[10, 25, 50, 100]"
+                     showFirstLastButtons
+                     (page)="onPageChange($event)">
+      </mat-paginator>
+    }
+
+  </mat-sidenav-content>
+</mat-sidenav-container>
