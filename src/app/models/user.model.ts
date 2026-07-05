@@ -24,6 +24,7 @@ export interface User {
   createdAt: Date;
   lastActive: Date;
   isVerified?: boolean;
+  is_email_verified?: boolean;
   profile?: UserProfile;
   tempGuid?: string;
 }

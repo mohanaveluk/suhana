@@ -83,6 +83,7 @@
       font-size: 18px;
       width: 18px;
       height: 18px;
+      margin: -3px 0px 3px -1px;
     }
   }
 }
@@ -103,6 +104,7 @@
     flex-shrink: 0;
     color: #43a047;
     margin-top: 1px;
+    
   }
 
   span {
@@ -116,8 +118,9 @@
     color: #43a047 !important;
     width: 28px;
     height: 28px;
+        margin: 7px 0px;
 
-    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    mat-icon { font-size: 16px; width: 16px; height: 16px; margin: -2px -2px 7px -2px;}
   }
 }
 

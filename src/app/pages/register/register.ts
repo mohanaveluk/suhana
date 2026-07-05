@@ -164,6 +164,9 @@ export class RegisterComponent implements OnInit {
           // is there but unverified; fetch the profile and pre-fill all steps.
           await this.auth.login(email ?? '', password ?? '');
           const user = this.auth.user();
+          if (user?.is_email_verified) {
+            throw new Error('Email already verified. Please login instead, or use "Forgot Password" if you\'ve forgotten your credentials.');
+          }
           if (user) {
             this.registeredUserId.set(user.id ?? '');
             const prefilled = await this.tryPrefillFromProfile(email as string);

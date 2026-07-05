@@ -138,6 +138,7 @@ export class AuthService {
       membership: u['membership'] as MembershipTier,
       lastActive: new Date(),
       isVerified: u['is_verified'] as boolean,
+      is_email_verified: u['is_email_verified'] as boolean,
       createdAt: u['created_at'] ? new Date(u['created_at'] as string) : new Date(),
     };
     localStorage.setItem('suhana_user', JSON.stringify(user));
