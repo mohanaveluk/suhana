@@ -137,7 +137,17 @@ export const routes: Routes = [
       import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent),
   },
   {
+    path: 'privacy',
+    loadComponent: () =>
+      import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent),
+  },
+  {
     path: 'terms-of-service',
+    loadComponent: () =>
+      import('./pages/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent),
+  },
+  {
+    path: 'terms',
     loadComponent: () =>
       import('./pages/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent),
   },

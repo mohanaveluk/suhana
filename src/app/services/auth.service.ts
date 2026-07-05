@@ -9,7 +9,7 @@ export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly currentUser = signal<User | null>(null);
-  private readonly isAuthenticated = signal(false);
+  public readonly isAuthenticated = signal(false);
 
   readonly user = this.currentUser.asReadonly();
   readonly authenticated = this.isAuthenticated.asReadonly();

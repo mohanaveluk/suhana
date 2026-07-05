@@ -191,6 +191,32 @@ body {
 
 h1, h2, h3, h4, h5, h6 { color: var(--suhana-text-primary); }
 
+// ── Image Cropper Dialog panel ────────────────────────────────────────────────
+.suhana-image-cropper-panel {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 1.25rem !important;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(128, 0, 32, 0.2), 0 8px 32px rgba(0,0,0,0.15) !important;
+  }
+
+  .mat-mdc-dialog-surface {
+    border-radius: 1.25rem !important;
+    padding: 0 !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    flex: 1;
+  }
+}
+
 a {
   color: var(--suhana-maroon);
   text-decoration: none;

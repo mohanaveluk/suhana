@@ -380,8 +380,10 @@
                     [disabled]="isSubmitting()"
                     (click)="onSubmit()">
               @if (isSubmitting()) {
-                <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
-                Submitting...
+                <span class="button-content">
+                  <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                  Submitting...
+                </span>
               } @else {
                 <ng-container>
                   <mat-icon>check_circle</mat-icon> Submit Match Details

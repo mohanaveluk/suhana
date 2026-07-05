@@ -82,8 +82,29 @@
   padding-top: 16px;
   border-top: 1px solid var(--suhana-rose-gold-lighter);
 
-  button { display: inline-flex; align-items: center; gap: 6px; }
-  mat-icon { font-size: 18px; width: 18px; height: 18px; margin-bottom: -4px;}
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-bottom: -4px;
+  }
+
+  .button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; // space between spinner and text
+  }
+
+  .button-content ::ng-deep .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: white !important;
+  }
 }
 
 // ─── Congratulations ─────────────────────────────────────────────────────────
@@ -283,7 +304,7 @@
   width: 28px !important;
   height: 28px !important;
 
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  mat-icon { font-size: 16px; width: 16px; height: 16px; margin: -11px -4px 8px -3px;}
 }
 
 // ─── Textarea field ────────────────────────────────────────────────────────────
