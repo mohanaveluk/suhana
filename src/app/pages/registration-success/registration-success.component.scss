@@ -37,7 +37,9 @@
   margin: 0 auto 28px;
 
   &--success {
-    background: #e0fde9; //linear-gradient(135deg, #fff0f3 0%, #ffe0e8 100%);
+    //background: #e0fde9; //linear-gradient(135deg, #fff0f3 0%, #ffe0e8 100%);
+    background: #e3f5e9;
+    border: 1px solid #b8e6c7;
 
     .rs-icon { color: #2e7d32; }
   }
