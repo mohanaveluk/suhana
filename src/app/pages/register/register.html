@@ -70,6 +70,14 @@
             <mat-checkbox formControlName="agreeTerms" color="primary">
               I agree to the <a routerLink="/terms">Terms of Service</a> and <a routerLink="/privacy">Privacy Policy</a>
             </mat-checkbox>
+            @if (accountForm.get('agreeTerms')?.touched &&
+              accountForm.get('agreeTerms')?.hasError('required')) {
+              <div class="terms-error">
+                <mat-error>
+                  You must accept the Terms of Service and Privacy Policy.
+                </mat-error>
+              </div>
+            }
 
             <div class="step-actions">
               <button mat-raised-button class="suhana-btn-primary"
