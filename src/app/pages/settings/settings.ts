@@ -8,7 +8,7 @@ import { CommonModule, TitleCasePipe } from '@angular/common';
 @Component({
   selector: 'app-settings',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, MaterialModule, CommonModule],
+  imports: [ReactiveFormsModule, RouterLink, MaterialModule, CommonModule,],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })

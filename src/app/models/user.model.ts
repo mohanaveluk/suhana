@@ -88,7 +88,7 @@ export interface Occupation {
 }
 
 export interface ProfilePhoto {
-  id: string;
+  id?: string;
   url: string;
   isPrimary: boolean;
   isVerified: boolean;

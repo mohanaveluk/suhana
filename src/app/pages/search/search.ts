@@ -2,11 +2,13 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } 
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { AuthService, SearchService } from '../../services';
 import { MatchService } from '../../services';
 import { UserProfile } from '../../models/user.model';
 import { CommonService } from '../../services/common.service';
+import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
 
 @Component({
   selector: 'app-search',
@@ -18,6 +20,7 @@ import { CommonService } from '../../services/common.service';
 export class SearchComponent implements OnInit {
   private readonly matchService   = inject(MatchService);
   private readonly snackBar       = inject(MatSnackBar);
+  private readonly dialog         = inject(MatDialog);
   protected readonly searchService  = inject(SearchService);
   protected readonly commonService  = inject(CommonService);
   private readonly authService    = inject(AuthService);
@@ -95,6 +98,20 @@ export class SearchComponent implements OnInit {
 
   navigateToProfile(profileId: string): void {
     window.location.href = `/profile-view/${profileId}`;
+  }
+
+  openImageViewer(profile: UserProfile, event: MouseEvent): void {
+    event.stopPropagation();
+    const urls = (profile.photos ?? [])
+      .filter(p => !!p.url)
+      .map(p => p.url as string);
+    if (!urls.length) return;
+    this.dialog.open(ImageViewerDialogComponent, {
+      data:       { urls, index: 0 },
+      panelClass: 'image-viewer-panel',
+      maxWidth:   '100vw',
+      maxHeight:  '100vh',
+    });
   }
 
   isShortlisted(userId: string): boolean {
