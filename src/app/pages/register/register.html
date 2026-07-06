@@ -43,6 +43,9 @@
               @if (accountForm.controls.email.hasError('email')) {
                 <mat-error>Please enter a valid email</mat-error>
               }
+              @else if (accountForm.controls.email.hasError('required')) {
+                <mat-error>Email is required</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
@@ -55,6 +58,9 @@
               </button>
               @if (accountForm.controls.password.hasError('minlength')) {
                 <mat-error>Minimum 8 characters</mat-error>
+              }
+              @else if (accountForm.controls.password.hasError('required')) {
+                <mat-error>Password is required</mat-error>
               }
             </mat-form-field>
 

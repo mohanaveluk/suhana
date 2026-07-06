@@ -186,6 +186,19 @@
                   <mat-icon>verified</mat-icon> Verified
                 </div>
               }
+              <!-- Photo viewer trigger -->
+              @if (profile.photos && profile.photos.length) {
+                <button class="result-image__viewer-btn"
+                        (click)="openImageViewer(profile, $event)"
+                        [matTooltip]="(profile.photos.length > 1 ? profile.photos.length + ' photos' : 'View photo')"
+                        matTooltipPosition="above"
+                        aria-label="View photos">
+                  <mat-icon>collections</mat-icon>
+                  @if (profile.photos.length > 1) {
+                    <span class="result-image__photo-count">{{ profile.photos.length }}</span>
+                  }
+                </button>
+              }
             </div>
             <mat-card-content>
               <div class="result-header">

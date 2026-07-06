@@ -313,6 +313,25 @@
   mat-icon { font-size: 20px; width: 20px; height: 20px; }
 }
 
+.view-image-seal {
+  position: absolute;
+  bottom: 8px;
+  left: 4px;
+  background: linear-gradient(135deg, #004080, #286ac1);
+  //background: linear-gradient(135deg, #800020, #c1285b);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
 .completeness-badge {
   position: relative;
   width: 56px;

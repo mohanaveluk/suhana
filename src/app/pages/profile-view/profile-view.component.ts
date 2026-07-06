@@ -263,6 +263,20 @@ export class ProfileViewComponent implements OnInit {
     });
   }
 
+  openImageViewer(profile: UserProfile, event: MouseEvent): void {
+    event.stopPropagation();
+    const urls = (profile.photos ?? [])
+      .filter(p => !!p.url)
+      .map(p => p.url as string);
+    if (!urls.length) return;
+    this.dialog.open(ImageViewerDialogComponent, {
+      data:       { urls, index: 0 },
+      panelClass: 'image-viewer-panel',
+      maxWidth:   '100vw',
+      maxHeight:  '100vh',
+    });
+  }
+    
   protected goBack(): void {
     // Try browser history first; fallback to /search
     if (window.history.length > 1) {

@@ -112,6 +112,15 @@
                 <mat-icon>verified</mat-icon>
               </div>
             }
+            <!-- Photo viewer trigger -->
+             @if (p.photos && p.photos.length) {
+              <button class="view-image-seal" (click)="openImageViewer(p, $event)"
+                [matTooltip]="(p.photos.length > 1 ? p.photos.length + ' photos' : 'View photo')"
+                matTooltipPosition="below" aria-label="View photos">
+                <mat-icon>collections</mat-icon>
+              </button>
+             }
+
           </div>
 
           <!-- Completeness badge -->
@@ -598,7 +607,7 @@
                           <div class="pref-icon"><mat-icon>family_restroom</mat-icon></div>
                           <div class="pref-body">
                             <span class="pref-label">Family Type</span>
-                            <span class="pref-value">{{ p.preferences.familyType | titlecase }}</span>
+                            <span class="pref-value">{{ p.preferences.familyType }}</span>
                           </div>
                         </div>
                       }

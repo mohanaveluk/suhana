@@ -44,6 +44,7 @@ export class EditProfileComponent implements OnInit {
   protected readonly saveSuccess = signal(false);
 
   protected readonly currentAvatarUrl = signal<string | null>(null);
+  protected readonly originalAvatarUrl = signal<string | null>(null);
   protected readonly avatarPreview = signal<string | null>(null);
   protected readonly avatarFile = signal<File | null>(null);
   protected readonly avatarError = signal<string | null>(null);
@@ -95,6 +96,8 @@ export class EditProfileComponent implements OnInit {
       this.avatarError.set(`Image must be smaller than ${MAX_PHOTO_MB} MB.`);
       return;
     }
+    const origUrl = await this.profileService.uploadPhoto(file);
+    this.originalAvatarUrl.set(origUrl);
     this.avatarError.set(null);
 
     // Open the image cropper dialog
@@ -367,6 +370,8 @@ export class EditProfileComponent implements OnInit {
     const priv   = this.privacyForm.getRawValue();
     const dob    = basic.dateOfBirth ?? new Date();
 
+    const photos = this.getPhotosArray();
+    
     const updated: Partial<UserProfile> = {
       userId: basic.userId ?? '',
       firstName: basic.firstName ?? '',
@@ -422,7 +427,7 @@ export class EditProfileComponent implements OnInit {
       },
       photoPrivacy: priv.photoPrivacy as PhotoPrivacy,
       status: priv.status as ProfileStatus,
-      photos: this.currentAvatarUrl() ? [{url: this.currentAvatarUrl(), isPrimary: true, isVerified: false }] as ProfilePhoto[] : [],
+      photos: this.getPhotosArray(),
     };
 
     try {
@@ -528,5 +533,20 @@ export class EditProfileComponent implements OnInit {
     const [ year, month, day ] = date.split('-').map(Number);
 
     return new Date(year, month - 1, day);
+  }
+
+  getPhotosArray(): ProfilePhoto[] {
+    const photos: ProfilePhoto[] = [];
+    const currentUrl = this.currentAvatarUrl();
+    const originalUrl = this.originalAvatarUrl();
+
+    if (currentUrl) {
+      photos.push({ url: currentUrl, isPrimary: true, isVerified: false });
+    }
+
+    if (originalUrl && originalUrl !== currentUrl) {
+      photos.push({ url: originalUrl, isPrimary: false, isVerified: false });
+    }
+    return photos;
   }
 }
