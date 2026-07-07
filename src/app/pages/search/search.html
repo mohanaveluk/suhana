@@ -186,30 +186,80 @@
                   <mat-icon>verified</mat-icon> Verified
                 </div>
               }
+
+
               <!-- Photo viewer trigger -->
               @if (profile.photos && profile.photos.length) {
                 <button class="result-image__viewer-btn"
                         (click)="openImageViewer(profile, $event)"
                         [matTooltip]="(profile.photos.length > 1 ? profile.photos.length + ' photos' : 'View photo')"
-                        matTooltipPosition="above"
+                        matTooltipPosition="right"
                         aria-label="View photos">
                   <mat-icon>collections</mat-icon>
                   @if (profile.photos.length > 1) {
-                    <span class="result-image__photo-count">{{ profile.photos.length }}</span>
+                    <!-- <span class="result-image__photo-count">{{ profile.photos.length }}</span> -->
                   }
                 </button>
               }
+              <!-- Share profile trigger -->
+              <button class="result-image__share-btn"
+                      (click)="shareProfile(profile, $event)"
+                      [matTooltip]="'Share ' + profile.firstName + '\'s profile'"
+                      matTooltipPosition="right"
+                      aria-label="Share profile">
+                <mat-icon>share</mat-icon>
+              </button>
+
             </div>
             <mat-card-content>
               <div class="result-header">
                 <h3>{{ profile.firstName }} {{ profile.lastName }}</h3>
-                <span> {{ profile.profileCode! }}</span>
+                <button mat-icon-button class="result-header__menu-btn"
+                        [matMenuTriggerFor]="profileMenu"
+                        [matMenuTriggerData]="{ profile: profile }"
+                        (click)="$event.stopPropagation()"
+                        aria-label="More options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
               </div>
+
+              <!-- Per-card context menu -->
+              <mat-menu #profileMenu="matMenu" class="result-card-menu">
+                <!-- Profile code → navigate to profile -->
+                <button mat-menu-item (click)="navigateToProfile(profile.userId)">
+                  <mat-icon>badge</mat-icon>
+                  <span class="result-menu-code">{{ profile.profileCode }}</span>
+                </button>
+
+                <mat-divider></mat-divider>
+
+                <button mat-menu-item
+                        (click)="openImageViewer(profile, $event)"
+                        [disabled]="!(profile.photos && profile.photos.length)">
+                  <mat-icon>collections</mat-icon>
+                  <span>View Photos</span>
+                </button>
+
+                <button mat-menu-item (click)="shareProfile(profile, $event)">
+                  <mat-icon>share</mat-icon>
+                  <span>Share Profile</span>
+                </button>
+
+                <button mat-menu-item
+                        (click)="sendInterestFromCard(profile)"
+                        [disabled]="isSelf(profile) || interestSentIds().has(profile.user?.id ?? '')">
+                  <mat-icon>{{ interestSentIds().has(profile.user?.id ?? '') ? 'check_circle' : 'favorite' }}</mat-icon>
+                  <span>{{ interestSentIds().has(profile.user?.id ?? '') ? 'Interest Sent' : 'Send Interest' }}</span>
+                </button>
+
+                <button mat-menu-item
+                        (click)="toggleShortlist(profile)"
+                        [disabled]="isSelf(profile)">
+                  <mat-icon>{{ isShortlisted(profile.user?.id ?? '') ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+                  <span>{{ isShortlisted(profile.user?.id ?? '') ? 'Remove Shortlist' : 'Shortlist' }}</span>
+                </button>
+              </mat-menu>
               <p class="result-meta">{{ profile.age }} yrs &middot; {{ profile.height }}</p>
-              <div class="result-meta" >
-                <span>{{ profile.age }} yrs &middot; {{ profile.height }}</span>
-                <span>{{ profile.profileCode! }}</span>
-              </div>
               <div class="result-details">
                 <span><mat-icon>location_on</mat-icon> {{ profile.location.city }}</span>
                 <span><mat-icon>work</mat-icon> {{ profile.occupation.title }}</span>

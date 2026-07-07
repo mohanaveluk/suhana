@@ -239,6 +239,15 @@
 
             <button
               mat-icon-button
+              class="action-share"
+              (click)="openShareProfile(p.profileCode ?? '')"
+              matTooltip="Share this profile"
+              aria-label="Share this profile">
+              <mat-icon>share</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
               class="action-more"
               [matMenuTriggerFor]="moreMenu"
               matTooltip="More options"

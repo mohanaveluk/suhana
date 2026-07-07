@@ -6,9 +6,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { AuthService, SearchService } from '../../services';
 import { MatchService } from '../../services';
+import { InterestService } from '../../services/interest.service';
 import { UserProfile } from '../../models/user.model';
 import { CommonService } from '../../services/common.service';
 import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
+import {
+  ShareProfileComponent,
+  ShareProfileData,
+} from '../../shared/components/share-profile/share-profile.component';
 
 @Component({
   selector: 'app-search',
@@ -18,15 +23,17 @@ import { ImageViewerDialogComponent } from '../../features/match-fixed/image-vie
   styleUrl: './search.scss',
 })
 export class SearchComponent implements OnInit {
-  private readonly matchService   = inject(MatchService);
-  private readonly snackBar       = inject(MatSnackBar);
-  private readonly dialog         = inject(MatDialog);
-  protected readonly searchService  = inject(SearchService);
-  protected readonly commonService  = inject(CommonService);
-  private readonly authService    = inject(AuthService);
+  private readonly matchService    = inject(MatchService);
+  private readonly interestService = inject(InterestService);
+  private readonly snackBar        = inject(MatSnackBar);
+  private readonly dialog          = inject(MatDialog);
+  protected readonly searchService   = inject(SearchService);
+  protected readonly commonService   = inject(CommonService);
+  private readonly authService     = inject(AuthService);
 
-  protected readonly filtersOpen = signal(false);
-  private readonly shortlistedIds = signal<Set<string>>(new Set());
+  protected readonly filtersOpen    = signal(false);
+  private readonly shortlistedIds  = signal<Set<string>>(new Set());
+  protected readonly interestSentIds = signal<Set<string>>(new Set());
 
   // Per-dropdown inline search text
   protected readonly citySearch       = signal('');
@@ -72,6 +79,7 @@ export class SearchComponent implements OnInit {
     await Promise.all([
       this.searchService.initialLoad(),
       this.matchService.loadMatchesFromApi(),
+      this.interestService.loadInterests(),
     ]);
 
     const alreadyShortlisted = this.matchService.matches()
@@ -81,6 +89,34 @@ export class SearchComponent implements OnInit {
 
     if (alreadyShortlisted.length) {
       this.shortlistedIds.set(new Set(alreadyShortlisted));
+    }
+
+    const alreadySent = this.interestService.sent()
+      .filter(i => i.status === 'pending' || i.status === 'accepted')
+      .map(i => i.toUserId)
+      .filter((id): id is string => !!id);
+
+    if (alreadySent.length) {
+      this.interestSentIds.set(new Set(alreadySent));
+    }
+  }
+
+  async sendInterestFromCard(profile: UserProfile): Promise<void> {
+    const userId = profile.user?.id;
+    if (!userId || this.isSelf(profile)) return;
+    if (this.interestSentIds().has(userId)) return;
+
+    this.interestSentIds.update(s => new Set([...s, userId])); // optimistic
+    try {
+      const message = this.interestService.buildDefaultMessage(profile);
+      await this.interestService.sendInterest(userId, message);
+      this.snackBar.open(`Interest sent to ${profile.firstName}! 💌`, 'Dismiss', {
+        duration: 3000,
+        panelClass: ['af-snack', 'af-snack--success'],
+      });
+    } catch {
+      this.interestSentIds.update(s => { const n = new Set(s); n.delete(userId); return n; });
+      this.snackBar.open('Could not send interest. Please try again.', 'OK', { duration: 3000 });
     }
   }
 
@@ -111,6 +147,27 @@ export class SearchComponent implements OnInit {
       panelClass: 'image-viewer-panel',
       maxWidth:   '100vw',
       maxHeight:  '100vh',
+    });
+  }
+
+  shareProfile(profile: UserProfile, event: MouseEvent): void {
+    event.stopPropagation();
+    if (!profile.profileCode) return;
+    this.dialog.open(ShareProfileComponent, {
+      data: {
+        profileCode: profile.profileCode,
+        profileName: `${profile.firstName} ${profile.lastName}`.trim(),
+      } satisfies ShareProfileData,
+      position:               { right: '0', top: '0' },
+      height:                 '100vh',
+      maxHeight:              '100vh',
+      width:                  '500px',
+      maxWidth:               '100vw',
+      panelClass:             'share-profile-drawer',
+      disableClose:           false,
+      autoFocus:              false,
+      enterAnimationDuration: '0ms',
+      exitAnimationDuration:  '0ms',
     });
   }
 
@@ -151,4 +208,5 @@ export class SearchComponent implements OnInit {
       this.snackBar.open('Could not update shortlist. Please try again.', 'OK', { duration: 3000 });
     }
   }
+
 }
