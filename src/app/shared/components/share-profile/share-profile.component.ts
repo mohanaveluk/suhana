@@ -70,7 +70,7 @@ export class ShareProfileComponent implements OnInit {
 
     this.form.patchValue({
       message:
-        `Hello,\n\nI found this profile and thought it may be of interest to you.\n\nProfile Link:\n${this.shareUrl},`,
+        `Hello,\n\nI found this profile and thought it may be of interest to you.\n\nProfile Link:\n${this.shareUrl}`,
     });
   }
 
@@ -192,7 +192,7 @@ export class ShareProfileComponent implements OnInit {
     this.error.set(null);
     this.form.patchValue({
       message:
-        `Hello,\n\nI found this profile and thought it may be of interest to you.\n\nProfile Link:\n${this.shareUrl},`,
+        `Hello,\n\nI found this profile and thought it may be of interest to you.\n\nProfile Link:\n${this.shareUrl}`,
     });
   }
 
