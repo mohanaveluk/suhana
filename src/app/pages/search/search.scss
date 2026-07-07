@@ -225,23 +225,35 @@ $sidebar-w: 280px;
     position: relative;
     cursor: pointer;
 
-    &__viewer-btn {
+
+    // ── Shared base for both action buttons ──────────────────────────────────
+    &__viewer-btn,
+    &__share-btn {
       position: absolute;
-      bottom: 8px;
       right: 8px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s ease;
+      background: rgba(0, 0, 0, 0.52);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(128, 0, 32, 0.78);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+    }
+
+    // ── Photo viewer button — pill shape, stacked on top ──────────────────────
+    &__viewer-btn1 {
+      bottom: 48px; // 8px gap + 32px share-btn height + 8px gap
       display: flex;
       align-items: center;
       gap: 3px;
       padding: 4px 8px 4px 6px;
-      background: rgba(0, 0, 0, 0.52);
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 20px;
-      color: #fff;
-      cursor: pointer;
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s ease;
 
       mat-icon {
         font-size: 16px;
@@ -249,10 +261,22 @@ $sidebar-w: 280px;
         height: 16px;
         line-height: 16px;
       }
+    }
 
-      &:hover {
-        background: rgba(128, 0, 32, 0.78);
-        border-color: rgba(255, 255, 255, 0.35);
+    &__viewer-btn {
+      bottom: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+
+      mat-icon {
+        font-size: 15px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
       }
     }
 
@@ -262,7 +286,27 @@ $sidebar-w: 280px;
       line-height: 1;
     }
 
-    &:hover .result-image__viewer-btn {
+    // ── Share button — circle, bottom of stack ────────────────────────────────
+    &__share-btn {
+      bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+
+      mat-icon {
+        font-size: 15px;
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
+      }
+    }
+
+    // ── Reveal both on hover ──────────────────────────────────────────────────
+    &:hover .result-image__viewer-btn,
+    &:hover .result-image__share-btn {
       opacity: 1;
       transform: translateY(0);
     }
@@ -294,14 +338,26 @@ $sidebar-w: 280px;
       margin: 0 0 3px;
     }
 
-    .result-header{
+    .result-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
 
-      span {
-        font-size: 0.75rem;
-        color: var(--suhana-text-secondary);
+      &__menu-btn {
+        flex-shrink: 0;
+        width: 28px !important;
+        height: 28px !important;
+        color: var(--suhana-text-secondary) !important;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          margin: -3px -6px 7px -5px;
+
+        }
+
+        &:hover { color: var(--suhana-maroon) !important; }
       }
     }
 

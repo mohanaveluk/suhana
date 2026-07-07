@@ -529,6 +529,17 @@ export class ApiService {
     return this.http.patch(`${this.baseUrl}/v1/profiles/admx/${id}`, data);
   }
 
+  // Profile share
+  shareProfile(data: {
+    receiverName: string;
+    toEmail: string[];
+    shareUrl: string;
+    subject: string;
+    body: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/profiles/share`, data);
+  }
+
   // Contact
   createContact(data: { firstName: string; lastName: string; email: string; mobile?: string; message: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/contact`, data);

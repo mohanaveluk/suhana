@@ -23,6 +23,10 @@ import { firstValueFrom } from 'rxjs';
 import { GalleryImage } from '../../models';
 import { GalleryImageData } from '../../models/gallery.model';
 import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
+import {
+  ShareProfileComponent,
+  ShareProfileData,
+} from '../../shared/components/share-profile/share-profile.component';
 
 @Component({
   selector: 'app-profile-view',
@@ -277,6 +281,26 @@ export class ProfileViewComponent implements OnInit {
     });
   }
     
+  protected openShareProfile(profileCode: string): void {
+    const p = this.profile();
+    this.dialog.open(ShareProfileComponent, {
+      data: {
+        profileCode,
+        profileName: p ? `${p.firstName} ${p.lastName}`.trim() : undefined,
+      } satisfies ShareProfileData,
+      position:              { right: '0', top: '0' },
+      height:                '100vh',
+      maxHeight:             '100vh',
+      width:                 '500px',
+      maxWidth:              '100vw',
+      panelClass:            'share-profile-drawer',
+      disableClose:          false,
+      autoFocus:             false,
+      enterAnimationDuration: '0ms',
+      exitAnimationDuration:  '0ms',
+    });
+  }
+
   protected goBack(): void {
     // Try browser history first; fallback to /search
     if (window.history.length > 1) {

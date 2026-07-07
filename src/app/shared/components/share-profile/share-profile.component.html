@@ -1,0 +1,291 @@
+<div class="sp-drawer">
+
+  <!-- ═══════════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════════ -->
+  <div class="sp-header">
+    <div class="sp-header-content">
+      <div class="sp-header-icon" aria-hidden="true">
+        <mat-icon>share</mat-icon>
+      </div>
+      <div class="sp-header-text">
+        <h2 class="sp-title">Share Profile</h2>
+        <p class="sp-subtitle">Share this profile securely with family and friends.</p>
+      </div>
+    </div>
+    <button mat-icon-button class="sp-close-btn"
+            (click)="close()"
+            aria-label="Close share panel">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SCROLLABLE BODY
+  ═══════════════════════════════════════════════ -->
+  <div class="sp-body">
+
+    <!-- ── Profile URL card ──────────────────────── -->
+    <div class="sp-url-card" [class.sp-url-card--copied]="linkCopied()">
+      <div class="sp-url-label">
+        <mat-icon>link</mat-icon>
+        <span>Profile Link</span>
+        @if (data.profileCode) {
+          <span class="sp-profile-code">{{ data.profileCode }}</span>
+        }
+      </div>
+      <div class="sp-url-row">
+        <input class="sp-url-input"
+               [value]="shareUrl"
+               readonly
+               aria-label="Profile URL" />
+        <button mat-icon-button class="sp-url-action"
+                type="button"
+                (click)="copyLink()"
+                [matTooltip]="linkCopied() ? 'Copied!' : 'Copy link'"
+                aria-label="Copy link">
+          <mat-icon>{{ linkCopied() ? 'check_circle' : 'content_copy' }}</mat-icon>
+        </button>
+        <button mat-icon-button class="sp-url-action"
+                type="button"
+                (click)="openInNewTab()"
+                matTooltip="Open in new tab"
+                aria-label="Open in new tab">
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+      </div>
+      <div class="sp-quick-share">
+        <button mat-stroked-button class="sp-quick-btn sp-quick-btn--whatsapp"
+                type="button"
+                (click)="shareViaWhatsApp()"
+                matTooltip="Share via WhatsApp">
+          <mat-icon>chat</mat-icon>
+          <span>WhatsApp</span>
+        </button>
+        <button mat-stroked-button class="sp-quick-btn sp-quick-btn--email"
+                type="button"
+                (click)="shareViaEmailClient()"
+                matTooltip="Open in email app">
+          <mat-icon>email</mat-icon>
+          <span>Email App</span>
+        </button>
+      </div>
+    </div>
+
+    <mat-divider class="sp-divider"></mat-divider>
+
+    <!-- ═══════════════════════════════════════════════
+         SUCCESS STATE
+    ═══════════════════════════════════════════════ -->
+    @if (successState()) {
+      <div class="sp-success animate-fade-in" role="status" aria-live="polite">
+        <div class="sp-success-icon" aria-hidden="true">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <h3 class="sp-success-title">Profile Shared Successfully</h3>
+        <p class="sp-success-sub">
+          Thank you,
+          The profile has been successfully shared with <strong>{{ form.value.receiverName }}</strong>:
+        </p>
+        <ul class="sp-success-emails" aria-label="Recipients">
+          @for (email of sharedWithList(); track email) {
+            <li>
+              <mat-icon>email</mat-icon>
+              <span>{{ email }}</span>
+            </li>
+          }
+        </ul>
+        <p class="sp-success-note">
+          The recipients will receive an email containing the profile link and your message.
+        </p>
+        <div class="sp-success-actions">
+          <button mat-stroked-button class="sp-success-btn"
+                  type="button"
+                  (click)="shareAnother()">
+            <mat-icon>share</mat-icon> Share Another
+          </button>
+          <button mat-raised-button class="suhana-btn-primary"
+                  type="button"
+                  (click)="close()">
+            <mat-icon>check</mat-icon> Done
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════
+         FORM
+    ═══════════════════════════════════════════════ -->
+    @else {
+      <form [formGroup]="form" class="sp-form" novalidate>
+
+        <!-- Receiver Name ─────────────────────────── -->
+        <mat-form-field appearance="outline" class="sp-field">
+          <mat-label>Receiver Name</mat-label>
+          <mat-icon matPrefix>person_outline</mat-icon>
+          <input matInput
+                 formControlName="receiverName"
+                 placeholder="E.g. Mohan Kumar"
+                 autocomplete="name" />
+          @if (form.get('receiverName')?.invalid && form.get('receiverName')?.touched) {
+            <mat-error>
+              @if (form.get('receiverName')?.errors?.['required']) { Receivername is required. }
+              @else { Name must be at least 2 characters. }
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Recipient Emails (chip input) ──────── -->
+        <div class="sp-chips-wrapper">
+          <mat-form-field appearance="outline" class="sp-field">
+            <mat-label>Recipient Email(s)</mat-label>
+            <mat-icon matPrefix>group</mat-icon>
+            <mat-chip-grid #chipGrid aria-label="Recipient email addresses">
+              @for (email of emails(); track email) {
+                <mat-chip-row (removed)="removeEmail(email)">
+                  {{ email }}
+                  <button matChipRemove [attr.aria-label]="'Remove ' + email">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+              }
+            </mat-chip-grid>
+            <input
+              placeholder="Type email and press Enter or comma"
+              [matChipInputFor]="chipGrid"
+              [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+              (matChipInputTokenEnd)="addEmailFromInput($event)"
+              (paste)="onEmailInputPaste($event)"
+              aria-label="Add email address" />
+          </mat-form-field>
+
+          @if (emailError()) {
+            <p class="sp-chip-error" role="alert">
+              <mat-icon>error_outline</mat-icon>
+              {{ emailError() }}
+            </p>
+          }
+
+          <!-- Recent email suggestions ──────────── -->
+          @if (recentEmails().length) {
+            <div class="sp-recent" aria-label="Recently used emails">
+              <span class="sp-recent-label">Recent:</span>
+              <div class="sp-recent-chips">
+                @for (email of recentEmails(); track email) {
+                  @if (!emails().includes(email)) {
+                    <mat-chip class="sp-recent-chip"
+                              (click)="addRecentEmail(email)"
+                              [attr.aria-label]="'Add ' + email">
+                      {{ email }}
+                    </mat-chip>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Subject ────────────────────────────── -->
+        <mat-form-field appearance="outline" class="sp-field">
+          <mat-label>Subject</mat-label>
+          <mat-icon matPrefix>subject</mat-icon>
+          <input matInput formControlName="subject" />
+          @if (form.get('subject')?.invalid && form.get('subject')?.touched) {
+            <mat-error>Subject is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Personal Message ────────────────────── -->
+        <mat-form-field appearance="outline" class="sp-field">
+          <mat-label>Personal Message (optional)</mat-label>
+          <textarea matInput
+                    formControlName="message"
+                    rows="6"
+                    maxlength="1000"
+                    aria-label="Personal message"></textarea>
+          <mat-hint align="end">{{ messageLength }} / 1000</mat-hint>
+          @if (form.get('message')?.errors?.['maxlength']) {
+            <mat-error>Message must not exceed 1000 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Preview toggle ──────────────────────── -->
+        <button mat-button class="sp-preview-toggle"
+                type="button"
+                (click)="showPreview.update(v => !v)"
+                [attr.aria-expanded]="showPreview()">
+          <mat-icon>{{ showPreview() ? 'expand_less' : 'preview' }}</mat-icon>
+          {{ showPreview() ? 'Hide' : 'Show' }} email preview
+        </button>
+
+        @if (showPreview()) {
+          <div class="sp-preview-card animate-fade-in">
+            <div class="sp-preview-header">
+              <mat-icon>mail_outline</mat-icon>
+              <span>Email Preview</span>
+            </div>
+            <div class="sp-preview-row">
+              <span class="sp-preview-label">To:</span>
+              <span>{{ emails().join(', ') || '—' }}</span>
+            </div>
+            <div class="sp-preview-row">
+              <span class="sp-preview-label">Subject:</span>
+              <span>{{ form.value.subject }}</span>
+            </div>
+            <div class="sp-preview-body">
+              <p class="sp-preview-text">{{ form.value.message }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- API Error ───────────────────────────── -->
+        @if (error()) {
+          <div class="sp-api-error" role="alert">
+            <div class="sp-api-error-icon" aria-hidden="true">
+              <mat-icon>error_outline</mat-icon>
+            </div>
+            <div class="sp-api-error-content">
+              <strong>Email Delivery Failed</strong>
+              <p>{{ error() }}</p>
+              <p class="sp-api-error-hint">Please verify the email addresses and try again.</p>
+            </div>
+            <button mat-icon-button class="sp-api-error-close"
+                    type="button"
+                    (click)="error.set(null)"
+                    aria-label="Dismiss error">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+
+      </form>
+    }
+
+  </div><!-- /sp-body -->
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER (only shown during form state)
+  ═══════════════════════════════════════════════ -->
+  @if (!successState()) {
+    <div class="sp-footer">
+      <button mat-stroked-button class="sp-cancel-btn"
+              type="button"
+              (click)="close()"
+              [disabled]="isLoading()">
+        Cancel
+      </button>
+      <button mat-raised-button class="suhana-btn-primary sp-send-btn" type="button" (click)="sendShare()"
+        [disabled]="isLoading()">
+        <span class="button-content">
+          @if (isLoading()) {
+            <mat-spinner diameter="18" class="sp-spinner"></mat-spinner>
+          } @else {
+            <mat-icon>send</mat-icon>
+          }
+          {{ isLoading() ? 'Sending...' : 'Send' }}
+        </span>
+      </button>
+    </div>
+  }
+
+</div>
