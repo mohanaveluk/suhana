@@ -133,13 +133,29 @@
 
         <!-- My Profile -->
         <div class="hero-profile hero-left">
-          <div class="avatar-ring mine">
+          <div class="avatar-ring mine"
+               [class.avatar-ring--clickable]="myProfile()!.photos && myProfile()!.photos.length"
+               (click)="openProfilePhotoViewer(myProfile()!)"
+               [matTooltip]="myProfile()!.photos && myProfile()!.photos.length ? myProfile()!.firstName + '\'s photos (' + myProfile()!.photos!.length + ')' : ''"
+               [attr.role]="myProfile()!.photos && myProfile()!.photos.length ? 'button' : null"
+               [attr.aria-label]="myProfile()!.photos && myProfile()!.photos.length ? 'View ' + myProfile()!.firstName + '\'s photos' : null">
             <img
               [src]="primaryPhoto(myProfile()!)"
               [alt]="myProfile()!.firstName"
               (error)="onImageError($event)"
               class="avatar-img"
             />
+            @if (myProfile()!.photos && myProfile()!.photos.length) {
+              <div class="avatar-overlay" aria-hidden="true">
+                <mat-icon>collections</mat-icon>
+                @if (myProfile()!.photos!.length > 1) {
+                  <span class="avatar-overlay__count">{{ myProfile()!.photos!.length }}</span>
+                }
+              </div>
+            }
+            <!-- @if (myProfile()!.photos && myProfile()!.photos.length > 1) {
+              <span class="hm-photo-count">{{ myProfile()!.photos.length }}</span>
+            }             -->
             <div class="avatar-label">My Profile</div>
           </div>
           <div class="hero-info">
@@ -190,13 +206,26 @@
 
         <!-- Their Profile -->
         <div class="hero-profile hero-right">
-          <div class="avatar-ring theirs">
+          <div class="avatar-ring theirs"
+               [class.avatar-ring--clickable]="theirProfile()!.photos && theirProfile()!.photos.length"
+               (click)="openProfilePhotoViewer(theirProfile()!)"
+               [matTooltip]="theirProfile()!.photos && theirProfile()!.photos.length ? theirProfile()!.firstName + '\'s photos (' + theirProfile()!.photos!.length + ')' : ''"
+               [attr.role]="theirProfile()!.photos && theirProfile()!.photos.length ? 'button' : null"
+               [attr.aria-label]="theirProfile()!.photos && theirProfile()!.photos.length ? 'View ' + theirProfile()!.firstName + '\'s photos' : null">
             <img
               [src]="primaryPhoto(theirProfile()!)"
               [alt]="theirProfile()!.firstName"
               (error)="onImageError($event)"
               class="avatar-img"
             />
+            @if (theirProfile()!.photos && theirProfile()!.photos.length) {
+              <div class="avatar-overlay" aria-hidden="true">
+                <mat-icon>collections</mat-icon>
+                @if (theirProfile()!.photos!.length > 1) {
+                  <span class="avatar-overlay__count">{{ theirProfile()!.photos!.length }}</span>
+                }
+              </div>
+            }
             <div class="avatar-label">Their Profile</div>
           </div>
           <div class="hero-info">
@@ -607,7 +636,7 @@
           [disabled]="isSelf()"
           matTooltip="View AI horoscope compatibility report"
         >
-          <mat-icon>auto_awesome</mat-icon> View Horoscope Match
+          <mat-icon>auto_awesome</mat-icon> View AI Horoscope Match
         </button>
       </div>
 

@@ -29,14 +29,53 @@
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 @else if (error()) {
   <div class="hm-state-wrap">
-    <mat-card class="hm-error-card" appearance="outlined">
+    <mat-card class="hm-error-card" [class.hm-upgrade-card]="isUpgradeError()" appearance="outlined">
       <mat-card-content>
-        <mat-icon class="hm-state-icon state-error">error_outline</mat-icon>
-        <h3>Unable to load report</h3>
-        <p>{{ error() }}</p>
-        <button mat-raised-button color="primary" (click)="loadData()">
-          <mat-icon>refresh</mat-icon> Retry
-        </button>
+
+        @if (isUpgradeError()) {
+          <!-- ── Membership upgrade prompt ────────────────────────────────── -->
+          <mat-icon class="hm-state-icon state-upgrade">workspace_premium</mat-icon>
+          <h3>Premium Feature</h3>
+          <p>{{ error() }}</p>
+
+          <div class="hm-plan-grid">
+            <!-- Gold plan -->
+            <div class="hm-plan-card hm-plan-card--gold">
+              <mat-icon class="hm-plan-icon">star</mat-icon>
+              <span class="hm-plan-name">Gold</span>
+              <p class="hm-plan-desc">Horoscope compatibility reports & advanced match insights</p>
+              <button mat-raised-button class="hm-plan-btn hm-plan-btn--gold"
+                      (click)="navigateToPremium()">
+                Upgrade to Gold
+              </button>
+            </div>
+
+            <!-- Platinum plan -->
+            <div class="hm-plan-card hm-plan-card--platinum">
+              <mat-icon class="hm-plan-icon">diamond</mat-icon>
+              <span class="hm-plan-name">Platinum</span>
+              <p class="hm-plan-desc">All Gold features + AI-powered analysis & unlimited reports</p>
+              <button mat-raised-button class="hm-plan-btn hm-plan-btn--platinum"
+                      (click)="navigateToPremium()">
+                Upgrade to Platinum
+              </button>
+            </div>
+          </div>
+
+          <button mat-button class="hm-retry-link" (click)="loadData()">
+            <mat-icon>refresh</mat-icon> Retry
+          </button>
+
+        } @else {
+          <!-- ── Generic error ───────────────────────────────────────────── -->
+          <mat-icon class="hm-state-icon state-error">error_outline</mat-icon>
+          <h3>Unable to load report</h3>
+          <p>{{ error() }}</p>
+          <button mat-raised-button color="primary" (click)="loadData()">
+            <mat-icon>refresh</mat-icon> Retry
+          </button>
+        }
+
       </mat-card-content>
     </mat-card>
   </div>
@@ -70,7 +109,12 @@
 
         <!-- Profile 1 -->
         <div class="hm-hero-profile hm-hero-profile--left">
-          <div class="hm-hero-photo-wrap">
+          <div class="hm-hero-photo-wrap"
+               [class.hm-hero-photo-wrap--clickable]="p1.photos && p1.photos.length"
+               (click)="openPhotoViewer(p1)"
+               [matTooltip]="p1.photos && p1.photos.length ? p1.firstName + '\'s photos (' + p1.photos.length + ')' : ''"
+               [attr.role]="p1.photos && p1.photos.length ? 'button' : null"
+               [attr.aria-label]="p1.photos && p1.photos.length ? 'View ' + p1.firstName + '\'s photos' : null">
             @if (getPrimaryPhoto(p1)) {
               <img [src]="getPrimaryPhoto(p1)" [alt]="p1.firstName" class="hm-hero-photo" />
             } @else {
@@ -82,6 +126,9 @@
               <span class="hm-verified-badge" matTooltip="Verified photo">
                 <mat-icon>verified</mat-icon>
               </span>
+            }
+            @if (p1.photos && p1.photos.length > 1) {
+              <span class="hm-photo-count">{{ p1.photos.length }}</span>
             }
           </div>
           <h3 class="hm-hero-name">{{ p1.firstName }} {{ p1.lastName }}</h3>
@@ -126,7 +173,12 @@
 
         <!-- Profile 2 -->
         <div class="hm-hero-profile hm-hero-profile--right">
-          <div class="hm-hero-photo-wrap">
+          <div class="hm-hero-photo-wrap"
+               [class.hm-hero-photo-wrap--clickable]="p2.photos && p2.photos.length"
+               (click)="openPhotoViewer(p2)"
+               [matTooltip]="p2.photos && p2.photos.length ? p2.firstName + '\'s photos (' + p2.photos.length + ')' : ''"
+               [attr.role]="p2.photos && p2.photos.length ? 'button' : null"
+               [attr.aria-label]="p2.photos && p2.photos.length ? 'View ' + p2.firstName + '\'s photos' : null">
             @if (getPrimaryPhoto(p2)) {
               <img [src]="getPrimaryPhoto(p2)" [alt]="p2.firstName" class="hm-hero-photo" />
             } @else {
@@ -138,6 +190,9 @@
               <span class="hm-verified-badge" matTooltip="Verified photo">
                 <mat-icon>verified</mat-icon>
               </span>
+            }
+            @if (p2.photos && p2.photos.length > 1) {
+              <span class="hm-photo-count">{{ p2.photos.length }}</span>
             }
           </div>
           <h3 class="hm-hero-name">{{ p2.firstName }} {{ p2.lastName }}</h3>
