@@ -7,11 +7,13 @@ import {
   OnInit,
   HostListener,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location, CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { HoroscopeMatchService } from './horoscope-match.service';
 import { BirthChartComponent } from './birth-chart/birth-chart.component';
+import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
 import {
   HoroscopeMatchResponse,
   HoroscopeUserProfile,
@@ -33,14 +35,20 @@ import {
 })
 export class HoroscopeMatchComponent implements OnInit {
   private readonly route    = inject(ActivatedRoute);
+  private readonly router   = inject(Router);
   private readonly location = inject(Location);
+  private readonly dialog   = inject(MatDialog);
   private readonly svc      = inject(HoroscopeMatchService);
 
   // ── State ─────────────────────────────────────────────────────────────────
   protected readonly data          = signal<HoroscopeMatchResponse | null>(null);
   protected readonly isLoading     = signal(true);
   protected readonly error         = signal<string | null>(null);
-  protected readonly showScrollTop = signal(false);
+  protected readonly showScrollTop  = signal(false);
+  protected readonly isUpgradeError = computed(() =>
+    (this.error() ?? '').toLowerCase().includes('upgrade your membership') ||
+    (this.error() ?? '').toLowerCase().includes('gold and platinum')
+  );
 
   // ── Hero ring: r=80 → circumference ≈ 502.65 ─────────────────────────────
   protected readonly RADIUS        = 80;
@@ -162,7 +170,19 @@ export class HoroscopeMatchComponent implements OnInit {
     });
   }
 
+  protected navigateToPremium(): void { this.router.navigate(['/premium']); }
   protected goBack():     void { this.location.back(); }
+
+  protected openPhotoViewer(profile: HoroscopeUserProfile): void {
+    const urls = (profile.photos ?? []).filter(p => !!p.url).map(p => p.url);
+    if (!urls.length) return;
+    this.dialog.open(ImageViewerDialogComponent, {
+      data:       { urls, index: 0 },
+      panelClass: 'image-viewer-panel',
+      maxWidth:   '100vw',
+      maxHeight:  '100vh',
+    });
+  }
   protected scrollToTop(): void { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
   @HostListener('window:scroll')
