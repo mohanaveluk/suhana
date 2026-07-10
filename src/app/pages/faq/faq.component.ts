@@ -36,7 +36,44 @@ export class FaqComponent {
         },
         {
           question: 'How do I create an account?',
-          answer: 'Click "Register Free" on the homepage. Enter your name, email, gender, and mobile number. Verify your email address, then complete your profile with personal, educational, and family information to start receiving matches.',
+          answer: `<h3 data-section-id="k5zcip" data-start="56" data-end="91">Creating your Suhana Matrimony account is simple and free:</h3>
+                    <ol data-start="153" data-end="437">
+                    <li data-section-id="1x8xjcz" data-start="153" data-end="198">Click <strong data-start="162" data-end="181">"Register Free"</strong> on the homepage.</li>
+                    <li data-section-id="jyvfto" data-start="199" data-end="265">Select whether you are registering as a <strong data-start="242" data-end="251">Bride</strong> or <strong data-start="255" data-end="264">Groom</strong>.</li>
+                    <li data-section-id="q8pmyc" data-start="266" data-end="404">Enter your basic details, including:
+                    <ul data-start="309" data-end="404">
+                    <li data-section-id="l72ab" data-start="309" data-end="335">First Name and Last Name</li>
+                    <li data-section-id="18lefxu" data-start="339" data-end="354">Email Address</li>
+                    <li data-section-id="xi81rf" data-start="358" data-end="373">Mobile Number</li>
+                    <li data-section-id="1xgaxg7" data-start="377" data-end="385">Gender</li>
+                    <li data-section-id="15cepcg" data-start="389" data-end="404">Date of Birth</li>
+                    </ul>
+                    </li>
+                    <li data-section-id="dxv8vv" data-start="405" data-end="437">Submit the registration form.</li>
+                    </ol>
+                    <p data-start="439" data-end="458">After registration:</p>
+                    <ol start="5" data-start="460" data-end="746">
+                    <li data-section-id="1wkajbd" data-start="460" data-end="530">A verification email will be sent to your registered email address.</li>
+                    <li data-section-id="870km" data-start="531" data-end="599">Open your inbox and look for the email from <strong data-start="578" data-end="598">Suhana Matrimony</strong>.</li>
+                    <li data-section-id="7a4051" data-start="600" data-end="655">Click the <strong data-start="613" data-end="629">Verify Email</strong> button/link in the email.</li>
+                    <li data-section-id="2lhe6o" data-start="656" data-end="746">Once your email address has been successfully verified, your account will be activated.</li>
+                    </ol>
+                    <p data-start="748" data-end="761">You can then:</p>
+                    <ol start="9" data-start="763" data-end="1031">
+                    <li data-section-id="kpjc8i" data-start="763" data-end="839">Sign in to your account using your registered email address and password.</li>
+                    <li data-section-id="148fth1" data-start="840" data-end="1031">Complete your profile by adding your:
+                    <ul data-start="886" data-end="1031">
+                    <li data-section-id="tr1dcs" data-start="886" data-end="908">Personal Information</li>
+                    <li data-section-id="1uxrlvk" data-start="913" data-end="932">Education Details</li>
+                    <li data-section-id="j4dnov" data-start="937" data-end="963">Professional Information</li>
+                    <li data-section-id="1sj5998" data-start="968" data-end="984">Family Details</li>
+                    <li data-section-id="102ebfy" data-start="989" data-end="1010">Partner Preferences</li>
+                    <li data-section-id="1h0vw9o" data-start="1015" data-end="1031">Profile Photos</li>
+                    </ul>
+                    </li>
+                    </ol>
+                    <p data-start="1033" data-end="1136">A complete profile helps you receive better and more relevant match recommendations from other members.</p>
+                    <p data-start="1138" data-end="1312" data-is-last-node="" data-is-only-node=""><strong data-start="1138" data-end="1146">Tip:</strong> If you do not receive the verification email within a few minutes, check your Spam or Junk folder, or use the <strong data-start="1257" data-end="1286">Resend Verification Email</strong> option on the login page.</p>`,
         },
         {
           question: 'Is Suhana free to use?',
@@ -96,6 +133,16 @@ export class FaqComponent {
           question: 'What is Match Tracker?',
           answer: 'Match Tracker helps you follow the journey of each promising connection — from initial interest, to connection, to conversation, and beyond. It gives you a clear picture of where each relationship stands so you never lose track of important interactions.',
         },
+        {
+          question: 'How do I view horoscope compatibility?',
+          answer: 'When viewing a match, click "View AI Horoscope Match" to see a detailed compatibility report. It includes Guna Milan (36 points scoring), Manglik status comparison, and overall astrological compatibility between the two birth charts.',
+        },
+        {
+          question: 'How does AI-based Horoscope Matching work in Suhana?',
+          answer: `<p class="PDq2pG_selectionAnchorContainer" data-start="62" data-end="523">Suhana combines traditional Vedic astrology with AI-powered analysis to provide a comprehensive horoscope compatibility assessment. Using the birth details (date, time, and place of birth) or uploaded horoscope charts of both individuals, our system calculates key compatibility factors such as Guna Milan (36-point matching), Nakshatra compatibility, planetary positions, doshas, emotional compatibility, marriage harmony, and long-term relationship potential.</p>
+                    <p data-start="525" data-end="774">Instead of showing only complex astrological calculations, Suhana translates the results into simple, easy-to-understand compatibility scores and personalized insights, helping you and your family make informed matchmaking decisions with confidence.</p>
+                    <p data-start="776" data-end="951" data-is-last-node="" data-is-only-node=""><strong data-start="776" data-end="785">Note:</strong> Horoscope matching is provided as a guidance tool and should be considered along with personal preferences, values, lifestyle compatibility, and family expectations.</p>`,
+        }
       ],
     },
     {

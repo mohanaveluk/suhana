@@ -5,7 +5,9 @@ import {
   signal,
   computed,
   OnInit,
+  effect,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,7 +21,7 @@ import {
   PhotoGalleryDialogComponent,
   PhotoDialogData,
 } from './photo-gallery-dialog.component';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { GalleryImage } from '../../models';
 import { GalleryImageData } from '../../models/gallery.model';
 import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
@@ -27,6 +29,7 @@ import {
   ShareProfileComponent,
   ShareProfileData,
 } from '../../shared/components/share-profile/share-profile.component';
+
 
 @Component({
   selector: 'app-profile-view',
@@ -85,8 +88,38 @@ export class ProfileViewComponent implements OnInit {
     !!this.authService.user()?.id && this.authService.user()?.id === this.profile()?.user?.id,
   );
 
+  readonly profileId = toSignal(
+    this.route.paramMap.pipe(
+      map(params => params.get('id'))
+    ),
+    { initialValue: null }
+  );
+
+  constructor() {
+    effect(() => {
+      const id = this.profileId();
+
+      if (!id) {
+        this.error.set('No profile ID provided.');
+        this.isLoading.set(false);
+        return;
+      }
+
+      const routePath =
+        this.route.routeConfig?.path?.includes('/')
+          ? this.route.routeConfig.path.split('/:')[0]
+          : 'profile-view';
+
+      void this.loadProfile(id, routePath);
+    });
+  }
+
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   ngOnInit(): void {
+    
+  }
+
+  ngOnInit1(): void {
     const id = this.route.snapshot.paramMap.get('id');
     const routePath = this.route.routeConfig?.path?.includes('/') ? this.route.routeConfig?.path?.split('/:')[0] : 'profile-view';
     if (!id) {
