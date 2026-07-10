@@ -1,4 +1,6 @@
-export type MessageType  = 'text' | 'html' | 'faq' | 'action';
+import { ChatProfileSummary } from './chatbot-profile.model';
+
+export type MessageType  = 'text' | 'html' | 'faq' | 'action' | 'profile-list';
 export type MessageRole  = 'user' | 'bot';
 export type FeedbackType = 'helpful' | 'not-helpful';
 
@@ -16,4 +18,5 @@ export interface ChatMessage {
   actions?:     ChatAction[];
   suggestions?: string[];
   feedback?:    FeedbackType | null;
+  profiles?:    ChatProfileSummary[];
 }

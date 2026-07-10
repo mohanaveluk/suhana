@@ -386,6 +386,104 @@ $cb-radius:        20px;
   &:hover { background: var(--suhana-rose-gold-lighter, #f0d4d8) !important; }
 }
 
+// ── Matching profile cards ───────────────────────────────────────────────────
+.cb-profile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cb-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: var(--suhana-ivory-warm, #fdf8f4);
+  border: 1px solid rgba(183,110,121,0.2);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+
+  &:hover {
+    background: var(--suhana-rose-gold-lighter, #f0d4d8);
+    border-color: var(--suhana-rose-gold, #b76e79);
+    transform: translateY(-1px);
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+.cb-profile-photo {
+  width:  44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--suhana-rose-gold-lighter, #f0d4d8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width:  100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  mat-icon {
+    color: var(--suhana-maroon, #a20000);
+    opacity: 0.6;
+  }
+}
+
+.cb-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cb-profile-name {
+  margin: 0;
+  font-size:   0.82rem;
+  font-weight: 700;
+  color: var(--suhana-text-primary, #3d2c2e);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cb-profile-meta {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: var(--suhana-text-secondary, #6b5557);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--sub { opacity: 0.85; }
+}
+
+.cb-profile-score {
+  flex-shrink: 0;
+  font-size:   0.72rem;
+  font-weight: 700;
+  color: #fff;
+  background: $cb-gradient;
+  border-radius: 10px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.cb-profile-arrow {
+  color: var(--suhana-rose-gold, #b76e79);
+  flex-shrink: 0;
+  font-size: 20px !important;
+  width:     20px !important;
+  height:    20px !important;
+}
+
 // ── Feedback ───────────────────────────────────────────────────────────────────
 .cb-feedback {
   display: flex;

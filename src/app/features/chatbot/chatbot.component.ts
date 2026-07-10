@@ -166,6 +166,7 @@ export class AiChatbotComponent implements OnInit, AfterViewChecked {
           actions:     res.actions,
           suggestions: res.suggestions?.length ? res.suggestions : undefined,
           feedback:    null,
+          profiles:    res.profiles?.length ? res.profiles : undefined,
         };
         this.messages.update(m => [...m, botMsg]);
         this.isTyping.set(false);
@@ -200,6 +201,16 @@ export class AiChatbotComponent implements OnInit, AfterViewChecked {
       void this.router.navigateByUrl(action.url);
       this.close();
     }
+  }
+
+  protected viewProfile(profileId: string): void {
+  //  void this.router.navigateByUrl(`/profile-view/${profileId}`, { state: { fromChatbot: true } });
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree([`/profile-view/${profileId}`])
+    );
+
+    window.open(url, '_blank');
+    //this.close();
   }
 
   protected submitFeedback(msg: ChatMessage, type: 'helpful' | 'not-helpful'): void {

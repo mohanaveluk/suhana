@@ -4,7 +4,7 @@ This file gives Claude Code the context it needs to work effectively in this rep
 
 ## Project Overview
 
-**Suhana** — Angular single-page matchmaking application.
+**Suhana** — Angular application which is a beautiful and elegant choice for your matrimony business! It conveys a sense of a joyful, smooth, and beautiful journey, which is perfect for matchmaking. It has features like AI-based matchmaking, horoscope matching, and video profiles.
 
 - **Frontend:** Angular, using standalone components and signals (no NgModules, no RxJS-heavy state where signals suffice).
 - **Backend:** REST API consumed via `ApiService`. Base URL comes from `environment.apiUrl` (see `environment.ts`).

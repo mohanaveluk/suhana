@@ -1,4 +1,5 @@
 import { ChatAction, FeedbackType } from './chatbot-message.model';
+import { ChatProfileSummary } from './chatbot-profile.model';
 
 export interface ChatbotSendRequest {
   message:        string;
@@ -15,8 +16,9 @@ export interface ChatbotApiResponse {
   tokensUsed:     number;
   responseTimeMs: number;
   // optional extended fields (kept for forward-compat)
-  type?:          'text' | 'html' | 'faq' | 'action';
+  type?:          'text' | 'html' | 'faq' | 'action' | 'profile-list';
   actions?:       ChatAction[];
+  profiles?:      ChatProfileSummary[];
 }
 
 export interface ChatbotSessionResponse {

@@ -116,6 +116,36 @@
               </div>
             }
 
+            <!-- Matching profile cards -->
+            @if (msg.type === 'profile-list' && msg.profiles && msg.profiles.length) {
+              <div class="cb-profile-list">
+                @for (p of msg.profiles; track p.userId) {
+                  <button type="button" class="cb-profile-card" (click)="viewProfile(p.userId)">
+                    <div class="cb-profile-photo">
+                      @if (p.photos && p.photos.length) {
+                        <img [src]="p.photos[0].url" [alt]="p.firstName" />
+                      } @else {
+                        <mat-icon>person</mat-icon>
+                      }
+                    </div>
+                    <div class="cb-profile-info">
+                      <p class="cb-profile-name">{{ p.firstName }} {{ p.lastName }}, {{ p.age }}</p>
+                      <p class="cb-profile-meta">
+                        {{ p.occupation.title }}@if (p.location && p.location.city) { &bull; {{ p.location.city }} }
+                      </p>
+                      <p class="cb-profile-meta cb-profile-meta--sub">
+                        {{ p.religion }}@if (p.caste) { &bull; {{ p.caste }} }
+                      </p>
+                    </div>
+                    <div class="cb-profile-score" [attr.aria-label]="p.matchPercentage + '% compatibility'">
+                      {{ p.matchPercentage }}%
+                    </div>
+                    <mat-icon class="cb-profile-arrow">chevron_right</mat-icon>
+                  </button>
+                }
+              </div>
+            }
+
             <!-- Timestamp -->
             <span class="cb-bubble-time">
               {{ msg.timestamp | date:'HH:mm' }}
