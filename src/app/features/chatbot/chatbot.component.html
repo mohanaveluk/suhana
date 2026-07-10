@@ -1,0 +1,231 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  AI CHATBOT WIDGET                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- ── Floating Action Button ─────────────────────────────────────────────── -->
+<div class="cb-fab-wrap">
+  <button
+    class="cb-fab"
+    (click)="togglePanel()"
+    [class.cb-fab--open]="isOpen()"
+    [attr.aria-label]="isOpen() ? 'Close AI assistant' : 'Open AI assistant'"
+    matTooltip="Suhana AI Assistant"
+    matTooltipPosition="left">
+    @if (isOpen()) {
+      <mat-icon class="cb-fab-icon">close</mat-icon>
+    } @else {
+      <mat-icon class="cb-fab-icon">chat</mat-icon>
+    }
+    @if (!isOpen() && unreadCount() > 0) {
+      <span class="cb-badge" aria-label="{{ unreadCount() }} unread messages">
+        {{ unreadCount() }}
+      </span>
+    }
+  </button>
+</div>
+
+<!-- ── Chat Panel ──────────────────────────────────────────────────────────── -->
+@if (isOpen()) {
+  <div
+    class="cb-panel"
+    role="dialog"
+    aria-label="Suhana AI Assistant chat window"
+    aria-modal="false">
+
+    <!-- ── Header ──────────────────────────────────────────────────────────── -->
+    <div class="cb-header">
+      <div class="cb-header-avatar" aria-hidden="true">
+        <span class="cb-avatar-glyph">✨</span>
+        <span class="cb-online-dot"></span>
+      </div>
+
+      <div class="cb-header-info">
+        <h3 class="cb-header-title">Suhana AI Assistant</h3>
+        <p class="cb-header-sub">
+          <span class="cb-online-indicator"></span>
+          Online &bull; Ready to Help
+        </p>
+      </div>
+
+      <div class="cb-header-actions">
+        <button mat-icon-button class="cb-hdr-btn"
+                (click)="startNewChat()"
+                matTooltip="New conversation"
+                aria-label="Start new conversation">
+          <mat-icon>add_comment</mat-icon>
+        </button>
+        <button mat-icon-button class="cb-hdr-btn"
+                (click)="downloadConversation()"
+                matTooltip="Download chat"
+                aria-label="Download conversation">
+          <mat-icon>download</mat-icon>
+        </button>
+        <button mat-icon-button class="cb-hdr-btn"
+                (click)="close()"
+                matTooltip="Close"
+                aria-label="Close chat">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Message List ────────────────────────────────────────────────────── -->
+    <div
+      class="cb-messages"
+      #messageList
+      role="log"
+      aria-live="polite"
+      aria-label="Chat messages"
+      aria-relevant="additions">
+
+      @for (msg of messages(); track trackById($index, msg)) {
+        <div class="cb-msg-row" [class.cb-msg-row--user]="msg.role === 'user'">
+
+          <!-- Bot avatar (left side) -->
+          @if (msg.role === 'bot') {
+            <div class="cb-bot-avatar" aria-hidden="true">
+              <mat-icon>auto_awesome</mat-icon>
+            </div>
+          }
+
+          <!-- Bubble -->
+          <div
+            class="cb-bubble"
+            [class.cb-bubble--bot]="msg.role === 'bot'"
+            [class.cb-bubble--user]="msg.role === 'user'">
+
+            <!-- Message text -->
+            @if (msg.type === 'html') {
+              <div class="cb-bubble-text" [innerHTML]="msg.text"></div>
+            } @else {
+              <p class="cb-bubble-text"  [innerHTML]="msg.text"></p>
+            }
+
+            <!-- Action buttons -->
+            @if (msg.actions && msg.actions.length) {
+              <div class="cb-msg-actions">
+                @for (action of msg.actions; track action.label) {
+                  <button mat-stroked-button class="cb-action-btn"
+                          (click)="handleAction(action)">
+                    {{ action.label }}
+                    @if (action.url) {
+                      <mat-icon>arrow_forward</mat-icon>
+                    }
+                  </button>
+                }
+              </div>
+            }
+
+            <!-- Timestamp -->
+            <span class="cb-bubble-time">
+              {{ msg.timestamp | date:'HH:mm' }}
+            </span>
+
+            <!-- Feedback row (bot messages only, skip welcome) -->
+            @if (msg.role === 'bot' && msg.id !== 'welcome') {
+              <div class="cb-feedback">
+                <button
+                  class="cb-feedback-btn"
+                  [class.cb-feedback-btn--active]="msg.feedback === 'helpful'"
+                  [disabled]="!!msg.feedback"
+                  (click)="submitFeedback(msg, 'helpful')"
+                  aria-label="Mark as helpful">
+                  👍
+                </button>
+                <button
+                  class="cb-feedback-btn"
+                  [class.cb-feedback-btn--active]="msg.feedback === 'not-helpful'"
+                  [disabled]="!!msg.feedback"
+                  (click)="submitFeedback(msg, 'not-helpful')"
+                  aria-label="Mark as not helpful">
+                  👎
+                </button>
+                @if (!msg.feedback) {
+                  <span class="cb-feedback-label">Helpful?</span>
+                } @else {
+                  <span class="cb-feedback-label cb-feedback-label--done">
+                    Thank you!
+                  </span>
+                }
+                <button mat-icon-button class="cb-copy-btn"
+                        (click)="copyMessage(msg.text)"
+                        matTooltip="Copy message"
+                        aria-label="Copy message">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Per-message follow-up suggestions (bot only) -->
+        @if (msg.role === 'bot' && msg.suggestions && msg.suggestions.length) {
+          <div class="cb-msg-suggestions" aria-label="Suggested follow-up questions">
+            @for (s of msg.suggestions; track s) {
+              <button class="cb-suggestion-chip" type="button" (click)="sendMessage(s)">
+                {{ s }}
+              </button>
+            }
+          </div>
+        }
+      }
+
+      <!-- Typing indicator -->
+      @if (isTyping()) {
+        <div class="cb-msg-row" aria-label="AI is typing">
+          <div class="cb-bot-avatar" aria-hidden="true">
+            <mat-icon>auto_awesome</mat-icon>
+          </div>
+          <div class="cb-bubble cb-bubble--bot cb-bubble--typing">
+            <span class="cb-dot"></span>
+            <span class="cb-dot"></span>
+            <span class="cb-dot"></span>
+            <span class="cb-typing-label">AI is typing…</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── Suggested Questions ────────────────────────────────────────────── -->
+    @if (showSuggestions()) {
+      <div class="cb-suggestions" aria-label="Suggested questions">
+        <p class="cb-suggestions-label">Quick questions</p>
+        <div class="cb-chips">
+          @for (q of suggestedQuestions; track q) {
+            <button class="cb-chip" (click)="sendMessage(q)" type="button">
+              {{ q }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── Input Footer ────────────────────────────────────────────────────── -->
+    <div class="cb-footer">
+      <div class="cb-input-wrap" [class.cb-input-wrap--focused]="false">
+        <textarea
+          #chatInput
+          class="cb-input"
+          placeholder="Type your message…"
+          [value]="inputText()"
+          (input)="onInputChange($event)"
+          (keydown)="onKeydown($event)"
+          rows="1"
+          maxlength="500"
+          aria-label="Chat message"
+          [disabled]="isTyping()">
+        </textarea>
+        <button
+          class="cb-send-btn"
+          [class.cb-send-btn--ready]="canSend()"
+          [disabled]="!canSend()"
+          (click)="sendMessage()"
+          aria-label="Send message"
+          type="button">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+      <p class="cb-footer-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
+    </div>
+  </div>
+}
