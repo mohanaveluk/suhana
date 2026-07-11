@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { AuthService } from '../../services';
@@ -17,6 +17,12 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  /** Where to go after a successful login — set by authGuard, defaults to home. */
+  private get returnUrl(): string {
+    return this.route.snapshot.queryParamMap.get('returnUrl') || '/';
+  }
 
   protected readonly hidePassword = signal(true);
   protected readonly isLoggingIn = signal(false);
@@ -42,7 +48,7 @@ export class LoginComponent {
     const { email, password } = this.loginForm.getRawValue();
     try {
       await this.auth.login(email ?? '', password ?? '');
-      this.router.navigate(['/']);
+      this.router.navigateByUrl(this.returnUrl);
     } catch (err: any) {
       const msg: string = err?.error?.message ?? err?.message ?? 'Login failed. Please try again.';
       this.errorMessage.set(msg);
@@ -68,7 +74,7 @@ export class LoginComponent {
   }
 
   async loginAsDemo(role: 'registered' | 'admin' | 'tester'): Promise<void> {
-    await this.auth.loginAsRole(role);
-    this.router.navigate([role === 'admin' ? '/admin' : '/']);
+    //await this.auth.loginAsRole(role);
+    //this.router.navigate([role === 'admin' ? '/admin' : '/']);
   }
 }

@@ -18,24 +18,81 @@ export class ProfileService {
   private readonly _totalPages = signal(1);
   private readonly _isLoadingMore = signal(false);
 
+  /** Page size used for server-side paged fetches. */
+  private static readonly PAGE_SIZE = 20;
+  /** Base filters (e.g. { status: 'all' }) that persist across paging + search. */
+  private readonly _baseFilters = signal<Record<string, string | number>>({});
+  /** Active free-text search term, sent to the API as `query`. */
+  private readonly _searchTerm = signal('');
+
   readonly allProfiles = this.profiles.asReadonly();
   readonly myProfile = this.userProfile.asReadonly();
   readonly currentPage = this._currentPage.asReadonly();
   readonly totalPages = this._totalPages.asReadonly();
   readonly isLoadingMore = this._isLoadingMore.asReadonly();
+  readonly searchTerm = this._searchTerm.asReadonly();
   readonly hasMoreProfiles = computed(() => this._currentPage() < this._totalPages());
 
+  /**
+   * Initial paged load. Captures the caller's filters as the base set for
+   * subsequent {@link goToPage}/{@link applySearch} calls, and resets to page 1.
+   */
   async loadProfiles(params?: Record<string, string | number>): Promise<void> {
+    // Strip pagination + search keys — those are managed internally.
+    const base = { ...(params ?? {}) };
+    delete base['page'];
+    delete base['limit'];
+    delete base['query'];
+    this._baseFilters.set(base);
+    this._searchTerm.set('');
+    await this.fetchProfiles(1);
+    this.initialized = true;
+  }
+
+  /** Navigate to a specific 1-based page within the current filter/search set. */
+  async goToPage(page: number): Promise<void> {
+    if (page < 1 || page > this._totalPages()) return;
+    await this.fetchProfiles(page);
+  }
+
+  /**
+   * Apply combined server-side filters (free-text query, gender, status).
+   * gender/status are folded into the base filters so they persist across paging;
+   * always resets to page 1 since the result set changes.
+   */
+  async applyFilters(filters: { query?: string; gender?: string; status?: string }): Promise<void> {
+    const base: Record<string, string | number> = { ...this._baseFilters() };
+
+    if (filters.gender) base['gender'] = filters.gender;
+    else delete base['gender'];
+
+    if (filters.status) base['status'] = filters.status;
+    else delete base['status'];
+
+    this._baseFilters.set(base);
+    this._searchTerm.set((filters.query ?? '').trim());
+    await this.fetchProfiles(1);
+  }
+
+  /** Server-side page fetch honouring the active base filters + search term. */
+  private async fetchProfiles(page: number): Promise<void> {
+    const params: Record<string, string | number> = {
+      ...this._baseFilters(),
+      page,
+      limit: ProfileService.PAGE_SIZE,
+    };
+    const term = this._searchTerm();
+    if (term) params['query'] = term;
+
     try {
       const res = await firstValueFrom(this.api.getProfiles(params));
       const list = res.data ?? res;
       this.profiles.set(Array.isArray(list) ? list : []);
-      if (res.page != null) this._currentPage.set(res.page);
-      if (res.totalPages != null) this._totalPages.set(res.totalPages);
+      this._currentPage.set(res.page ?? page);
+      this._totalPages.set(res.totalPages ?? 1);
     } catch {
       throw new Error('Failed to load profiles');
     }
-    this.initialized = true;
   }
 
   async loadMoreProfiles(): Promise<void> {

@@ -3,6 +3,50 @@
   padding-bottom: 64px;
 }
 
+// ── Users tab: search + pagination ─────────────────────────────────────────
+.users-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  .users-search {
+    flex: 1 1 280px;
+    max-width: 420px;
+  }
+
+  .users-filter {
+    flex: 0 0 auto;
+    min-width: 150px;
+  }
+}
+
+.users-progress {
+  margin-bottom: 8px;
+}
+
+.users-error {
+  color: var(--suhana-maroon, #b00020);
+  font-size: 0.9rem;
+  margin: 8px 0;
+}
+
+.users-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+
+  .page-indicator {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--suhana-text-primary);
+  }
+}
+
 .admin-header {
   margin-bottom: 32px;
 
