@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { VerifyEmailComponent } from './pages/verify/verify-email.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -20,18 +21,22 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/profile/profile').then(m => m.ProfileComponent),
   },
   {
     path: 'profile/edit',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/edit-profile/edit-profile').then(m => m.EditProfileComponent),
   },
   {
     path: 'settings',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/settings/settings').then(m => m.SettingsComponent),
   },
   {
     path: 'search',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/search/search').then(m => m.SearchComponent),
   },
   {
@@ -59,22 +64,27 @@ export const routes: Routes = [
   },
   {
     path: 'matchmaking',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/matchmaking/matchmaking').then(m => m.MatchmakingComponent),
   },
   {
     path: 'matchmaking/:profileId',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/matchmaking/matchmaking').then(m => m.MatchmakingComponent),
   },
   {
     path: 'compare',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/compare/compare').then(m => m.CompareComponent),
   },
   {
     path: 'shortlist',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/shortlist/shortlist').then(m => m.ShortlistComponent),
   },
   {
     path: 'chat',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/chat/chat').then(m => m.ChatComponent),
   },
   {
@@ -93,24 +103,29 @@ export const routes: Routes = [
   },
   {
     path: 'premium',
+    //canActivate: [authGuard],
     loadComponent: () => import('./pages/premium/premium').then(m => m.PremiumComponent),
   },
   {
     path: 'premium/payment',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/premium-payment/premium-payment').then(m => m.PremiumPaymentComponent),
   },
   {
     path: 'match-tracker',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/match-tracker/match-tracker').then(m => m.MatchTrackerComponent),
   },
   {
     path: 'gallery',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/gallery/gallery-management.component').then(m => m.GalleryManagementComponent),
   },
   {
     path: 'gallery/:profileId',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/gallery/gallery-management.component').then(m => m.GalleryManagementComponent),
   },
@@ -158,6 +173,7 @@ export const routes: Routes = [
   },
   {
     path: 'notifications',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/notifications/notification.component').then(m => m.NotificationComponent),
   },
@@ -169,18 +185,21 @@ export const routes: Routes = [
   // Match Fixed
   {
     path: 'match-fixed/new',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/match-fixed/match-fixed-form/match-fixed-form.component')
         .then(m => m.MatchFixedFormComponent),
   },
   {
     path: 'match-fixed/me',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/match-fixed/my-match-fixed/my-match-fixed.component')
         .then(m => m.MyMatchFixedComponent),
   },
   {
     path: 'match-fixed/:id/edit',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/match-fixed/match-fixed-edit/match-fixed-edit.component')
         .then(m => m.MatchFixedEditComponent),

@@ -92,6 +92,45 @@
     <!-- User Management -->
     <mat-tab label="Users">
       <div class="tab-content">
+        <!-- Search + filters -->
+        <div class="users-toolbar">
+          <mat-form-field appearance="outline" class="users-search">
+            <mat-label>Search profiles</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              matInput
+              type="text"
+              [value]="searchTerm()"
+              (input)="onSearchInput($event)"
+              placeholder="Name, age, location" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="users-filter">
+            <mat-label>Gender</mat-label>
+            <mat-select [value]="genderFilter()" (selectionChange)="onGenderChange($event.value)">
+              @for (opt of genderOptions; track opt.value) {
+                <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="users-filter">
+            <mat-label>Status</mat-label>
+            <mat-select [value]="statusFilter()" (selectionChange)="onStatusChange($event.value)">
+              @for (opt of statusOptions; track opt.value) {
+                <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        @if (isLoadingProfiles()) {
+          <mat-progress-bar mode="indeterminate" class="users-progress"></mat-progress-bar>
+        }
+        @if (profilesError()) {
+          <p class="users-error">{{ profilesError() }}</p>
+        }
+
         <div class="table-wrapper">
           <table mat-table [dataSource]="adminService.allProfiles()" class="users-table">
             <!-- Photo Column -->
@@ -167,6 +206,29 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
         </div>
+
+        <!-- Pagination -->
+        @if (profileService.totalPages() > 1) {
+          <div class="users-pagination">
+            <button
+              mat-stroked-button
+              (click)="goToPage(profileService.currentPage() - 1)"
+              [disabled]="profileService.currentPage() === 1 || isLoadingProfiles()">
+              <mat-icon>chevron_left</mat-icon> Previous
+            </button>
+
+            <span class="page-indicator">
+              Page {{ profileService.currentPage() }} of {{ profileService.totalPages() }}
+            </span>
+
+            <button
+              mat-stroked-button
+              (click)="goToPage(profileService.currentPage() + 1)"
+              [disabled]="profileService.currentPage() === profileService.totalPages() || isLoadingProfiles()">
+              Next <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        }
       </div>
     </mat-tab>
 
