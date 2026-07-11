@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -10,12 +10,14 @@ import {
 } from './models/chatbot-response.model';
 import { ChatSession } from './models/chatbot-session.model';
 import { ChatMessage } from './models/chatbot-message.model';
+import { AuthService } from '../../services/auth.service';
 
 const STORAGE_KEY = 'suhana_chat_session';
 
 @Injectable({ providedIn: 'root' })
 export class ChatbotService {
   private readonly http    = inject(HttpClient);
+  private readonly auth    = inject(AuthService);
   private readonly baseUrl = `${environment.apiUrl}/v1/chatbot`;
 
   private _sessionId      = '';
@@ -23,7 +25,18 @@ export class ChatbotService {
 
   readonly session = signal<ChatSession | null>(null);
 
-  constructor() { this.restoreSession(); }
+  constructor() {
+    this.restoreSession();
+    // Chat history is scoped to auth state — drop it whenever the user logs in/out.
+    let prevAuth = this.auth.isAuthenticated();
+    effect(() => {
+      const authed = this.auth.isAuthenticated();
+      if (authed !== prevAuth) {
+        prevAuth = authed;
+        this.clearSession();
+      }
+    });
+  }
 
   get sessionId():      string { return this._sessionId; }
   get conversationId(): string { return this._conversationId; }
@@ -34,6 +47,11 @@ export class ChatbotService {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const s = JSON.parse(raw) as ChatSession;
+      // Discard a session that belongs to a different auth state (guest vs. logged-in).
+      if (!!s.authenticated !== this.auth.isAuthenticated()) {
+        this.clearSession();
+        return;
+      }
       this._sessionId      = s.sessionId;
       this._conversationId = s.conversationId;
       // Rehydrate Date objects from ISO strings
@@ -47,6 +65,7 @@ export class ChatbotService {
       sessionId:      this._sessionId,
       conversationId: this._conversationId,
       createdAt:      new Date().toISOString(),
+      authenticated:  this.auth.isAuthenticated(),
       messages,
     };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch { /* quota exceeded */ }
@@ -82,7 +101,10 @@ export class ChatbotService {
       sessionId:      this._sessionId,
       conversationId: this._conversationId,
     };
-    return this.http.post<ChatbotApiResponse>(`${this.baseUrl}/message`, body).pipe(
+    const endpoint = this.auth.isAuthenticated()
+      ? `${this.baseUrl}/message`
+      : `${this.baseUrl}/public/message`;
+    return this.http.post<ChatbotApiResponse>(endpoint, body).pipe(
       catchError(() => of({
         messageId:      '',
         answer:         "I'm having trouble connecting right now. Please try again in a moment.",

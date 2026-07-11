@@ -539,6 +539,17 @@
     &:hover { background: rgba(255,255,255,0.12) !important; }
   }
 
+  .action-match {
+    height: 44px;
+    border-radius: 22px !important;
+    border-color: rgba(255,255,255,0.6) !important;
+    color: white !important;
+    font-weight: 500;
+    transition: all 0.2s !important;
+
+    &:hover { background: rgba(255,255,255,0.12) !important; }
+  }
+
   .action-shortlist {
     width: 44px;
     height: 44px;

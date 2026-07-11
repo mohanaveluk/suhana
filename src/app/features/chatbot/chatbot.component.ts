@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ChatbotService } from './chatbot.service';
+import { AuthService } from '../../services/auth.service';
 import { ChatAction, ChatMessage, MessageType } from './models/chatbot-message.model';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -61,6 +62,7 @@ const SUGGESTED_QUESTIONS = [
 export class AiChatbotComponent implements OnInit, AfterViewChecked {
   private readonly chatService = inject(ChatbotService);
   private readonly router      = inject(Router);
+  private readonly auth        = inject(AuthService);
 
   @ViewChild('messageList') private messageListRef!: ElementRef<HTMLDivElement>;
   @ViewChild('chatInput')   private chatInputRef!:   ElementRef<HTMLTextAreaElement>;
@@ -85,7 +87,6 @@ export class AiChatbotComponent implements OnInit, AfterViewChecked {
   );
 
   private shouldScrollToBottom  = false;
-  private sessionInitialized    = false;
 
   // ── Lifecycle ────────────────────────────────────────────────────────────────
   ngOnInit(): void {
@@ -127,8 +128,10 @@ export class AiChatbotComponent implements OnInit, AfterViewChecked {
 
   // ── Session ───────────────────────────────────────────────────────────────────
   private async ensureSession(): Promise<void> {
-    if (this.sessionInitialized || this.chatService.sessionId) return;
-    this.sessionInitialized = true;
+    // Guests use the public endpoint and don't need a server-side session.
+    if (!this.auth.isAuthenticated()) return;
+    // Authenticated user already has an active session.
+    if (this.chatService.sessionId) return;
     await new Promise<void>(resolve =>
       this.chatService.createSession().subscribe({ next: () => resolve(), error: () => resolve() })
     );
@@ -229,7 +232,6 @@ export class AiChatbotComponent implements OnInit, AfterViewChecked {
 
   protected async startNewChat(): Promise<void> {
     this.chatService.clearSession();
-    this.sessionInitialized = false;
     this.isTyping.set(false);
     this.unreadCount.set(0);
     this.messages.set([{ ...WELCOME_MESSAGE, timestamp: new Date() }]);
