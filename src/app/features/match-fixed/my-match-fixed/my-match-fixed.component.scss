@@ -190,5 +190,21 @@
   border-radius: 10px;
   border: 1px solid #ffcdd2;
   flex-wrap: wrap;
-  p { margin: 0; font-size: 0.875rem; color: #c62828; }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #c62828;
+  }
+
+  .button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; // space between spinner and text
+  }
+
+  .button-content ::ng-deep .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: white !important;
+  }
 }

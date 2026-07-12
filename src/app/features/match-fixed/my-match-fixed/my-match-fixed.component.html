@@ -189,7 +189,9 @@
           <div class="mmf-confirm-cancel">
             <p>Are you sure you want to cancel?</p>
             <button mat-raised-button color="warn" [disabled]="cancelling()" (click)="cancelMatchFixed()">
-              @if (cancelling()) { <mat-spinner diameter="16"></mat-spinner> } Yes, Cancel
+              <span class="button-content">
+                @if (cancelling()) { <mat-spinner diameter="16"></mat-spinner> } Yes, Cancel
+              </span>
             </button>
             <button mat-button (click)="confirmCancel.set(false)">Keep It</button>
           </div>
