@@ -105,7 +105,7 @@ export class MatchFixedService {
       if (query.limit)       params['limit']       = query.limit;
       if (query.matchSource) params['matchSource'] = query.matchSource;
       const res = await firstValueFrom(this.api.getPublicSuccessStories(params));
-      const paginated: PaginatedSuccessStories = res?.data ?? res;
+      const paginated: PaginatedSuccessStories =  res ?? res?.data ;
       this._stories.set(paginated.data ?? []);
       this._currentPage.set(paginated.page ?? 1);
       this._totalPages.set(paginated.totalPages ?? 1);
