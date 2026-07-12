@@ -1257,3 +1257,13 @@ mat-divider[vertical] {
   .match-hero { box-shadow: none; border: 1px solid #ccc; }
   .pm-tabs { box-shadow: none; }
 }
+
+// ── PDF download: inline spinner alignment ──────────────────────────────────
+.action-btn mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.icon-action mat-spinner {
+  display: inline-block;
+}

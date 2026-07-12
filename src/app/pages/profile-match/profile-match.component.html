@@ -14,8 +14,15 @@
       <button mat-icon-button (click)="printReport()" matTooltip="Print report" class="icon-action">
         <mat-icon>print</mat-icon>
       </button>
-      <button mat-icon-button (click)="downloadReport()" matTooltip="Download PDF" class="icon-action">
-        <mat-icon>picture_as_pdf</mat-icon>
+      <button mat-icon-button (click)="downloadReport()"
+              [disabled]="isGeneratingPdf()"
+              [matTooltip]="isGeneratingPdf() ? 'Generating PDF Report…' : 'Download PDF'"
+              class="icon-action">
+        @if (isGeneratingPdf()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>picture_as_pdf</mat-icon>
+        }
       </button>
     </div>
   </div>
@@ -581,8 +588,14 @@
                     <mat-icon>{{ isFavorited() ? 'favorite' : 'favorite_border' }}</mat-icon>
                     {{ isFavorited() ? 'Saved' : 'Save Profile' }}
                   </button>
-                  <button mat-stroked-button class="action-btn" (click)="downloadReport()">
-                    <mat-icon>download</mat-icon> Download Report
+                  <button mat-stroked-button class="action-btn" (click)="downloadReport()"
+                          [disabled]="isGeneratingPdf()">
+                    @if (isGeneratingPdf()) {
+                      <mat-spinner diameter="18"></mat-spinner>
+                    } @else {
+                      <mat-icon>download</mat-icon>
+                    }
+                    {{ isGeneratingPdf() ? 'Generating PDF Report…' : 'Download Report' }}
                   </button>
                 </div>
                 <p class="report-date">
