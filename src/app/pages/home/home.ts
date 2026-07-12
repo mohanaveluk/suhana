@@ -4,7 +4,7 @@ import { TitleCasePipe } from '@angular/common';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { BannerSlide, Testimonial, UserProfile } from '../../models/user.model';
-import { ProfileService } from '../../services';
+import { AuthService, ProfileService } from '../../services';
 import { FeaturedSuccessStoriesComponent } from "../../features/match-fixed/featured-success-stories/featured-success-stories.component";
 import { SuccessStatsComponent } from "../../features/match-fixed/success-stats/success-stats.component";
 import { SuccessStoriesWallComponent } from "../../features/match-fixed/success-stories-wall/success-stories-wall.component";
@@ -24,6 +24,7 @@ import { SuccessStoriesWallComponent } from "../../features/match-fixed/success-
 export class HomeComponent implements OnInit, OnDestroy {
   private readonly profileService = inject(ProfileService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly authService = inject(AuthService);
   private bannerInterval: ReturnType<typeof setInterval> | null = null;
 
   protected readonly currentSlide = signal(0);
@@ -102,6 +103,18 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   setHoveredCard(id: string | null): void {
     this.hoveredCard.set(id);
+  }
+
+  //navigateToProfile(profile: UserProfile): void {
+  //  window.location.href = `/profile-view/${profile.userId}`;
+  //}
+  // Navigate to the profile view page using Angular RouterLink. if user is authticated, redirect to profile-view, else redirect to view page with profileCode. This is to prevent unauthorized access to profile-view page.
+  navigateToProfile(profile: UserProfile): void {
+    if (this.authService.isAuthenticated() && profile.userId) {
+      window.location.href = `/profile-view/${profile.userId}`;
+    } else {
+      window.location.href = `/view/${profile.profileCode}`;
+    } 
   }
 
   protected cardBg(url: string | undefined): SafeStyle {

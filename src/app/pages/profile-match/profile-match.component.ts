@@ -21,6 +21,9 @@ import { GalleryImage } from '../../models';
 import { ImageViewerDialogComponent } from '../../features/match-fixed/image-viewer-dialog/image-viewer-dialog.component';
 import { GalleryImageData } from '../../models/gallery.model';
 import { MatDialog } from '@angular/material/dialog';
+import { PdfReportService } from './pdf-report.service';
+import { HoroscopeMatchService } from '../horoscope-match/horoscope-match.service';
+import { KundliMatching } from '../horoscope-match/horoscope-match.model';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Interfaces & Types
@@ -354,6 +357,8 @@ export class ProfileMatchComponent implements OnInit {
   private readonly interestService = inject(InterestService);
   private readonly snackBar        = inject(MatSnackBar);
   private readonly dialog         = inject(MatDialog);
+  private readonly pdfService      = inject(PdfReportService);
+  private readonly horoscopeSvc    = inject(HoroscopeMatchService);
 
   // ── State ────────────────────────────────────────────────────────────────
   protected readonly myProfile       = signal<UserProfile | null>(null);
@@ -366,6 +371,7 @@ export class ProfileMatchComponent implements OnInit {
   protected readonly interestSent    = signal(false);
   protected readonly activeTab       = signal(0);
   protected readonly validationError = signal<'same-profile' | 'same-gender' | null>(null);
+  protected readonly isGeneratingPdf = signal(false);
 
   // SVG circle ring (r=54 → c≈339.3)
   protected readonly RADIUS = 54;
@@ -567,8 +573,39 @@ export class ProfileMatchComponent implements OnInit {
     if (p) void this.router.navigate(['/chat'], { queryParams: { profileId: p.userId } });
   }
 
-  protected downloadReport(): void {
-    this.snackBar.open('PDF download will be available in the premium plan 📄', 'OK', { duration: 3500 });
+  protected async downloadReport(): Promise<void> {
+    if (this.isGeneratingPdf()) return;
+
+    const myProfile = this.myProfile();
+    const theirProfile = this.theirProfile();
+    const report = this.report();
+
+    if (!myProfile || !theirProfile || !report) {
+      this.snackBar.open('Report data is not ready yet. Please wait for the page to finish loading.', 'OK', { duration: 3500 });
+      return;
+    }
+
+    this.isGeneratingPdf.set(true);
+    try {
+      // Fetch the full Kundli (Ashtakoota) breakdown; fall back to basic horoscope info on failure.
+      let kundli: KundliMatching | null = null;
+      try {
+        const matchUserId = theirProfile.user?.id ?? theirProfile.userId;
+        const res = await firstValueFrom(this.horoscopeSvc.getHoroscopeMatch(matchUserId));
+        kundli = res?.horoscopeReport?.kundliMatching ?? null;
+      } catch {
+        kundli = null;
+      }
+
+      const data = this.pdfService.generateCompatibilityReport({ myProfile, theirProfile, report, kundli });
+      const doc = this.pdfService.generatePdf(data);
+      this.pdfService.downloadPdf(doc, data.fileName);
+      this.snackBar.open('Your compatibility report has been downloaded 📄', 'Dismiss', { duration: 3000 });
+    } catch {
+      this.snackBar.open('Sorry, we could not generate the PDF report. Please try again.', 'OK', { duration: 3500 });
+    } finally {
+      this.isGeneratingPdf.set(false);
+    }
   }
 
   protected printReport(): void {
