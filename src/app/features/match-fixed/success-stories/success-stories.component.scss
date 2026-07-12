@@ -18,6 +18,9 @@
     animation: pulse 2s ease infinite;
   }
 
+  &__title { font-size: 2.4rem; font-weight: 700; margin: 0 0 12px; color: var(--suhana-rose-gold-lighter); }
+  &__subtitle { font-size: 1.1rem; opacity: 0.9; margin: 0; }
+
   h1 { font-size: 2.4rem; font-weight: 700; margin: 0 0 12px; }
   p  { font-size: 1.1rem; opacity: 0.9; margin: 0; }
 
@@ -163,7 +166,7 @@
 .ss-card__cta {
   color: var(--suhana-rose-gold) !important;
   font-size: 0.8rem !important;
-  padding: 0 !important;
+  padding: 16px !important;
   display: flex; align-items: center; gap: 4px;
   mat-icon { font-size: 16px; width: 16px; height: 16px; transition: transform 0.2s; }
   &:hover mat-icon { transform: translateX(3px); }
