@@ -509,7 +509,8 @@ export class ApiService {
     formData.append('file', file, file.name);
     formData.append('context', 'match-fixed');
     //return this.http.post(`${this.baseUrl}/v1/profiles/profile/image`, formData);
-    return this.http.post(`${this.baseUrl}/v1/images/upload`, formData);
+    //return this.http.post(`${this.baseUrl}/v1/images/upload`, formData);
+    return this.http.post(`${this.baseUrl}/v1/images/upload-variants`, formData);
   }
 
   deleteUser(id: string): Observable<any> {

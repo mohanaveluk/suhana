@@ -169,8 +169,8 @@ export class MatchFixedService {
     await firstValueFrom(this.api.verifyMatchFixedPartner(id));
   }
 
-  async uploadPhoto(file: File): Promise<string> {
+  async uploadPhoto(file: File): Promise<{ originalUrl: string; displayUrl: string; thumbnailUrl: string }> {
     const res = await firstValueFrom(this.api.uploadMatchFixedPhoto(file));
-    return res?.data?.imageUrl ?? res?.imageUrl ?? '';
+    return {originalUrl: res?.data?.originalUrl ?? res?.originalUrl ?? '', displayUrl: res?.data?.displayUrl ?? res?.displayUrl ?? '', thumbnailUrl: res?.data?.thumbnailUrl ?? res?.thumbnailUrl ?? ''};
   }
 }

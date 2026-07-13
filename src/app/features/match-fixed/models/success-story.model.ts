@@ -5,9 +5,9 @@ export interface SuccessStoryResponse {
   userName: string;
   partnerName: string;
   profileImageUrl?: string;
-  partnerPhotoUrl?: string;
-  engagementPhotoUrl?: string;
-  weddingPhotoUrl?: string;
+  partnerPhotoUrl?: {originalUrl: string; displayUrl: string; thumbnailUrl: string };
+  engagementPhotoUrl?: {originalUrl: string; displayUrl: string; thumbnailUrl: string };
+  weddingPhotoUrl?: {originalUrl: string; displayUrl: string; thumbnailUrl: string };
   successStory?: string;
   engagementDate?: Date;
   marriageDate?: Date;

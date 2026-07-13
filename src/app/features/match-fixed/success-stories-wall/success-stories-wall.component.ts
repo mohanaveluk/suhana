@@ -46,7 +46,7 @@ export class SuccessStoriesWallComponent implements OnInit {
   }
 
   photo(story: SuccessStoryResponse): string {
-    return story.engagementPhotoUrl ?? story.profileImageUrl ?? story.partnerPhotoUrl ?? '';
+    return story.engagementPhotoUrl?.displayUrl ??  story.partnerPhotoUrl?.displayUrl ?? '';
   }
 
   isSuhana(story: SuccessStoryResponse): boolean {

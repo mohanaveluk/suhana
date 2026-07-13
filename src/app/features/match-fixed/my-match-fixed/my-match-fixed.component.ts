@@ -46,7 +46,13 @@ export class MyMatchFixedComponent implements OnInit {
   photos(): string[] {
     const r = this.record();
     if (!r) return [];
-    return [r.partnerPhotoUrl, r.engagementPhotoUrl, r.weddingPhotoUrl].filter(Boolean) as string[];
+    return [r.partnerPhotoUrl?.thumbnailUrl, r.engagementPhotoUrl?.thumbnailUrl, r.weddingPhotoUrl?.thumbnailUrl].filter(Boolean) as string[];
+  }
+
+  photosOriginal(): string[] {
+    const r = this.record();
+    if (!r) return [];
+    return [r.partnerPhotoUrl?.originalUrl, r.engagementPhotoUrl?.originalUrl, r.weddingPhotoUrl?.originalUrl].filter(Boolean) as string[];
   }
 
   photoLabel(index: number): string {

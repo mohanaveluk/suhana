@@ -127,7 +127,7 @@
               } @else if (existingPhoto('partner'); as existing) {
                 <div class="mfe-photo-preview mfe-photo-preview--existing">
                   <span class="mfe-photo-existing-badge">Current</span>
-                  <img [src]="existing" alt="Current partner photo" />
+                  <img [src]="existing.thumbnailUrl" alt="Current partner photo" />
                   <label class="mfe-photo-replace-btn">
                     <mat-icon>upload</mat-icon> Replace
                     <input type="file" accept="image/*" hidden (change)="onPhotoSelected('partner', $event)" />
@@ -157,7 +157,7 @@
               } @else if (existingPhoto('engagement'); as existing) {
                 <div class="mfe-photo-preview mfe-photo-preview--existing">
                   <span class="mfe-photo-existing-badge">Current</span>
-                  <img [src]="existing" alt="Current engagement photo" />
+                  <img [src]="existing.thumbnailUrl" alt="Current engagement photo" />
                   <label class="mfe-photo-replace-btn">
                     <mat-icon>upload</mat-icon> Replace
                     <input type="file" accept="image/*" hidden (change)="onPhotoSelected('engagement', $event)" />
@@ -187,7 +187,7 @@
               } @else if (existingPhoto('wedding'); as existing) {
                 <div class="mfe-photo-preview mfe-photo-preview--existing">
                   <span class="mfe-photo-existing-badge">Current</span>
-                  <img [src]="existing" alt="Current wedding photo" />
+                  <img [src]="existing.thumbnailUrl" alt="Current wedding photo" />
                   <label class="mfe-photo-replace-btn">
                     <mat-icon>upload</mat-icon> Replace
                     <input type="file" accept="image/*" hidden (change)="onPhotoSelected('wedding', $event)" />

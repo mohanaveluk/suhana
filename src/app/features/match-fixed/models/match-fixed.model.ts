@@ -23,9 +23,9 @@ export interface CreateMatchFixedDto {
   partnerAge?: number;
   partnerProfession?: string;
   partnerLocation?: string;
-  partnerPhotoUrl?: string;
-  engagementPhotoUrl?: string;
-  weddingPhotoUrl?: string;
+  partnerPhotoUrl?: { originalUrl: string; displayUrl: string; thumbnailUrl: string };
+  engagementPhotoUrl?: { originalUrl: string; displayUrl: string; thumbnailUrl: string };
+  weddingPhotoUrl?: { originalUrl: string; displayUrl: string; thumbnailUrl: string };
   engagementDate?: string;
   marriageDate?: string;
   successStory?: string;
@@ -49,9 +49,9 @@ export interface MatchFixedResponse {
   partnerAge?: number;
   partnerProfession?: string;
   partnerLocation?: string;
-  partnerPhotoUrl?: string;
-  engagementPhotoUrl?: string;
-  weddingPhotoUrl?: string;
+  partnerPhotoUrl?: { originalUrl: string; displayUrl: string; thumbnailUrl: string };
+  engagementPhotoUrl?: { originalUrl: string; displayUrl: string; thumbnailUrl: string };
+  weddingPhotoUrl?: { originalUrl: string; displayUrl: string; thumbnailUrl: string };
   engagementDate?: Date;
   marriageDate?: Date;
   successStory?: string;
