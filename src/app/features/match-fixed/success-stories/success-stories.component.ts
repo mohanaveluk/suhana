@@ -54,7 +54,7 @@ export class SuccessStoriesComponent implements OnInit {
   }
 
   displayPhoto(story: SuccessStoryResponse): string {
-    return story.profileImageUrl ?? story.partnerPhotoUrl ?? story.engagementPhotoUrl ?? '';
+    return story.profileImageUrl ?? story.partnerPhotoUrl?.thumbnailUrl ?? story.engagementPhotoUrl?.thumbnailUrl ?? '';
   }
 
   initials(story: SuccessStoryResponse): string {

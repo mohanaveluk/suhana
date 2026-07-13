@@ -192,9 +192,9 @@ export class MatchFixedFormComponent implements OnDestroy {
     try {
       // Upload photos
       const [partnerPhotoUrl, engagementPhotoUrl, weddingPhotoUrl] = await Promise.all([
-        this.partnerPhotoFile()    ? this.svc.uploadPhoto(this.partnerPhotoFile()!)    : Promise.resolve(''),
-        this.engagementPhotoFile() ? this.svc.uploadPhoto(this.engagementPhotoFile()!) : Promise.resolve(''),
-        this.weddingPhotoFile()    ? this.svc.uploadPhoto(this.weddingPhotoFile()!)    : Promise.resolve(''),
+        this.partnerPhotoFile()    ? this.svc.uploadPhoto(this.partnerPhotoFile()!)    : Promise.resolve({ originalUrl: '', displayUrl: '', thumbnailUrl: '' }),
+        this.engagementPhotoFile() ? this.svc.uploadPhoto(this.engagementPhotoFile()!) : Promise.resolve({ originalUrl: '', displayUrl: '', thumbnailUrl: '' }),
+        this.weddingPhotoFile()    ? this.svc.uploadPhoto(this.weddingPhotoFile()!)    : Promise.resolve({ originalUrl: '', displayUrl: '', thumbnailUrl: '' }),
       ]);
 
       const src = this.matchSourceForm.getRawValue().matchSourceType as MatchSourceType;

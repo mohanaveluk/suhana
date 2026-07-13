@@ -25,15 +25,24 @@ export class SuccessStoryDialogComponent {
 
   photos(): string[] {
     return [
-      this.story.partnerPhotoUrl,
-      this.story.engagementPhotoUrl,
-      this.story.weddingPhotoUrl,
+      this.story.partnerPhotoUrl?.thumbnailUrl,
+      this.story.engagementPhotoUrl?.thumbnailUrl,
+      this.story.weddingPhotoUrl?.thumbnailUrl,
     ].filter(Boolean) as string[];
   }
 
+
+  photosOriginal(): string[] {
+    return [
+      this.story.partnerPhotoUrl?.originalUrl,
+      this.story.engagementPhotoUrl?.originalUrl,
+      this.story.weddingPhotoUrl?.originalUrl,
+    ].filter(Boolean) as string[];
+  }  
+
   openImage(index: number): void {
     this.dialog.open(ImageViewerDialogComponent, {
-      data: { urls: this.photos(), index },
+      data: { urls: this.photosOriginal(), index },
       panelClass: 'image-viewer-panel',
       maxWidth: '100vw',
       maxHeight: '100vh',

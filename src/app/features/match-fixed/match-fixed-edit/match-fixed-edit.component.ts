@@ -116,12 +116,12 @@ export class MatchFixedEditComponent implements OnInit, OnDestroy {
     return this.record()?.matchSourceType === MatchSourceType.SUHANA;
   }
 
-  protected existingPhoto(type: 'partner' | 'engagement' | 'wedding'): string | null {
+  protected existingPhoto(type: 'partner' | 'engagement' | 'wedding'): { originalUrl: string; displayUrl: string; thumbnailUrl: string } | null {
     const r = this.record();
     if (!r) return null;
-    if (type === 'partner')    return r.partnerPhotoUrl    ?? null;
-    if (type === 'engagement') return r.engagementPhotoUrl ?? null;
-    return r.weddingPhotoUrl ?? null;
+    if (type === 'partner')    return r.partnerPhotoUrl    ?? { originalUrl: '', displayUrl: '', thumbnailUrl: '' };
+    if (type === 'engagement') return r.engagementPhotoUrl ?? { originalUrl: '', displayUrl: '', thumbnailUrl: '' };
+    return r.weddingPhotoUrl ?? { originalUrl: '', displayUrl: '', thumbnailUrl: '' };
   }
 
   // ── Photo handlers ─────────────────────────────────────────────────────────

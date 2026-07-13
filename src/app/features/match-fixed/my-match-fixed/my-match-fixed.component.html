@@ -127,7 +127,7 @@
           <mat-card-content>
             <div class="mmf-photo-grid">
               @for (url of photos(); track url; let i = $index) {
-                <div class="mmf-photo-thumb" (click)="openImage(photos(), i)" role="button" tabindex="0">
+                <div class="mmf-photo-thumb" (click)="openImage(photosOriginal(), i)" role="button" tabindex="0">
                   <img [src]="url" [alt]="photoLabel(i)" loading="lazy" />
                   <div class="mmf-photo-thumb__overlay">
                     <mat-icon>zoom_in</mat-icon>
