@@ -322,6 +322,6 @@ export class PhotoGalleryDialogComponent {
   }
 
   onImageError(event: Event): void {
-    (event.target as HTMLImageElement).src = 'assets/avatar-default.svg';
+    (event.target as HTMLImageElement).src = '/avatar-default.svg';
   }
 }

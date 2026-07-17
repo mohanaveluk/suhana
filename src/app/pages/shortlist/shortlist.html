@@ -16,7 +16,7 @@
             @for (match of shortlistedMatches(); track match.id) {
               <mat-card class="shortlist-card" appearance="outlined">
                 <div class="card-row">
-                  <img [src]="match.profile.photos[0]?.url" [alt]="match.profile.firstName" class="card-avatar" />
+                  <img [style.background-image]="commonService.cardBg(match.profile.photos[0]?.url)" [alt]="" class="card-avatar" />
                   <div class="card-info">
                     <h3>{{ match.profile.firstName }} {{ match.profile.lastName }}</h3>
                     <p>{{ match.profile.age }} yrs &middot; {{ match.profile.location.city }}</p>
@@ -57,7 +57,7 @@
             @for (match of interestedMatches(); track match.id) {
               <mat-card class="shortlist-card" appearance="outlined">
                 <div class="card-row">
-                  <img [src]="match.profile.photos[0]?.url" [alt]="match.profile.firstName" class="card-avatar" />
+                  <img [style.background-image]="commonService.cardBg(match.profile.photos[0]?.url)" [alt]="" class="card-avatar" />
                   <div class="card-info">
                     <h3>{{ match.profile.firstName }} {{ match.profile.lastName }}</h3>
                     <p>{{ match.profile.age }} yrs &middot; {{ match.profile.location.city }}</p>
@@ -96,7 +96,7 @@
             @for (match of connectedMatches(); track match.id) {
               <mat-card class="shortlist-card connected" appearance="outlined">
                 <div class="card-row">
-                  <img [src]="match.profile.photos[0]?.url" [alt]="match.profile.firstName" class="card-avatar" />
+                  <img [style.background-image]="commonService.cardBg(match.profile.photos[0]?.url)" [alt]="" class="card-avatar" />
                   <div class="card-info">
                     <h3>{{ match.profile.firstName }} {{ match.profile.lastName }}</h3>
                     <p>{{ match.profile.age }} yrs &middot; {{ match.profile.location.city }}</p>

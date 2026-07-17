@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { MatchService } from '../../services';
 import { MatchResult } from '../../models/user.model';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-shortlist',
@@ -15,6 +16,7 @@ import { MatchResult } from '../../models/user.model';
 })
 export class ShortlistComponent implements OnInit {
   protected readonly matchService = inject(MatchService);
+  protected readonly commonService   = inject(CommonService);
   protected readonly shortlistedMatches = signal<MatchResult[]>([]);
   protected readonly interestedMatches = signal<MatchResult[]>([]);
   protected readonly connectedMatches = signal<MatchResult[]>([]);

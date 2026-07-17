@@ -90,8 +90,15 @@ export interface Occupation {
 export interface ProfilePhoto {
   id?: string;
   url: string;
+  variants?: ProfilePhotoVariant;
   isPrimary: boolean;
   isVerified: boolean;
+}
+
+export interface ProfilePhotoVariant {
+  originalUrl: string;
+  displayUrl: string;
+  thumbnailUrl: string;
 }
 
 export interface FamilyDetails {

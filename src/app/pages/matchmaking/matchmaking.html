@@ -46,7 +46,7 @@
           </div>
 
           <!-- Profile Image -->
-          <div class="match-image" [style.background-image]="'url(' + match.profile.photos[0]?.url + ')'" (click)="navigateToProfile(match.profile.userId)" matTooltip="View {{ match.profile.firstName }}'s profile" matTooltipPosition="above">
+          <div class="match-image" [style.background-image]="commonService.cardBg(match.profile.photos[0]?.url)" (click)="navigateToProfile(match.profile.userId)" matTooltip="View {{ match.profile.firstName }}'s profile" matTooltipPosition="above">
             <div class="match-image-overlay"></div>
             @if (match.status === 'shortlisted') {
               <div class="shortlisted-badge">

@@ -6,6 +6,7 @@ import { MatchService } from '../../services';
 import { ProfileService } from '../../services';
 import { InterestService } from '../../services/interest.service';
 import { MatchResult, UserProfile } from '../../models/user.model';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-matchmaking',
@@ -20,8 +21,10 @@ export class MatchmakingComponent implements OnInit {
   protected readonly matchService  = inject(MatchService);
   private readonly profileService  = inject(ProfileService);
   private readonly interestService = inject(InterestService);
+  protected readonly commonService = inject(CommonService);
   private readonly snackBar        = inject(MatSnackBar);
   private readonly route           = inject(ActivatedRoute);
+
 
   protected readonly currentMatches = signal<MatchResult[]>([]);
   protected readonly isLoading = signal(false);

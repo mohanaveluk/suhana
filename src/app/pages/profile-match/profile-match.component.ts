@@ -457,7 +457,7 @@ export class ProfileMatchComponent implements OnInit {
 
   protected primaryPhoto(profile: UserProfile): string {
     const ph = profile.photos?.find(p => p.isPrimary) ?? profile.photos?.[0];
-    return ph?.url ?? 'assets/avatar-default.svg';
+    return ph?.url ?? '/avatar-default.svg';
   }
 
   protected matchLevelIcon(level: MatchLevel): string {
@@ -476,7 +476,7 @@ export class ProfileMatchComponent implements OnInit {
   }
 
   protected onImageError(e: Event): void {
-    (e.target as HTMLImageElement).src = 'assets/avatar-default.svg';
+    (e.target as HTMLImageElement).src = '/avatar-default.svg';
   }
 
   protected trackByKey(_: number, item: MatchCategory): string {
@@ -540,13 +540,18 @@ export class ProfileMatchComponent implements OnInit {
   }
 
   protected openProfilePhotoViewer(profile: UserProfile): void {
-    const urls = (profile.photos ?? []).filter(p => !!p.url).map(p => p.url as string);
+    const urls = (profile.photos ?? [])
+      .filter(p => !!p.url)
+      .map(p => p.variants?.originalUrl ?? p.variants?.displayUrl ?? p.variants?.thumbnailUrl ?? p.url as string);
+      //      .map(p => p.url as string);
+
+
     if (!urls.length) return;
     this.dialog.open(ImageViewerDialogComponent, {
-      data:       { urls, index: 0 },
+      data: { urls, index: 0 },
       panelClass: 'image-viewer-panel',
-      maxWidth:   '100vw',
-      maxHeight:  '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
     });
   }
 

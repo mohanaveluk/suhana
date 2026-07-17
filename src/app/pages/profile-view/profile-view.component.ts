@@ -304,7 +304,9 @@ export class ProfileViewComponent implements OnInit {
     event.stopPropagation();
     const urls = (profile.photos ?? [])
       .filter(p => !!p.url)
-      .map(p => p.url as string);
+      .map(p => p.variants?.originalUrl ?? p.variants?.displayUrl ?? p.variants?.thumbnailUrl ?? p.url as string);
+      //.map(p => p.url as string);
+
     if (!urls.length) return;
     this.dialog.open(ImageViewerDialogComponent, {
       data:       { urls, index: 0 },
@@ -344,7 +346,7 @@ export class ProfileViewComponent implements OnInit {
   }
 
   protected onImageError(event: Event): void {
-    (event.target as HTMLImageElement).src = 'assets/avatar-default.svg';
+    (event.target as HTMLImageElement).src = '/avatar-default.svg';
   }
 
   /** Safe age display with ordinal indicator */
