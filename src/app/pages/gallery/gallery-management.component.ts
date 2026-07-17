@@ -517,7 +517,7 @@ export class GalleryManagementComponent implements OnInit, OnDestroy {
   }
 
   photos(): string[] {
-    return this.gallery().map(g => g.imageUrl).filter(Boolean) as string[];
+    return this.gallery().map(g => g?.variants?.originalUrl ?? g?.variants?.displayUrl ?? g?.variants?.thumbnailUrl ?? g.imageUrl).filter(Boolean) as string[];
   }
 
   // ── Gallery Actions ───────────────────────────────────────────────────────

@@ -141,7 +141,8 @@ export class SearchComponent implements OnInit {
     event.stopPropagation();
     const urls = (profile.photos ?? [])
       .filter(p => !!p.url)
-      .map(p => p.url as string);
+      .sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0))
+      .map(p => p.variants?.originalUrl ?? p.variants?.displayUrl ?? p.variants?.thumbnailUrl ?? p.url as string);
     if (!urls.length) return;
     this.dialog.open(ImageViewerDialogComponent, {
       data:       { urls, index: 0 },

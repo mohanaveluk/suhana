@@ -5,6 +5,7 @@ import { MaterialModule } from '../../shared/modules/material.module';
 import { MatchService } from '../../services';
 import { MatchResult } from '../../models/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-compare',
@@ -17,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class CompareComponent implements OnInit {
   private readonly matchService = inject(MatchService);
+  protected readonly commonService = inject(CommonService);  
   private readonly snackBar        = inject(MatSnackBar);
 
   protected readonly compareList = signal<MatchResult[]>([]);

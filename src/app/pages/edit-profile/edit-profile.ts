@@ -16,6 +16,7 @@ import {
   FamilyType, FoodPreference,
   User,
   ProfilePhoto,
+  ProfilePhotoVariant,
 } from '../../models/user.model';
 import { firstValueFrom } from 'rxjs';
 
@@ -45,6 +46,8 @@ export class EditProfileComponent implements OnInit {
 
   protected readonly currentAvatarUrl = signal<string | null>(null);
   protected readonly originalAvatarUrl = signal<string | null>(null);
+  protected readonly photoVariants = signal<ProfilePhotoVariant | null>(null);
+  protected readonly currentAvatar = signal<ProfilePhotoVariant | null>(null);
   protected readonly avatarPreview = signal<string | null>(null);
   protected readonly avatarFile = signal<File | null>(null);
   protected readonly avatarError = signal<string | null>(null);
@@ -96,8 +99,11 @@ export class EditProfileComponent implements OnInit {
       this.avatarError.set(`Image must be smaller than ${MAX_PHOTO_MB} MB.`);
       return;
     }
-    const origUrl = await this.profileService.uploadPhoto(file);
-    this.originalAvatarUrl.set(origUrl);
+    //const origUrl = await this.profileService.uploadPhoto(file);
+    //this.originalAvatarUrl.set(origUrl);
+    const variants = await this.profileService.uploadPhotoVariant(file);
+    this.photoVariants.set(variants);
+
     this.avatarError.set(null);
 
     // Open the image cropper dialog
@@ -123,9 +129,10 @@ export class EditProfileComponent implements OnInit {
     this.saveError.set(null);
     try {
       const croppedFile = new File([result.blob], file.name, { type: 'image/jpeg' });
-      const url = await this.profileService.uploadPhoto(croppedFile);
+      const url = await this.profileService.uploadPhotoVariant(croppedFile);
       if (url) {
-        this.currentAvatarUrl.set(url);
+        this.currentAvatarUrl.set(url.thumbnailUrl);
+        this.currentAvatar.set(url);
         this.avatarPreview.set(null);
         this.avatarFile.set(null);
       }
@@ -537,15 +544,16 @@ export class EditProfileComponent implements OnInit {
 
   getPhotosArray(): ProfilePhoto[] {
     const photos: ProfilePhoto[] = [];
-    const currentUrl = this.currentAvatarUrl();
-    const originalUrl = this.originalAvatarUrl();
+    const variants = this.photoVariants();
+    const currentUrl = this.currentAvatar()?.thumbnailUrl || this.currentAvatar()?.displayUrl || this.currentAvatar()?.originalUrl || '';
+    const originalUrl = variants?.thumbnailUrl || variants?.displayUrl || variants?.originalUrl || '';
 
-    if (currentUrl) {
-      photos.push({ url: currentUrl, isPrimary: true, isVerified: false });
+    if (this.currentAvatar()) {
+      photos.push({ url: this.currentAvatar()?.thumbnailUrl || '', variants: this.currentAvatar() || undefined, isPrimary: true, isVerified: false });
     }
 
     if (originalUrl && originalUrl !== currentUrl) {
-      photos.push({ url: originalUrl, isPrimary: false, isVerified: false });
+      photos.push({ url: variants?.thumbnailUrl || '', variants: variants || undefined, isPrimary: false, isVerified: false });
     }
     return photos;
   }

@@ -18,7 +18,7 @@
                           aria-label="Remove from comparison">
                     <mat-icon>close</mat-icon>
                   </button>
-                  <img [src]="match.profile.photos[0]?.url" [alt]="match.profile.firstName" class="compare-avatar" />
+                  <img [style.background-image]="commonService.cardBg(match.profile.photos[0]?.url)" [alt]="" class="compare-avatar" />
                   <h3>{{ match.profile.firstName }}</h3>
                   <span class="compare-age">{{ match.profile.age }} yrs</span>
                   <div class="compare-score" [class]="getScoreClass(match.matchPercentage)">

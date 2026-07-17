@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import {
   UserProfile, Gender, MatchPreferences,
+  ProfilePhotoVariant,
 } from '../models/user.model';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
@@ -219,6 +220,22 @@ export class ProfileService {
     }
     return url;
   }  
+
+
+  async uploadPhotoVariant(file: File): Promise<ProfilePhotoVariant> {
+    const res = await firstValueFrom(this.api.uploadPhotoVariant(file));
+    const variants: ProfilePhotoVariant = res?.data ?? res ?? { originalUrl: '', displayUrl: '', thumbnailUrl: '' };
+    if (variants) {
+      const current = this.userProfile();
+      if (current) {
+        const newPhoto = { id: res?.profileId ?? `photo_${Date.now()}`, url: variants?.thumbnailUrl, isPrimary: true, isVerified: false };
+        const rest = (current.photos ?? []).map(p => ({ ...p, isPrimary: false }));
+        this.userProfile.set({ ...current, photos: [newPhoto, ...rest] });
+      }
+      return {displayUrl: variants?.displayUrl || '', originalUrl: variants?.originalUrl || '', thumbnailUrl: variants?.thumbnailUrl || ''};
+    }
+    return { originalUrl: '', displayUrl: '', thumbnailUrl: '' };
+  }
 
 async updateNewProfile(profile: Partial<UserProfile>): Promise<void> {
     try {

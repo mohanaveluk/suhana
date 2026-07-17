@@ -14,6 +14,12 @@ export interface GalleryImageData {
   profileName?: string;  // Used for alt text and ARIA labels
 }
 
+export interface PhotoVariant{
+  originalUrl?: string;
+  displayUrl?: string;
+  thumbnailUrl?: string;
+}
+
 export interface GalleryImage {
   id: string;
   imageUrl: string;
@@ -24,6 +30,7 @@ export interface GalleryImage {
   createdAt: string;   // ISO date string
   imageSize?: number;    // bytes
   mimeType?: string;
+  variants?: PhotoVariant
 }
 
 export interface GalleryApiResponse {

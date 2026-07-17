@@ -63,6 +63,8 @@
   object-fit: cover;
   border: 3px solid var(--suhana-rose-gold-lighter);
   flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
 }
 
 .card-info {

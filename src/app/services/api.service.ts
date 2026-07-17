@@ -105,6 +105,13 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/v1/profiles/profile/image`, formData);
   }
 
+  uploadPhotoVariant(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    formData.append('context', 'profile');
+    return this.http.post(`${this.baseUrl}/v1/images/upload-variants`, formData);
+  }
+
   uploadAdmxPhoto(id: string, file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file, file.name);
