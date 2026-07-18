@@ -269,9 +269,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     try {
       const { firstValueFrom } = await import('rxjs');
       const res = await firstValueFrom(this.api.revealPhoneNumber(partnerId));
-      this.revealedPhone.set(res?.phone ?? res?.data?.phone ?? 'Not available');
-    } catch {
-      this.snackBar.open('Could not fetch phone number', 'OK', { duration: 3000 });
+      this.revealedPhone.set(res?.mobile ?? res?.data?.mobile ?? 'Not available');
+    } catch(error: any) {
+      const message =
+        error?.error?.message ||   // NestJS HttpException
+        error?.message ||          // Generic JS Error
+        'Could not fetch phone number';
+
+      this.snackBar.open(message, 'OK', { duration: 3000 });
     }
   }
 
