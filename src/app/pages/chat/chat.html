@@ -62,7 +62,7 @@
                  role="button" tabindex="0"
                  (keydown.enter)="openConversation(conv)">
               <div class="avatar-wrap">
-                <img [src]="conv.partnerProfile?.photos?.[0]?.url || '/default-avatar.png'"
+                <img [src]="conv.partnerProfile?.photos?.[0]?.url || '/avatar-default.svg'"
                      [alt]="conv.partnerProfile?.firstName"
                      class="conv-avatar" />
                 @if (conv.isOnline) {
@@ -112,7 +112,7 @@
       <div class="interests-list">
         @for (interest of pendingInterests(); track interest.id) {
           <div class="interest-item">
-            <img [src]="interest.fromUser?.profile?.photos?.[0]?.url || '/default-avatar.png'"
+            <img [src]="interest.fromUser?.profile?.photos?.[0]?.url || '/avatar-default.svg'"
                  [alt]="interest.fromUser?.profile?.firstName"
                  class="interest-avatar" />
             <div class="interest-info">
@@ -157,7 +157,7 @@
 
         <div class="header-avatar-wrap" [routerLink]="['/profile-view', conv.partnerProfile?.userId]"
              style="cursor:pointer">
-          <img [src]="conv.partnerProfile?.photos?.[0]?.url || '/default-avatar.png'"
+          <img [src]="conv.partnerProfile?.photos?.[0]?.url || '/avatar-default.svg'"
                [alt]="conv.partnerProfile?.firstName"
                class="header-avatar" />
           @if (conv.isOnline) {
@@ -241,7 +241,7 @@
           </div>
         } @else if (messages().length === 0) {
           <div class="chat-start">
-            <img [src]="conv.partnerProfile?.photos?.[0]?.url || '/default-avatar.png'"
+            <img [src]="conv.partnerProfile?.photos?.[0]?.url || '/avatar-default.svg'"
                  [alt]="conv.partnerProfile?.firstName"
                  class="start-avatar" />
             <h3>Start chatting with {{ conv.partnerProfile?.firstName }}</h3>
