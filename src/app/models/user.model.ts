@@ -143,6 +143,7 @@ export interface MatchResult {
   badges: CompatibilityBadge[];
   status: MatchStatus;
   suggestedAt: Date;
+  interestStatus?: string;
 }
 
 export interface CompatibilityBreakdown {

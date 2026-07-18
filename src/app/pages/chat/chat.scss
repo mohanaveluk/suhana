@@ -273,7 +273,7 @@
     flex-shrink: 0;
 
     button { width: 32px; height: 32px;
-      mat-icon { font-size: 20px; width: 20px; height: 20px; }
+      mat-icon { font-size: 20px; width: 20px; height: 20px; margin: -2px 0px 4px -2px;}
     }
     button[color="primary"] mat-icon { color: #4caf50; }
     button:not([color]) mat-icon { color: #f44336; }

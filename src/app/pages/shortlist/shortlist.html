@@ -68,7 +68,7 @@
                   </div>
                   <div class="card-actions">
                     <button mat-raised-button class="suhana-btn-primary" (click)="connect(match.id)">
-                      <mat-icon>chat</mat-icon> Chat
+                      <mat-icon>chat</mat-icon> Connect
                     </button>
                   </div>
                 </div>
@@ -100,14 +100,23 @@
                   <div class="card-info">
                     <h3>{{ match.profile.firstName }} {{ match.profile.lastName }}</h3>
                     <p>{{ match.profile.age }} yrs &middot; {{ match.profile.location.city }}</p>
+                    @if (match?.interestStatus === 'accepted') {
                     <div class="status-tag confirmed">
                       <mat-icon>check_circle</mat-icon> Mutual interest confirmed
                     </div>
+                    }
+                    @else{
+                    <div class="status-tag pending">
+                      <mat-icon>schedule</mat-icon> Pending confirmation
+                    </div>
+                    }
                   </div>
                   <div class="card-actions">
-                    <a mat-raised-button routerLink="/chat" class="suhana-btn-primary">
-                      <mat-icon>chat</mat-icon> Start Chat
-                    </a>
+                    @if (match?.interestStatus === 'accepted') {
+                      <a mat-raised-button routerLink="/chat" class="suhana-btn-primary">
+                        <mat-icon>chat</mat-icon> Start Chat
+                      </a>
+                    }
                   </div>
                 </div>
               </mat-card>

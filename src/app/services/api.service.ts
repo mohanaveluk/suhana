@@ -301,7 +301,7 @@ export class ApiService {
   }
 
   revealPhoneNumber(userId: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/v1/users/${userId}/phone`);
+    return this.http.get(`${this.baseUrl}/v1/user/${userId}/phone`);
   }
 
   // Connected profiles for chat list

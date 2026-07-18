@@ -42,9 +42,19 @@ export class ShortlistComponent implements OnInit {
 
   refreshLists(): void {
     const all = this.matchService.matches();
-    this.shortlistedMatches.set(all.filter(m => m.status === 'shortlisted'));
-    this.interestedMatches.set(all.filter(m => m.status === 'interested'));
-    this.connectedMatches.set(all.filter(m => m.status === 'connected'));
+
+    const distinctMatches = Array.from(
+      new Map(
+        all.map(match => [
+          `${match.userId}_${match.matchedUserId}`,
+          match
+        ])
+      ).values()
+    );
+
+    this.shortlistedMatches.set(distinctMatches.filter(m => m.status === 'shortlisted'));
+    this.interestedMatches.set(distinctMatches.filter(m => m.status === 'interested'));
+    this.connectedMatches.set(distinctMatches.filter(m => m.status === 'connected'));
   }
 
   removeShortlist(matchId: string): void {
