@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import {
   UserProfile, Gender, MatchPreferences,
   ProfilePhotoVariant,
@@ -14,6 +14,8 @@ export class ProfileService {
   private readonly profiles = signal<UserProfile[]>([]);
   private readonly userProfile = signal<UserProfile | null>(null);
   private initialized = false;
+  /** Tracks whose profile is cached so we can drop it when the user switches. */
+  private cachedForUserId: string | null = null;
 
   private readonly _currentPage = signal(1);
   private readonly _totalPages = signal(1);
@@ -33,6 +35,18 @@ export class ProfileService {
   readonly isLoadingMore = this._isLoadingMore.asReadonly();
   readonly searchTerm = this._searchTerm.asReadonly();
   readonly hasMoreProfiles = computed(() => this._currentPage() < this._totalPages());
+
+  constructor() {
+    // Drop the cached "my profile" whenever the logged-in user changes (or logs out),
+    // so a previous user's data (e.g. header avatar) never leaks into the next session.
+    effect(() => {
+      const uid = this.auth.user()?.id ?? null;
+      if (uid !== this.cachedForUserId) {
+        this.cachedForUserId = uid;
+        this.userProfile.set(null);
+      }
+    });
+  }
 
   /**
    * Initial paged load. Captures the caller's filters as the base set for

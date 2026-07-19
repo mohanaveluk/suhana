@@ -283,7 +283,7 @@ export class ProfileViewComponent implements OnInit {
       profileName: `${this.profile()?.firstName ?? ''} ${this.profile()?.lastName ?? ''}`.trim(),
     };
 
-    const gImages = photos.map(p => p.imageUrl).filter(Boolean) as string[];
+    const gImages = photos.map(p => p.variants?.originalUrl ?? p.variants?.displayUrl ?? p.variants?.thumbnailUrl ?? p.imageUrl).filter(Boolean) as string[];
     
     // this.dialog.open(PhotoGalleryDialogComponent, {
     //   data,

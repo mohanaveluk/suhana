@@ -557,7 +557,7 @@ export class ProfileMatchComponent implements OnInit {
 
   protected openGalleryDialog(photos: GalleryImage[], index: number): void {
 
-    const gImages = photos.map(p => p.imageUrl).filter(Boolean) as string[];
+    const gImages = photos.map(p => p.variants?.originalUrl ?? p.variants?.displayUrl ?? p.variants?.thumbnailUrl ?? p.imageUrl).filter(Boolean) as string[];
     
     this.dialog.open(ImageViewerDialogComponent, {
       data: { urls: gImages, index },

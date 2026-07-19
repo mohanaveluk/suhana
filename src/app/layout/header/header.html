@@ -54,7 +54,11 @@
 
         <!-- ── User Menu ── -->
         <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu" [matTooltip]="displayName()" placement="below" class="profile-rnd">
-          <mat-icon>account_circle</mat-icon>
+          @if (profilePhoto() && !avatarError()) {
+            <img [src]="profilePhoto()" alt="Profile photo" class="profile-avatar" (error)="onAvatarError()" />
+          } @else {
+            <mat-icon>account_circle</mat-icon>
+          }
         </button>
         <mat-menu #userMenu="matMenu">
           <a mat-menu-item routerLink="/profile" class="user-name-item" style="margin-right: 2rem;">
