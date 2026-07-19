@@ -59,14 +59,25 @@ export class ProfileViewComponent implements OnInit {
   protected readonly matchedDetail = signal<MatchResult | undefined>(undefined);
   protected readonly gallery        = signal<GalleryImage[]>([]);
   protected readonly activeTabIdx  = signal(0);
+  protected readonly hasProfileImage  = signal(false);
   protected readonly profileType = signal<'profile' | 'view'>(this.route.snapshot.data['profileType'] === 'view' ? 'view' : 'profile');
 
   // ── Derived ──────────────────────────────────────────────────────────────
   protected readonly primaryPhoto = computed<string>(() => {
     const photos = this.profile()?.photos ?? [];
     if (!photos.length) return '/avatar-default.svg';
-    const primary = photos.find(ph => ph.isPrimary);
-    return primary?.url ?? photos[0].url;
+    const primaryWithUrl = photos.find(ph => ph.isPrimary && !!ph.url?.trim());
+    //return primary?.url ?? photos[0].url;
+
+    if (primaryWithUrl) {
+      return primaryWithUrl.url;
+    }
+
+    const firstWithUrl = photos.find(
+      photo => !!photo.url?.trim()
+    );
+
+    return firstWithUrl?.url ?? '/avatar-default.svg';
   });
 
   protected readonly hasVerifiedPhoto = computed(() =>
@@ -134,6 +145,7 @@ export class ProfileViewComponent implements OnInit {
     try {
       const profile = await this.profileSvc.getProfileById(id, routePath);
       this.profile.set(profile);
+      this.profileImageExist();
 
       if (this.profileType() === 'profile') {
         const matchedDetail = await this.matchSvc.getMatchByUserId(profile.user?.id ?? '');
@@ -376,5 +388,12 @@ export class ProfileViewComponent implements OnInit {
     return decodeURIComponent(url.split('?')[0].split('/').pop() ?? 'document');
   }  
 
+  protected profileImageExist() {
+    //check profile image exists
+    const userProfile = this.profile();
+    return userProfile?.photos?.some(
+      photo => !!photo.url?.trim()
+    ) ?? false;
+  }
 
 }
