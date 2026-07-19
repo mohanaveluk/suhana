@@ -113,7 +113,7 @@
               </div>
             }
             <!-- Photo viewer trigger -->
-             @if (p.photos && p.photos.length) {
+             @if (p.photos && p.photos.length && profileImageExist() ) {
               <button class="view-image-seal" (click)="openImageViewer(p, $event)"
                 [matTooltip]="(p.photos.length > 1 ? p.photos.length + ' photos' : 'View photo')"
                 matTooltipPosition="below" aria-label="View photos">
