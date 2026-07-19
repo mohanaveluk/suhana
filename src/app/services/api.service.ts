@@ -32,6 +32,16 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/v1/auth/login`, data);
   }
 
+  /** Passwordless login — request a one-time code for the given email. */
+  sendLoginOtc(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/auth/login/send-otc`, { email });
+  }
+
+  /** Passwordless login — validate the email + one-time code and receive auth tokens. */
+  validateLoginOtc(email: string, code: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/auth/login/validate-otc`, { email, code });
+  }
+
   sendVerificationEmail(email: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/auth/resend-verification`, { email });
   }

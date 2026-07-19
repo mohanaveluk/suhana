@@ -39,6 +39,20 @@ export class AuthService {
     }
   }
 
+  /** Passwordless login — request a one-time code be emailed to the user. */
+  async sendLoginOtc(email: string): Promise<any> {
+    const res = await firstValueFrom(this.api.sendLoginOtc(email));
+    return res.data ?? res;
+  }
+
+  /** Passwordless login — validate email + one-time code and establish the session. */
+  async loginWithOtc(email: string, code: string): Promise<void> {
+    const res = await firstValueFrom(this.api.validateLoginOtc(email, code));
+    if (res?.data?.user) {
+      this.setSession(res.data);
+    }
+  }
+
   async sendVerificationEmail(email: string): Promise<void> {
     await firstValueFrom(this.api.sendVerificationEmail(email));
   }

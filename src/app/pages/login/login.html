@@ -30,46 +30,136 @@
       }
     }
 
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="email" />
-        <mat-icon matPrefix>email</mat-icon>
-        @if (loginForm.controls.email.hasError('required') && loginForm.controls.email.touched) {
-          <mat-error>Email is required</mat-error>
-        } @else if (loginForm.controls.email.hasError('email') && loginForm.controls.email.touched) {
-          <mat-error>Please enter a valid email</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Password</mat-label>
-        <input matInput formControlName="password" [type]="hidePassword() ? 'password' : 'text'" />
-        <mat-icon matPrefix>lock</mat-icon>
-        <button mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())" type="button"
-                [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'">
-          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
-        @if (loginForm.controls.password.hasError('required') && loginForm.controls.password.touched) {
-          <mat-error>Password is required</mat-error>
-        } @else if (loginForm.controls.password.hasError('minlength') && loginForm.controls.password.touched) {
-          <mat-error>Minimum 6 characters</mat-error>
-        }
-      </mat-form-field>
-
-      <div class="forgot-link">
-        <a routerLink="/forgot-password">Forgot password?</a>
-      </div>
-
-      <button mat-raised-button type="submit" class="suhana-btn-primary full-width login-btn"
-              [disabled]="isLoggingIn()">
-        @if (isLoggingIn()) {
-          Logging in...
-        } @else {
-          <ng-container>Login <mat-icon>arrow_forward</mat-icon></ng-container>
-        }
+    <!-- ── Mode toggle ── -->
+    <div class="mode-toggle" role="tablist" aria-label="Login method">
+      <button type="button" role="tab" class="mode-tab"
+              [class.active]="loginMode() === 'otc'"
+              [attr.aria-selected]="loginMode() === 'otc'"
+              (click)="switchMode('otc')">
+        <mat-icon>pin</mat-icon> One-Time Code
       </button>
-    </form>
+      <button type="button" role="tab" class="mode-tab"
+              [class.active]="loginMode() === 'password'"
+              [attr.aria-selected]="loginMode() === 'password'"
+              (click)="switchMode('password')">
+        <mat-icon>lock</mat-icon> Password
+      </button>
+    </div>
+
+    @if (loginMode() === 'password') {
+      <!-- ── Password login ── -->
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" />
+          <mat-icon matPrefix>email</mat-icon>
+          @if (loginForm.controls.email.hasError('required') && loginForm.controls.email.touched) {
+            <mat-error>Email is required</mat-error>
+          } @else if (loginForm.controls.email.hasError('email') && loginForm.controls.email.touched) {
+            <mat-error>Please enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" [type]="hidePassword() ? 'password' : 'text'" />
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())" type="button"
+                  [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (loginForm.controls.password.hasError('required') && loginForm.controls.password.touched) {
+            <mat-error>Password is required</mat-error>
+          } @else if (loginForm.controls.password.hasError('minlength') && loginForm.controls.password.touched) {
+            <mat-error>Minimum 6 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="forgot-link">
+          <a routerLink="/forgot-password">Forgot password?</a>
+        </div>
+
+        <button mat-raised-button type="submit" class="suhana-btn-primary full-width login-btn"
+                [disabled]="isLoggingIn()">
+          @if (isLoggingIn()) {
+            Logging in...
+          } @else {
+            <ng-container>Login <mat-icon>arrow_forward</mat-icon></ng-container>
+          }
+        </button>
+      </form>
+    } @else {
+      <!-- ── Passwordless one-time-code login ── -->
+      <form [formGroup]="loginForm"
+            (ngSubmit)="otcStep() === 'email' ? sendOtc() : validateOtc()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email"
+                 [readonly]="otcStep() === 'code'" />
+          <mat-icon matPrefix>email</mat-icon>
+          @if (otcStep() === 'code') {
+            <button mat-button matSuffix type="button" class="change-email-btn" (click)="changeEmail()">
+              Change
+            </button>
+          }
+          @if (loginForm.controls.email.hasError('required') && loginForm.controls.email.touched) {
+            <mat-error>Email is required</mat-error>
+          } @else if (loginForm.controls.email.hasError('email') && loginForm.controls.email.touched) {
+            <mat-error>Please enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        @if (otcStep() === 'code') {
+          <p class="otc-hint">
+            <mat-icon>mark_email_read</mat-icon>
+            <!-- We sent a one-time code to <strong>{{ loginForm.controls.email.value }}</strong>. -->
+             {{otcMessage()}}
+          </p>
+
+          <mat-form-field appearance="outline" class="full-width" [formGroup]="otcForm">
+            <mat-label>One-Time Code</mat-label>
+            <input matInput formControlName="code" inputmode="numeric" autocomplete="one-time-code"
+                   maxlength="8" />
+            <mat-icon matPrefix>pin</mat-icon>
+            @if (otcForm.controls.code.hasError('required') && otcForm.controls.code.touched) {
+              <mat-error>Code is required</mat-error>
+            } @else if (otcForm.controls.code.hasError('minlength') && otcForm.controls.code.touched) {
+              <mat-error>Please enter the full code</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="otc-resend">
+            @if (canResend()) {
+              <button type="button" class="link-btn" [disabled]="isSendingOtc()" (click)="resendOtc()">
+                {{ isSendingOtc() ? 'Sending…' : 'Resend code' }}
+              </button>
+            } @else {
+              <span class="resend-timer">Resend code in {{ resendCountdown() }}s</span>
+            }
+          </div>
+        }
+
+        @if (otcStep() === 'email') {
+          <button mat-raised-button type="submit" class="suhana-btn-primary full-width login-btn"
+                  [disabled]="isSendingOtc()">
+            @if (isSendingOtc()) {
+              Sending code...
+            } @else {
+              <ng-container>Send Login Code <mat-icon>send</mat-icon></ng-container>
+            }
+          </button>
+        } @else {
+          <button mat-raised-button type="submit" class="suhana-btn-primary full-width login-btn"
+                  [disabled]="isValidatingOtc()">
+            @if (isValidatingOtc()) {
+              Verifying...
+            } @else {
+              <ng-container>Verify &amp; Login <mat-icon>arrow_forward</mat-icon></ng-container>
+            }
+          </button>
+        }
+      </form>
+    }
 
     <mat-divider></mat-divider>
 
