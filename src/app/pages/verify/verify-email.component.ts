@@ -77,8 +77,14 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.isResending.set(false);
         this.registeredEmail.set(response?.email ?? '');
-        this.state.set('resent');
-        this.startCooldown(60);
+        if (response?.message.indexOf('Email already verified') >= 0) {
+          this.responseMessage.set(response?.message ?? 'Your email has been successfully verified!');
+          this.state.set('success');
+        }
+        else {
+          this.state.set('resent');
+          this.startCooldown(60);
+        }
       },
       error: (error) => {
         this.isResending.set(false);
