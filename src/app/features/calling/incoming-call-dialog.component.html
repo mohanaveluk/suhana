@@ -1,0 +1,30 @@
+@if (callingService.incomingCall(); as call) {
+  <div class="incoming-call-overlay">
+    <div class="incoming-call-card">
+      <div class="ring-pulse">
+        @if (call.caller.photoUrl) {
+          <img [src]="call.caller.photoUrl" alt="" class="caller-photo" />
+        } @else {
+          <div class="caller-photo caller-photo--placeholder">
+            <mat-icon>person</mat-icon>
+          </div>
+        }
+      </div>
+
+      <h2 class="caller-name">{{ call.caller.name }}</h2>
+      <p class="call-type">
+        <mat-icon>{{ call.type === 'video' ? 'videocam' : 'call' }}</mat-icon>
+        {{ call.type === 'video' ? 'Incoming video call…' : 'Incoming audio call…' }}
+      </p>
+
+      <div class="actions">
+        <button mat-fab class="decline-btn" (click)="decline()" aria-label="Decline call">
+          <mat-icon>call_end</mat-icon>
+        </button>
+        <button mat-fab class="accept-btn" (click)="accept()" aria-label="Accept call">
+          <mat-icon>call</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+}

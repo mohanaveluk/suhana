@@ -9,7 +9,7 @@ export type FoodPreference = 'vegetarian' | 'non_vegetarian' | 'vegan' | 'eggeta
 export type MessageDeliveryStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
 export type AttachmentType = 'image' | 'video' | 'audio' | 'document';
 export type CallType = 'audio' | 'video';
-export type CallStatus = 'initiated' | 'ringing' | 'connected' | 'ended' | 'missed' | 'declined';
+export type CallStatus = 'pending' | 'ringing' | 'accepted' | 'declined' | 'missed' | 'completed' | 'failed';
 export type InterestStatus = 'pending' | 'accepted' | 'declined' | 'expired';
 
 export interface User {
@@ -217,8 +217,9 @@ export interface CallRecord {
   receiverId: string;
   type: CallType;
   status: CallStatus;
-  duration?: number;
+  durationSeconds?: number;
   startedAt: Date;
+  answeredAt?: Date;
   endedAt?: Date;
 }
 

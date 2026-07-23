@@ -1,0 +1,42 @@
+@if (isVisible()) {
+  <div class="active-call-overlay">
+    <video #remoteVideo class="remote-video" [class.hidden]="!isVideoCall()" autoplay playsinline></video>
+    <video #localVideo class="local-video" [class.hidden]="!isVideoCall()" autoplay playsinline muted></video>
+
+    @if (!isVideoCall()) {
+      <div class="audio-call-info">
+        @if (peer()?.photoUrl) {
+          <img [src]="peer()!.photoUrl" alt="" class="peer-photo" />
+        } @else {
+          <div class="peer-photo peer-photo--placeholder">
+            <mat-icon>person</mat-icon>
+          </div>
+        }
+        <h2>{{ peer()?.name }}</h2>
+      </div>
+    }
+
+    <div class="call-status-bar">
+      @if (isVideoCall()) {
+        <span class="peer-name">{{ peer()?.name }}</span>
+      }
+      <span class="call-status">{{ statusLabel() }}</span>
+    </div>
+
+    <div class="call-controls">
+      <button mat-fab (click)="toggleMute()" [class.active]="callingService.isMuted()" aria-label="Toggle mute">
+        <mat-icon>{{ callingService.isMuted() ? 'mic_off' : 'mic' }}</mat-icon>
+      </button>
+
+      @if (isVideoCall()) {
+        <button mat-fab (click)="toggleCamera()" [class.active]="callingService.isCameraOff()" aria-label="Toggle camera">
+          <mat-icon>{{ callingService.isCameraOff() ? 'videocam_off' : 'videocam' }}</mat-icon>
+        </button>
+      }
+
+      <button mat-fab class="end-btn" (click)="end()" aria-label="End call">
+        <mat-icon>call_end</mat-icon>
+      </button>
+    </div>
+  </div>
+}
