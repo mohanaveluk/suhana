@@ -298,7 +298,7 @@ export class ApiService {
   }
 
   endCall(callId: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/v1/calls/${callId}/end`, {});
+    return this.http.post(`${this.baseUrl}/v1/calls/${callId}/end`, {});
   }
 
   heartbeat(): Observable<void> {

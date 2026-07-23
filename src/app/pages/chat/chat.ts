@@ -11,6 +11,7 @@ import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../services/auth.service';
 import { InterestService } from '../../services/interest.service';
 import { ApiService } from '../../services/api.service';
+import { CallingService } from '../../services/calling.service';
 import { Conversation, InterestRequest, CallType, MessageDeliveryStatus } from '../../models/user.model';
 
 type SidebarTab = 'chats' | 'interests';
@@ -31,6 +32,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   protected readonly authService = inject(AuthService);
   protected readonly interestService = inject(InterestService);
   private readonly api = inject(ApiService);
+  private readonly callingService = inject(CallingService);
   private readonly snackBar = inject(MatSnackBar);
 
   @ViewChild('messagesArea') private messagesAreaRef!: ElementRef<HTMLElement>;
@@ -248,14 +250,15 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
     const conv = this.activeConv();
-    if (!conv) return;
-    try {
-      const { firstValueFrom } = await import('rxjs');
-      await firstValueFrom(this.api.initiateCall(conv.id, type));
-      this.snackBar.open(`Starting ${type} call…`, undefined, { duration: 2000 });
-    } catch {
-      this.snackBar.open('Call could not be started', 'OK', { duration: 3000 });
-    }
+    const partner = conv?.partnerProfile;
+    if (!conv || !partner) return;
+
+    const photo = partner.photos?.find(p => p.isPrimary) ?? partner.photos?.[0];
+    await this.callingService.initiateCall(conv.id, type, {
+      id: partner.userId,
+      name: `${partner.firstName} ${partner.lastName ?? ''}`.trim(),
+      photoUrl: photo?.url,
+    });
   }
 
   async revealPhone(): Promise<void> {
