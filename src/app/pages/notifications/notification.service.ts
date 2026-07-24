@@ -91,16 +91,16 @@ export class EmailHistoryService {
   async load(): Promise<void> {
     this._isLoading.set(true);
     this._error.set(null);
-    // try {
-    //   const res  = await firstValueFrom(this.api.getEmailNotifications());
-    //   const list: EmailNotification[] = Array.isArray(res) ? res : (res?.data ?? []);
-    //   list.sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
-    //   this._notifications.set(list);
-    // } catch {
-    //   this._error.set('Unable to load notifications. Please try again.');
-    // } finally {
-    //   this._isLoading.set(false);
-    // }
+    try {
+      const res  = await firstValueFrom(this.api.getEmailNotifications());
+      const list: EmailNotification[] = Array.isArray(res) ? res : (res?.data ?? []);
+      list.sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
+      this._notifications.set(list);
+    } catch {
+      this._error.set('Unable to load notifications. Please try again.');
+    } finally {
+      this._isLoading.set(false);
+    }
   }
 
   async getDetail(guid: string): Promise<EmailNotificationDetail> {
