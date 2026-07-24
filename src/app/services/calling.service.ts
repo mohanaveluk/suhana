@@ -59,13 +59,13 @@ export class CallingService {
   readonly errorMessage = signal<string | null>(null);
 
   constructor() {
-    effect(() => {
-      if (this.auth.authenticated()) {
-        this.connect();
-      } else {
-        this.disconnect();
-      }
-    });
+    // effect(() => {
+    //   if (this.auth.authenticated()) {
+    //     this.connect();
+    //   } else {
+    //     this.disconnect();
+    //   }
+    // });
 
     effect(() => {
       const message = this.errorMessage();
