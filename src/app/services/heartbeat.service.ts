@@ -55,6 +55,6 @@ export class HeartbeatService implements OnDestroy {
   private ping(): void {
     if (!this.auth.user()) return;
     // Fire-and-forget — backend errors (network, 401) are silently ignored
-    this.api.heartbeat().subscribe({ error: () => {} });
+    //this.api.heartbeat().subscribe({ error: () => {} });
   }
 }

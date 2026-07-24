@@ -11,7 +11,8 @@ import { CallingService } from './services/calling.service';
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, AiChatbotComponent, IncomingCallDialogComponent, ActiveCallComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, AiChatbotComponent],
+  //imports: [RouterOutlet, HeaderComponent, FooterComponent, AiChatbotComponent, IncomingCallDialogComponent, ActiveCallComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

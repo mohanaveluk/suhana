@@ -182,23 +182,23 @@
 
         <div class="header-actions">
           <!-- Audio call -->
-          <button mat-icon-button
+          <!-- <button mat-icon-button
                   [class.premium-locked]="!isPremium()"
                   (click)="initiateCall('audio')"
                   [matTooltip]="isPremium() ? 'Audio call' : 'Premium feature'">
             <mat-icon>call</mat-icon>
-          </button>
+          </button> -->
 
           <!-- Video call -->
-          <button mat-icon-button
+          <!-- <button mat-icon-button
                   [class.premium-locked]="!isPremium()"
                   (click)="initiateCall('video')"
                   [matTooltip]="isPremium() ? 'Video call' : 'Premium feature'">
             <mat-icon>videocam</mat-icon>
-          </button>
+          </button> -->
 
           <!-- View profile -->
-          <button mat-icon-button [routerLink]="['/profile-view', conv.partnerProfile?.userId]"
+          <button mat-icon-button [routerLink]="['/profile-view', conv.partnerProfile?.id]"
                   matTooltip="View profile">
             <mat-icon>person</mat-icon>
           </button>

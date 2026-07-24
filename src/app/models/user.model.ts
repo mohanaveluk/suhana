@@ -30,6 +30,7 @@ export interface User {
 }
 
 export interface UserProfile {
+  id?: string;
   userId: string;
   firstName: string;
   lastName: string;
