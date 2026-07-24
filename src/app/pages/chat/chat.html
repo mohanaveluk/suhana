@@ -405,7 +405,7 @@
           <textarea #messageInput
                     class="message-textarea"
                     placeholder="Type a message… (Shift+Enter for new line)"
-                    rows="1"
+                    rows="2"
                     [value]="messageText()"
                     (input)="onMessageInput($event)"
                     (keydown.enter)="onEnterKey($event)">

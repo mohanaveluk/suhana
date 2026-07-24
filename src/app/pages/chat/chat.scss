@@ -650,11 +650,12 @@ a.attachment-file {
 // ─── Input area ───────────────────────────────────────────────────────────────
 .message-input-area {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 6px;
   padding: 10px 16px;
   background: white;
   border-top: 1px solid var(--suhana-rose-gold-lighter);
+  margin: 1rem 0 4rem 0;
 
   button.active mat-icon { color: #ffc107; }
 }
