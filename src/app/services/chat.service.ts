@@ -226,16 +226,16 @@ export class ChatService {
 
   /** Polls typing status for every conversation so background convs update too. */
   private async checkAllTypingStatuses(): Promise<void> {
-    // const convs = this.conversations();
-    // await Promise.allSettled(convs.map(async conv => {
-    //   try {
-    //     const res = await firstValueFrom(this.api.getTypingStatus(conv.id));
-    //     const isTyping: boolean = res?.isTyping ?? res?.data?.isTyping ?? false;
-    //     this.conversations.update(list =>
-    //       list.map(c => c.id === conv.id ? { ...c, isTyping } : c),
-    //     );
-    //   } catch { /* typing endpoint may not exist — silently skip */ }
-    // }));
+    const convs = this.conversations();
+    await Promise.allSettled(convs.map(async conv => {
+      try {
+        const res = await firstValueFrom(this.api.getTypingStatus(conv.id));
+        const isTyping: boolean = res?.isTyping ?? res?.data?.isTyping ?? false;
+        this.conversations.update(list =>
+          list.map(c => c.id === conv.id ? { ...c, isTyping } : c),
+        );
+      } catch { /* typing endpoint may not exist — silently skip */ }
+    }));
   }
 
   /** Auto-clears isTyping after 5 s in case TYPING_STOP is never received. */
@@ -415,7 +415,7 @@ export class ChatService {
 
   sendTypingIndicator(conversationId: string, isTyping: boolean): void {
     //this.ws.send(WS_EVENTS.TYPING_START, { conversationId, isTyping });
-    //this.api.sendTypingIndicator(conversationId, isTyping).subscribe({ error: () => {} });
+    this.api.sendTypingIndicator(conversationId, isTyping).subscribe({ error: () => {} });
   }
 
   async addConversationFromInterest(partner: User): Promise<void> {
