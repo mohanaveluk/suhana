@@ -685,6 +685,7 @@ $gradient      : var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800
     font-weight: 700;
     color: white;
     margin: 0 0 8px;
+    line-height: normal;
   }
 
   &__subtitle {
@@ -732,7 +733,7 @@ $gradient      : var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800
   .cu-form-section,
   .cu-cta-section { background: var(--suhana-ivory-warm, #fdf8f4); }
 
-  .cu-social-section { background: linear-gradient(180deg, #221820 0%, #1a1218 100%); }
+  .cu-social-section1 { background: linear-gradient(180deg, #221820 0%, #1a1218 100%); }
 
   .cu-info-card1 {
     background: #261e22 !important;
