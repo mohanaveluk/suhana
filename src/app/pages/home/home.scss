@@ -49,6 +49,7 @@
     margin-bottom: 16px;
     letter-spacing: 0.5px;
     animation: fadeInUp 0.8s ease;
+    line-height: normal;
 
     @media (max-width: 768px) { font-size: 2rem; }
   }
@@ -543,6 +544,7 @@
     font-size: 2rem;
     color: white;
     margin-bottom: 12px;
+    line-height: normal;
 
     @media (max-width: 768px) { font-size: 1.5rem; }
   }
