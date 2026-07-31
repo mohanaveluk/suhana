@@ -1,0 +1,90 @@
+<div class="ssd-page">
+  <div class="ssd-page__back">
+    <a mat-button routerLink="/testimonials/success-stories">
+      <mat-icon>arrow_back</mat-icon> All Stories
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="ssd-page__loading" aria-busy="true">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else if (!story()) {
+    <div class="ssd-page__not-found" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Story not found</h2>
+      <a mat-raised-button class="suhana-btn-primary" routerLink="/testimonials/success-stories">Back to Stories</a>
+    </div>
+  } @else {
+    <article class="ssd-page__article"
+             [attr.aria-label]="story()!.groomName + ' & ' + story()!.brideName + ' story'">
+
+      <!-- Hero photo -->
+      <div class="ssd-page__photo-hero">
+        @if (story()!.photoUrl) {
+          <img [src]="story()!.photoUrl!" [alt]="story()!.groomName + ' & ' + story()!.brideName"
+               loading="eager" class="ssd-page__hero-img" />
+          <div class="ssd-page__photo-overlay" aria-hidden="true"></div>
+        } @else {
+          <div class="ssd-page__photo-fallback" aria-hidden="true">
+            <mat-icon>favorite</mat-icon>
+          </div>
+        }
+
+        <div class="ssd-page__photo-caption">
+          <h1 class="ssd-page__couple-names">
+            {{ story()!.groomName }}
+            <mat-icon class="ssd-page__heart" aria-hidden="true">favorite</mat-icon>
+            {{ story()!.brideName }}
+          </h1>
+          @if (story()!.verifiedMarriage) {
+            <span class="ssd-page__verified-badge">
+              <mat-icon>verified</mat-icon> Marriage Verified
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="ssd-page__body">
+
+        <!-- Meta -->
+        <div class="ssd-page__meta">
+          @if (story()!.marriageDate) {
+            <span class="ssd-page__meta-item">
+              <mat-icon>calendar_today</mat-icon>
+              Married {{ story()!.marriageDate | date:'longDate' }}
+            </span>
+          }
+          @if (story()!.location) {
+            <span class="ssd-page__meta-item">
+              <mat-icon>location_on</mat-icon>
+              {{ story()!.location }}
+            </span>
+          }
+        </div>
+
+        <!-- Title as headline -->
+        @if (story()!.title) {
+          <blockquote class="ssd-page__headline">"{{ story()!.title }}"</blockquote>
+        }
+
+        <!-- Full story -->
+        @if (story()!.story) {
+          <div class="ssd-page__text">
+            <p>{{ story()!.story }}</p>
+          </div>
+        }
+
+        <!-- Share CTA -->
+        <div class="ssd-page__cta">
+          <p class="ssd-page__cta-text">Inspired by their story? Find your perfect match on Suhana.</p>
+          <a mat-raised-button class="suhana-btn-primary" routerLink="/register">
+            <mat-icon>favorite</mat-icon> Start Your Journey
+          </a>
+        </div>
+
+      </div>
+    </article>
+  }
+</div>

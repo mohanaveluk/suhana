@@ -1,0 +1,117 @@
+<div class="rv-page">
+
+  <!-- Hero -->
+  <section class="rv-page__hero" aria-labelledby="rv-hero-heading">
+    <div class="rv-page__hero-inner">
+      <h1 id="rv-hero-heading" class="rv-page__hero-title">Member Reviews</h1>
+      <p class="rv-page__hero-sub">Honest experiences from our growing community</p>
+      <a mat-raised-button class="suhana-btn-gold" routerLink="/testimonials/submit-review"
+         aria-label="Write your review">
+        <mat-icon>rate_review</mat-icon> Write a Review
+      </a>
+    </div>
+    <svg class="rv-page__wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60Z" fill="white"/>
+    </svg>
+  </section>
+
+  <div class="rv-page__layout">
+
+    <!-- Sidebar -->
+    <aside class="rv-page__sidebar" aria-label="Filter and rating summary">
+      @if (stats()) {
+        <mat-card class="rv-page__sidebar-card" appearance="outlined">
+          <mat-card-content>
+            <app-overall-rating [stats]="stats()!" />
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <mat-card class="rv-page__sidebar-card" appearance="outlined">
+        <mat-card-content>
+          <app-trust-center [stats]="stats()" />
+        </mat-card-content>
+      </mat-card>
+    </aside>
+
+    <!-- Main content -->
+    <main class="rv-page__main">
+
+      <!-- Filters -->
+      <div class="rv-page__filters" role="search">
+        <mat-form-field appearance="outline" class="rv-page__search">
+          <mat-label>Search reviews</mat-label>
+          <input matInput [(ngModel)]="search" (ngModelChange)="applyFilters()"
+                 placeholder="Keyword…" aria-label="Search reviews" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rv-page__filter-select">
+          <mat-label>Sort</mat-label>
+          <mat-select [(ngModel)]="sortBy" (ngModelChange)="applyFilters()" aria-label="Sort by">
+            @for (opt of sortOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rv-page__filter-select">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="filterType" (ngModelChange)="applyFilters()" aria-label="Filter by type">
+            @for (opt of typeOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="rv-page__view-toggle" role="group" aria-label="View mode">
+          <button mat-icon-button [class.active]="viewMode() === 'list'"
+                  (click)="viewMode.set('list')" matTooltip="List view" aria-label="List view">
+            <mat-icon>view_list</mat-icon>
+          </button>
+          <button mat-icon-button [class.active]="viewMode() === 'grid'"
+                  (click)="viewMode.set('grid')" matTooltip="Grid view" aria-label="Grid view">
+            <mat-icon>grid_view</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Results count -->
+      @if (!loading()) {
+        <p class="rv-page__count" aria-live="polite">
+          {{ total() }} review{{ total() !== 1 ? 's' : '' }} found
+        </p>
+      }
+
+      <!-- Grid -->
+      @if (loading()) {
+        <app-loading-skeleton [count]="pageSize" />
+      } @else if (reviews().length === 0) {
+        <app-empty-state icon="rate_review"
+                         title="No reviews found"
+                         message="Try adjusting your search or filters."
+                         actionLabel="Clear Filters"
+                         (action)="clearFilters()" />
+      } @else {
+        <div [class]="viewMode() === 'grid' ? 'rv-page__grid' : 'rv-page__list'" role="list">
+          @for (review of reviews(); track review.id) {
+            <div role="listitem">
+              <app-review-card [review]="review"
+                               [layout]="viewMode() === 'grid' ? 'card' : 'row'"
+                               [isAuthenticated]="isAuthenticated"
+                               (reportClick)="onReport($event)" />
+            </div>
+          }
+        </div>
+
+        <mat-paginator [length]="total()"
+                       [pageSize]="pageSize"
+                       [pageIndex]="pageIndex"
+                       [pageSizeOptions]="[10, 20, 50]"
+                       (page)="onPageChange($event)"
+                       aria-label="Review pagination" />
+      }
+
+    </main>
+  </div>
+</div>

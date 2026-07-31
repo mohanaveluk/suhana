@@ -1,0 +1,84 @@
+<div class="pr-page">
+  <div class="pr-page__header">
+    <div>
+      <h1 class="pr-page__title">Pending Reviews</h1>
+      <p class="pr-page__sub">Reviews awaiting moderation</p>
+    </div>
+    <a mat-button routerLink="/testimonials/admin" aria-label="Back to dashboard">
+      <mat-icon>arrow_back</mat-icon> Dashboard
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="pr-page__loading" aria-busy="true"><mat-spinner diameter="40" /></div>
+  } @else if (reviews().length === 0) {
+    <div class="pr-page__empty" role="status">
+      <mat-icon>check_circle</mat-icon>
+      <p>All caught up! No pending reviews.</p>
+    </div>
+  } @else {
+    <div class="pr-page__count" aria-live="polite">{{ reviews().length }} review(s) pending</div>
+
+    <div class="mat-elevation-z2 pr-page__table-wrap">
+      <table mat-table [dataSource]="reviews()" class="pr-page__table" aria-label="Pending reviews">
+
+        <!-- Author -->
+        <ng-container matColumnDef="author">
+          <th mat-header-cell *matHeaderCellDef>Author</th>
+          <td mat-cell *matCellDef="let r">{{ r.author?.name ?? 'Anonymous' }}</td>
+        </ng-container>
+
+        <!-- Rating -->
+        <ng-container matColumnDef="rating">
+          <th mat-header-cell *matHeaderCellDef>Rating</th>
+          <td mat-cell *matCellDef="let r">
+            <app-rating-stars [value]="r.overallRating" size="small" [showValue]="true" />
+          </td>
+        </ng-container>
+
+        <!-- Title -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title</th>
+          <td mat-cell *matCellDef="let r" class="pr-page__title-cell">
+            <a [routerLink]="['/testimonials/review', r.id]" class="pr-page__review-link">{{ r.title }}</a>
+            <p class="pr-page__preview">{{ r.reviewText | slice:0:120 }}…</p>
+          </td>
+        </ng-container>
+
+        <!-- Date -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Submitted</th>
+          <td mat-cell *matCellDef="let r">{{ r.createdAt | date:'shortDate' }}</td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let r">
+            @if (processing() === r.id) {
+              <mat-spinner diameter="24" />
+            } @else {
+              <button mat-icon-button color="primary" (click)="approve(r)"
+                      [attr.aria-label]="'Approve review: ' + r.title" matTooltip="Approve">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="reject(r)"
+                      [attr.aria-label]="'Reject review: ' + r.title" matTooltip="Reject">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button mat-icon-button (click)="toggleFeatured(r)"
+                      [style.color]="r.isFeatured ? '#c9a84c' : null"
+                      [attr.aria-label]="(r.isFeatured ? 'Unfeature' : 'Feature') + ' review: ' + r.title"
+                      [matTooltip]="r.isFeatured ? 'Remove featured' : 'Mark as featured'">
+                <mat-icon>{{ r.isFeatured ? 'workspace_premium' : 'star_outline' }}</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="pr-page__row"></tr>
+      </table>
+    </div>
+  }
+</div>

@@ -4,7 +4,13 @@
       "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\projects\\\\matrimony\\\\suhana\\\\src\\\\environments\")",
       "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\projects\\\\matrimony\\\\suhana\\\\src\\\\app\\\\pages\\\\forgot\")",
       "Bash(npx tsc *)",
-      "Bash(npx ng *)"
+      "Bash(npx ng *)",
+      "Read(//d/projects/matrimony/api/suhana-api/src/modules/testimonials/controllers/**)",
+      "Read(//d/projects/matrimony/api/suhana-api/**)",
+      "Read(//d/projects/matrimony/api/suhana-api/src/modules/testimonials/dto/**)",
+      "Read(//d/projects/matrimony/api/suhana-api/src/modules/testimonials/enums/**)",
+      "Read(//d/projects/matrimony/api/suhana-api/src/modules/testimonials/entity/**)",
+      "Read(//d/projects/matrimony/api/suhana-api/src/modules/testimonials/repositories/**)"
     ]
   }
 }

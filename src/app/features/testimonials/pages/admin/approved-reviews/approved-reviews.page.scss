@@ -1,0 +1,89 @@
+$maroon  : var(--suhana-maroon, #800020);
+$rose    : var(--suhana-rose-gold, #b76e79);
+$lighter : var(--suhana-rose-gold-lighter, #f0d4d8);
+$text-s  : var(--suhana-text-secondary, #6b5557);
+$grad    : linear-gradient(135deg, #b76e79 0%, #800020 100%);
+
+.ar-page {
+  padding: 32px 24px 60px;
+  max-width: 1300px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
+  }
+
+  &__title  { font-size: 1.6rem; font-weight: 800; color: $maroon; margin: 0; }
+  &__sub    { color: $text-s; margin: 4px 0 0; font-size: 0.88rem; }
+
+  &__header-actions { display: flex; align-items: center; gap: 10px; }
+
+  &__filters {
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 20px;
+    background: white; border-radius: 12px; padding: 16px;
+    box-shadow: 0 2px 12px rgba(183,110,121,.1);
+  }
+
+  &__filter-field { width: 160px; }
+
+  &__loading { display: flex; justify-content: center; padding: 60px 0; }
+
+  &__count { font-size: 0.85rem; color: $text-s; margin: 0 0 12px; }
+
+  &__table-wrap { border-radius: 12px; overflow: hidden; }
+
+  &__table { width: 100%; }
+
+  &__row { cursor: default; }
+  &__row:hover { background: rgba(253,248,244,.8); }
+
+  &__author-cell {
+    display: flex; align-items: center; gap: 10px; padding: 6px 0;
+  }
+
+  &__avatar {
+    width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    background: $grad;
+    display: flex; align-items: center; justify-content: center;
+    img { width: 100%; height: 100%; object-fit: cover; }
+    span { color: white; font-weight: 700; font-size: 0.8rem; }
+  }
+
+  &__author-name {
+    font-weight: 600; font-size: 0.87rem; color: $maroon; display: block;
+  }
+
+  &__verified {
+    display: flex; align-items: center; gap: 2px;
+    color: #2e7d32; font-size: 0.72rem; font-weight: 600; margin-top: 2px;
+    mat-icon { font-size: 12px; width: 12px; height: 12px; }
+  }
+
+  &__preview-cell { max-width: 340px; }
+
+  &__review-title {
+    font-weight: 700; font-size: 0.87rem; color: $maroon;
+    text-decoration: none; display: block;
+    &:hover { text-decoration: underline; }
+  }
+
+  &__review-preview {
+    font-size: 0.77rem; color: $text-s; margin: 3px 0 0; line-height: 1.4;
+  }
+
+  &__type-chip {
+    height: 22px !important; font-size: 0.7rem !important;
+    background: $lighter !important; color: $maroon !important;
+    border-radius: 11px !important;
+    .mdc-evolution-chip__text-label { font-size: 0.7rem; }
+  }
+
+  &__date { font-size: 0.8rem; color: $text-s; white-space: nowrap; }
+}
+
+@media (max-width: 899px) {
+  .ar-page { padding: 20px 16px 40px; }
+  .ar-page__filter-field { width: 140px; }
+}

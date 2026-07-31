@@ -1,0 +1,119 @@
+<section class="ft suhana-section" aria-labelledby="ft-heading">
+
+  <!-- Section header -->
+  <div class="ft__header suhana-container">
+    <div class="ft__title-group">
+      <h2 id="ft-heading" class="ft__title">What Our Members Say</h2>
+      <p class="ft__subtitle">Real experiences from couples who found love on Suhana</p>
+    </div>
+
+    <div class="ft__header-right">
+      <!-- Three-mode view toggle -->
+      <div class="ft__view-toggle" role="group" aria-label="Choose review display style">
+        <button mat-icon-button
+                [class.ft__view-toggle-btn--active]="viewMode() === 'amazon'"
+                (click)="viewMode.set('amazon')"
+                matTooltip="Review style"
+                aria-label="Review article view">
+          <mat-icon>article</mat-icon>
+        </button>
+        <button mat-icon-button
+                [class.ft__view-toggle-btn--active]="viewMode() === 'list'"
+                (click)="viewMode.set('list')"
+                matTooltip="List view"
+                aria-label="Compact list view">
+          <mat-icon>view_list</mat-icon>
+        </button>
+        <button mat-icon-button
+                [class.ft__view-toggle-btn--active]="viewMode() === 'grid'"
+                (click)="viewMode.set('grid')"
+                matTooltip="Card view"
+                aria-label="Card grid view">
+          <mat-icon>grid_view</mat-icon>
+        </button>
+      </div>
+
+      <a mat-stroked-button routerLink="/testimonials/reviews" class="ft__all-link"
+         aria-label="See all member reviews">
+        All Reviews <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+  </div>
+
+  <!-- Content -->
+  @if (loading()) {
+    <div class="suhana-container">
+      <app-loading-skeleton [count]="3" />
+    </div>
+
+  } @else if (reviews().length === 0) {
+    <div class="suhana-container">
+      <app-empty-state icon="rate_review"
+                       title="No featured reviews yet"
+                       message="Be the first to share your Suhana experience!" />
+    </div>
+
+  } @else if (viewMode() === 'amazon') {
+    <!-- ── Amazon / article style (default) ── -->
+    <div class="suhana-container">
+      <div class="ft__amazon" role="list" aria-label="Featured member reviews">
+        @for (review of reviews(); track review.id) {
+          <div role="listitem" class="ft__amazon-item">
+            <app-review-card [review]="review"
+                             layout="amazon"
+                             [showActions]="false" />
+          </div>
+        }
+      </div>
+      <div class="ft__footer">
+        <a mat-button routerLink="/testimonials/submit-review" class="ft__write-link">
+          <mat-icon>rate_review</mat-icon> Write a Review
+        </a>
+        <a mat-stroked-button routerLink="/testimonials/reviews" class="ft__see-all">
+          See all reviews <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+    </div>
+
+  } @else if (viewMode() === 'list') {
+    <!-- ── List / Trustpilot row style ── -->
+    <div class="suhana-container">
+      <div class="ft__list" role="list" aria-label="Featured member reviews">
+        @for (review of reviews(); track review.id) {
+          <div role="listitem" class="ft__list-item">
+            <app-review-card [review]="review"
+                             layout="row"
+                             [showActions]="false" />
+          </div>
+        }
+      </div>
+      <div class="ft__footer">
+        <a mat-button routerLink="/testimonials/submit-review" class="ft__write-link">
+          <mat-icon>rate_review</mat-icon> Write a Review
+        </a>
+        <a mat-stroked-button routerLink="/testimonials/reviews" class="ft__see-all">
+          See all reviews <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+    </div>
+
+  } @else {
+    <!-- ── Grid / card style ── -->
+    <div class="suhana-container ft__grid" role="list" aria-label="Featured member reviews">
+      @for (review of reviews(); track review.id) {
+        <div role="listitem">
+          <app-review-card [review]="review" [showActions]="false" />
+        </div>
+      }
+    </div>
+    <div class="suhana-container ft__footer">
+      <a mat-button routerLink="/testimonials/submit-review" class="ft__write-link">
+        <mat-icon>rate_review</mat-icon> Write a Review
+      </a>
+      <a mat-stroked-button routerLink="/testimonials/reviews" class="ft__see-all">
+        See all reviews <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+  }
+
+</section>

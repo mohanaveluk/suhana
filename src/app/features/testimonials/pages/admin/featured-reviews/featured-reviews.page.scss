@@ -1,0 +1,136 @@
+$maroon : var(--suhana-maroon, #800020);
+$rose   : var(--suhana-rose-gold, #b76e79);
+$gold   : var(--suhana-gold, #c9a84c);
+$text-s : var(--suhana-text-secondary, #6b5557);
+$grad   : linear-gradient(135deg, #b76e79 0%, #800020 100%);
+
+.fr-page {
+  padding: 32px 24px 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
+  }
+
+  &__title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 1.6rem; font-weight: 800; color: $maroon; margin: 0;
+  }
+
+  &__title-icon { color: $gold; font-size: 1.8rem; }
+
+  &__sub { color: $text-s; margin: 4px 0 0; font-size: 0.88rem; }
+
+  &__header-actions { display: flex; align-items: center; gap: 12px; }
+
+  &__save-btn { display: flex !important; align-items: center; gap: 6px; }
+
+  &__loading {
+    display: flex; justify-content: center; padding: 60px 0;
+  }
+
+  &__empty {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 0; gap: 16px; color: $text-s;
+    mat-icon { font-size: 56px; width: 56px; height: 56px; color: $gold; }
+    p { margin: 0; }
+  }
+
+  &__hint {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85rem; color: $text-s; margin-bottom: 16px;
+    background: rgba(201,168,76,.08); border-radius: 8px; padding: 10px 16px;
+    mat-icon { font-size: 18px; color: $rose; }
+  }
+
+  &__list-wrap { border-radius: 12px; overflow: hidden; }
+
+  &__list-header {
+    display: flex; align-items: center;
+    background: #f5f0f2; padding: 10px 16px;
+    font-size: 0.75rem; font-weight: 700; color: $text-s;
+    text-transform: uppercase; letter-spacing: 0.04em; gap: 0;
+  }
+
+  &__list {
+    display: flex; flex-direction: column;
+    background: white;
+    min-height: 60px;
+  }
+
+  &__item {
+    display: flex; align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(183,110,121,.1);
+    background: white; cursor: grab;
+    transition: background 0.15s;
+    user-select: none;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba(253,248,244,.9); }
+  }
+
+  &__drag-handle {
+    color: rgba(183,110,121,.45); cursor: grab; flex-shrink: 0; margin-right: 4px;
+    &:hover { color: $rose; }
+  }
+
+  &__drag-placeholder {
+    background: rgba(201,168,76,.08);
+    border: 2px dashed $gold;
+    border-radius: 8px;
+    min-height: 60px;
+    flex: 1;
+  }
+
+  // Column widths — header and item must match
+  &__col-drag    { flex: 0 0 32px; }
+  &__col-num     { flex: 0 0 36px; text-align: center; }
+  &__col-author  { flex: 0 0 190px; }
+  &__col-rating  { flex: 0 0 100px; }
+  &__col-title   { flex: 1; min-width: 0; }
+  &__col-actions { flex: 0 0 auto; padding-left: 16px; }
+
+  &__order { font-weight: 800; font-size: 1rem; color: $gold; }
+
+  &__author {
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  &__avatar {
+    width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    background: $grad;
+    display: flex; align-items: center; justify-content: center;
+    img { width: 100%; height: 100%; object-fit: cover; }
+    span { color: white; font-weight: 700; font-size: 0.75rem; }
+  }
+
+  &__author-name { font-size: 0.85rem; font-weight: 600; color: $maroon; }
+
+  &__review-title {
+    font-weight: 600; font-size: 0.88rem; color: $maroon;
+    text-decoration: none;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// CDK drag-drop global styles
+.cdk-drag-preview {
+  box-shadow: 0 8px 32px rgba(128,0,32,.18);
+  border-radius: 8px;
+  background: white;
+  display: flex; align-items: center;
+  padding: 12px 16px;
+  opacity: 0.95;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.fr-page__list.cdk-drop-list-dragging .fr-page__item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

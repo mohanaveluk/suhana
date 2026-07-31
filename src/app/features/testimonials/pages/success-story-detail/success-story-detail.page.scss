@@ -1,0 +1,103 @@
+$maroon : var(--suhana-maroon, #800020);
+$rose   : var(--suhana-rose-gold, #b76e79);
+$gold   : var(--suhana-gold, #c9a84c);
+$lighter: var(--suhana-rose-gold-lighter, #f0d4d8);
+$text-s : var(--suhana-text-secondary, #6b5557);
+$ivory  : var(--suhana-ivory-warm, #fdf8f4);
+
+.ssd-page {
+  min-height: 100vh;
+
+  &__back { padding: 16px 24px 0; max-width: 860px; margin: 0 auto; }
+
+  &__loading, &__not-found {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 80px 24px; gap: 16px; text-align: center;
+    mat-icon { font-size: 3rem; width: 3rem; height: 3rem; color: $rose; }
+    h2 { color: $maroon; margin: 0; }
+  }
+
+  &__article { max-width: 860px; margin: 16px auto 60px; overflow: hidden; }
+
+  // Photo hero
+  &__photo-hero {
+    position: relative; border-radius: 20px 20px 0 0;
+    overflow: hidden; height: 380px;
+    background: linear-gradient(135deg, #800020, #b76e79);
+  }
+
+  &__hero-img { width: 100%; height: 100%; object-fit: cover; }
+
+  &__photo-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 60%);
+  }
+
+  &__photo-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    mat-icon { font-size: 5rem; width: 5rem; height: 5rem; color: rgba(255,255,255,.6); animation: heartbeat 1.6s ease infinite; }
+  }
+
+  &__photo-caption {
+    position: absolute; bottom: 24px; left: 24px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+
+  &__couple-names {
+    font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 900; color: white;
+    margin: 0; display: flex; align-items: center; gap: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,.5);
+  }
+
+  &__heart { font-size: 1.2rem; width: 1.2rem; height: 1.2rem; color: $rose; }
+
+  // Body
+  &__body {
+    background: white; border-radius: 0 0 20px 20px;
+    padding: 32px; display: flex; flex-direction: column; gap: 24px;
+    border: 1px solid $lighter; border-top: none;
+    box-shadow: 0 6px 28px rgba(183,110,121,.12);
+  }
+
+  &__meta { display: flex; flex-wrap: wrap; gap: 16px; }
+
+  &__meta-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.88rem; color: $text-s;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; color: $rose; }
+  }
+
+  &__headline {
+    font-size: 1.15rem; font-style: italic; color: $maroon; font-weight: 600;
+    border-left: 4px solid $rose; padding-left: 16px; margin: 0; line-height: 1.7;
+  }
+
+  &__text { font-size: 0.95rem; color: $text-s; line-height: 1.9; }
+
+  &__tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  &__tag {
+    font-size: 0.8rem; color: $rose; background: rgba(183,110,121,.08);
+    padding: 3px 12px; border-radius: 16px; border: 1px solid $lighter;
+  }
+
+  &__cta {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    background: $ivory; border-radius: 16px; padding: 24px;
+    text-align: center; border: 1px solid $lighter;
+  }
+
+  &__cta-text { font-size: 0.95rem; color: $text-s; margin: 0; line-height: 1.6; }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+
+@media (max-width: 599px) {
+  .ssd-page__photo-hero { height: 240px; }
+  .ssd-page__body { padding: 20px; gap: 18px; }
+  .ssd-page__couple-names { font-size: 1.2rem; }
+}

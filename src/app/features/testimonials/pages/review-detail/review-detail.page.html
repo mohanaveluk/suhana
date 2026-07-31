@@ -1,0 +1,138 @@
+<div class="rd-page">
+  <div class="rd-page__back">
+    <a mat-button routerLink="/testimonials/reviews" aria-label="Back to reviews">
+      <mat-icon>arrow_back</mat-icon> All Reviews
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="rd-page__loading" aria-busy="true" aria-label="Loading review">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else if (!review()) {
+    <div class="rd-page__not-found" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Review not found</h2>
+      <a mat-raised-button class="suhana-btn-primary" routerLink="/testimonials/reviews">Back to Reviews</a>
+    </div>
+  } @else {
+    <article class="rd-page__article" [attr.aria-label]="review()!.title">
+
+      <!-- Header band -->
+      <div class="rd-page__band" aria-hidden="true"></div>
+
+      <div class="rd-page__body">
+
+        <!-- Author -->
+        <header class="rd-page__header">
+          <div class="rd-page__avatar" aria-hidden="true">
+            @if (review()!.author?.profileImage) {
+              <img [src]="review()!.author!.profileImage!" [alt]="review()!.author!.name" loading="lazy" />
+            } @else {
+              <span>{{ (review()!.author?.name ?? 'S')[0] }}</span>
+            }
+          </div>
+          <div class="rd-page__author-info">
+            <div class="rd-page__author-row">
+              <span class="rd-page__author-name">{{ review()!.author?.name ?? 'Suhana Member' }}</span>
+              <app-verified-badge [show]="review()!.isVerifiedReview" />
+            </div>
+            <span class="rd-page__date">{{ review()!.createdAt | date:'longDate' }}</span>
+          </div>
+          @if (review()!.sentiment) {
+            <mat-icon class="rd-page__sentiment"
+                      [style.color]="review()!.sentiment | sentimentColor"
+                      [matTooltip]="review()!.sentiment! | titlecase">
+              {{ review()!.sentiment | sentimentIcon }}
+            </mat-icon>
+          }
+        </header>
+
+        <!-- Rating -->
+        <div class="rd-page__stars">
+          <app-rating-stars [value]="review()!.overallRating" [showValue]="true" />
+        </div>
+
+        <!-- Title & review text -->
+        <h1 class="rd-page__title">{{ review()!.title }}</h1>
+        <p class="rd-page__text">{{ review()!.reviewText }}</p>
+
+        <!-- Sub-ratings -->
+        @if (review()!.easeOfUseRating || review()!.matchQualityRating) {
+          <div class="rd-page__sub-ratings">
+            <h3 class="rd-page__sub-heading">Detailed Ratings</h3>
+            <div class="rd-page__sub-grid">
+              @if (review()!.easeOfUseRating) {
+                <div class="rd-page__sub-item">
+                  <span>Ease of Use</span>
+                  <app-rating-stars [value]="review()!.easeOfUseRating!" size="small" [showValue]="true" />
+                </div>
+              }
+              @if (review()!.matchQualityRating) {
+                <div class="rd-page__sub-item">
+                  <span>Match Quality</span>
+                  <app-rating-stars [value]="review()!.matchQualityRating!" size="small" [showValue]="true" />
+                </div>
+              }
+              @if (review()!.communicationRating) {
+                <div class="rd-page__sub-item">
+                  <span>Communication</span>
+                  <app-rating-stars [value]="review()!.communicationRating!" size="small" [showValue]="true" />
+                </div>
+              }
+              @if (review()!.customerSupportRating) {
+                <div class="rd-page__sub-item">
+                  <span>Customer Support</span>
+                  <app-rating-stars [value]="review()!.customerSupportRating!" size="small" [showValue]="true" />
+                </div>
+              }
+              @if (review()!.trustSafetyRating) {
+                <div class="rd-page__sub-item">
+                  <span>Trust & Safety</span>
+                  <app-rating-stars [value]="review()!.trustSafetyRating!" size="small" [showValue]="true" />
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Actions -->
+        <div class="rd-page__actions">
+          <app-like-button [liked]="!!review()!.likedByViewer"
+                           [likeCount]="review()!.likeCount"
+                           [disabled]="!isAuthenticated()"
+                           (likeToggle)="onLikeToggle($event)" />
+          @if (isAuthenticated()) {
+            <button mat-button class="rd-page__reply-btn"
+                    (click)="showReply.set(!showReply())"
+                    aria-label="Toggle reply form">
+              <mat-icon>reply</mat-icon>
+              {{ showReply() ? 'Close' : 'Reply' }}
+            </button>
+            <button mat-icon-button class="rd-page__report-btn"
+                    (click)="openReport()" aria-label="Report this review"
+                    matTooltip="Report this review">
+              <mat-icon>flag</mat-icon>
+            </button>
+          }
+        </div>
+
+        <!-- Replies -->
+        @if (review()!.id) {
+          <section class="rd-page__replies" aria-label="Replies to this review">
+            <h3 class="rd-page__replies-heading">
+              Replies
+              @if (review()!.replyCount > 0) {
+                <span class="rd-page__reply-count">({{ review()!.replyCount }})</span>
+              }
+            </h3>
+            <app-review-replies [reviewId]="review()!.id"
+                                [isAuthenticated]="isAuthenticated()"
+                                [showForm]="showReply()" />
+          </section>
+        }
+
+      </div>
+    </article>
+  }
+</div>

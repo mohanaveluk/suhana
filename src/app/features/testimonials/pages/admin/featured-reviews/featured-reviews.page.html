@@ -1,0 +1,106 @@
+<div class="fr-page">
+
+  <div class="fr-page__header">
+    <div>
+      <h1 class="fr-page__title">
+        <mat-icon class="fr-page__title-icon">workspace_premium</mat-icon>
+        Featured Reviews
+      </h1>
+      <p class="fr-page__sub">Drag rows to set the display order on the home page. Toggle reviews from the All Reviews page.</p>
+    </div>
+    <div class="fr-page__header-actions">
+      <a mat-button routerLink="/testimonials/admin/approved">
+        <mat-icon>list</mat-icon> All Reviews
+      </a>
+      <button mat-raised-button color="primary" class="fr-page__save-btn"
+              [disabled]="!isDirty() || saving()"
+              (click)="saveOrder()"
+              aria-label="Save featured order">
+        @if (saving()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        Save Order
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="fr-page__loading" aria-busy="true"><mat-spinner diameter="40" /></div>
+  } @else if (reviews().length === 0) {
+    <div class="fr-page__empty" role="status">
+      <mat-icon>workspace_premium</mat-icon>
+      <p>No featured reviews yet.</p>
+      <a mat-stroked-button routerLink="/testimonials/admin/approved">
+        Go to All Reviews to feature some
+      </a>
+    </div>
+  } @else {
+    <div class="fr-page__hint" aria-label="Drag hint">
+      <mat-icon aria-hidden="true">drag_indicator</mat-icon>
+      Drag rows to reorder, then click <strong>Save Order</strong>.
+    </div>
+
+    <div class="mat-elevation-z2 fr-page__list-wrap">
+      <!-- Column headers -->
+      <div class="fr-page__list-header" aria-hidden="true">
+        <span class="fr-page__col-drag"></span>
+        <span class="fr-page__col-num">#</span>
+        <span class="fr-page__col-author">Author</span>
+        <span class="fr-page__col-rating">Rating</span>
+        <span class="fr-page__col-title">Title</span>
+        <span class="fr-page__col-actions">Actions</span>
+      </div>
+
+      <div cdkDropList class="fr-page__list"
+           (cdkDropListDropped)="drop($event)"
+           aria-label="Drag to reorder featured reviews">
+        @for (review of reviews(); track review.id; let i = $index) {
+          <div cdkDrag class="fr-page__item"
+               [attr.aria-label]="'Position ' + (i + 1) + ': ' + review.title">
+
+            <mat-icon cdkDragHandle class="fr-page__drag-handle" aria-hidden="true">
+              drag_indicator
+            </mat-icon>
+
+            <span class="fr-page__col-num fr-page__order">{{ i + 1 }}</span>
+
+            <div class="fr-page__col-author fr-page__author">
+              <div class="fr-page__avatar">
+                @if (review.author?.profileImage) {
+                  <img [src]="review.author!.profileImage!" [alt]="review.author!.name" />
+                } @else {
+                  <span>{{ (review.author?.name ?? 'S')[0].toUpperCase() }}</span>
+                }
+              </div>
+              <span class="fr-page__author-name">{{ review.author?.name ?? 'Anonymous' }}</span>
+            </div>
+
+            <div class="fr-page__col-rating">
+              <app-rating-stars [value]="review.overallRating" size="small" [showValue]="true" />
+            </div>
+
+            <div class="fr-page__col-title">
+              <a [routerLink]="['/testimonials/review', review.id]" class="fr-page__review-title">
+                {{ review.title }}
+              </a>
+            </div>
+
+            <div class="fr-page__col-actions">
+              <button mat-stroked-button color="warn" (click)="unfeature(review)"
+                      [attr.aria-label]="'Unfeature: ' + review.title"
+                      matTooltip="Remove from featured">
+                <mat-icon>star_outline</mat-icon> Unfeature
+              </button>
+            </div>
+
+            <ng-template cdkDragPlaceholder>
+              <div class="fr-page__drag-placeholder"></div>
+            </ng-template>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

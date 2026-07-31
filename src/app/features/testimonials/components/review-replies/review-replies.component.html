@@ -1,0 +1,54 @@
+<section class="rr" aria-label="Replies">
+
+  @if (loading()) {
+    <div class="rr__loading" aria-live="polite" aria-busy="true">
+      <mat-spinner diameter="32" />
+    </div>
+  }
+
+  @if (!loading() && replies().length === 0 && !showForm) {
+    <p class="rr__empty">No replies yet. Be the first to reply!</p>
+  }
+
+  @for (reply of replies(); track reply.id) {
+    <article class="rr__item" [class.rr__item--admin]="!!reply.adminId">
+      <div class="rr__avatar" aria-hidden="true">
+        @if (reply.author?.profileImage) {
+          <img [src]="reply.author!.profileImage!" [alt]="reply.author!.name" loading="lazy" />
+        } @else {
+          <mat-icon>{{ reply.adminId ? 'support_agent' : 'person' }}</mat-icon>
+        }
+      </div>
+      <div class="rr__bubble">
+        <div class="rr__meta">
+          <span class="rr__author">{{ reply.author?.name ?? (reply.adminId ? 'Suhana Support' : 'Member') }}</span>
+          @if (reply.adminId) { <span class="rr__badge">Official</span> }
+          <span class="rr__date">{{ reply.createdAt | date:'mediumDate' }}</span>
+        </div>
+        <p class="rr__text">{{ reply.replyText }}</p>
+      </div>
+    </article>
+  }
+
+  @if (showForm && isAuthenticated) {
+    <form class="rr__form" (ngSubmit)="submit()" novalidate>
+      <mat-form-field appearance="outline" class="rr__field">
+        <mat-label>Write a reply…</mat-label>
+        <textarea matInput [formControl]="replyCtrl" rows="3" maxlength="500"
+                  placeholder="Share your thoughts…" aria-label="Reply text"></textarea>
+        <mat-hint align="end">{{ charCount }}/500</mat-hint>
+        @if (replyCtrl.touched && replyCtrl.errors?.['required']) {
+          <mat-error>Reply is required</mat-error>
+        }
+        @if (replyCtrl.touched && replyCtrl.errors?.['minlength']) {
+          <mat-error>At least 5 characters</mat-error>
+        }
+      </mat-form-field>
+      <button mat-raised-button class="suhana-btn-primary rr__submit"
+              type="button" (click)="submit()" [disabled]="replyCtrl.invalid || submitting()">
+        @if (submitting()) { <mat-spinner diameter="18" /> } @else { Post Reply }
+      </button>
+    </form>
+  }
+
+</section>

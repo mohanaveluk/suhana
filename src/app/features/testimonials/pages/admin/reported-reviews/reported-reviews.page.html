@@ -1,0 +1,90 @@
+<div class="rr-page">
+  <div class="rr-page__header">
+    <div>
+      <h1 class="rr-page__title">Reported Reviews</h1>
+      <p class="rr-page__sub">User-reported content awaiting resolution</p>
+    </div>
+    <a mat-button routerLink="/testimonials/admin" aria-label="Back to dashboard">
+      <mat-icon>arrow_back</mat-icon> Dashboard
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="rr-page__loading" aria-busy="true"><mat-spinner diameter="40" /></div>
+  } @else if (reports().length === 0) {
+    <div class="rr-page__empty" role="status">
+      <mat-icon>check_circle</mat-icon>
+      <p>No open reports. The community is happy!</p>
+    </div>
+  } @else {
+    <div class="rr-page__count" aria-live="polite">{{ reports().length }} open report(s)</div>
+
+    <div class="mat-elevation-z2 rr-page__table-wrap">
+      <table mat-table [dataSource]="reports()" class="rr-page__table" aria-label="Reported reviews">
+
+        <!-- Reporter (userId) -->
+        <ng-container matColumnDef="reporter">
+          <th mat-header-cell *matHeaderCellDef>Reported By</th>
+          <td mat-cell *matCellDef="let r">{{ r.reportedBy }}</td>
+        </ng-container>
+
+        <!-- Reason -->
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef>Reason</th>
+          <td mat-cell *matCellDef="let r">
+            <mat-chip class="rr-page__reason-chip" [disableRipple]="true">{{ r.reason }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Review link -->
+        <ng-container matColumnDef="review">
+          <th mat-header-cell *matHeaderCellDef>Review</th>
+          <td mat-cell *matCellDef="let r">
+            <a [routerLink]="['/testimonials/review', r.reviewId]" class="rr-page__link">
+              View Review <mat-icon class="rr-page__link-icon">open_in_new</mat-icon>
+            </a>
+            @if (r.comments) {
+              <p class="rr-page__desc">{{ r.comments }}</p>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Date -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Reported</th>
+          <td mat-cell *matCellDef="let r">{{ r.createdAt | date:'shortDate' }}</td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="rr-page__status rr-page__status--{{ r.status.toLowerCase() }}">{{ r.status }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let r">
+            @if (processing() === r.id) {
+              <mat-spinner diameter="24" />
+            } @else {
+              <button mat-icon-button (click)="dismiss(r)"
+                      matTooltip="Dismiss report" aria-label="Dismiss report">
+                <mat-icon>thumb_up</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="removeReview(r)"
+                      matTooltip="Remove review" aria-label="Remove review">
+                <mat-icon>delete_forever</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="rr-page__row"></tr>
+      </table>
+    </div>
+  }
+</div>

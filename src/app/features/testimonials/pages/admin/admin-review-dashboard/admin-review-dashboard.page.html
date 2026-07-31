@@ -1,0 +1,51 @@
+<div class="ard-page">
+  <div class="ard-page__header">
+    <h1 class="ard-page__title">Review Dashboard</h1>
+    <div class="ard-page__nav">
+      <a mat-stroked-button routerLink="/testimonials/admin/pending">
+        <mat-icon>pending_actions</mat-icon> Pending
+      </a>
+      <a mat-stroked-button routerLink="/testimonials/admin/approved">
+        <mat-icon>fact_check</mat-icon> All Reviews
+      </a>
+      <a mat-stroked-button routerLink="/testimonials/admin/featured">
+        <mat-icon>workspace_premium</mat-icon> Featured
+      </a>
+      <a mat-stroked-button routerLink="/testimonials/admin/reported">
+        <mat-icon>flag</mat-icon> Reported
+      </a>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="ard-page__loading" aria-busy="true"><mat-spinner diameter="48" /></div>
+  } @else if (!metrics()) {
+    <p class="ard-page__error" role="alert">Could not load dashboard metrics.</p>
+  } @else {
+    <!-- Metric cards -->
+    <div class="ard-page__metrics" role="list">
+      @for (card of [
+        { icon: 'pending',       label: 'Pending',      value: metrics()!.pendingReviews,  color: '#e65100' },
+        { icon: 'check_circle',  label: 'Approved',     value: metrics()!.approvedReviews, color: '#2e7d32' },
+        { icon: 'workspace_premium', label: 'Featured', value: metrics()!.featuredReviews, color: '#6a1a6a' },
+        { icon: 'flag',          label: 'Reported',     value: metrics()!.reportedReviews, color: '#b71c1c' },
+        { icon: 'reply',         label: 'Total Replies',value: metrics()!.totalReplies,    color: '#1565c0' },
+        { icon: 'favorite',      label: 'Total Likes',  value: metrics()!.totalLikes,      color: '#ad1457' }
+      ]; track card.label) {
+        <mat-card class="ard-page__metric-card" appearance="outlined" role="listitem">
+          <mat-card-content>
+            <mat-icon [style.color]="card.color" aria-hidden="true">{{ card.icon }}</mat-icon>
+            <span class="ard-page__metric-value" [style.color]="card.color">{{ card.value | number }}</span>
+            <span class="ard-page__metric-label">{{ card.label }}</span>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Average rating -->
+    <div class="ard-page__avg" aria-label="Average platform rating">
+      <span class="ard-page__avg-label">Average Rating</span>
+      <span class="ard-page__avg-value">{{ metrics()!.averageRating | number:'1.1-1' }} / 5</span>
+    </div>
+  }
+</div>

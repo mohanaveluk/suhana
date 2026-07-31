@@ -87,6 +87,19 @@
             <span>My Match Fixed</span>
           </a>
           <mat-divider></mat-divider>
+          <a mat-menu-item routerLink="/testimonials/reviews">
+            <mat-icon>star_rate</mat-icon>
+            <span>Member Reviews</span>
+          </a>
+          <a mat-menu-item routerLink="/testimonials/my-reviews">
+            <mat-icon>rate_review</mat-icon>
+            <span>My Reviews</span>
+          </a>
+          <a mat-menu-item routerLink="/testimonials/submit-review">
+            <mat-icon>edit</mat-icon>
+            <span>Write a Review</span>
+          </a>
+          <mat-divider></mat-divider>
           <a mat-menu-item routerLink="/feedback">
             <mat-icon>rate_review</mat-icon>
             <span>Share Feedback</span>
@@ -144,10 +157,19 @@
       <a routerLink="/match-fixed/me" (click)="toggleMobileMenu()">
         <mat-icon>favorite</mat-icon> My Match Fixed
       </a>
+      <a routerLink="/testimonials/my-reviews" (click)="toggleMobileMenu()">
+        <mat-icon>rate_review</mat-icon> My Reviews
+      </a>
+      <a routerLink="/testimonials/submit-review" (click)="toggleMobileMenu()">
+        <mat-icon>edit</mat-icon> Write a Review
+      </a>
       <a routerLink="/feedback" (click)="toggleMobileMenu()">
         <mat-icon>rate_review</mat-icon> Share Feedback
       </a>
     }
+    <a routerLink="/testimonials/reviews" (click)="toggleMobileMenu()">
+      <mat-icon>star_rate</mat-icon> Member Reviews
+    </a>
     <a routerLink="/safety-tips" (click)="toggleMobileMenu()">
       <mat-icon>verified_user</mat-icon> Safety Tips
     </a>

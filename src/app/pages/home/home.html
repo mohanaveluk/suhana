@@ -190,32 +190,7 @@
 </section>
 
 <!-- ═══════════════ TESTIMONIALS ═══════════════ -->
-<section class="suhana-section testimonials-section" aria-label="Success stories">
-  <div class="suhana-container">
-    <h2 class="suhana-section-title">Love Stories That Started Here</h2>
-    <p class="suhana-section-subtitle">Real couples who found their happily ever after on Suhana</p>
-
-    <div class="testimonials-grid">
-      @for (testimonial of testimonials; track testimonial.id) {
-        <mat-card class="testimonial-card" appearance="outlined">
-          <mat-card-content>
-            <div class="quote-icon">
-              <mat-icon>format_quote</mat-icon>
-            </div>
-            <p class="quote-text">{{ testimonial.quote }}</p>
-            <div class="testimonial-author">
-              <img [src]="testimonial.photo" [alt]="testimonial.name" class="author-photo" />
-              <div>
-                <strong>{{ testimonial.name }}</strong>
-                <span>Matched {{ testimonial.matchDate }}</span>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      }
-    </div>
-  </div>
-</section>
+<app-featured-testimonials />
 
 <!-- ═══════════════ CTA SECTION ═══════════════ -->
 <section class="cta-section" aria-label="Call to action">

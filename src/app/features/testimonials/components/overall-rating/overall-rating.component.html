@@ -1,0 +1,26 @@
+<div class="or" role="region" aria-label="Overall rating summary">
+
+  <!-- Big score -->
+  <div class="or__score-block">
+    <span class="or__big-score">{{ stats.averageRating | number:'1.1-1' }}</span>
+    <div class="or__stars-row">
+      <app-rating-stars [value]="stats.averageRating" />
+    </div>
+    <span class="or__total">{{ stats.totalReviews | number }} review{{ stats.totalReviews === 1 ? '' : 's' }}</span>
+  </div>
+
+  <!-- Distribution bars -->
+  <div class="or__bars" role="list" aria-label="Rating distribution">
+    @for (row of distributionBars; track row.stars) {
+      <div class="or__bar-row" role="listitem"
+           [attr.aria-label]="row.stars + ' star — ' + row.count + ' reviews (' + row.pct + '%)'">
+        <span class="or__bar-label">{{ row.stars }}<mat-icon class="or__star-icon" aria-hidden="true">star</mat-icon></span>
+        <div class="or__bar-track">
+          <div class="or__bar-fill" [style.width.%]="row.pct" role="presentation"></div>
+        </div>
+        <span class="or__bar-pct">{{ row.pct }}%</span>
+      </div>
+    }
+  </div>
+
+</div>

@@ -1,0 +1,53 @@
+<div class="mr-page">
+
+  <div class="mr-page__header">
+    <div>
+      <h1 class="mr-page__title">My Reviews</h1>
+      <p class="mr-page__sub">Reviews you've written on Suhana</p>
+    </div>
+    <a mat-raised-button class="suhana-btn-primary" routerLink="/testimonials/submit-review"
+       aria-label="Write a new review">
+      <mat-icon>rate_review</mat-icon> Write Review
+    </a>
+  </div>
+
+  @if (loading()) {
+    <app-loading-skeleton [count]="3" />
+  } @else if (reviews().length === 0) {
+    <app-empty-state icon="rate_review"
+                     title="No reviews yet"
+                     message="Share your Suhana experience and help others find love!"
+                     actionLabel="Write Your First Review"
+                     routerLink="/testimonials/submit-review" />
+  } @else {
+    <div class="mr-page__grid" role="list">
+      @for (review of reviews(); track review.id) {
+        <div class="mr-page__item" role="listitem">
+          <!-- Status badge -->
+          <div class="mr-page__status"
+               [class.mr-page__status--approved]="review.status === ReviewStatus.APPROVED"
+               [class.mr-page__status--pending]="review.status === ReviewStatus.PENDING"
+               [class.mr-page__status--rejected]="review.status === ReviewStatus.REJECTED || review.status === ReviewStatus.HIDDEN">
+            {{ statusLabel(review.status) }}
+          </div>
+
+          <app-review-card [review]="review" [showActions]="false" />
+
+          <!-- Actions -->
+          <div class="mr-page__item-actions">
+            <a mat-icon-button [routerLink]="['/testimonials/review', review.id]"
+               matTooltip="View detail" aria-label="View review detail">
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+            <button mat-icon-button (click)="delete(review)"
+                    matTooltip="Delete review" aria-label="Delete this review"
+                    class="mr-page__delete-btn">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>

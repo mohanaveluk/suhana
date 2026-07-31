@@ -1,0 +1,19 @@
+<div class="tc" role="region" aria-label="Trust and transparency">
+  <div class="tc__grid" role="list">
+    @for (point of trustPoints; track point.label) {
+      <div class="tc__item" role="listitem">
+        <div class="tc__icon-wrap" aria-hidden="true">
+          <mat-icon>{{ point.icon }}</mat-icon>
+        </div>
+        <div class="tc__text">
+          <span class="tc__value">{{ point.value }}</span>
+          <span class="tc__label">{{ point.label }}</span>
+        </div>
+      </div>
+    }
+  </div>
+  <p class="tc__notice">
+    <mat-icon class="tc__notice-icon" aria-hidden="true">info</mat-icon>
+    All reviews are from verified Suhana members. We moderate content to ensure authenticity and respect.
+  </p>
+</div>

@@ -1,0 +1,42 @@
+$maroon : var(--suhana-maroon, #800020);
+$rose   : var(--suhana-rose-gold, #b76e79);
+$lighter: var(--suhana-rose-gold-lighter, #f0d4d8);
+$text-s : var(--suhana-text-secondary, #6b5557);
+
+.tc {
+  display: flex; flex-direction: column; gap: 16px;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  &__item {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(183,110,121,.06); border-radius: 14px; padding: 14px 16px;
+    border: 1px solid $lighter;
+  }
+
+  &__icon-wrap {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, #b76e79, #800020);
+    display: flex; align-items: center; justify-content: center;
+    mat-icon { font-size: 20px; width: 20px; height: 20px; color: white; }
+  }
+
+  &__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+  &__value { font-size: 0.9rem; font-weight: 700; color: $maroon; }
+
+  &__label { font-size: 0.75rem; color: $text-s; }
+
+  &__notice {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.8rem; color: $text-s; line-height: 1.6; margin: 0;
+    background: rgba(183,110,121,.04); border-radius: 10px;
+    padding: 10px 14px; border: 1px solid $lighter;
+  }
+
+  &__notice-icon { font-size: 16px; width: 16px; height: 16px; color: $rose; flex-shrink: 0; margin-top: 1px; }
+}
