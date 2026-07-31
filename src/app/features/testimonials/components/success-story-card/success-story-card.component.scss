@@ -1,0 +1,143 @@
+$maroon : var(--suhana-maroon, #800020);
+$rose   : var(--suhana-rose-gold, #b76e79);
+$gold   : var(--suhana-gold, #c9a84c);
+$lighter: var(--suhana-rose-gold-lighter, #f0d4d8);
+$text-s : var(--suhana-text-secondary, #6b5557);
+$ivory  : var(--suhana-ivory-warm, #fdf8f4);
+$grad   : linear-gradient(135deg, #b76e79 0%, #800020 100%);
+$shadow : rgba(183,110,121,.18);
+
+.ssc {
+  border-radius: 18px !important;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+
+  &:hover { transform: translateY(-5px); box-shadow: 0 12px 40px $shadow !important; }
+
+  // Photo region
+  &__photo {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    background: $grad;
+  }
+
+  &__photo-img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.4s ease;
+    .ssc:hover & { transform: scale(1.04); }
+  }
+
+  &__photo-fallback {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; position: relative;
+  }
+
+  &__couple-initials {
+    font-size: 2.4rem; font-weight: 800; color: rgba(255,255,255,.9);
+    text-shadow: 0 2px 8px rgba(0,0,0,.3);
+    z-index: 1;
+  }
+
+  &__heart-icon {
+    font-size: 1.4rem; width: 1.4rem; height: 1.4rem;
+    color: rgba(255,255,255,.7);
+    animation: heartbeat 1.4s ease infinite;
+  }
+
+  &__verified-overlay {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(255,255,255,.92);
+    color: $maroon; border-radius: 20px;
+    padding: 3px 10px; display: flex; align-items: center; gap: 4px;
+    font-size: 0.72rem; font-weight: 700;
+    mat-icon { font-size: 14px; width: 14px; height: 14px; color: #4caf50; }
+  }
+
+  &__featured-ribbon {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(201,168,76,.92); color: white;
+    border-radius: 20px; padding: 3px 10px;
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.72rem; font-weight: 700;
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+  }
+
+  // Body
+  &__body { padding: 18px 20px 12px !important; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+  &__couple { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+
+  &__couple-names {
+    font-size: 1.1rem; font-weight: 800; color: $maroon; margin: 0;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  &__ring-icon { font-size: 16px; width: 16px; height: 16px; color: $rose; }
+
+  &__years {
+    font-size: 0.75rem; color: $text-s; background: $lighter;
+    padding: 2px 8px; border-radius: 20px; white-space: nowrap; cursor: help;
+  }
+
+  &__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  &__chip {
+    height: 24px !important; font-size: 0.72rem !important;
+    background: $ivory !important; color: $text-s !important;
+    border: 1px solid $lighter !important; border-radius: 12px !important;
+    mat-icon { font-size: 13px !important; width: 13px !important; height: 13px !important; color: $rose !important; }
+    .mdc-evolution-chip__text-label { font-size: 0.72rem; }
+  }
+
+  &__headline {
+    font-style: italic; font-size: 0.9rem; color: $maroon;
+    line-height: 1.6; margin: 0; font-weight: 600;
+    border-left: 3px solid $rose; padding-left: 10px;
+  }
+
+  &__text {
+    font-size: 0.87rem; color: $text-s; line-height: 1.7; margin: 0;
+  }
+
+  &__read-more {
+    padding: 0 !important; height: auto !important; font-size: 0.82rem !important; color: $rose !important;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; vertical-align: middle; }
+  }
+
+  &__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  &__tag {
+    font-size: 0.73rem; color: $rose; background: rgba(183,110,121,.08);
+    padding: 2px 8px; border-radius: 12px;
+  }
+
+  // Actions
+  &__actions { padding: 4px 16px 16px !important; }
+
+  &__cta {
+    color: $maroon !important; font-weight: 600 !important; font-size: 0.85rem !important;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; vertical-align: middle; transition: transform 0.2s; }
+    &:hover mat-icon { transform: translateX(3px); }
+  }
+
+  // Compact variant
+  &--compact {
+    .ssc__photo { height: 140px; }
+    .ssc__body  { padding: 12px 14px 8px !important; gap: 6px; }
+    .ssc__couple-names { font-size: 0.95rem; }
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.2); }
+}
+
+@media (prefers-color-scheme: dark) {
+  .ssc { background: #261e22 !important; border-color: #3d2d33 !important; }
+}

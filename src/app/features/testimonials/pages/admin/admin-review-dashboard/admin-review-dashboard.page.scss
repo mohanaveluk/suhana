@@ -1,0 +1,52 @@
+$maroon : var(--suhana-maroon, #800020);
+$rose   : var(--suhana-rose-gold, #b76e79);
+$lighter: var(--suhana-rose-gold-lighter, #f0d4d8);
+$text-s : var(--suhana-text-secondary, #6b5557);
+
+.ard-page {
+  max-width: 1100px; margin: 0 auto; padding: 32px 24px 60px;
+  display: flex; flex-direction: column; gap: 28px;
+
+  &__header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+
+  &__title { font-size: 1.8rem; font-weight: 800; color: $maroon; margin: 0; }
+
+  &__nav { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  &__loading { display: flex; justify-content: center; padding: 80px; }
+
+  &__error { color: #c00; text-align: center; }
+
+  &__metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 16px;
+  }
+
+  &__metric-card {
+    border-radius: 16px !important;
+    mat-card-content {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px; padding: 20px 12px !important; text-align: center;
+      mat-icon { font-size: 2rem; width: 2rem; height: 2rem; }
+    }
+  }
+
+  &__metric-value { font-size: 2rem; font-weight: 900; line-height: 1; }
+
+  &__metric-label { font-size: 0.8rem; color: $text-s; }
+
+  &__avg {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(183,110,121,.06); border-radius: 14px;
+    padding: 16px 20px; border: 1px solid $lighter;
+    max-width: 300px;
+  }
+
+  &__avg-label { font-size: 0.88rem; color: $text-s; }
+
+  &__avg-value { font-size: 1.4rem; font-weight: 800; color: $maroon; }
+}

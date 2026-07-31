@@ -1,0 +1,47 @@
+<div class="ss-page">
+
+  <!-- Hero -->
+  <section class="ss-page__hero" aria-labelledby="ss-hero-heading">
+    <div class="ss-page__hero-inner">
+      <mat-icon class="ss-page__hero-icon" aria-hidden="true">favorite</mat-icon>
+      <h1 id="ss-hero-heading" class="ss-page__hero-title">Success Stories</h1>
+      <p class="ss-page__hero-sub">Every love story begins with a single match. Read how Suhana brought couples together.</p>
+    </div>
+    <svg class="ss-page__wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,0 C480,60 960,60 1440,0 L1440,60 L0,60Z" fill="white"/>
+    </svg>
+  </section>
+
+  <div class="ss-page__main">
+
+    <!-- Stats strip -->
+    <div class="ss-page__stats" aria-live="polite">
+      <span>{{ total() | number }} love stories and counting</span>
+    </div>
+
+    <!-- Grid -->
+    @if (loading()) {
+      <app-loading-skeleton [count]="pageSize" />
+    } @else if (stories().length === 0) {
+      <app-empty-state icon="favorite"
+                       title="No stories yet"
+                       message="Be the first to share your love story!" />
+    } @else {
+      <div class="ss-page__grid" role="list">
+        @for (story of stories(); track story.id) {
+          <div role="listitem">
+            <app-success-story-card [story]="story" />
+          </div>
+        }
+      </div>
+
+      <mat-paginator [length]="total()"
+                     [pageSize]="pageSize"
+                     [pageIndex]="pageIndex"
+                     [pageSizeOptions]="[6, 9, 18]"
+                     (page)="onPageChange($event)"
+                     aria-label="Stories pagination" />
+    }
+
+  </div>
+</div>

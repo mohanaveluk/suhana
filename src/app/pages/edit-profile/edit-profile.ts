@@ -19,6 +19,7 @@ import {
   ProfilePhotoVariant,
 } from '../../models/user.model';
 import { firstValueFrom } from 'rxjs';
+import { CommonService } from '../../services/common.service';
 
 const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PHOTO_MB = 2;
@@ -36,6 +37,7 @@ const MAX_HOROSCOPE_MB = 10;
 export class EditProfileComponent implements OnInit {
   private readonly fb             = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
+  private readonly commonService = inject(CommonService);
   private readonly api            = inject(ApiService);
   private readonly router         = inject(Router);
   private readonly dialog         = inject(MatDialog);

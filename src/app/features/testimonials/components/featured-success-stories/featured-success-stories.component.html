@@ -1,0 +1,27 @@
+<section class="fss" aria-labelledby="fss-heading">
+  <div class="fss__header">
+    <div class="fss__title-group">
+      <h2 id="fss-heading" class="fss__title">Success Stories</h2>
+      <p class="fss__subtitle">Celebrating couples who found their perfect match</p>
+    </div>
+    <a mat-stroked-button routerLink="/testimonials/success-stories" class="fss__all-link">
+      All Stories <mat-icon>arrow_forward</mat-icon>
+    </a>
+  </div>
+
+  @if (loading()) {
+    <app-loading-skeleton [count]="3" />
+  } @else if (stories().length === 0) {
+    <app-empty-state icon="favorite"
+                     title="No success stories yet"
+                     message="Help inspire others — share your love story with us!" />
+  } @else {
+    <div class="fss__grid" role="list">
+      @for (story of stories(); track story.id) {
+        <div role="listitem">
+          <app-success-story-card [story]="story" />
+        </div>
+      }
+    </div>
+  }
+</section>

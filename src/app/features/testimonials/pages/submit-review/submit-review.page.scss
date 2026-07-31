@@ -1,0 +1,89 @@
+$maroon : var(--suhana-maroon, #800020);
+$rose   : var(--suhana-rose-gold, #b76e79);
+$lighter: var(--suhana-rose-gold-lighter, #f0d4d8);
+$text-s : var(--suhana-text-secondary, #6b5557);
+$ivory  : var(--suhana-ivory-warm, #fdf8f4);
+
+.sr-page {
+  min-height: 100vh;
+
+  &__hero {
+    background: linear-gradient(135deg, #3d0010 0%, #800020 60%, #b76e79 100%);
+    padding: 56px 24px 48px;
+    text-align: center;
+  }
+
+  &__hero-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; color: white;
+    margin: 0 0 10px;
+  }
+
+  &__hero-sub { color: rgba(255,255,255,.85); font-size: 1rem; margin: 0; }
+
+  &__card {
+    max-width: 700px; margin: -24px auto 60px;
+    background: white; border-radius: 20px; padding: 32px;
+    box-shadow: 0 6px 32px rgba(183,110,121,.14);
+    border: 1px solid $lighter;
+    position: relative; z-index: 1;
+  }
+
+  &__step { display: flex; flex-direction: column; gap: 18px; padding-top: 12px; }
+
+  &__field-group { display: flex; flex-direction: column; gap: 8px; }
+
+  &__sub-label { font-size: 0.9rem; color: $maroon; font-weight: 600; }
+
+  &__req { color: #c00; }
+
+  &__error { font-size: 0.78rem; color: #c00; }
+
+  &__optional-label { font-size: 0.82rem; color: $text-s; margin: 0; }
+
+  &__sub-grid { display: flex; flex-direction: column; gap: 10px; }
+
+  &__sub-row { display: flex; align-items: center; justify-content: space-between; }
+
+  &__sub-label-sm { font-size: 0.82rem; color: $text-s; }
+
+  &__full-field { width: 100%; display: block; }
+
+  &__half-field { width: 260px; display: block; }
+
+  &__check-row { display: flex; flex-direction: column; gap: 8px; }
+
+  &__step-actions {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 10px; padding-top: 8px;
+    .btn-icon-text {
+      mat-icon {margin: 0px 0px -7px 0px !important;}
+    }
+  }
+
+  // Success state
+  &__success {
+    max-width: 480px; margin: 40px auto 80px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; gap: 14px; padding: 0 24px;
+    h2 { font-size: 1.5rem; color: $maroon; margin: 0; }
+    p  { font-size: 0.9rem; color: $text-s; margin: 0; line-height: 1.6; }
+  }
+
+  &__success-icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, #b76e79, #800020);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: white; font-weight: 800;
+    animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
+  }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@media (max-width: 599px) {
+  .sr-page__card { margin: -16px 12px 40px; padding: 20px; }
+  .sr-page__half-field { width: 100%; }
+}

@@ -1,0 +1,123 @@
+$maroon  : var(--suhana-maroon, #800020);
+$rose    : var(--suhana-rose-gold, #b76e79);
+$gold    : var(--suhana-gold, #c9a84c);
+$lighter : var(--suhana-rose-gold-lighter, #f0d4d8);
+$text-s  : var(--suhana-text-secondary, #6b5557);
+
+// ── Section header ───────────────────────────────────────────────
+.ft {
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  &__title-group { display: flex; flex-direction: column; gap: 4px; }
+
+  &__title { font-size: 1.8rem; font-weight: 800; color: $maroon; margin: 0; }
+
+  &__subtitle { font-size: 0.95rem; color: $text-s; margin: 0; }
+
+  &__header-right { display: flex; align-items: center; gap: 12px; }
+
+  // ── Three-button view toggle ──────────────────────────────────
+  &__view-toggle {
+    display: flex; align-items: center;
+    background: rgba(128,0,32,.06);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+
+    button {
+      width: 34px; height: 34px; border-radius: 7px !important;
+      color: $text-s; transition: background 0.15s, color 0.15s;
+      mat-icon { font-size: 20px; margin: -1px 0 -2px -3px; }
+    }
+  }
+
+  &__view-toggle-btn--active {
+    color: $maroon !important;
+    background: white !important;
+    box-shadow: 0 1px 4px rgba(128,0,32,.15) !important;
+  }
+
+  &__all-link {
+    color: $maroon !important; border-color: $maroon !important;
+    white-space: nowrap;
+    mat-icon { font-size: 18px; width: 18px; height: 18px; vertical-align: middle; }
+  }
+
+  // ── Amazon / article view ─────────────────────────────────────
+  &__amazon {
+    background: white;
+    border: 1px solid rgba(183,110,121,.16);
+    border-radius: 18px;
+    padding: 0 28px;
+    box-shadow: 0 4px 24px rgba(183,110,121,.1);
+    overflow: hidden;
+  }
+
+  &__amazon-item {
+    display: block;
+
+    // Remove bottom divider from the last review
+    &:last-child ::ng-deep .rc--amazon {
+      border-bottom: none;
+    }
+  }
+
+  // ── List / row view ───────────────────────────────────────────
+  &__list {
+    border: 1px solid rgba(183,110,121,.16);
+    border-radius: 18px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 24px rgba(183,110,121,.1);
+
+    > .ft__list-item:last-child ::ng-deep .rc--row {
+      border-bottom: none;
+    }
+  }
+
+  &__list-item { display: block; }
+
+  // ── Grid / card view ─────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  // ── Shared footer ─────────────────────────────────────────────
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  &__write-link {
+    color: $rose !important;
+    mat-icon { font-size: 18px; width: 18px; height: 18px; vertical-align: middle; margin-right: 4px; }
+  }
+
+  &__see-all {
+    color: $maroon !important; border-color: $maroon !important;
+    mat-icon { font-size: 18px; width: 18px; height: 18px; vertical-align: middle; }
+  }
+}
+
+// ── Responsive ───────────────────────────────────────────────────
+@media (max-width: 599px) {
+  .ft__header       { flex-direction: column; align-items: flex-start; }
+  .ft__header-right { align-self: flex-start; }
+  .ft__title        { font-size: 1.4rem; }
+  .ft__amazon       { padding: 0 16px; border-radius: 12px; }
+  .ft__list         { border-radius: 12px; }
+  .ft__footer       { flex-direction: column; align-items: stretch; }
+}

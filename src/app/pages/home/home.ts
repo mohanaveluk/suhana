@@ -3,11 +3,12 @@ import { RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { MaterialModule } from '../../shared/modules/material.module';
-import { BannerSlide, Testimonial, UserProfile } from '../../models/user.model';
+import { BannerSlide, UserProfile } from '../../models/user.model';
 import { AuthService, ProfileService } from '../../services';
 import { FeaturedSuccessStoriesComponent } from "../../features/match-fixed/featured-success-stories/featured-success-stories.component";
 import { SuccessStatsComponent } from "../../features/match-fixed/success-stats/success-stats.component";
 import { SuccessStoriesWallComponent } from "../../features/match-fixed/success-stories-wall/success-stories-wall.component";
+import { FeaturedTestimonialsComponent } from "../../features/testimonials/components/featured-testimonials/featured-testimonials.component";
 
 @Component({
   selector: 'app-home',
@@ -16,7 +17,8 @@ import { SuccessStoriesWallComponent } from "../../features/match-fixed/success-
     RouterLink, TitleCasePipe, MaterialModule,
     FeaturedSuccessStoriesComponent,
     SuccessStatsComponent,
-    SuccessStoriesWallComponent
+    SuccessStoriesWallComponent,
+    FeaturedTestimonialsComponent
 ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
@@ -58,12 +60,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   ];
 
   protected readonly featuredProfiles = signal<UserProfile[]>([]);
-
-  protected readonly testimonials: Testimonial[] = [
-    { id: 1, name: 'Priya & Arjun', partnerName: '', photo: 'https://randomuser.me/api/portraits/women/32.jpg', quote: 'Suhana\'s AI matching found us a 94% compatibility match. We connected over shared love for travel and family values. Getting married next month!', matchDate: 'March 2026' },
-    { id: 2, name: 'Meera & Karthik', partnerName: '', photo: 'https://randomuser.me/api/portraits/women/44.jpg', quote: 'We were skeptical about online matchmaking, but the compatibility insights were so accurate. The platform respects tradition while embracing modern expectations.', matchDate: 'January 2026' },
-    { id: 3, name: 'Aisha & Rahul', partnerName: '', photo: 'https://randomuser.me/api/portraits/women/68.jpg', quote: 'The video introduction feature helped us see each other\'s personalities before we even met. The icebreaker chat made the first conversation so easy!', matchDate: 'February 2026' },
-  ];
 
   protected readonly features = [
     { icon: 'psychology', title: 'AI-Powered Matching', desc: 'Smart algorithms analyze 50+ parameters to find your ideal partner with detailed compatibility scores.' },

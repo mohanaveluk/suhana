@@ -235,8 +235,14 @@ export const routes: Routes = [
   },
   {
     path: 'feedback',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/feedback/feedback.component').then(m => m.FeedbackComponent),
+  },
+  {
+    path: 'testimonials',
+    loadChildren: () =>
+      import('./features/testimonials/testimonials.routes').then(m => m.TESTIMONIALS_ROUTES),
   },
   {
     path: '**',

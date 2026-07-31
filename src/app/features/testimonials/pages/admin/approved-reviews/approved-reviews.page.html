@@ -1,0 +1,162 @@
+<div class="ar-page">
+
+  <div class="ar-page__header">
+    <div>
+      <h1 class="ar-page__title">All Reviews</h1>
+      <p class="ar-page__sub">Manage, approve and feature member reviews</p>
+    </div>
+    <div class="ar-page__header-actions">
+      <a mat-stroked-button routerLink="/testimonials/admin/featured">
+        <mat-icon>workspace_premium</mat-icon> Featured Reviews
+      </a>
+      <a mat-button routerLink="/testimonials/admin">
+        <mat-icon>arrow_back</mat-icon> Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="ar-page__filters">
+    <mat-form-field appearance="outline" class="ar-page__filter-field">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+        @for (opt of statusOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ar-page__filter-field">
+      <mat-label>Featured</mat-label>
+      <mat-select [(ngModel)]="featuredFilter" (ngModelChange)="applyFilters()">
+        <mat-option [value]="''">All</mat-option>
+        <mat-option [value]="true">Featured Only</mat-option>
+        <mat-option [value]="false">Not Featured</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ar-page__filter-field">
+      <mat-label>Type</mat-label>
+      <mat-select [(ngModel)]="typeFilter" (ngModelChange)="applyFilters()">
+        @for (opt of typeOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <div class="ar-page__loading" aria-busy="true"><mat-spinner diameter="40" /></div>
+  } @else {
+    <p class="ar-page__count" aria-live="polite">{{ total() }} review(s)</p>
+
+    <div class="mat-elevation-z2 ar-page__table-wrap">
+      <table mat-table [dataSource]="reviews()" class="ar-page__table" aria-label="All reviews">
+
+        <!-- Author -->
+        <ng-container matColumnDef="author">
+          <th mat-header-cell *matHeaderCellDef>Author</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="ar-page__author-cell">
+              <div class="ar-page__avatar">
+                @if (r.author?.profileImage) {
+                  <img [src]="r.author.profileImage" [alt]="r.author.name" />
+                } @else {
+                  <span>{{ (r.author?.name ?? 'S')[0].toUpperCase() }}</span>
+                }
+              </div>
+              <div>
+                <span class="ar-page__author-name">{{ r.author?.name ?? 'Anonymous' }}</span>
+                @if (r.isVerifiedReview) {
+                  <span class="ar-page__verified">
+                    <mat-icon>verified</mat-icon> Verified
+                  </span>
+                }
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Rating -->
+        <ng-container matColumnDef="rating">
+          <th mat-header-cell *matHeaderCellDef>Rating</th>
+          <td mat-cell *matCellDef="let r">
+            <app-rating-stars [value]="r.overallRating" size="small" [showValue]="true" />
+          </td>
+        </ng-container>
+
+        <!-- Preview -->
+        <ng-container matColumnDef="preview">
+          <th mat-header-cell *matHeaderCellDef>Review</th>
+          <td mat-cell *matCellDef="let r" class="ar-page__preview-cell">
+            <a [routerLink]="['/testimonials/review', r.id]" class="ar-page__review-title">{{ r.title }}</a>
+            <p class="ar-page__review-preview">
+              {{ r.reviewText.length > 100 ? r.reviewText.slice(0, 100) + '…' : r.reviewText }}
+            </p>
+          </td>
+        </ng-container>
+
+        <!-- Type -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let r">
+            <mat-chip class="ar-page__type-chip" [disableRipple]="true">{{ r.reviewType | titlecase }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Date -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let r" class="ar-page__date">{{ r.createdAt | date:'MMM d, y' }}</td>
+        </ng-container>
+
+        <!-- Featured toggle -->
+        <ng-container matColumnDef="featured">
+          <th mat-header-cell *matHeaderCellDef>Featured</th>
+          <td mat-cell *matCellDef="let r">
+            <mat-slide-toggle
+              [checked]="r.isFeatured"
+              [disabled]="processing() === r.id || r.status !== ReviewStatus.APPROVED"
+              (change)="toggleFeatured(r)"
+              color="primary"
+              [attr.aria-label]="'Feature toggle for ' + r.title"
+              [matTooltip]="r.status !== ReviewStatus.APPROVED ? 'Approve review first' : (r.isFeatured ? 'Remove from featured' : 'Mark as featured')" />
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let r">
+            @if (processing() === r.id) {
+              <mat-spinner diameter="24" />
+            } @else {
+              @if (r.status !== ReviewStatus.APPROVED) {
+                <button mat-icon-button color="primary" (click)="approve(r)"
+                        [attr.aria-label]="'Approve: ' + r.title" matTooltip="Approve">
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+              }
+              @if (r.status !== ReviewStatus.REJECTED) {
+                <button mat-icon-button color="warn" (click)="reject(r)"
+                        [attr.aria-label]="'Reject: ' + r.title" matTooltip="Reject">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              }
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="ar-page__row"></tr>
+      </table>
+    </div>
+
+    <mat-paginator [length]="total()"
+                   [pageSize]="pageSize"
+                   [pageIndex]="pageIndex"
+                   [pageSizeOptions]="[20, 50, 100]"
+                   (page)="onPageChange($event)"
+                   aria-label="Review pagination" />
+  }
+</div>

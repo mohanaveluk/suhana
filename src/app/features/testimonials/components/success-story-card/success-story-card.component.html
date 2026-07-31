@@ -1,0 +1,91 @@
+<mat-card class="ssc" [class.ssc--compact]="compact" appearance="outlined"
+          [attr.aria-label]="story.groomName + ' & ' + story.brideName + ' success story'">
+
+  <!-- Photo / couple visual -->
+  <div class="ssc__photo" aria-hidden="true">
+    @if (story.photoUrl) {
+      <img [src]="story.photoUrl" [alt]="story.groomName + ' & ' + story.brideName"
+           loading="lazy" class="ssc__photo-img" />
+    } @else {
+      <div class="ssc__photo-fallback">
+        <span class="ssc__couple-initials">{{ coupleInitials }}</span>
+        <mat-icon class="ssc__heart-icon" aria-hidden="true">favorite</mat-icon>
+      </div>
+    }
+
+    <!-- Verified marriage badge overlay -->
+    @if (story.verifiedMarriage) {
+      <div class="ssc__verified-overlay" matTooltip="Marriage verified">
+        <mat-icon>verified</mat-icon>
+        <span>Verified</span>
+      </div>
+    }
+
+    <!-- Featured ribbon -->
+    @if (story.isFeatured && !compact) {
+      <div class="ssc__featured-ribbon" aria-label="Featured story">
+        <mat-icon>workspace_premium</mat-icon>
+        <span>Featured</span>
+      </div>
+    }
+  </div>
+
+  <mat-card-content class="ssc__body">
+
+    <!-- Couple names -->
+    <div class="ssc__couple">
+      <h3 class="ssc__couple-names">
+        {{ story.groomName }}
+        <mat-icon class="ssc__ring-icon" aria-hidden="true">favorite</mat-icon>
+        {{ story.brideName }}
+      </h3>
+      @if (yearsTogether !== null) {
+        <span class="ssc__years" [matTooltip]="'Together for ' + yearsTogether + ' year(s)'">
+          {{ yearsTogether }}y together
+        </span>
+      }
+    </div>
+
+    <!-- Meta chips -->
+    <div class="ssc__chips" role="list">
+      @if (story.marriageDate) {
+        <mat-chip class="ssc__chip" [disableRipple]="true" role="listitem">
+          <mat-icon matChipAvatar>calendar_today</mat-icon>
+          {{ story.marriageDate | date:'mediumDate' }}
+        </mat-chip>
+      }
+      @if (story.location) {
+        <mat-chip class="ssc__chip" [disableRipple]="true" role="listitem">
+          <mat-icon matChipAvatar>location_on</mat-icon>
+          {{ story.location }}
+        </mat-chip>
+      }
+    </div>
+
+    <!-- Title as tagline -->
+    @if (story.title && !compact) {
+      <p class="ssc__headline">"{{ story.title }}"</p>
+    }
+
+    <!-- Story text -->
+    @if (!compact && story.story) {
+      <p class="ssc__text">{{ previewText }}</p>
+      @if (shouldTruncate) {
+        <button class="ssc__read-more" mat-button (click)="expanded.set(!expanded())">
+          {{ expanded() ? 'Show less' : 'Read more' }}
+          <mat-icon>{{ expanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+      }
+    }
+
+  </mat-card-content>
+
+  <!-- Footer CTA -->
+  <mat-card-actions class="ssc__actions" align="end">
+    <button mat-button class="ssc__cta"
+            [routerLink]="['/testimonials/success-story', story.id]">
+      Read full story <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </mat-card-actions>
+
+</mat-card>

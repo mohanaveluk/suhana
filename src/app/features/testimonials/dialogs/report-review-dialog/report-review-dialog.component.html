@@ -1,0 +1,48 @@
+@if (!success()) {
+  <h2 mat-dialog-title class="rrd__title">
+    <span>Report Review</span>
+  </h2>
+
+  <mat-dialog-content class="rrd__content">
+    <p class="rrd__hint">
+      Help us keep Suhana trustworthy. Tell us what's wrong with this review.
+    </p>
+
+    <form [formGroup]="form" novalidate id="reportForm" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="rrd__field">
+        <mat-label>Reason</mat-label>
+        <mat-select formControlName="reason" aria-label="Report reason">
+          @for (r of reasons; track r.value) {
+            <mat-option [value]="r.value">{{ r.label }}</mat-option>
+          }
+        </mat-select>
+        @if (form.get('reason')?.touched && form.get('reason')?.errors?.['required']) {
+          <mat-error>Please select a reason</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="rrd__field">
+        <mat-label>Additional details (optional)</mat-label>
+        <textarea matInput formControlName="comments" rows="4" maxlength="500"
+                  placeholder="Describe the issue in more detail…" aria-label="Report details"></textarea>
+        <mat-hint align="end">{{ charCount }}/500</mat-hint>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="rrd__actions">
+    <button mat-button mat-dialog-close [disabled]="submitting()">Cancel</button>
+    <button mat-raised-button class="suhana-btn-primary"
+            type="submit" form="reportForm"
+            [disabled]="form.invalid || submitting()">
+      @if (submitting()) { <mat-spinner diameter="18" /> } @else { Submit Report }
+    </button>
+  </mat-dialog-actions>
+
+} @else {
+  <div class="rrd__success" aria-live="assertive">
+    <div class="rrd__success-icon" aria-hidden="true">✓</div>
+    <h2 class="rrd__success-title">Report Submitted</h2>
+    <p class="rrd__success-msg">Thank you for helping keep Suhana safe. Our team will review your report.</p>
+  </div>
+}

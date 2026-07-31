@@ -1,0 +1,302 @@
+@if (layout === 'amazon') {
+<!-- ── Amazon / article-style layout ── -->
+<div class="rc rc--amazon" role="article" [attr.aria-label]="review.title">
+
+  <!-- Author: avatar + name -->
+  <div class="rc-amz__author-row">
+    <div class="rc__avatar rc-amz__avatar">
+      @if (review.author?.profileImage) {
+        <img [src]="review.author!.profileImage!" [alt]="review.author!.name" loading="lazy" />
+      } @else {
+        <span>{{ authorInitials }}</span>
+      }
+    </div>
+    <span class="rc-amz__name">{{ review.author?.name ?? 'Suhana Member' }}</span>
+  </div>
+
+  <!-- Stars + Title inline -->
+  <div class="rc-amz__rating-title">
+    <app-rating-stars [value]="review.overallRating" size="small" />
+    <h3 class="rc-amz__title">{{ review.title }}</h3>
+  </div>
+
+  <!-- "Reviewed on …" date line -->
+  <p class="rc-amz__date">Reviewed on {{ review.createdAt | date:'MMMM d, y' }}</p>
+
+  <!-- Category chip + Verified badge + Featured star -->
+  <div class="rc-amz__meta">
+    <mat-chip class="rc__type-chip" [disableRipple]="true">{{ review.reviewType | titlecase }}</mat-chip>
+    @if (review.isVerifiedReview) {
+      <span class="rc-amz__verified" aria-label="Verified profile">
+        <mat-icon aria-hidden="true">verified</mat-icon> Verified Profile
+      </span>
+    }
+    @if (review.isFeatured) {
+      <mat-icon class="rc__featured-icon" matTooltip="Featured review" aria-label="Featured">
+        workspace_premium
+      </mat-icon>
+    }
+  </div>
+
+  <!-- Review body -->
+  <p class="rc-amz__text">{{ previewText }}</p>
+  @if (shouldTruncate) {
+    <button class="rc__read-more" mat-button (click)="expanded.set(!expanded())">
+      {{ expanded() ? 'Show less' : 'Read more' }}
+      <mat-icon>{{ expanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+  }
+
+  <!-- Footer: helpful count + actions -->
+  <div class="rc-amz__footer">
+    @if (review.likeCount > 0) {
+      <span class="rc-amz__helpful-count">
+        {{ review.likeCount }} {{ review.likeCount === 1 ? 'person' : 'people' }} found this helpful
+      </span>
+    }
+    <div class="rc-amz__actions">
+      <button mat-button class="rc-amz__helpful-btn"
+              [class.rc-amz__helpful-btn--liked]="review.likedByViewer"
+              [disabled]="!isAuthenticated"
+              (click)="onLikeToggle(!review.likedByViewer)"
+              [attr.aria-label]="review.likedByViewer ? 'Remove helpful vote' : 'Mark as helpful'">
+        <mat-icon>{{ review.likeCount > 0 ? 'thumb_up' : 'thumb_up_off_alt' }}</mat-icon>
+        Helpful
+      </button>
+      @if (showActions && isAuthenticated) {
+        <span class="rc-amz__sep" aria-hidden="true">|</span>
+        <button mat-button class="rc-amz__report-btn"
+                (click)="reportClick.emit(review)"
+                aria-label="Report this review">
+          Report
+        </button>
+      }
+          <button mat-icon-button class="rc__menu-btn"
+            (click)="router.navigate(['/testimonials/review', review.id])"
+            matTooltip="View review" aria-label="View review details">
+      <mat-icon>open_in_new</mat-icon>
+    </button>
+    </div>
+  </div>
+
+</div>
+
+} @else if (layout === 'row') {
+<!-- ── Row / list layout (Trustpilot-style) ── -->
+<div class="rc rc--row" role="article" [attr.aria-label]="review.title">
+
+  <!-- Col 1: Avatar -->
+  <div class="rc__avatar rc-row__avatar">
+    @if (review.author?.profileImage) {
+      <img [src]="review.author!.profileImage!" [alt]="review.author!.name" loading="lazy" />
+    } @else {
+      <span>{{ authorInitials }}</span>
+    }
+  </div>
+
+  <!-- Col 2: Name + verified badge -->
+  <div class="rc-row__author">
+    <span class="rc__author-name">{{ review.author?.name ?? 'Suhana Member' }}</span>
+    <div class="rc-row__badges">
+      <app-verified-badge [show]="review.isVerifiedReview" [showLabel]="false" />
+      @if (review.isFeatured) {
+        <mat-icon class="rc__featured-icon" matTooltip="Featured review" aria-label="Featured">workspace_premium</mat-icon>
+      }
+    </div>
+  </div>
+
+  <!-- Col 3: Rating -->
+  <div class="rc-row__rating">
+    <app-rating-stars [value]="review.overallRating" size="small" [showValue]="true" />
+  </div>
+
+  <!-- Col 4: Title + preview (stretches) -->
+  <div class="rc-row__content">
+    <h3 class="rc-row__title">{{ review.title }}</h3>
+    <p class="rc-row__text">{{ review.reviewText.length > 150 ? review.reviewText.slice(0, 150) + '…' : review.reviewText }}</p>
+  </div>
+
+  <!-- Col 5: Category chip (hidden on mobile) -->
+  <div class="rc-row__category">
+    <mat-chip class="rc__type-chip" [disableRipple]="true">{{ review.reviewType | titlecase }}</mat-chip>
+  </div>
+
+  <!-- Col 6: Date (hidden on mobile) -->
+  <span class="rc-row__date rc__date">{{ review.createdAt | date:'MMM y' }}</span>
+
+  <!-- Col 7: Actions -->
+  <div class="rc-row__actions">
+    <app-like-button [liked]="!!review.likedByViewer" [likeCount]="review.likeCount"
+                     [disabled]="!isAuthenticated" (likeToggle)="onLikeToggle($event)" />
+    <button mat-icon-button class="rc__menu-btn"
+            (click)="router.navigate(['/testimonials/review', review.id])"
+            matTooltip="View review" aria-label="View review details">
+      <mat-icon>open_in_new</mat-icon>
+    </button>
+    @if (showActions && isAuthenticated) {
+      <button mat-icon-button class="rc__menu-btn"
+              (click)="replyClick.emit(review)"
+              matTooltip="Reply" aria-label="Reply to review">
+        <mat-icon>reply</mat-icon>
+      </button>
+    }
+    @if (showActions) {
+      <button mat-icon-button [matMenuTriggerFor]="rowMenu"
+              aria-label="More options" class="rc__menu-btn">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #rowMenu="matMenu">
+        @if (isAuthenticated) {
+          <button mat-menu-item (click)="reportClick.emit(review)">
+            <mat-icon>flag</mat-icon> Report
+          </button>
+        }
+      </mat-menu>
+    }
+  </div>
+
+</div>
+
+} @else {
+<!-- ── Card / grid layout ── -->
+<mat-card class="rc" appearance="outlined" [attr.aria-label]="review.title">
+
+  <!-- Top colour band -->
+  <div class="rc__band" aria-hidden="true"></div>
+
+  <mat-card-content class="rc__body">
+
+    <!-- Header: avatar + author + meta -->
+    <header class="rc__header">
+      <div class="rc__avatar" aria-hidden="true">
+        @if (review.author?.profileImage) {
+          <img [src]="review.author!.profileImage!" [alt]="review.author!.name" loading="lazy" />
+        } @else {
+          <span>{{ authorInitials }}</span>
+        }
+      </div>
+
+      <div class="rc__author">
+        <div class="rc__author-row">
+          <span class="rc__author-name">{{ review.author?.name ?? 'Suhana Member' }}</span>
+          <app-verified-badge [show]="review.isVerifiedReview" [showLabel]="false" />
+        </div>
+        <div class="rc__meta">
+          <mat-chip class="rc__type-chip" [disableRipple]="true">
+            {{ review.reviewType | titlecase }}
+          </mat-chip>
+          <span class="rc__date">{{ review.createdAt | date:'mediumDate' }}</span>
+        </div>
+      </div>
+
+      <!-- Sentiment + menu -->
+      <div class="rc__actions-right">
+        @if (review.sentiment) {
+          <mat-icon class="rc__sentiment"
+                    [style.color]="review.sentiment | sentimentColor"
+                    [matTooltip]="review.sentiment | titlecase"
+                    aria-hidden="true">
+            {{ review.sentiment | sentimentIcon }}
+          </mat-icon>
+        }
+        @if (showActions) {
+          <button mat-icon-button [matMenuTriggerFor]="cardMenu"
+                  aria-label="Review options" class="rc__menu-btn">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #cardMenu="matMenu">
+            <a mat-menu-item [routerLink]="['/testimonials/review', review.id]">
+              <mat-icon>open_in_new</mat-icon> View detail
+            </a>
+            @if (isAuthenticated) {
+              <button mat-menu-item (click)="reportClick.emit(review)">
+                <mat-icon>flag</mat-icon> Report
+              </button>
+            }
+          </mat-menu>
+        }
+      </div>
+    </header>
+
+    <!-- Rating stars -->
+    <div class="rc__stars">
+      <app-rating-stars [value]="review.overallRating" [showValue]="true" />
+    </div>
+
+    <!-- Title -->
+    <h3 class="rc__title">{{ review.title }}</h3>
+
+    <!-- Review text -->
+    <p class="rc__text">{{ previewText }}</p>
+    @if (shouldTruncate) {
+      <button class="rc__read-more" mat-button (click)="expanded.set(!expanded())">
+        {{ expanded() ? 'Show less' : 'Read more' }}
+        <mat-icon>{{ expanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+    }
+
+    <!-- Sub-ratings (expanded only) -->
+    @if (expanded() && (review.easeOfUseRating || review.matchQualityRating || review.communicationRating)) {
+      <div class="rc__sub-ratings">
+        @if (review.easeOfUseRating) {
+          <div class="rc__sub-row">
+            <span>Ease of Use</span>
+            <app-rating-stars [value]="review.easeOfUseRating" size="small" />
+          </div>
+        }
+        @if (review.matchQualityRating) {
+          <div class="rc__sub-row">
+            <span>Match Quality</span>
+            <app-rating-stars [value]="review.matchQualityRating" size="small" />
+          </div>
+        }
+        @if (review.communicationRating) {
+          <div class="rc__sub-row">
+            <span>Communication</span>
+            <app-rating-stars [value]="review.communicationRating" size="small" />
+          </div>
+        }
+        @if (review.customerSupportRating) {
+          <div class="rc__sub-row">
+            <span>Customer Support</span>
+            <app-rating-stars [value]="review.customerSupportRating" size="small" />
+          </div>
+        }
+        @if (review.trustSafetyRating) {
+          <div class="rc__sub-row">
+            <span>Trust & Safety</span>
+            <app-rating-stars [value]="review.trustSafetyRating" size="small" />
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Footer actions -->
+    <footer class="rc__footer">
+      <app-like-button
+        [liked]="!!review.likedByViewer"
+        [likeCount]="review.likeCount"
+        [disabled]="!isAuthenticated"
+        (likeToggle)="onLikeToggle($event)" />
+
+      @if (showActions && isAuthenticated) {
+        <button mat-button class="rc__action-btn" (click)="replyClick.emit(review)"
+                aria-label="Reply to this review">
+          <mat-icon>reply</mat-icon>
+          <span>Reply</span>
+          @if (review.replyCount > 0) { <span class="rc__count">({{ review.replyCount }})</span> }
+        </button>
+      }
+
+      <span class="rc__spacer"></span>
+
+      @if (review.isFeatured) {
+        <mat-icon class="rc__featured-icon" matTooltip="Featured review" aria-label="Featured">
+          workspace_premium
+        </mat-icon>
+      }
+    </footer>
+
+  </mat-card-content>
+</mat-card>
+}

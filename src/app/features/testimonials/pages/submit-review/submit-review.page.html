@@ -1,0 +1,126 @@
+<div class="sr-page">
+  <!-- Hero -->
+  <section class="sr-page__hero" aria-labelledby="sr-hero-heading">
+    <h1 id="sr-hero-heading" class="sr-page__hero-title">Share Your Experience</h1>
+    <p class="sr-page__hero-sub">Help others find love — your review matters</p>
+  </section>
+
+  @if (success()) {
+    <div class="sr-page__success" role="alert" aria-live="assertive">
+      <div class="sr-page__success-icon" aria-hidden="true">✓</div>
+      <h2>Review Submitted!</h2>
+      <p>Thank you for your honest review. It will appear after our moderation team reviews it.</p>
+      <a mat-raised-button class="suhana-btn-primary" routerLink="/testimonials/reviews">View All Reviews</a>
+    </div>
+  } @else {
+    <div class="sr-page__card">
+      <mat-stepper orientation="vertical" linear #stepper>
+
+        <!-- Step 1: Ratings -->
+        <mat-step label="Rate your experience" [stepControl]="ratingForm">
+          <form [formGroup]="ratingForm" class="sr-page__step" novalidate>
+            <div class="sr-page__field-group">
+              <label class="sr-page__sub-label">Overall Rating <span class="sr-page__req">*</span></label>
+              <app-rating-stars [value]="ratingForm.get('overallRating')!.value!"
+                                [interactive]="true"
+                                (ratingChange)="setRating('overallRating', $event)" />
+              @if (ratingForm.get('overallRating')?.touched && ratingForm.get('overallRating')?.invalid) {
+                <span class="sr-page__error">Please select a rating</span>
+              }
+            </div>
+
+            <p class="sr-page__optional-label">Optional sub-ratings</p>
+            <div class="sr-page__sub-grid">
+              @for (sub of [
+                { key: 'easeOfUseRating', label: 'Ease of Use' },
+                { key: 'matchQualityRating', label: 'Match Quality' },
+                { key: 'communicationRating', label: 'Communication' },
+                { key: 'customerSupportRating', label: 'Customer Support' },
+                { key: 'trustSafetyRating', label: 'Trust & Safety' }
+              ]; track sub.key) {
+                <div class="sr-page__sub-row">
+                  <span class="sr-page__sub-label-sm">{{ sub.label }}</span>
+                  <app-rating-stars [value]="ratingForm.get(sub.key)!.value!"
+                                    [interactive]="true" size="small"
+                                    (ratingChange)="setRating(sub.key, $event)" />
+                </div>
+              }
+            </div>
+
+            <div class="sr-page__step-actions">
+              <button mat-raised-button class="suhana-btn-primary" matStepperNext
+                      [disabled]="ratingForm.invalid" type="button">
+                Next <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Step 2: Details -->
+        <mat-step label="Tell us more" [stepControl]="detailForm">
+          <form [formGroup]="detailForm" (ngSubmit)="submit()" class="sr-page__step" novalidate>
+
+            <mat-form-field appearance="outline" class="sr-page__full-field">
+              <mat-label>Review Title</mat-label>
+              <input matInput formControlName="title" maxlength="120"
+                     placeholder="Summarise your experience in one line" />
+              <mat-hint align="end">{{ titleLength }}/120</mat-hint>
+              @if (detailForm.get('title')?.touched && detailForm.get('title')?.errors?.['required']) {
+                <mat-error>Title is required</mat-error>
+              }
+              @if (detailForm.get('title')?.touched && detailForm.get('title')?.errors?.['minlength']) {
+                <mat-error>At least 5 characters</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="sr-page__full-field">
+              <mat-label>Your Review</mat-label>
+              <textarea matInput formControlName="reviewText" rows="6" maxlength="3000"
+                        placeholder="Share details about your experience…"></textarea>
+              <mat-hint align="end">{{ textLength }}/3000</mat-hint>
+              @if (detailForm.get('reviewText')?.touched && detailForm.get('reviewText')?.errors?.['required']) {
+                <mat-error>Review text is required</mat-error>
+              }
+              @if (detailForm.get('reviewText')?.touched && detailForm.get('reviewText')?.errors?.['minlength']) {
+                <mat-error>At least 20 characters</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="sr-page__half-field">
+              <mat-label>Review Category</mat-label>
+              <mat-select formControlName="reviewType">
+                @for (opt of typeOptions; track opt.value) {
+                  <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <div class="sr-page__check-row">
+              <mat-checkbox formControlName="wouldRecommend" color="primary">
+                I would recommend Suhana to others
+              </mat-checkbox>
+              <mat-checkbox formControlName="isAnonymous" color="primary">
+                Post anonymously
+              </mat-checkbox>
+            </div>
+
+            <div class="sr-page__step-actions">
+              <button mat-button type="button" matStepperPrevious>Back</button>
+              <button mat-raised-button class="suhana-btn-primary" type="submit"
+                      [disabled]="detailForm.invalid || submitting()">
+                @if (submitting()) {
+                  <mat-spinner diameter="20" />
+                } @else {
+                  <ng-container>
+                    <span class="btn-icon-text"><mat-icon>send</mat-icon> Submit Review</span>
+                  </ng-container>
+                }
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+      </mat-stepper>
+    </div>
+  }
+</div>
