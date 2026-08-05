@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { MatchService } from '../../services';
 import { MatchResult } from '../../models/user.model';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-match-tracker',
@@ -15,6 +16,7 @@ import { MatchResult } from '../../models/user.model';
 })
 export class MatchTrackerComponent implements OnInit {
   private readonly matchService = inject(MatchService);
+  protected readonly commonService = inject(CommonService);
   protected readonly trackedMatches = signal<{ match: MatchResult; step: number }[]>([]);
 
   protected readonly steps = ['Shortlist', 'Express Interest', 'Chat / Meet'];

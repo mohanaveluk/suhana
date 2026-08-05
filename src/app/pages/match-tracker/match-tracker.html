@@ -8,7 +8,7 @@
     @for (item of trackedMatches(); track item.match.id) {
       <mat-card class="tracker-card" appearance="outlined">
         <div class="tracker-profile">
-          <img [src]="item.match.profile.photos[0]?.url" [alt]="item.match.profile.firstName" class="tracker-avatar" />
+          <img [style.background-image]="commonService.cardBg(item.match.profile.photos[0]?.url)" [alt]="item.match.profile.firstName" class="tracker-avatar" />
           <div class="tracker-info">
             <h3>{{ item.match.profile.firstName }} {{ item.match.profile.lastName }}</h3>
             <p>{{ item.match.profile.age }} yrs &middot; {{ item.match.profile.location.city }}</p>

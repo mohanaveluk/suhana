@@ -100,3 +100,20 @@
   border-radius: 8px;
   border-left: 3px solid var(--suhana-rose-gold-lighter);
 }
+
+.mad-verifying {
+  display: inline-flex;
+  justify-content: center;
+  padding: 0;
+}
+
+.mad-spinner-white {
+  --mdc-circular-progress-active-indicator-color: white !important;
+  --mat-mdc-progress-spinner-active-indicator-color: white !important;
+  top: 4px;
+
+  ::ng-deep circle {
+    stroke: white !important;
+  }
+}
+

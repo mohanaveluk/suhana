@@ -518,7 +518,7 @@ export class ApiService {
   }
 
   verifyMatchFixedPartner(id: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/v1/match-fixed/${id}/verify-partner`, {});
+    return this.http.post(`${this.baseUrl}/v1/match-fixed/admin/${id}/verify`, {});
   }
 
   uploadMatchFixedPhoto(file: File): Observable<any> {

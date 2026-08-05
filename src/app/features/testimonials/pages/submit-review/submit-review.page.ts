@@ -1,5 +1,6 @@
 import {
   Component, ChangeDetectionStrategy, inject, signal,
+  OnInit,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReviewsService } from '../../services/reviews.service';
 import { RatingStarsComponent } from '../../components/rating-stars/rating-stars.component';
 import { ReviewType } from '../../enums/testimonial.enum';
+import { UserProfile } from '../../../../models/user.model';
 
 @Component({
   selector: 'app-submit-review-page',
@@ -29,7 +31,7 @@ import { ReviewType } from '../../enums/testimonial.enum';
   templateUrl: './submit-review.page.html',
   styleUrl:    './submit-review.page.scss',
 })
-export class SubmitReviewPage {
+export class SubmitReviewPage implements OnInit {
   private readonly fb      = inject(FormBuilder);
   private readonly svc     = inject(ReviewsService);
   private readonly router  = inject(Router);
@@ -37,6 +39,8 @@ export class SubmitReviewPage {
 
   protected submitting = signal(false);
   protected success    = signal(false);
+  private readonly userProfile = signal<UserProfile | null>(null);
+
 
   protected readonly typeOptions = [
     { value: ReviewType.GENERAL,          label: 'General Experience' },
@@ -63,6 +67,12 @@ export class SubmitReviewPage {
     wouldRecommend:[true],
   });
 
+  async ngOnInit(): Promise<void> {
+    await this.svc.loadMyProfile();
+    const profile = this.svc.myProfile();
+    this.userProfile.set(profile);
+  }
+
   protected setRating(field: string, value: number): void {
     this.ratingForm.get(field)?.setValue(value);
   }
@@ -74,6 +84,7 @@ export class SubmitReviewPage {
     const payload = {
       ...this.ratingForm.getRawValue() as any,
       ...this.detailForm.getRawValue() as any,
+      profileId: this.userProfile()?.userId
     };
 
     this.svc.create(payload).subscribe({

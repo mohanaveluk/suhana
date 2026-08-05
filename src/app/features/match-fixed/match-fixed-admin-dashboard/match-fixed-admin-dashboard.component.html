@@ -127,7 +127,11 @@
                     <button mat-raised-button class="suhana-btn-primary"
                             [disabled]="verifyingId() === story.id"
                             (click)="verify(story.id)">
-                      @if (verifyingId() === story.id) { <mat-spinner diameter="16"></mat-spinner> }
+                      @if (verifyingId() === story.id) {
+                        <div class="mad-verifying">
+                          <mat-spinner diameter="16" class="mad-spinner-white"></mat-spinner>
+                        </div>
+                      }
                       <mat-icon>verified</mat-icon> Verify Partner
                     </button>
                   </div>
