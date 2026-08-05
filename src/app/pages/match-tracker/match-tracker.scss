@@ -44,6 +44,9 @@
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--suhana-rose-gold-lighter);
+    flex-shrink: 0;
+    background-size: cover !important;
+    background-position: center !important;
   }
 
   .tracker-info {

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { retry } from 'rxjs/operators';
@@ -20,12 +20,20 @@ import {
   ReviewStats,
   UpdateReviewRequest,
 } from '../models/review.model';
+import { firstValueFrom } from 'rxjs';
+import { UserProfile } from '../../../models/user.model';
+import { ApiService } from '../../../services';
+
 
 @Injectable({ providedIn: 'root' })
 export class ReviewsService {
+  private readonly api  = inject(ApiService);
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/v1/reviews`;
+  private readonly userProfile = signal<UserProfile | null>(null);
 
+  readonly myProfile = this.userProfile.asReadonly();
+  
   // ── Public ────────────────────────────────────────────────────────────────
   getFeatured(): Observable<Review[]> {
     return this.http.get<Review[]>(`${this.base}/public/featured`).pipe(retry(1));
@@ -55,6 +63,14 @@ export class ReviewsService {
   }
 
   // ── Authenticated ─────────────────────────────────────────────────────────
+
+  async loadMyProfile(): Promise<void> {
+    try {
+      const profile = await firstValueFrom(this.api.getMyProfile());
+      this.userProfile.set(profile);
+    } catch { /* fallback: keep current */ }
+  }
+  
   create(dto: CreateReviewRequest): Observable<Review> {
     return this.http.post<Review>(this.base, dto);
   }
