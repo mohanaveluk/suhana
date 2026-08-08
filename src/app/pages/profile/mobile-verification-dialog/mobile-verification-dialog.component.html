@@ -1,0 +1,100 @@
+<div class="mvd">
+  <div mat-dialog-title class="mvd__title">
+    <mat-icon class="mvd__title-icon">phone_android</mat-icon>
+    <span>Verify Your Mobile Number</span>
+    <button mat-icon-button class="mvd__close-btn" (click)="cancel()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="mvd__content">
+
+    <!-- Alerts -->
+    @if (errorMsg()) {
+      <div class="mvd__alert mvd__alert--error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMsg() }}</span>
+      </div>
+    }
+    @if (successMsg()) {
+      <div class="mvd__alert mvd__alert--success" role="status">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ successMsg() }}</span>
+      </div>
+    }
+
+    <!-- Step 1: Enter / confirm mobile number -->
+    @if (step() === 'number') {
+      <p class="mvd__intro">
+        We will send a 6-digit verification code to the mobile number below.
+        You may update the number before sending.
+      </p>
+
+      <form [formGroup]="numberForm" class="mvd__form" (ngSubmit)="sendOtp()">
+        <mat-form-field appearance="outline" class="mvd__field">
+          <mat-label>Mobile Number</mat-label>
+          <mat-icon matPrefix>phone</mat-icon>
+          <input matInput formControlName="mobileNumber" type="tel"
+                 placeholder="+19253320011" autocomplete="tel" />
+          @if (numberForm.controls.mobileNumber.invalid && numberForm.controls.mobileNumber.touched) {
+            <mat-error>Enter a valid international mobile number (e.g. +1 925 332 0011)</mat-error>
+          }
+        </mat-form-field>
+      </form>
+    }
+
+    <!-- Step 2: Enter OTP -->
+    @if (step() === 'otp') {
+      <p class="mvd__intro">
+        Enter the 6-digit code sent to
+        <strong>{{ numberForm.value.mobileNumber }}</strong>.
+      </p>
+
+      <form [formGroup]="otpForm" class="mvd__form" (ngSubmit)="verifyOtp()">
+        <mat-form-field appearance="outline" class="mvd__field">
+          <mat-label>Verification Code</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput formControlName="otpCode" type="text"
+                 inputmode="numeric" maxlength="6" placeholder="000000"
+                 autocomplete="one-time-code" />
+          @if (otpForm.controls.otpCode.invalid && otpForm.controls.otpCode.touched) {
+            <mat-error>Enter the 6-digit code</mat-error>
+          }
+        </mat-form-field>
+      </form>
+
+      <div class="mvd__resend">
+        @if (resendCountdown() > 0) {
+          <span class="mvd__resend-countdown">
+            <mat-icon>timer</mat-icon>
+            Resend available in {{ resendCountdown() }}s
+          </span>
+        } @else {
+          <button mat-button class="mvd__resend-btn" type="button"
+                  (click)="resendOtp()" [disabled]="loading()">
+            <mat-icon>refresh</mat-icon> Resend Code
+          </button>
+        }
+      </div>
+    }
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="mvd__actions" align="end">
+    @if (step() === 'number') {
+      <button mat-button type="button" (click)="cancel()" [disabled]="loading()">Cancel</button>
+      <button mat-raised-button class="suhana-btn-primary" type="button"
+              (click)="sendOtp()" [disabled]="loading() || numberForm.invalid">
+        @if (loading()) { <mat-spinner diameter="18" class="mvd-spinner-white" /> } @else { Send Code }
+      </button>
+    } @else {
+      <button mat-button type="button" (click)="goBack()" [disabled]="loading()">
+        <mat-icon>arrow_back</mat-icon> Back
+      </button>
+      <button mat-raised-button class="suhana-btn-primary" type="button"
+              (click)="verifyOtp()" [disabled]="loading() || otpForm.invalid">
+        @if (loading()) { <mat-spinner diameter="18" class="mvd-spinner-white" /> } @else { Verify }
+      </button>
+    }
+  </mat-dialog-actions>
+</div>

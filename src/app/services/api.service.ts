@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { UserProfile, RefreshTokenResponse } from '../models/user.model';
+import { UserProfile, RefreshTokenResponse, MobileVerificationStatus, ProfileTrustIndicator } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -146,6 +146,10 @@ export class ApiService {
 
   deletePhoto(photoId: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/v1/profiles/me/photos/${photoId}`);
+  }
+
+  updateVoiceIntruduction(data: Record<string, unknown>): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/profiles/me/voice-introduction`, data);
   }
 
   // Matches
@@ -566,6 +570,37 @@ export class ApiService {
   // Safety Tips — public
   getSafetyTips(): Observable<any> {
     return this.http.get(`${this.baseUrl}/v1/safety-tips`);
+  }
+
+  // Mobile Verification
+  getMobileVerificationStatus(): Observable<MobileVerificationStatus> {
+    return this.http.get<MobileVerificationStatus>(`${this.baseUrl}/v1/users/mobile/status`);
+  }
+
+  sendMobileVerification(mobileNumber: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/users/mobile/send-verification`, { mobileNumber });
+  }
+
+  verifyMobileOtp(mobileNumber: string, otpCode: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/users/mobile/verify`, { mobileNumber, otpCode });
+  }
+
+  resendMobileVerification(mobileNumber: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/users/mobile/resend-verification`, { mobileNumber });
+  }
+
+  // Voice Introduction
+  uploadVoiceIntroduction(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    formData.append('context', 'voice');
+    //return this.http.post<{ url: string }>(`${this.baseUrl}/v1/images/upload-variants`, formData);
+    return this.http.post<{ url: string }>(`${this.baseUrl}/v1/profile/voice/upload`, formData);
+  }
+
+  // Profile Trust Indicator
+  getProfileTrustIndicator(profileId: string): Observable<ProfileTrustIndicator> {
+    return this.http.get<ProfileTrustIndicator>(`${this.baseUrl}/v1/audit-log/profile-indicator/${profileId}`);
   }
 
   // Safety Tips — admin

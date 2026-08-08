@@ -284,6 +284,14 @@ async updateNewProfile(profile: Partial<UserProfile>): Promise<void> {
     }
   }
 
+  // updateVoiceIntroduction url to the profile 
+  async updateVoiceIntroductionUrl(url: string): Promise<void> {
+    const current = this.userProfile();
+    if (current) {
+      await this.updateProfile({ voiceIntroductionUrl: url });
+    }
+  }
+
   // uploadProfileImage(file: File): Observable<{ imageUrl: string }> {
   //   const formData = new FormData();
   //   formData.append('file', file, file.name);

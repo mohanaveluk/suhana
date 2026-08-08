@@ -144,6 +144,24 @@
             <span class="hero-age">{{ formatAge(p.age) }}</span>
           </div>
 
+          <!-- Trust & Verification indicators -->
+          <div class="hero-trust-row">
+            @if (trustIndicator(); as ti) {
+              <span class="trust-chip trust-chip--{{ ti.trustIndicator | lowercase }}"
+                    [matTooltip]="trustTooltip(ti.trustIndicator)">
+                <mat-icon>{{ trustIcon(ti.trustIndicator) }}</mat-icon>
+                {{ trustLabel(ti.trustIndicator) }}
+              </span>
+            }
+            @if (p.user?.isMobileVerified!) {
+              <span class="trust-chip trust-chip--verified"
+                    matTooltip="This mobile number has been verified.">
+                <mat-icon>verified</mat-icon>
+                Mobile Verified
+              </span>
+            }
+          </div>
+
           <!-- Location -->
           <p class="hero-location">
             <mat-icon>location_on</mat-icon>
@@ -309,6 +327,49 @@
                   </mat-card-content>
                 </mat-card>
 
+                <!-- Voice Introduction -->
+                @if (p.voiceIntroductionUrl) {
+                  <mat-card class="info-card voice-intro-card" appearance="outlined">
+                    <mat-card-header>
+                      <div class="card-header-inner">
+                        <div class="card-header-icon"><mat-icon>mic</mat-icon></div>
+                        <mat-card-title>Voice Introduction</mat-card-title>
+                      </div>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <div class="voice-player">
+                        <audio [src]="p.voiceIntroductionUrl" controls
+                               class="voice-player__audio" preload="none"
+                               aria-label="Voice introduction by {{ p.firstName }}"></audio>
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                }
+
+                <!-- Video Introduction -->
+                @if (p.videoIntroUrl) {
+                  <mat-card class="info-card video-intro-card" appearance="outlined">
+                    <mat-card-header>
+                      <div class="card-header-inner">
+                        <div class="card-header-icon"><mat-icon>videocam</mat-icon></div>
+                        <mat-card-title>Video Introduction</mat-card-title>
+                      </div>
+                    </mat-card-header>
+                    <mat-card-content>
+                      @if (isPlayableVideo(p.videoIntroUrl)) {
+                        <video [src]="p.videoIntroUrl" controls preload="none"
+                               class="video-player__video"
+                               aria-label="Video introduction by {{ p.firstName }}"></video>
+                      } @else {
+                        <a mat-stroked-button class="video-player__link"
+                           [href]="p.videoIntroUrl" target="_blank" rel="noopener noreferrer">
+                          <mat-icon>play_circle</mat-icon> Watch Video
+                        </a>
+                      }
+                    </mat-card-content>
+                  </mat-card>
+                }
+
                 <!-- Personal Details -->
                 <mat-card class="info-card" appearance="outlined">
                   <mat-card-header>
@@ -417,6 +478,19 @@
                           </span>
                         </div>
                       </div>
+
+                      @if (p.isMobileVerified) {
+                        <div class="info-item">
+                          <div class="info-icon"><mat-icon style="color:#1565c0">phone_android</mat-icon></div>
+                          <div class="info-body">
+                            <span class="info-label">Mobile</span>
+                            <span class="info-value mobile-verified-badge"
+                                  matTooltip="This mobile number has been verified.">
+                              <mat-icon>check_circle</mat-icon> Mobile Verified
+                            </span>
+                          </div>
+                        </div>
+                      }
 
                     </div>
                   </mat-card-content>

@@ -243,3 +243,76 @@ a {
   transition: color 0.2s ease;
   &:hover { color: var(--suhana-rose-gold); }
 }
+
+// ── Shared: Trust Indicator Chips ─────────────────────────────────────────────
+.trust-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: default;
+  white-space: nowrap;
+
+  mat-icon { font-size: 15px; width: 15px; height: 15px; flex-shrink: 0; }
+
+  &.trust-chip--green_flag  { background: #e8f5e9; color: #2e7d32; mat-icon { color: #2e7d32; } }
+  &.trust-chip--yellow_flag { background: #fffde7; color: #f57f17; mat-icon { color: #f57f17; } }
+  &.trust-chip--red_flag    { background: #fdecea; color: #c62828; mat-icon { color: #c62828; } }
+  &.trust-chip--verified    { background: #e3f2fd; color: #1565c0; mat-icon { color: #1565c0; } }
+}
+
+.hero-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 10px;
+}
+
+// ── Shared: Mobile Verified Badge ─────────────────────────────────────────────
+.mobile-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #1565c0;
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  mat-icon { font-size: 15px; width: 15px; height: 15px; color: #1565c0; }
+}
+
+// ── Shared: Voice Player ──────────────────────────────────────────────────────
+.voice-player__audio {
+  width: 100%;
+  border-radius: 8px;
+  accent-color: var(--suhana-maroon, #800020);
+}
+
+.voice-intro-card {
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+// ── Shared: Video Player ──────────────────────────────────────────────────────
+.video-player__video {
+  width: 100%;
+  max-height: 420px;
+  border-radius: 8px;
+  background: #000;
+  display: block;
+}
+
+.video-player__link {
+  display: inline-flex !important;
+  align-items: center;
+  border-color: var(--suhana-rose-gold) !important;
+  color: var(--suhana-maroon) !important;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; margin-right: 6px; }
+}

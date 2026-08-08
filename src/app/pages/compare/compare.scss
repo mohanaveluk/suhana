@@ -171,6 +171,67 @@
   }
 }
 
+/* Voice / video introductions. Columns are narrow, so the audio player is
+   compact and video always opens in a new tab rather than embedding 4 players. */
+.media-cell {
+  &__audio {
+    width: 100%;
+    min-width: 88px;
+    height: 34px;
+    border-radius: 6px;
+    accent-color: var(--suhana-maroon);
+    vertical-align: middle;
+  }
+
+  &__watch {
+    white-space: nowrap;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    padding: 0 10px;
+    border-color: var(--suhana-rose-gold) !important;
+    color: var(--suhana-maroon) !important;
+
+    mat-icon { font-size: 15px; width: 15px; height: 15px; margin-right: 3px; }
+  }
+}
+
+/* Neutral placeholder — visibly "absent" without reading as an error. */
+.na-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 10px;
+  background: #f1f1f1;
+  color: #9b9b9b;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: default;
+}
+
+/* Trust + verification chips inside the comparison grid.
+   The global .trust-chip is nowrap; columns here are narrow, so let it wrap. */
+.trust-cell {
+  .trust-chip {
+    white-space: normal;
+    text-align: left;
+    line-height: 1.25;
+    font-size: 0.68rem;
+    padding: 4px 8px;
+  }
+
+  .trust-chip--unverified {
+    background: #f5f5f5;
+    color: var(--suhana-text-secondary);
+
+    mat-icon { color: var(--suhana-text-secondary); }
+  }
+
+  .no-data {
+    color: var(--suhana-text-secondary);
+    font-size: 0.85rem;
+  }
+}
+
 .insight-row td {
   background: var(--suhana-blush);
 
@@ -358,6 +419,18 @@ tfoot td {
       font-size: 0.82rem;
     }
   }
+
+  .trust-cell .trust-chip {
+    font-size: 0.75rem;
+    padding: 5px 11px;
+  }
+
+  .media-cell {
+    &__audio { height: 40px; }
+    &__watch { font-size: 0.78rem; padding: 0 14px; }
+  }
+
+  .na-tag { font-size: 0.74rem; padding: 3px 11px; }
 
   .score-bar-container {
     grid-template-columns: 1fr 35px;

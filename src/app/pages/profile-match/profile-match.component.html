@@ -238,6 +238,24 @@
           <div class="hero-info">
             <h2 class="hero-name">{{ theirProfile()!.firstName }} {{ theirProfile()!.lastName }}</h2>
             <p class="hero-meta">{{ theirProfile()!.age }} yrs &bull; {{ theirProfile()!.location.city }}</p>
+
+            <!-- Trust Indicator -->
+            @if (theirTrustIndicator(); as ti) {
+              <div class="hero-trust-row">
+                <span class="trust-chip trust-chip--{{ ti.trustIndicator | lowercase }}"
+                      [matTooltip]="trustTooltip(ti.trustIndicator)">
+                  <mat-icon>{{ trustIcon(ti.trustIndicator) }}</mat-icon>
+                  {{ trustLabel(ti.trustIndicator) }}
+                </span>
+                @if (theirProfile()!.user?.isMobileVerified) {
+                  <span class="trust-chip trust-chip--verified"
+                        matTooltip="Mobile Verified">
+                    <mat-icon>verified</mat-icon>
+                  </span>
+                }
+              </div>
+            }
+
             <p class="hero-occ">
               <mat-icon>work</mat-icon>{{ theirProfile()!.occupation.title }}
             </p>
@@ -537,6 +555,8 @@
                   <div class="spc-row"><mat-icon>work</mat-icon><span>{{ myProfile()!.occupation.title }}</span></div>
                   <div class="spc-row"><mat-icon>family_restroom</mat-icon><span>{{ myProfile()!.familyDetails.familyType | titlecase }} family</span></div>
                 </div>
+                <ng-container [ngTemplateOutlet]="introMedia"
+                              [ngTemplateOutletContext]="{ $implicit: myProfile()! }"></ng-container>
               </mat-card>
 
               <!-- Profile B summary -->
@@ -560,8 +580,46 @@
                   <div class="spc-row"><mat-icon>work</mat-icon><span>{{ theirProfile()!.occupation.title }}</span></div>
                   <div class="spc-row"><mat-icon>family_restroom</mat-icon><span>{{ theirProfile()!.familyDetails.familyType | titlecase }} family</span></div>
                 </div>
+                <ng-container [ngTemplateOutlet]="introMedia"
+                              [ngTemplateOutletContext]="{ $implicit: theirProfile()! }"></ng-container>
               </mat-card>
             </div>
+
+            <!-- Voice / video introductions, rendered into both summary cards above -->
+            <ng-template #introMedia let-p>
+              @if (p.voiceIntroductionUrl || p.videoIntroUrl) {
+                <mat-divider></mat-divider>
+                <div class="spc-media">
+                  @if (p.voiceIntroductionUrl) {
+                    <div class="spc-media__item">
+                      <span class="spc-media__label">
+                        <mat-icon>mic</mat-icon> Voice Introduction
+                      </span>
+                      <audio [src]="p.voiceIntroductionUrl" controls preload="none"
+                             class="voice-player__audio"
+                             aria-label="Voice introduction by {{ p.firstName }}"></audio>
+                    </div>
+                  }
+                  @if (p.videoIntroUrl) {
+                    <div class="spc-media__item">
+                      <span class="spc-media__label">
+                        <mat-icon>videocam</mat-icon> Video Introduction
+                      </span>
+                      @if (isPlayableVideo(p.videoIntroUrl)) {
+                        <video [src]="p.videoIntroUrl" controls preload="none"
+                               class="spc-media__video"
+                               aria-label="Video introduction by {{ p.firstName }}"></video>
+                      } @else {
+                        <a mat-stroked-button class="spc-media__link"
+                           [href]="p.videoIntroUrl" target="_blank" rel="noopener noreferrer">
+                          <mat-icon>play_circle</mat-icon> Watch Video
+                        </a>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </ng-template>
 
             <!-- Action Panel -->
             <mat-card class="action-panel-card" appearance="outlined">

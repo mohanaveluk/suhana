@@ -1,0 +1,234 @@
+$maroon : var(--suhana-maroon, #800020);
+$rose   : var(--suhana-rose-gold, #b76e79);
+$green  : #2e7d32;
+$red    : #c62828;
+
+.vid {
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: $maroon;
+    padding: 20px 24px 4px;
+
+    &-icon { color: $rose; font-size: 26px; width: 26px; height: 26px; }
+  }
+
+  &__close-btn { margin-left: auto; color: #888; }
+
+  &__content {
+    padding: 8px 24px 16px !important;
+    min-width: min(480px, 92vw);
+    max-height: 70vh;
+  }
+
+  &__alert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 14px;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+
+    &--error { background: #fdecea; color: $red; mat-icon { color: $red; } }
+  }
+
+  &__tabs { margin-top: 4px; }
+
+  &__tab-body {
+    padding: 20px 4px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__hint {
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    line-height: 1.5;
+    margin: 0;
+    align-self: stretch;
+  }
+
+  // ── Recorder ring ────────────────────────────────────────────────────────
+  &__recorder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__ring {
+    position: relative;
+    width: 140px;
+    height: 140px;
+
+    &--active .vid__ring-progress { stroke: $maroon; }
+    &--active .vid__mic-icon { color: $maroon; animation: vid-pulse 1s ease-in-out infinite; }
+  }
+
+  &__ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  &__ring-bg {
+    fill: none;
+    stroke: rgba(128,0,32,.12);
+    stroke-width: 8;
+  }
+
+  &__ring-progress {
+    fill: none;
+    stroke: $rose;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 339.3;
+    stroke-dashoffset: 339.3;
+    transition: stroke-dashoffset 0.9s linear;
+  }
+
+  &__ring-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  &__mic-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: $rose;
+  }
+
+  &__timer {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__rec-controls { display: flex; gap: 10px; }
+
+  &__rec-btn, &__stop-btn {
+    mat-icon { margin-right: 4px; }
+  }
+
+  &__stop-btn {
+    background: #c62828 !important;
+    color: white !important;
+  }
+
+  // ── Playback ─────────────────────────────────────────────────────────────
+  &__playback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  &__audio-el { display: none; }
+
+  &__playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(128,0,32,.06);
+    border-radius: 32px;
+    padding: 6px 16px 6px 6px;
+  }
+
+  &__play-btn {
+    color: $maroon !important;
+    width: 48px;
+    height: 48px;
+    mat-icon { font-size: 40px; width: 40px; height: 40px; }
+  }
+
+  &__playback-label { font-size: 0.88rem; color: #555; flex: 1; }
+
+  &__delete-btn { color: #c62828 !important; }
+
+  // ── Upload ────────────────────────────────────────────────────────────────
+  &__drop-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 2px dashed rgba(128,0,32,.3);
+    border-radius: 14px;
+    padding: 36px 24px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+
+    &:hover, &:focus {
+      border-color: $maroon;
+      background: rgba(128,0,32,.04);
+    }
+  }
+
+  &__file-input { display: none; }
+
+  &__drop-icon { font-size: 48px; width: 48px; height: 48px; color: $rose; }
+
+  &__drop-label { font-size: 1rem; font-weight: 600; color: $maroon; }
+
+  &__drop-sub { font-size: 0.82rem; color: #888; }
+
+  &__upload-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+
+  &__audio-preview { width: 100%; border-radius: 8px; }
+
+  &__upload-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    color: #555;
+    mat-icon { color: $rose; font-size: 20px; width: 20px; height: 20px; }
+    button { color: #c62828 !important; }
+  }
+
+  &__actions { padding: 8px 24px 20px !important; }
+}
+
+@keyframes vid-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.92); }
+}
+.suhana-btn-primary {
+  mat-icon {
+    margin: -5px 0;
+  }
+}
+mat-spinner { display: inline-block; }
+.mvd-spinner-white {
+  --mdc-circular-progress-active-indicator-color: white !important;
+  --mat-mdc-progress-spinner-active-indicator-color: white !important;
+  top: 4px;
+
+  ::ng-deep circle {
+    stroke: white !important;
+  }
+}

@@ -1,0 +1,152 @@
+<div class="vid">
+  <div mat-dialog-title class="vid__title">
+    <mat-icon class="vid__title-icon">mic</mat-icon>
+    <span>Voice Introduction</span>
+    <button mat-icon-button class="vid__close-btn" type="button" (click)="cancel()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="vid__content">
+
+    @if (uploadError()) {
+      <div class="vid__alert vid__alert--error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ uploadError() }}</span>
+      </div>
+    }
+
+    <mat-tab-group animationDuration="200ms" class="vid__tabs">
+
+      <!-- ── Tab 1: Record ── -->
+      <mat-tab label="Record Voice">
+        <div class="vid__tab-body">
+
+          <p class="vid__hint">
+            Record up to {{ maxSeconds }} seconds. Introduce yourself — your name, interests,
+            and what you're looking for in a life partner.
+          </p>
+
+          <!-- Timer ring -->
+          <div class="vid__recorder">
+            <div class="vid__ring" [class.vid__ring--active]="recording()">
+              <svg viewBox="0 0 120 120" class="vid__ring-svg">
+                <circle cx="60" cy="60" r="54" class="vid__ring-bg" />
+                <circle cx="60" cy="60" r="54" class="vid__ring-progress"
+                        [style.stroke-dashoffset]="339.3 - (339.3 * recordingSeconds() / maxSeconds)" />
+              </svg>
+              <div class="vid__ring-inner">
+                <mat-icon class="vid__mic-icon">{{ recording() ? 'mic' : 'mic_off' }}</mat-icon>
+                <span class="vid__timer">{{ formatTime(recordingSeconds()) }}</span>
+              </div>
+            </div>
+
+            <div class="vid__rec-controls">
+              @if (!recording() && !recordedBlobUrl()) {
+                <button mat-raised-button class="suhana-btn-primary vid__rec-btn" type="button"
+                        (click)="startRecording()">
+                  <mat-icon>fiber_manual_record</mat-icon> Start Recording
+                </button>
+              }
+              @if (recording()) {
+                <button mat-raised-button class="vid__stop-btn" type="button"
+                        (click)="stopRecording()">
+                  <mat-icon>stop</mat-icon> Stop
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Playback -->
+          @if (recordedBlobUrl()) {
+            <div class="vid__playback">
+              <audio #audioPlayer [src]="recordedBlobUrl()!" (ended)="onAudioEnded()"
+                     class="vid__audio-el" preload="auto"></audio>
+
+              <div class="vid__playback-controls">
+                <button mat-icon-button class="vid__play-btn" type="button"
+                        (click)="togglePlayback()" [attr.aria-label]="isPlaying() ? 'Pause' : 'Play'">
+                  <mat-icon>{{ isPlaying() ? 'pause_circle_filled' : 'play_circle_filled' }}</mat-icon>
+                </button>
+                <span class="vid__playback-label">{{ formatTime(recordingSeconds()) }} recorded</span>
+                <button mat-icon-button class="vid__delete-btn" type="button"
+                        (click)="deleteRecording()" aria-label="Delete recording"
+                        matTooltip="Delete and re-record">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+
+              <button mat-raised-button class="suhana-btn-primary" type="button"
+                      (click)="saveRecording()" [disabled]="uploading()">
+                @if (uploading()) {
+                  <mat-spinner diameter="18" class="mvd-spinner-white"/>
+                } @else {
+                  <ng-container>
+                    <mat-icon>cloud_upload</mat-icon> Save Voice Introduction
+                  </ng-container>
+                }
+              </button>
+            </div>
+          }
+
+        </div>
+      </mat-tab>
+
+      <!-- ── Tab 2: Upload ── -->
+      <mat-tab label="Upload Audio">
+        <div class="vid__tab-body">
+
+          <p class="vid__hint">
+            Upload an existing recording (MP3, WAV, M4A, OGG — max 5 MB).
+          </p>
+
+          @if (fileError()) {
+            <div class="vid__alert vid__alert--error" role="alert">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ fileError() }}</span>
+            </div>
+          }
+
+          @if (!uploadedFile()) {
+            <label class="vid__drop-zone" tabindex="0" role="button"
+                   aria-label="Select audio file">
+              <input type="file" accept=".mp3,.wav,.m4a,.ogg,audio/*"
+                     class="vid__file-input" (change)="onFileSelected($event)" />
+              <mat-icon class="vid__drop-icon">audio_file</mat-icon>
+              <span class="vid__drop-label">Click to select an audio file</span>
+              <span class="vid__drop-sub">MP3 · WAV · M4A · OGG &nbsp;|&nbsp; Max 5 MB</span>
+            </label>
+          } @else {
+            <div class="vid__upload-preview">
+              <audio [src]="uploadedFileUrl()!" controls class="vid__audio-preview"></audio>
+              <div class="vid__upload-info">
+                <mat-icon>audio_file</mat-icon>
+                <span>{{ uploadedFile()!.name }}</span>
+                <button mat-icon-button type="button" (click)="removeUploadedFile()" aria-label="Remove">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <button mat-raised-button class="suhana-btn-primary" type="button"
+                      (click)="saveUploadedFile()" [disabled]="uploading()">
+                @if (uploading()) {
+                  <mat-spinner diameter="18" />
+                } @else {
+                  <ng-container>
+                    <mat-icon>cloud_upload</mat-icon> Upload Voice Introduction
+                  </ng-container>
+                }
+              </button>
+            </div>
+          }
+
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="vid__actions" align="end">
+    <button mat-button type="button" (click)="cancel()">Cancel</button>
+  </mat-dialog-actions>
+</div>
