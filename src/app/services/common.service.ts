@@ -94,6 +94,15 @@ export class CommonService {
     return value === null || value === undefined || value === '';
   }
 
+  /**
+   * A real mobile number is on file. The backend sends 0 (or '0') to mean
+   * "none recorded", which is truthy as a string and would otherwise render.
+   */
+  hasMobile(mobile: string | number | null | undefined): boolean {
+    const v = String(mobile ?? '').trim();
+    return v !== '' && v !== '0';
+  }
+
   public cardBg(url: string | undefined): SafeStyle {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url || '/avatar-default.svg'}')`);
   }

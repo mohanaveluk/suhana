@@ -48,7 +48,7 @@ const MAX_HOROSCOPE_MB = 10;
 export class EditProfileComponent implements OnInit {
   private readonly fb             = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
-  private readonly commonService  = inject(CommonService);
+  protected readonly commonService = inject(CommonService);
   private readonly api            = inject(ApiService);
   private readonly router         = inject(Router);
   private readonly dialog         = inject(MatDialog);
@@ -389,7 +389,9 @@ export class EditProfileComponent implements OnInit {
   protected removeVoiceIntro(): void { this.voiceIntroUrl.set(null); }
 
   protected openVerifyMobileDialog(): void {
-    const mobile = this.user()?.mobile ?? '';
+    // Don't prefill the placeholder "0" — start the dialog blank instead.
+    const raw = this.user()?.mobile;
+    const mobile = this.commonService.hasMobile(raw) ? String(raw) : '';
     const ref = this.dialog.open(MobileVerificationDialogComponent, {
       data: { mobileNumber: mobile } satisfies MobileVerificationDialogData,
       width: '480px',

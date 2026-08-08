@@ -100,7 +100,7 @@
 
       <!-- Quick-glance contact / profile info -->
       <div class="ep-sidebar__info">
-        @if (user()?.mobile) {
+        @if (commonService.hasMobile(user()?.mobile)) {
           <div class="ep-info-item">
             <mat-icon>phone_android</mat-icon>
             <span>{{ user()?.mobile }}</span>
@@ -205,9 +205,14 @@
               <div class="ep-mobile">
                 <!-- <span class="ep-mobile__label">Mobile Number</span> -->
                 <div class="ep-mobile__row">
-                  <span class="ep-mobile__value" [class.ep-mobile__value--empty]="!user()?.mobile">
+                  <span class="ep-mobile__value"
+                        [class.ep-mobile__value--empty]="!commonService.hasMobile(user()?.mobile)">
                     <mat-icon matTooltip="Mobile Number">phone_android</mat-icon>
-                    {{ user()?.mobile || 'Not provided' }}
+                    @if (commonService.hasMobile(user()?.mobile)) {
+                      {{ user()?.mobile }}
+                    } @else {
+                      Not provided yet
+                    }
                   </span>
 
                   @if (user()?.isMobileVerified) {
@@ -224,7 +229,8 @@
                   } @else {
                     <button mat-stroked-button type="button" class="ep-mobile__verify"
                             (click)="openVerifyMobileDialog()">
-                      <mat-icon>gpp_maybe</mat-icon> Verify Mobile
+                      <mat-icon>gpp_maybe</mat-icon>
+                      {{ commonService.hasMobile(user()?.mobile) ? 'Verify Mobile' : 'Add Mobile & Verify' }}
                     </button>
                   }
                 </div>

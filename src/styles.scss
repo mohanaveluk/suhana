@@ -299,6 +299,14 @@ a {
   }
 }
 
+// ── Mobile verification: country dropdown panel ───────────────────────────────
+// The panel is rendered by Material in the CDK overlay, outside any component's
+// encapsulation, so it can only be styled from here.
+.mvd-country-panel.mat-mdc-select-panel {
+  max-height: 320px;
+  padding-top: 0 !important; // lets the sticky search sit flush at the top
+}
+
 // ── Shared: Video Player ──────────────────────────────────────────────────────
 .video-player__video {
   width: 100%;

@@ -37,6 +37,27 @@ $red    : #c62828;
 
   &__field { width: 100%; }
 
+  // Country code sits beside the number, narrow enough to leave room to type.
+  &__phone-row {
+    display: grid;
+    grid-template-columns: 216px 1fr;
+    gap: 10px;
+    align-items: start;
+
+    @media (max-width: 420px) { grid-template-columns: 104px 1fr; }
+  }
+
+  &__country { min-width: 0; }
+  &__number  { min-width: 0; }
+
+  &__preview {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #777;
+
+    strong { color: $maroon; letter-spacing: 0.3px; }
+  }
+
   &__alert {
     display: flex;
     align-items: center;
@@ -77,6 +98,78 @@ $red    : #c62828;
     padding: 8px 24px 20px !important;
     gap: 8px;
   }
+}
+
+// ── Country selector ──────────────────────────────────────────────────────────
+// These live inside the mat-select overlay, but they are declared in this
+// component's template so emulated encapsulation still scopes them here.
+.mvd-flag {
+  width: 20px;
+  height: 15px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.mvd-country-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.mvd-country-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.mvd-country-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mvd-country-dial {
+  color: #888;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+// The panel is the scroll container, so this pins the search to its top.
+.mvd-country-search {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: #999; flex-shrink: 0; }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    font-size: 0.9rem;
+    color: inherit;
+  }
+}
+
+.mvd-country-empty {
+  padding: 16px 14px;
+  font-size: 0.86rem;
+  color: #888;
+  text-align: center;
 }
 
 mat-spinner { display: inline-block; }

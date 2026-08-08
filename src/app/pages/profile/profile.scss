@@ -479,6 +479,13 @@
     color: var(--suhana-text-primary);
     font-weight: 450;
   }
+
+  // Outranks the span rule above.
+  span.detail-empty {
+    color: var(--suhana-text-secondary);
+    font-style: italic;
+    font-weight: 400;
+  }
 }
 
 .horo-doc-card {

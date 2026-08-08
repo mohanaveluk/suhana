@@ -31,15 +31,61 @@
       </p>
 
       <form [formGroup]="numberForm" class="mvd__form" (ngSubmit)="sendOtp()">
-        <mat-form-field appearance="outline" class="mvd__field">
-          <mat-label>Mobile Number</mat-label>
-          <mat-icon matPrefix>phone</mat-icon>
-          <input matInput formControlName="mobileNumber" type="tel"
-                 placeholder="+19253320011" autocomplete="tel" />
-          @if (numberForm.controls.mobileNumber.invalid && numberForm.controls.mobileNumber.touched) {
-            <mat-error>Enter a valid international mobile number (e.g. +1 925 332 0011)</mat-error>
-          }
-        </mat-form-field>
+        <div class="mvd__phone-row">
+          <mat-form-field appearance="outline" class="mvd__country">
+            <mat-label>Code</mat-label>
+            <mat-select [value]="countryIso()"
+                        (selectionChange)="onCountrySelected($event.value)"
+                        (openedChange)="countryQuery.set('')"
+                        panelClass="mvd-country-panel"
+                        aria-label="Country dialling code">
+              <mat-select-trigger>
+                <span class="mvd-country-trigger">
+                  <img class="mvd-flag" [src]="flagSrc(selectedCountry().iso2)"
+                       width="20" height="15" alt="" loading="lazy" />
+                  {{ selectedCountry().dialCode }}
+                </span>
+              </mat-select-trigger>
+
+              <div class="mvd-country-search" (click)="$event.stopPropagation()">
+                <mat-icon>search</mat-icon>
+                <input type="text" placeholder="Search country or code"
+                       [value]="countryQuery()"
+                       (input)="countryQuery.set($any($event.target).value)"
+                       (keydown)="$event.stopPropagation()"
+                       aria-label="Search countries" />
+              </div>
+
+              @for (c of filteredCountries(); track c.iso2) {
+                <mat-option [value]="c.iso2">
+                  <span class="mvd-country-option">
+                    <img class="mvd-flag" [src]="flagSrc(c.iso2)"
+                         width="20" height="15" alt="" loading="lazy" />
+                    <span class="mvd-country-name">{{ c.name }}</span>
+                    <span class="mvd-country-dial">{{ c.dialCode }}</span>
+                  </span>
+                </mat-option>
+              } @empty {
+                <div class="mvd-country-empty">No countries match “{{ countryQuery() }}”</div>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="mvd__number">
+            <mat-label>Mobile Number</mat-label>
+            <mat-icon matPrefix>phone</mat-icon>
+            <input matInput formControlName="mobileNumber" type="tel"
+                   inputmode="tel" placeholder="9876543210" autocomplete="tel-national"
+                   (input)="onNumberInput($any($event.target).value)" />
+            @if (numberForm.controls.mobileNumber.invalid && numberForm.controls.mobileNumber.touched) {
+              <mat-error>Enter a valid mobile number, without the country code</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <p class="mvd__preview">
+          We will send the code to <strong>{{ fullNumber() }}</strong>
+        </p>
       </form>
     }
 
@@ -47,7 +93,7 @@
     @if (step() === 'otp') {
       <p class="mvd__intro">
         Enter the 6-digit code sent to
-        <strong>{{ numberForm.value.mobileNumber }}</strong>.
+        <strong>{{ fullNumber() }}</strong>.
       </p>
 
       <form [formGroup]="otpForm" class="mvd__form" (ngSubmit)="verifyOtp()">

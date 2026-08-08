@@ -228,12 +228,16 @@
                 </div>
 
                 <!-- Mobile Verification -->
-                @if (auth.user()?.mobile) {
+                @if (auth.user(); as u) {
                   <div class="detail-item">
                     <mat-icon>phone_android</mat-icon>
                     <div>
                       <label>Mobile Number</label>
-                      <span>{{ auth.user()!.mobile }}</span>
+                      @if (commonService.hasMobile(u.mobile)) {
+                        <span>{{ u.mobile }}</span>
+                      } @else {
+                        <span class="detail-empty">Not provided yet</span>
+                      }
                       @if (mobileStatus()?.isMobileVerified) {
                         <span class="mobile-verified-badge"
                               matTooltip="This mobile number has been verified.">
@@ -242,7 +246,8 @@
                       } @else {
                         <button mat-button class="mobile-verify-btn" type="button"
                                 (click)="openVerifyMobileDialog()">
-                          <mat-icon>verified_user</mat-icon> Verify Mobile
+                          <mat-icon>verified_user</mat-icon>
+                          {{ commonService.hasMobile(u.mobile) ? 'Verify Mobile' : 'Add Mobile & Verify' }}
                         </button>
                       }
                     </div>
