@@ -11,7 +11,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SuccessStoriesService } from '../../services/success-stories.service';
 import { SuccessStory } from '../../models/success-story.model';
-import { VerifiedBadgeComponent } from '../../components/verified-badge/verified-badge.component';
 
 @Component({
   selector: 'app-success-story-detail-page',
@@ -21,7 +20,6 @@ import { VerifiedBadgeComponent } from '../../components/verified-badge/verified
     RouterLink, DatePipe,
     MatButtonModule, MatIconModule, MatProgressSpinnerModule,
     MatChipsModule, MatTooltipModule,
-    VerifiedBadgeComponent,
   ],
   templateUrl: './success-story-detail.page.html',
   styleUrl:    './success-story-detail.page.scss',

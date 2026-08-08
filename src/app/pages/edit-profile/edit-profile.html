@@ -102,8 +102,12 @@
       <div class="ep-sidebar__info">
         @if (user()?.mobile) {
           <div class="ep-info-item">
-            <mat-icon>phone</mat-icon>
+            <mat-icon>phone_android</mat-icon>
             <span>{{ user()?.mobile }}</span>
+            @if (user()?.isMobileVerified) {
+              <mat-icon class="ep-info-item__verified"
+                        matTooltip="This mobile number has been verified.">verified</mat-icon>
+            }
           </div>
         }
         @if (locationForm.value.city) {
@@ -196,18 +200,54 @@
                 <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
                 <mat-datepicker #dobPicker></mat-datepicker>
               </mat-form-field>
+              <!-- Mobile is read-only here; it can only be changed through the
+                   verification dialog so a new number is always verified. -->
+              <div class="ep-mobile">
+                <!-- <span class="ep-mobile__label">Mobile Number</span> -->
+                <div class="ep-mobile__row">
+                  <span class="ep-mobile__value" [class.ep-mobile__value--empty]="!user()?.mobile">
+                    <mat-icon matTooltip="Mobile Number">phone_android</mat-icon>
+                    {{ user()?.mobile || 'Not provided' }}
+                  </span>
+
+                  @if (user()?.isMobileVerified) {
+                    <span class="trust-chip trust-chip--verified"
+                          matTooltip="This mobile number has been verified.">
+                      <mat-icon>verified</mat-icon> Verified
+                    </span>
+                    <button mat-icon-button type="button" class="ep-mobile__edit"
+                            (click)="openVerifyMobileDialog()"
+                            matTooltip="Change mobile number and verify"
+                            aria-label="Change mobile number and verify">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  } @else {
+                    <button mat-stroked-button type="button" class="ep-mobile__verify"
+                            (click)="openVerifyMobileDialog()">
+                      <mat-icon>gpp_maybe</mat-icon> Verify Mobile
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="ep-row">
               <mat-form-field appearance="outline">
                 <mat-label>Height</mat-label>
                 <mat-select formControlName="height">
                   @for (h of heights; track h) { <mat-option [value]="h">{{ h }}</mat-option> }
                 </mat-select>
               </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Weight (kg) — Optional</mat-label>
+                <input matInput formControlName="weight" placeholder="e.g. 65" />
+              </mat-form-field>
             </div>
 
             <div class="ep-row">
               <mat-form-field appearance="outline">
-                <mat-label>Weight (kg) — Optional</mat-label>
-                <input matInput formControlName="weight" placeholder="e.g. 65" />
+                <mat-label>Interest — Optional</mat-label>
+                <input matInput formControlName="interest" placeholder="e.g. Reading, Traveling" />
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Complexion</mat-label>
@@ -216,6 +256,7 @@
                   @for (c of complexions; track c) { <mat-option [value]="c">{{ c }}</mat-option> }
                 </mat-select>
               </mat-form-field>
+
             </div>
 
             <mat-form-field appearance="outline" class="full-width">
@@ -231,6 +272,43 @@
               <mat-icon matPrefix>videocam</mat-icon>
             </mat-form-field>
           </form>
+
+          <!-- ── Voice Introduction ─────────────────────────────────────────── -->
+          <div class="ep-voice-intro">
+            <div class="ep-voice-intro__header">
+              <div class="ep-voice-intro__label">
+                <mat-icon>mic</mat-icon>
+                <span>Voice Introduction <span class="ep-optional">(Optional)</span></span>
+              </div>
+              <div class="ep-voice-intro__actions">
+                <button mat-stroked-button type="button" (click)="openVoiceIntroDialog()"
+                        class="ep-voice-intro__btn">
+                  <mat-icon>{{ voiceIntroUrl() ? 'edit' : 'mic' }}</mat-icon>
+                  {{ voiceIntroUrl() ? 'Replace' : 'Record / Upload' }}
+                </button>
+                @if (voiceIntroUrl()) {
+                  <button mat-icon-button type="button" (click)="removeVoiceIntro()"
+                          matTooltip="Remove voice introduction" class="ep-voice-intro__remove">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                }
+              </div>
+            </div>
+
+            @if (voiceIntroUrl()) {
+              <div class="ep-voice-intro__player">
+                <audio [src]="voiceIntroUrl()!" controls preload="none"
+                       class="ep-voice-intro__audio"
+                       aria-label="Your voice introduction"></audio>
+              </div>
+            } @else {
+              <p class="ep-voice-intro__empty">
+                Record a short voice introduction (up to 30 seconds) or upload an audio file.
+                Voice builds trust much faster than text.
+              </p>
+            }
+          </div>
+
         </mat-expansion-panel>
 
         <!-- ══ 2. Religion & Culture ════════════════════════════════════════ -->

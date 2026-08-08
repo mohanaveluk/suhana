@@ -16,7 +16,8 @@ import { MaterialModule } from '../../shared/modules/material.module';
 import { GalleryService, MatchService, ProfileService } from '../../services';
 import { AuthService } from '../../services/auth.service';
 import { InterestService } from '../../services/interest.service';
-import { UserProfile, ProfilePhoto, MatchResult } from '../../models/user.model';
+import { UserProfile, ProfilePhoto, MatchResult, ProfileTrustIndicator } from '../../models/user.model';
+import { ProfileTrustIndicatorService } from '../../services/profile-trust-indicator.service';
 import {
   PhotoGalleryDialogComponent,
   PhotoDialogData,
@@ -49,9 +50,11 @@ export class ProfileViewComponent implements OnInit {
   private readonly gallerySvc  = inject(GalleryService);
   private readonly dialog         = inject(MatDialog);
   private readonly snackBar       = inject(MatSnackBar);
+  private readonly trustSvc       = inject(ProfileTrustIndicatorService);
 
   // ── State ────────────────────────────────────────────────────────────────
   protected readonly profile       = signal<UserProfile | null>(null);
+  protected readonly trustIndicator = signal<ProfileTrustIndicator | null>(null);
   protected readonly isLoading     = signal(true);
   protected readonly error         = signal<string | null>(null);
   protected readonly isShortlisted = signal(false);
@@ -147,6 +150,9 @@ export class ProfileViewComponent implements OnInit {
       this.profile.set(profile);
       this.profileImageExist();
 
+      // Load trust indicator in background
+      this.trustSvc.get(profile.userId).then(ti => this.trustIndicator.set(ti));
+
       if (this.profileType() === 'profile') {
         const matchedDetail = await this.matchSvc.getMatchByUserId(profile.user?.id ?? '');
         this.matchedDetail.set(matchedDetail);
@@ -175,6 +181,32 @@ export class ProfileViewComponent implements OnInit {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  // ── Trust Indicator helpers ───────────────────────────────────────────────
+  protected trustLabel(level: string): string {
+    if (level === 'GREEN_FLAG') return 'Highly Active Profile';
+    if (level === 'YELLOW_FLAG') return 'Moderately Active Profile';
+    return 'Low Activity Profile';
+  }
+  protected trustIcon(level: string): string {
+    if (level === 'GREEN_FLAG') return 'verified';
+    if (level === 'YELLOW_FLAG') return 'info';
+    return 'warning';
+  }
+  protected trustTooltip(level: string): string {
+    if (level === 'GREEN_FLAG') return 'This profile is actively maintained and frequently updated.';
+    if (level === 'YELLOW_FLAG') return 'This profile has been updated occasionally.';
+    return 'This profile has not been updated recently.';
+  }
+
+  /**
+   * videoIntroUrl is free text — it may be a direct media file or a share link
+   * (the edit-profile placeholder suggests YouTube). Only direct files can play
+   * in a <video> tag; anything else gets a "Watch Video" link instead.
+   */
+  protected isPlayableVideo(url: string): boolean {
+    return /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i.test(url);
   }
 
   // ── Actions ───────────────────────────────────────────────────────────────

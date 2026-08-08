@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TitleCasePipe } from '@angular/common';
+import { TitleCasePipe, LowerCasePipe } from '@angular/common';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { MatchService } from '../../services';
 import { MatchResult } from '../../models/user.model';
@@ -11,7 +11,7 @@ import { CommonService } from '../../services/common.service';
   selector: 'app-compare',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink, TitleCasePipe, MaterialModule,
+    RouterLink, TitleCasePipe, LowerCasePipe, MaterialModule,
   ],
   templateUrl: './compare.html',
   styleUrl: './compare.scss',
@@ -29,6 +29,12 @@ export class CompareComponent implements OnInit {
   };
 
   protected readonly isLoading = signal(true);
+
+  /** Hide the whole row when no one in the comparison has that media. */
+  protected readonly hasAnyVoiceIntro = computed(() =>
+    this.compareList().some(m => !!m.profile.voiceIntroductionUrl));
+  protected readonly hasAnyVideoIntro = computed(() =>
+    this.compareList().some(m => !!m.profile.videoIntroUrl));
 
   async ngOnInit(): Promise<void> {
     await this.matchService.loadMatchesFromApi();
@@ -71,5 +77,35 @@ export class CompareComponent implements OnInit {
     if (score >= 85) return 'score-high';
     if (score >= 70) return 'score-medium';
     return 'score-low';
+  }
+
+  getTrustScore(score: string): string {
+    if (score === 'GREEN_FLAG') return 'score-high';
+    if (score === 'YELLOW_FLAG') return 'score-medium';
+    return 'score-low';
+  }
+
+  /** API sends the flag as 0 | 1; tolerate a boolean too. */
+  protected isMobileVerified(match: MatchResult): boolean {
+    return Number(match.user?.isMobileVerified ?? match.isMobileVerified ?? 0) === 1;
+  }
+
+  // ── Trust Indicator helpers ───────────────────────────────────────────────
+  protected trustLabel(level: string): string {
+    if (level === 'GREEN_FLAG') return 'Highly Active Profile';
+    if (level === 'YELLOW_FLAG') return 'Moderately Active Profile';
+    return 'Low Activity Profile';
+  }
+
+  protected trustIcon(level: string): string {
+    if (level === 'GREEN_FLAG') return 'verified';
+    if (level === 'YELLOW_FLAG') return 'info';
+    return 'warning';
+  }
+
+  protected trustTooltip(level: string): string {
+    if (level === 'GREEN_FLAG') return 'This profile is actively maintained and frequently updated.';
+    if (level === 'YELLOW_FLAG') return 'This profile has been updated occasionally.';
+    return 'This profile has not been updated recently.';
   }
 }

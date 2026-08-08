@@ -1,7 +1,6 @@
 import {
   Component, ChangeDetectionStrategy, OnInit, inject, signal,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,7 +26,7 @@ import { ReviewSort, ReviewType } from '../../enums/testimonial.enum';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    DecimalPipe, FormsModule, RouterLink,
+    FormsModule, RouterLink,
     MatButtonModule, MatIconModule, MatSelectModule, MatFormFieldModule,
     MatInputModule, MatPaginatorModule, MatCardModule,
     ReviewCardComponent, OverallRatingComponent, TrustCenterComponent,

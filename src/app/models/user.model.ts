@@ -25,6 +25,7 @@ export interface User {
   lastActive: Date;
   isVerified?: boolean;
   is_email_verified?: boolean;
+  isMobileVerified?: boolean;
   profile?: UserProfile;
   tempGuid?: string;
 }
@@ -46,9 +47,12 @@ export interface UserProfile {
   height: string;
   weight?: string;
   complexion?: string;
+  interests?: string;
   aboutMe: string;
   photos: ProfilePhoto[];
   videoIntroUrl?: string;
+  voiceIntroductionUrl?: string;
+  isMobileVerified?: boolean;
   familyDetails: FamilyDetails;
   preferences: MatchPreferences;
   horoscope?: HoroscopeDetails;
@@ -66,6 +70,19 @@ export interface UserProfile {
   updatedAt?: Date;
   tempGuid?: string;
   user?: User;
+}
+
+export interface MobileVerificationStatus {
+  mobileNumber: string;
+  isMobileVerified: boolean;
+}
+
+export type TrustIndicatorLevel = 'GREEN_FLAG' | 'YELLOW_FLAG' | 'RED_FLAG';
+
+export interface ProfileTrustIndicator {
+  userId: string;
+  updateCount: number;
+  trustIndicator: TrustIndicatorLevel;
 }
 
 export interface Location {
@@ -145,6 +162,10 @@ export interface MatchResult {
   status: MatchStatus;
   suggestedAt: Date;
   interestStatus?: string;
+  trustIndicator?: string;
+  /** API returns this as 0 | 1; may also arrive as a boolean. */
+  isMobileVerified?: boolean | number;
+  user?: User;
 }
 
 export interface CompatibilityBreakdown {

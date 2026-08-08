@@ -1,7 +1,6 @@
 import {
   Component, ChangeDetectionStrategy, Input, Output, EventEmitter, computed, signal,
 } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -9,7 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   selector: 'app-rating-stars',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [NgClass, MatIconModule, MatTooltipModule],
+  imports: [MatIconModule, MatTooltipModule],
   template: `
     <div class="stars" [class.stars--interactive]="interactive" [attr.aria-label]="ariaLabel()"
          role="group">

@@ -18,7 +18,7 @@
                           aria-label="Remove from comparison">
                     <mat-icon>close</mat-icon>
                   </button>
-                  <img [style.background-image]="commonService.cardBg(match.profile.photos[0]?.url)" [alt]="" class="compare-avatar" />
+                  <img [style.background-image]="commonService.cardBg(match.profile.photos[0]?.url)" [alt]="" class="compare-avatar" [matTooltip]="match.profile.firstName + ' ' + match.profile.lastName"/>
                   <h3>{{ match.profile.firstName }}</h3>
                   <span class="compare-age">{{ match.profile.age }} yrs</span>
                   <div class="compare-score" [class]="getScoreClass(match.matchPercentage)">
@@ -84,6 +84,87 @@
             <td class="label-col"><mat-icon>translate</mat-icon> Language</td>
             @for (match of compareList(); track match.id) {
               <td>{{ match.profile.motherTongue }}</td>
+            }
+          </tr>
+
+          <!-- Voice Introduction -->
+          @if (hasAnyVoiceIntro()) {
+            <tr>
+              <td class="label-col"><mat-icon>mic</mat-icon> Voice Intro</td>
+              @for (match of compareList(); track match.id) {
+                <td class="media-cell">
+                  @if (match.profile.voiceIntroductionUrl) {
+                    <audio [src]="match.profile.voiceIntroductionUrl" controls preload="none"
+                           class="media-cell__audio"
+                           aria-label="Voice introduction by {{ match.profile.firstName }}"></audio>
+                  } @else {
+                    <span class="na-tag" matTooltip="No voice introduction added">NA</span>
+                  }
+                </td>
+              }
+            </tr>
+          }
+
+          <!-- Video Introduction -->
+          @if (hasAnyVideoIntro()) {
+            <tr>
+              <td class="label-col"><mat-icon>videocam</mat-icon> Video Intro</td>
+              @for (match of compareList(); track match.id) {
+                <td class="media-cell">
+                  @if (match.profile.videoIntroUrl) {
+                    <a mat-stroked-button class="media-cell__watch"
+                       [href]="match.profile.videoIntroUrl" target="_blank" rel="noopener noreferrer"
+                       [attr.aria-label]="'Watch video introduction by ' + match.profile.firstName">
+                      <mat-icon>play_circle</mat-icon> Watch
+                    </a>
+                  } @else {
+                    <span class="na-tag" matTooltip="No video introduction added">NA</span>
+                  }
+                </td>
+              }
+            </tr>
+          }
+
+          <!-- Mobile Verification -->
+          <tr>
+            <td class="label-col"><mat-icon>phone_android</mat-icon> Mobile</td>
+            @for (match of compareList(); track match.id) {
+              <td class="trust-cell">
+                @if (isMobileVerified(match)) {
+                  <span class="trust-chip trust-chip--verified"
+                        matTooltip="This mobile number has been verified."
+                        matTooltipPosition="above">
+                    <mat-icon>verified</mat-icon>
+                    Mobile Verified
+                  </span>
+                } @else {
+                  <span class="trust-chip trust-chip--unverified"
+                        matTooltip="This mobile number has not been verified yet."
+                        matTooltipPosition="above">
+                    <mat-icon>info</mat-icon>
+                    Not Verified
+                  </span>
+                }
+              </td>
+            }
+          </tr>
+
+          <!-- Trust Score -->
+          <tr>
+            <td class="label-col"><mat-icon>verified</mat-icon> Trust Score</td>
+            @for (match of compareList(); track match.id) {
+              <td class="trust-cell">
+                @if (match.trustIndicator) {
+                  <span class="trust-chip trust-chip--{{ match.trustIndicator | lowercase }}"
+                        [matTooltip]="trustTooltip(match.trustIndicator)"
+                        matTooltipPosition="above">
+                    <mat-icon>{{ trustIcon(match.trustIndicator) }}</mat-icon>
+                    {{ trustLabel(match.trustIndicator) }}
+                  </span>
+                } @else {
+                  <span class="no-data">—</span>
+                }
+              </td>
             }
           </tr>
 

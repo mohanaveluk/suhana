@@ -14,7 +14,8 @@ import { ProfileService } from '../../services/profile.service';
 import { MatchService } from '../../services/match.service';
 import { AuthService } from '../../services/auth.service';
 import { InterestService } from '../../services/interest.service';
-import { UserProfile } from '../../models/user.model';
+import { UserProfile, ProfileTrustIndicator } from '../../models/user.model';
+import { ProfileTrustIndicatorService } from '../../services/profile-trust-indicator.service';
 import { GalleryService } from '../../services';
 import { firstValueFrom } from 'rxjs';
 import { GalleryImage } from '../../models';
@@ -359,10 +360,12 @@ export class ProfileMatchComponent implements OnInit {
   private readonly dialog         = inject(MatDialog);
   private readonly pdfService      = inject(PdfReportService);
   private readonly horoscopeSvc    = inject(HoroscopeMatchService);
+  private readonly trustSvc        = inject(ProfileTrustIndicatorService);
 
   // ── State ────────────────────────────────────────────────────────────────
-  protected readonly myProfile       = signal<UserProfile | null>(null);
-  protected readonly theirProfile    = signal<UserProfile | null>(null);
+  protected readonly myProfile          = signal<UserProfile | null>(null);
+  protected readonly theirProfile       = signal<UserProfile | null>(null);
+  protected readonly theirTrustIndicator = signal<ProfileTrustIndicator | null>(null);
   protected readonly report          = signal<ProfileMatchReport | null>(null);
   protected readonly gallery         = signal<GalleryImage[]>([]);
   protected readonly isLoading       = signal(true);
@@ -387,7 +390,23 @@ export class ProfileMatchComponent implements OnInit {
   );
 
   protected readonly gallaryImages = computed<GalleryImage[]>(() => this.gallery() ?? []);
-  
+
+  protected trustLabel(level: string): string {
+    if (level === 'GREEN_FLAG') return 'Highly Active Profile';
+    if (level === 'YELLOW_FLAG') return 'Moderately Active Profile';
+    return 'Low Activity Profile';
+  }
+  protected trustIcon(level: string): string {
+    if (level === 'GREEN_FLAG') return 'verified';
+    if (level === 'YELLOW_FLAG') return 'info';
+    return 'warning';
+  }
+  protected trustTooltip(level: string): string {
+    if (level === 'GREEN_FLAG') return 'This profile is actively maintained and frequently updated.';
+    if (level === 'YELLOW_FLAG') return 'This profile has been updated occasionally.';
+    return 'This profile has not been updated recently.';
+  }
+
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
@@ -402,6 +421,9 @@ export class ProfileMatchComponent implements OnInit {
 
       const theirProfile = await this.profileSvc.getProfileById(id);
       this.theirProfile.set(theirProfile);
+
+      // Load trust indicator in background
+      this.trustSvc.get(theirProfile.userId).then(ti => this.theirTrustIndicator.set(ti));
 
       // Use authenticated user profile, or fall back to first profile of opposite gender
       let myProfile = this.profileSvc.myProfile();
@@ -477,6 +499,15 @@ export class ProfileMatchComponent implements OnInit {
 
   protected onImageError(e: Event): void {
     (e.target as HTMLImageElement).src = '/avatar-default.svg';
+  }
+
+  /**
+   * videoIntroUrl is free text — it may be a direct media file or a share link
+   * (the edit-profile placeholder suggests YouTube). Only direct files can play
+   * in a <video> tag; anything else gets a "Watch Video" link instead.
+   */
+  protected isPlayableVideo(url: string): boolean {
+    return /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i.test(url);
   }
 
   protected trackByKey(_: number, item: MatchCategory): string {

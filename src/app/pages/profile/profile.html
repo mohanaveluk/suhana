@@ -19,6 +19,25 @@
           </span>
           <p class="profile-meta">{{ p.age }} yrs &middot; {{ p.height }} &middot; {{ p.location.city }}, {{ p.location.state }}</p>
           <p class="profile-profession">{{ p.occupation.title }} at {{ p.occupation.company }}</p>
+
+          <!-- Trust & Verification chips -->
+          <div class="profile-trust-chips">
+            @if (trustIndicator(); as ti) {
+              <mat-chip class="trust-chip trust-chip--{{ ti.trustIndicator | lowercase }}"
+                        [matTooltip]="trustTooltip(ti.trustIndicator)">
+                <mat-icon matChipAvatar>{{ trustIcon(ti.trustIndicator) }}</mat-icon>
+                {{ trustLabel(ti.trustIndicator) }}
+              </mat-chip>
+            }
+            @if (mobileStatus()?.isMobileVerified) {
+              <mat-chip class="trust-chip trust-chip--verified"
+                        matTooltip="This mobile number has been verified.">
+                <mat-icon matChipAvatar>verified</mat-icon>
+                Mobile Verified
+              </mat-chip>
+            }
+          </div>
+
           <div class="profile-completeness">
             <span>Profile {{ p.profileCompleteness }}% complete</span>
             <mat-progress-bar mode="determinate" [value]="p.profileCompleteness"></mat-progress-bar>
@@ -207,9 +226,66 @@
                   <mat-icon>flight</mat-icon>
                   <div><label>Willing to Relocate</label><span>{{ p.location.willingToRelocate ? 'Yes' : 'No' }}</span></div>
                 </div>
+
+                <!-- Mobile Verification -->
+                @if (auth.user()?.mobile) {
+                  <div class="detail-item">
+                    <mat-icon>phone_android</mat-icon>
+                    <div>
+                      <label>Mobile Number</label>
+                      <span>{{ auth.user()!.mobile }}</span>
+                      @if (mobileStatus()?.isMobileVerified) {
+                        <span class="mobile-verified-badge"
+                              matTooltip="This mobile number has been verified.">
+                          <mat-icon>check_circle</mat-icon> Mobile Verified
+                        </span>
+                      } @else {
+                        <button mat-button class="mobile-verify-btn" type="button"
+                                (click)="openVerifyMobileDialog()">
+                          <mat-icon>verified_user</mat-icon> Verify Mobile
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
               </div>
             </mat-card-content>
           </mat-card>
+
+          <!-- Voice Introduction -->
+          <mat-card appearance="outlined" class="info-card voice-intro-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="voice-intro-icon">mic</mat-icon>
+                Voice Introduction
+              </mat-card-title>
+              <button mat-icon-button class="voice-intro-edit-btn" type="button"
+                      (click)="openVoiceIntroDialog()"
+                      [matTooltip]="p.voiceIntroductionUrl ? 'Re-record or replace' : 'Add voice introduction'"
+                      aria-label="Edit voice introduction">
+                <mat-icon>{{ p.voiceIntroductionUrl ? 'edit' : 'add_circle' }}</mat-icon>
+              </button>
+            </mat-card-header>
+            <mat-card-content>
+              @if (p.voiceIntroductionUrl) {
+                <div class="voice-player">
+                  <audio [src]="p.voiceIntroductionUrl" controls
+                         class="voice-player__audio" preload="none"
+                         aria-label="Voice introduction"></audio>
+                </div>
+              } @else {
+                <p class="voice-empty">
+                  <mat-icon>mic_none</mat-icon>
+                  Add a voice introduction to make a stronger first impression.
+                  <button mat-button class="mobile-verify-btn" type="button"
+                          (click)="openVoiceIntroDialog()">
+                    Record Now
+                  </button>
+                </p>
+              }
+            </mat-card-content>
+          </mat-card>
+
         </div>
       </mat-tab>
 

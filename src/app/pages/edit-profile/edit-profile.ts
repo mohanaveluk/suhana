@@ -18,6 +18,17 @@ import {
   ProfilePhoto,
   ProfilePhotoVariant,
 } from '../../models/user.model';
+import { VoiceIntroductionService } from '../../services/voice-introduction.service';
+import {
+  VoiceIntroductionDialogComponent,
+  VoiceIntroductionDialogData,
+  VoiceIntroductionDialogResult,
+} from '../profile/voice-introduction-dialog/voice-introduction-dialog.component';
+import {
+  MobileVerificationDialogComponent,
+  MobileVerificationDialogData,
+  MobileVerificationDialogResult,
+} from '../profile/mobile-verification-dialog/mobile-verification-dialog.component';
 import { firstValueFrom } from 'rxjs';
 import { CommonService } from '../../services/common.service';
 
@@ -37,10 +48,11 @@ const MAX_HOROSCOPE_MB = 10;
 export class EditProfileComponent implements OnInit {
   private readonly fb             = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
-  private readonly commonService = inject(CommonService);
+  private readonly commonService  = inject(CommonService);
   private readonly api            = inject(ApiService);
   private readonly router         = inject(Router);
   private readonly dialog         = inject(MatDialog);
+  private readonly voiceSvc       = inject(VoiceIntroductionService);
   protected readonly isLoading = signal(true);
   protected readonly isSaving = signal(false);
   protected readonly saveError = signal<string | null>(null);
@@ -62,6 +74,11 @@ export class EditProfileComponent implements OnInit {
   protected readonly isDragOverHoroscope = signal(false);
   protected readonly isUploadingHoroscopeDoc = signal(false);
   protected readonly showRemoveHoroscopeConfirm = signal(false);
+
+  // ── Voice Introduction ──────────────────────────────────────────────────────
+  protected readonly voiceIntroUrl       = signal<string | null>(null);
+  protected readonly isUploadingVoice    = signal(false);
+  protected readonly voiceUploadError    = signal<string | null>(null);
 
   protected readonly user = signal<User | null>(null);
   protected readonly profileId = signal<string | null>(null);
@@ -165,6 +182,8 @@ export class EditProfileComponent implements OnInit {
     complexion:   [''],
     aboutMe:      ['', [Validators.required, Validators.minLength(20)]],
     videoIntroUrl:[''],
+    mobile:       [''],
+    interest:     [''],
   });
 
   // ── Section 2: Religion & Culture ───────────────────────────────────────────
@@ -285,6 +304,8 @@ export class EditProfileComponent implements OnInit {
       dateOfBirth: p.dateOfBirth ? new Date(this.parseBackDateOnly(p.dateOfBirth.toString())) : null,
       height: p.height, weight: p.weight ?? '', complexion: p.complexion ?? '',
       aboutMe: p.aboutMe, videoIntroUrl: p.videoIntroUrl ?? '',
+      mobile: p.user?.mobile ?? '',
+      interest: p.interests ?? ''
     });
     this.religionForm.patchValue({
       religion: p.religion, caste: p.caste ?? '', motherTongue: p.motherTongue,
@@ -335,6 +356,8 @@ export class EditProfileComponent implements OnInit {
     });
     this.privacyForm.patchValue({ photoPrivacy: p.photoPrivacy, status: p.status });
 
+    this.voiceIntroUrl.set(p.voiceIntroductionUrl ?? null);
+
     this.user.set({
       id: p.user?.id ?? '',
       email: p.user?.email ?? '',
@@ -345,8 +368,41 @@ export class EditProfileComponent implements OnInit {
       createdAt: p.user?.createdAt ? new Date(p.user.createdAt) : new Date(),
       lastActive: p.user?.lastActive ? new Date(p.user.lastActive) : new Date(),
       isVerified: p.user?.isVerified ?? true,
+      isMobileVerified: p.user?.isMobileVerified ?? false,
       tempGuid: p.user?.tempGuid,
       } as User );
+  }
+
+  protected openVoiceIntroDialog(): void {
+    const ref = this.dialog.open(VoiceIntroductionDialogComponent, {
+      data: { existingUrl: this.voiceIntroUrl() ?? undefined } satisfies VoiceIntroductionDialogData,
+      width: '540px',
+      maxWidth: '96vw',
+      panelClass: 'suhana-dialog',
+      disableClose: false,
+    });
+    ref.afterClosed().subscribe((result: VoiceIntroductionDialogResult | null) => {
+      if (result?.url) this.voiceIntroUrl.set(result.url);
+    });
+  }
+
+  protected removeVoiceIntro(): void { this.voiceIntroUrl.set(null); }
+
+  protected openVerifyMobileDialog(): void {
+    const mobile = this.user()?.mobile ?? '';
+    const ref = this.dialog.open(MobileVerificationDialogComponent, {
+      data: { mobileNumber: mobile } satisfies MobileVerificationDialogData,
+      width: '480px',
+      maxWidth: '96vw',
+      panelClass: 'suhana-dialog',
+      disableClose: true,
+    });
+    ref.afterClosed().subscribe((result: MobileVerificationDialogResult | null) => {
+      if (!result?.verified) return;
+      // The dialog also allows changing the number, so adopt whatever it verified.
+      this.user.update(u => u ? { ...u, mobile: result.mobileNumber, isMobileVerified: true } : u);
+      this.basicForm.patchValue({ mobile: result.mobileNumber });
+    });
   }
 
   
@@ -393,6 +449,7 @@ export class EditProfileComponent implements OnInit {
       complexion: basic.complexion || undefined,
       aboutMe: basic.aboutMe ?? '',
       videoIntroUrl: basic.videoIntroUrl || undefined,
+      voiceIntroductionUrl: this.voiceIntroUrl() || undefined,
       religion: rel.religion ?? '',
       caste: rel.caste || undefined,
       motherTongue: rel.motherTongue ?? '',

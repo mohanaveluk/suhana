@@ -150,6 +150,7 @@ export class AuthService {
       role: u['role'] as UserRole, 
       gender: u['gender'] as 'bride' | 'groom',
       membership: u['membership'] as MembershipTier,
+      mobile: u['mobile'] as string | undefined,
       lastActive: new Date(),
       isVerified: u['is_verified'] as boolean,
       is_email_verified: u['is_email_verified'] as boolean,

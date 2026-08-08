@@ -4,7 +4,7 @@ export const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'imag
 export type AllowedMimeType = (typeof ALLOWED_MIME_TYPES)[number];
 
 /** 2 MB in bytes */
-export const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
+export const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024;
 
 export type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 
