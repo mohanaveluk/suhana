@@ -9,6 +9,7 @@ import { MatchFixedService } from '../../features/match-fixed/match-fixed.servic
 import { MatchFixedResponse, MATCH_SOURCE_LABELS } from '../../features/match-fixed/models/match-fixed.model';
 import { MobileVerificationService } from '../../services/mobile-verification.service';
 import { ProfileTrustIndicatorService } from '../../services/profile-trust-indicator.service';
+import { CommonService } from '../../services/common.service';
 import {
   MobileVerificationDialogComponent,
   MobileVerificationDialogData,
@@ -38,6 +39,7 @@ export class ProfileComponent implements OnInit {
   private readonly mobileVerifSvc         = inject(MobileVerificationService);
   private readonly trustSvc               = inject(ProfileTrustIndicatorService);
   private readonly dialog                 = inject(MatDialog);
+  protected readonly commonService        = inject(CommonService);
 
   protected readonly isLoading    = signal(true);
   protected readonly profile      = signal<UserProfile | null>(null);
@@ -105,18 +107,22 @@ export class ProfileComponent implements OnInit {
   }
 
   protected openVerifyMobileDialog(): void {
-    const mobile = this.auth.user()?.mobile ?? '';
+    // Don't prefill the placeholder "0" — start the dialog blank instead.
+    const raw = this.auth.user()?.mobile;
+    const mobile = this.commonService.hasMobile(raw) ? String(raw) : '';
     const ref = this.dialog.open(MobileVerificationDialogComponent, {
       data: { mobileNumber: mobile } satisfies MobileVerificationDialogData,
-      width: '480px',
+      width: '600px',
       maxWidth: '96vw',
       panelClass: 'suhana-dialog',
       disableClose: true,
     });
     ref.afterClosed().subscribe((result: MobileVerificationDialogResult | null) => {
-      if (result?.verified) {
-        this.profile.update(p => p ? { ...p, isMobileVerified: true } : p);
-      }
+      if (!result?.verified) return;
+      this.profile.update(p => p ? { ...p, isMobileVerified: true } : p);
+      // The dialog can add or change the number, so keep the cached user in sync
+      // or the row would still read "Not provided yet" after a first-time add.
+      this.auth.patchUser({ mobile: result.mobileNumber, isMobileVerified: true });
     });
   }
 
