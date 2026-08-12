@@ -1,10 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { LowerCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { AuthService, SearchService } from '../../services';
+import { SearchFilters } from '../../services/search.service';
 import { MatchService } from '../../services';
 import { InterestService } from '../../services/interest.service';
 import { UserProfile } from '../../models/user.model';
@@ -14,11 +16,23 @@ import {
   ShareProfileComponent,
   ShareProfileData,
 } from '../../shared/components/share-profile/share-profile.component';
+import { AiSearchService } from '../../services/ai-search.service';
+import {
+  IntentChip, SearchIntent, SearchMode, SEARCH_MODE_LABELS,
+} from '../../models/ai-search.model';
+import { AiSearchBoxComponent } from './components/ai-search-box/ai-search-box.component';
+import { AiIntentChipsComponent } from './components/ai-intent-chips/ai-intent-chips.component';
+import { AiSuggestionsPanelComponent } from './components/ai-suggestions-panel/ai-suggestions-panel.component';
+import { SearchWithinResultsComponent } from './components/search-within-results/search-within-results.component';
 
 @Component({
   selector: 'app-search',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink, MaterialModule],
+  imports: [
+    FormsModule, LowerCasePipe, RouterLink, MaterialModule,
+    AiSearchBoxComponent, AiIntentChipsComponent,
+    AiSuggestionsPanelComponent, SearchWithinResultsComponent,
+  ],
   templateUrl: './search.html',
   styleUrl: './search.scss',
 })
@@ -61,6 +75,136 @@ export class SearchComponent implements OnInit {
     const all = this.searchService.availableReligions;
     return q ? all.filter(r => r.toLowerCase().includes(q)) : all;
   });
+
+  // ── AI search ───────────────────────────────────────────────────────────────
+  protected readonly ai = inject(AiSearchService);
+  protected readonly SearchMode = SearchMode;
+  protected readonly modeLabels = SEARCH_MODE_LABELS;
+
+  /** Client-side narrowing of whatever is already on screen. */
+  protected readonly searchWithin = signal('');
+
+  /** AI results take over the grid once an AI search has run. */
+  protected readonly activeProfiles = computed<UserProfile[]>(() =>
+    this.ai.aiActive() ? this.ai.profiles() : this.searchService.results());
+
+  protected readonly visibleProfiles = computed<UserProfile[]>(() => {
+    const q = this.searchWithin().trim().toLowerCase();
+    const list = this.activeProfiles();
+    if (!q) return list;
+    return list.filter(p =>
+      [
+        p.firstName, p.lastName, p.location?.city,
+        p.occupation?.title, p.religion, p.education?.level,
+      ].some(field => (field ?? '').toLowerCase().includes(q)));
+  });
+
+  protected readonly isBusy = computed(() =>
+    this.ai.isSearching() || this.searchService.isLoading());
+
+  protected readonly hasMore = computed(() =>
+    this.ai.aiActive() ? this.ai.hasMore() : this.searchService.hasMore());
+
+  protected readonly resultCount = computed(() =>
+    this.ai.aiActive() ? this.ai.totalResults() : this.searchService.results().length);
+
+  /** Any traditional filter beyond the default gender counts as "in use". */
+  private traditionalIsActive(): boolean {
+    const f = this.searchService.filters();
+    return !!(f.query || f.religions?.length || f.locations?.length ||
+              f.education?.length || f.occupations?.length);
+  }
+
+  protected async runAiSearch(query: string): Promise<void> {
+    await this.ai.search(query);
+    const intent = this.ai.searchIntent();
+    if (intent) this.applyIntentToFilters(intent);
+    this.ai.setTraditionalActive(this.traditionalIsActive());
+  }
+
+  protected async onChipRemoved(chip: IntentChip): Promise<void> {
+    // Clear the mirrored filter first, or the sidebar would still show the
+    // facet the member just dismissed.
+    this.clearFilterForChip(chip);
+    await this.ai.removeChip(chip);
+    const intent = this.ai.searchIntent();
+    if (intent) this.applyIntentToFilters(intent);
+    this.ai.setTraditionalActive(this.traditionalIsActive());
+  }
+
+  /** Only clears the one facet the chip owns — other filters are left alone. */
+  private clearFilterForChip(chip: IntentChip): void {
+    switch (chip.key) {
+      case 'profession': this.searchService.setDefaultFilters({ occupations: [] }); break;
+      case 'education':  this.searchService.setDefaultFilters({ education: [] });   break;
+      case 'religion':   this.searchService.setDefaultFilters({ religions: [] });   break;
+      case 'city':
+      case 'state':
+      case 'country':    this.searchService.setDefaultFilters({ locations: [] });   break;
+      case 'gender':     this.searchService.setDefaultFilters({ gender: '' });      break;
+      default: break;
+    }
+  }
+
+  protected async onFollowUpSelected(text: string): Promise<void> {
+    await this.runAiSearch(text);
+  }
+
+  protected onAiCleared(): void {
+    this.searchWithin.set('');
+    this.ai.setTraditionalActive(this.traditionalIsActive());
+  }
+
+  /**
+   * Every traditional filter edit goes through here so the existing behaviour is
+   * untouched, and an active AI search is re-run with the edited facets folded in.
+   */
+  protected onFilterChange<K extends keyof SearchFilters>(key: K, value: SearchFilters[K]): void {
+    this.searchService.updateFilter(key, value);
+    this.ai.setTraditionalActive(this.traditionalIsActive());
+
+    if (!this.ai.aiActive()) return;
+    const merged = this.mergeFiltersIntoIntent(this.ai.searchIntent() ?? {});
+    void this.ai.applyIntent(merged);
+  }
+
+  /**
+   * Mirrors the extracted intent into the traditional filters so the member can
+   * see and adjust what the AI understood.
+   *
+   * Uses setDefaultFilters rather than updateFilter on purpose: updateFilter
+   * would kick off a debounced traditional search and immediately overwrite the
+   * AI results we just rendered.
+   */
+  private applyIntentToFilters(intent: SearchIntent): void {
+    const patch: Partial<SearchFilters> = {};
+    if (intent.gender === 'bride' || intent.gender === 'groom') patch.gender = intent.gender;
+    if (intent.religion)  patch.religions   = [intent.religion];
+    if (intent.education) patch.education   = [intent.education];
+    if (intent.profession) patch.occupations = [intent.profession];
+
+    const place = intent.city ?? intent.state ?? intent.country;
+    if (place) patch.locations = [place];
+
+    if (Object.keys(patch).length) this.searchService.setDefaultFilters(patch);
+  }
+
+  /**
+   * Folds the traditional filters back into the intent. The filters are
+   * multi-select while the intent holds one value per facet, so the first
+   * selection wins.
+   */
+  private mergeFiltersIntoIntent(intent: SearchIntent): SearchIntent {
+    const f = this.searchService.filters();
+    return {
+      ...intent,
+      gender:     f.gender || intent.gender,
+      religion:   f.religions?.[0]   ?? intent.religion,
+      education:  f.education?.[0]   ?? intent.education,
+      profession: f.occupations?.[0] ?? intent.profession,
+      city:       f.locations?.[0]   ?? intent.city,
+    };
+  }
 
   isSelf(profile: UserProfile | null | undefined): boolean {
     return !!this.authService.user()?.id &&
@@ -126,11 +270,12 @@ export class SearchComponent implements OnInit {
   }
 
   onGenderChange(value: string): void {
-    this.searchService.updateFilter('gender', (value === 'all' ? '' : value) as 'bride' | 'groom' | '');
+    this.onFilterChange('gender', (value === 'all' ? '' : value) as 'bride' | 'groom' | '');
   }
 
   onSearchInput(event: Event): void {
     this.searchService.setQuery((event.target as HTMLInputElement).value);
+    this.ai.setTraditionalActive(this.traditionalIsActive());
   }
 
   navigateToProfile(profileId: string): void {
@@ -178,6 +323,10 @@ export class SearchComponent implements OnInit {
   }
 
   async loadMore(): Promise<void> {
+    if (this.ai.aiActive()) {
+      await this.ai.loadMore();
+      return;
+    }
     await this.searchService.loadMore();
   }
 

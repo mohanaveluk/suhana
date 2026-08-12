@@ -111,7 +111,7 @@ export class SearchService {
     const page = append ? this._currentPage() + 1 : 1;
     try {
       const res = await firstValueFrom(this.api.getProfiles(this.toParams(filters, page)));
-      const list = res.data ?? res;
+      const list = res.profiles ?? res;
       const profiles = Array.isArray(list) ? list : [];
       if (append) {
         this._results.update(existing => [...existing, ...profiles]);

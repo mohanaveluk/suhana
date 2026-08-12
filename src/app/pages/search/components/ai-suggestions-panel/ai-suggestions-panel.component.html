@@ -1,0 +1,20 @@
+@if (suggestions().length) {
+  <mat-card class="ai-suggestions" appearance="outlined">
+    <div class="ai-suggestions__header">
+      <mat-icon>tips_and_updates</mat-icon>
+      <span>AI Suggestions</span>
+    </div>
+    <ul class="ai-suggestions__list">
+      @for (s of suggestions(); track s) {
+        <li>
+          <button type="button" class="ai-suggestions__item"
+                  [disabled]="disabled()"
+                  (click)="select.emit(s)">
+            <mat-icon>arrow_forward</mat-icon>
+            <span>{{ s }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  </mat-card>
+}

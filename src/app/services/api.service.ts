@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { UserProfile, RefreshTokenResponse, MobileVerificationStatus, ProfileTrustIndicator } from '../models/user.model';
+import { AiSearchRequest, AiSearchResponse, SearchSuggestionsResponse } from '../models/ai-search.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -601,6 +602,16 @@ export class ApiService {
   // Profile Trust Indicator
   getProfileTrustIndicator(profileId: string): Observable<ProfileTrustIndicator> {
     return this.http.get<ProfileTrustIndicator>(`${this.baseUrl}/v1/audit-log/profile-indicator/${profileId}`);
+  }
+
+  // AI Search
+  aiSearch(body: AiSearchRequest): Observable<AiSearchResponse> {
+    return this.http.post<AiSearchResponse>(`${this.baseUrl}/v1/search/ai`, body);
+  }
+
+  getAiSearchSuggestions(q: string, limit = 8): Observable<SearchSuggestionsResponse> {
+    const params = new HttpParams().set('q', q).set('limit', limit);
+    return this.http.get<SearchSuggestionsResponse>(`${this.baseUrl}/v1/search/ai/suggestions`, { params });
   }
 
   // Safety Tips — admin

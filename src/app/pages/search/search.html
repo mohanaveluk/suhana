@@ -1,7 +1,7 @@
 <div class="search-page">
 
   <!-- Sticky top bar: search input + view toggle + mobile filter toggle -->
-  <div class="search-topbar">
+  <div class="search-topbar" style="display: none;">
     <button mat-icon-button class="filter-toggle-btn"
             (click)="toggleFilters()"
             [color]="filtersOpen() ? 'primary' : ''"
@@ -29,7 +29,7 @@
   <mat-progress-bar
     mode="indeterminate"
     class="search-progress"
-    [class.search-progress--visible]="searchService.isLoading()">
+    [class.search-progress--visible]="isBusy()">
   </mat-progress-bar>
 
   <!-- Two-column layout: sidebar + results -->
@@ -64,7 +64,7 @@
           <mat-label>Religion</mat-label>
           <mat-select multiple
             [value]="searchService.filters().religions ?? []"
-            (selectionChange)="searchService.updateFilter('religions', $event.value)"
+            (selectionChange)="onFilterChange('religions', $event.value)"
             (openedChange)="!$event && religionSearch.set('')">
             <div class="select-search-box" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
               <mat-icon>search</mat-icon>
@@ -89,7 +89,7 @@
           <mat-label>Location</mat-label>
           <mat-select multiple class="lstbox"
             [value]="searchService.filters().locations ?? []"
-            (selectionChange)="searchService.updateFilter('locations', $event.value)"
+            (selectionChange)="onFilterChange('locations', $event.value)"
             (openedChange)="!$event && citySearch.set('')">
             <div class="select-search-box" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
               <mat-icon>search</mat-icon>
@@ -114,7 +114,7 @@
           <mat-label>Education</mat-label>
           <mat-select multiple
             [value]="searchService.filters().education ?? []"
-            (selectionChange)="searchService.updateFilter('education', $event.value)"
+            (selectionChange)="onFilterChange('education', $event.value)"
             (openedChange)="!$event && educationSearch.set('')">
             <div class="select-search-box" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
               <mat-icon>search</mat-icon>
@@ -139,7 +139,7 @@
           <mat-label>Occupation</mat-label>
           <mat-select multiple
             [value]="searchService.filters().occupations ?? []"
-            (selectionChange)="searchService.updateFilter('occupations', $event.value)"
+            (selectionChange)="onFilterChange('occupations', $event.value)"
             (openedChange)="!$event && occupationSearch.set('')">
             <div class="select-search-box" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
               <mat-icon>search</mat-icon>
@@ -166,15 +166,64 @@
     <!-- Results area -->
     <main class="search-results">
 
+      <!-- ── AI Search Panel ──────────────────────────────────────────────── -->
+      <app-ai-search-box
+        (search)="runAiSearch($event)"
+        (cleared)="onAiCleared()">
+      </app-ai-search-box>
+
+      <app-ai-intent-chips
+        [chips]="ai.chips()"
+        [corrections]="ai.corrections()"
+        [disabled]="ai.isSearching()"
+        (remove)="onChipRemoved($event)">
+      </app-ai-intent-chips>
+
+      <app-ai-suggestions-panel
+        [suggestions]="ai.followUps()"
+        [disabled]="ai.isSearching()"
+        (select)="onFollowUpSelected($event)">
+      </app-ai-suggestions-panel>
+
       <div class="results-info">
-        <span><strong>{{ searchService.results().length }}</strong> profiles found</span>
-        @if (searchService.hasMore()) {
-          <span class="more-available">Page {{ searchService.currentPage() }} of {{ searchService.totalPages() }}</span>
-        }
+        <span class="results-info__stats">
+          <strong>{{ resultCount() }}</strong> profiles found
+          @if (ai.aiActive()) {
+            <span class="results-info__sep">•</span>
+            <span class="ai-confidence ai-confidence--{{ ai.confidenceLevel() }}"
+                  matTooltip="Represents how confidently AI understood your search intent.">
+              <mat-icon>psychology</mat-icon> AI Confidence {{ ai.confidence() }}%
+            </span>
+            <span class="results-info__sep">•</span>
+            <span class="ai-timing" matTooltip="Server-side search time">
+              {{ ai.searchTimeMs() }}ms
+            </span>
+          }
+        </span>
+
+        <span class="results-info__right">
+          <span class="search-mode-badge search-mode-badge--{{ ai.searchMode() | lowercase }}">
+            <mat-icon>{{ ai.searchMode() === SearchMode.AI ? 'auto_awesome'
+                       : ai.searchMode() === SearchMode.HYBRID ? 'merge_type' : 'tune' }}</mat-icon>
+            {{ modeLabels[ai.searchMode()] }}
+          </span>
+          @if (hasMore() && !ai.aiActive()) {
+            <span class="more-available">Page {{ searchService.currentPage() }} of {{ searchService.totalPages() }}</span>
+          }
+        </span>
       </div>
 
+      <!-- Client-side narrowing of the loaded cards. Never calls the API. -->
+      @if (activeProfiles().length) {
+        <app-search-within-results
+          [(value)]="searchWithin"
+          [matchCount]="visibleProfiles().length"
+          [totalCount]="activeProfiles().length">
+        </app-search-within-results>
+      }
+
       <div class="results-grid" [class.list-view]="searchService.viewMode() === 'list'">
-        @for (profile of searchService.results(); track profile.userId) {
+        @for (profile of visibleProfiles(); track profile.userId) {
           <mat-card class="profile-result-card" appearance="outlined">
             <div class="result-image"
                  [style.background-image]="commonService.cardBg(profile.photos[0]?.url)"
@@ -282,25 +331,32 @@
             </mat-card-actions>
           </mat-card>
         } @empty {
-          @if (!searchService.isLoading()) {
+          @if (!isBusy()) {
             <div class="no-results">
               <mat-icon>search_off</mat-icon>
-              <h3>No profiles found</h3>
-              <p>Try adjusting your search filters</p>
+              <h3>No matches found.</h3>
+              @if (searchWithin().trim() && activeProfiles().length) {
+                <p>Nothing on this page matches “{{ searchWithin() }}”.</p>
+                <button mat-stroked-button type="button" (click)="searchWithin.set('')">
+                  <mat-icon>close</mat-icon> Clear results filter
+                </button>
+              } @else {
+                <p>Try broadening your search criteria.</p>
+              }
             </div>
           }
         }
       </div>
 
       <!-- Load More -->
-      @if (searchService.hasMore()) {
+      @if (hasMore()) {
         <div class="load-more-section">
           <button mat-stroked-button class="load-more-btn"
                   (click)="loadMore()"
-                  [disabled]="searchService.isLoading()">
-            <mat-spinner [hidden]="!searchService.isLoading()" diameter="20" class="inline-spinner"></mat-spinner>
-            <mat-icon [hidden]="searchService.isLoading()">expand_more</mat-icon>
-            {{ searchService.isLoading() ? 'Loading...' : 'Load More Profiles' }}
+                  [disabled]="isBusy()">
+            <mat-spinner [hidden]="!isBusy()" diameter="20" class="inline-spinner"></mat-spinner>
+            <mat-icon [hidden]="isBusy()">expand_more</mat-icon>
+            {{ isBusy() ? 'Loading...' : 'Load More Profiles' }}
           </button>
         </div>
       }
