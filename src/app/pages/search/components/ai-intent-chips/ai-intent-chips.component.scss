@@ -1,0 +1,70 @@
+:host { display: block; }
+
+.intent-chips {
+  margin: 0 0 14px;
+
+  &__corrections {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 0 0 8px;
+    font-size: 0.82rem;
+    color: var(--suhana-text-secondary);
+
+    mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--suhana-rose-gold); }
+    strong { color: var(--suhana-maroon); }
+  }
+
+  &__struck {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__label {
+    flex-shrink: 0;
+    padding-top: 7px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--suhana-text-secondary);
+  }
+}
+
+.intent-chip {
+  --mdc-chip-container-height: 30px;
+
+  background: #fff !important;
+  border: 1px solid var(--suhana-rose-gold-light, #d4a0a7) !important;
+  color: var(--suhana-maroon) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500;
+
+  mat-icon[matChipAvatar] {
+    font-size: 15px !important;
+    width: 15px !important;
+    height: 15px !important;
+    color: var(--suhana-rose-gold) !important;
+  }
+
+  button[matChipRemove] mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    opacity: 0.65;
+  }
+
+  button[matChipRemove]:hover mat-icon { opacity: 1; color: #c62828; }
+}
+
+@media (max-width: 640px) {
+  .intent-chips__label { padding-top: 0; width: 100%; }
+}

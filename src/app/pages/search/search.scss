@@ -185,6 +185,73 @@ $sidebar-w: 280px;
   font-size: 0.82rem;
 }
 
+// ─── AI search metrics row ─────────────────────────────────────────────────────
+.results-info {
+  flex-wrap: wrap;
+  gap: 8px;
+
+  &__stats,
+  &__right {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &__sep { color: var(--suhana-rose-gold-light); }
+}
+
+.ai-confidence {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: default;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+  &--high   { background: #e8f5e9; color: #2e7d32; }
+  &--medium { background: #fff8e1; color: #b26a00; }
+  &--low    { background: #fdecea; color: #c62828; }
+}
+
+.ai-timing {
+  font-size: 0.76rem;
+  color: var(--suhana-text-secondary);
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+}
+
+.search-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+  &--traditional { background: #eceff1; color: #455a64; }
+  &--ai          { background: var(--suhana-blush, #fde8e8); color: var(--suhana-maroon); }
+  &--hybrid      { background: #ede7f6; color: #5e35b1; }
+}
+
+@media (max-width: 640px) {
+  .results-info {
+    flex-direction: column;
+    align-items: flex-start;
+
+    &__right { width: 100%; }
+  }
+}
+
 // ─── Profile grid ──────────────────────────────────────────────────────────────
 .results-grid {
   display: grid;

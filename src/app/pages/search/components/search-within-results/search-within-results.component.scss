@@ -1,0 +1,29 @@
+:host { display: block; }
+
+.swr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+
+  &__field {
+    flex: 1;
+    min-width: 0;
+    background: #fff;
+  }
+
+  &__icon { color: var(--suhana-rose-gold); margin: 0 6px 0 4px; }
+
+  &__count {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--suhana-text-secondary);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    flex-wrap: wrap;
+    &__field { flex-basis: 100%; }
+  }
+}

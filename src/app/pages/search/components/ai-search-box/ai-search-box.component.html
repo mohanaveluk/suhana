@@ -1,0 +1,88 @@
+<section class="ai-box" aria-label="AI match search">
+  <header class="ai-box__header">
+    <mat-icon class="ai-box__icon">auto_awesome</mat-icon>
+    <h2 class="ai-box__title">AI Match Search</h2>
+    @if (ai.aiActive()) {
+      <button mat-button class="ai-box__clear" type="button" (click)="clear()">
+        <mat-icon>close</mat-icon> Clear AI Search
+      </button>
+    }
+  </header>
+
+  <div class="ai-box__row">
+    <mat-form-field appearance="outline" class="ai-box__field" subscriptSizing="dynamic">
+      <mat-label>Find matches using natural language...</mat-label>
+      <mat-icon matPrefix class="ai-box__prefix">search</mat-icon>
+      <input matInput
+             type="text"
+             maxlength="500"
+             autocomplete="off"
+             [value]="ai.query()"
+             [matAutocomplete]="auto"
+             (input)="onInput($any($event.target).value)"
+             (keydown.enter)="submit()"
+             aria-label="AI search query" />
+
+      @if (ai.isSuggesting()) {
+        <mat-spinner matSuffix diameter="18" class="ai-box__spinner"></mat-spinner>
+      }
+
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSuggestionSelected($event)"
+                        class="ai-box__panel">
+        @for (s of ai.suggestions(); track s.text) {
+          <mat-option [value]="s.text">
+            <span class="ai-sugg">
+              <mat-icon class="ai-sugg__icon">
+                {{ s.type === 'COMPLETION' ? 'text_fields'
+                 : s.type === 'POPULAR' ? 'trending_up'
+                 : s.type === 'EXAMPLE' ? 'lightbulb' : 'tune' }}
+              </mat-icon>
+              <span class="ai-sugg__text">{{ s.text }}</span>
+              @if (s.facet) { <span class="ai-sugg__facet">{{ s.facet }}</span> }
+            </span>
+          </mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <button mat-raised-button class="suhana-btn-primary ai-box__submit" type="button"
+            (click)="submit()"
+            [disabled]="ai.isSearching() || !ai.query().trim()">
+      @if (ai.isSearching()) {
+        <mat-spinner diameter="18" class="ai-box__submit-spinner"></mat-spinner>
+      } @else {
+        <mat-icon>auto_awesome</mat-icon>
+      }
+      <span class="ai-box__submit-text">Search</span>
+    </button>
+  </div>
+
+  @if (ai.suggestError(); as err) {
+    <div class="ai-box__alert ai-box__alert--warn" role="status">
+      <mat-icon>info</mat-icon>
+      <span>{{ err }}</span>
+      <button mat-icon-button type="button" (click)="ai.dismissSuggestError()" aria-label="Dismiss">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (ai.searchError(); as err) {
+    <div class="ai-box__alert ai-box__alert--error" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ err }}</span>
+      <button mat-icon-button type="button" (click)="ai.dismissSearchError()" aria-label="Dismiss">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (!ai.aiActive()) {
+    <div class="ai-box__examples">
+      <span class="ai-box__examples-label">Try:</span>
+      @for (ex of examples; track ex) {
+        <button type="button" class="ai-box__example" (click)="useExample(ex)">{{ ex }}</button>
+      }
+    </div>
+  }
+</section>

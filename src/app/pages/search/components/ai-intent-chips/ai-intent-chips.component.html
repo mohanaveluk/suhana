@@ -1,0 +1,33 @@
+@if (chips().length || corrections().length) {
+  <div class="intent-chips">
+    @if (corrections().length) {
+      <p class="intent-chips__corrections">
+        <mat-icon>spellcheck</mat-icon>
+        Showing results for
+        @for (c of corrections(); track c[0]) {
+          <strong>{{ c[1] }}</strong><span class="intent-chips__struck">{{ c[0] }}</span>
+        }
+      </p>
+    }
+
+    @if (chips().length) {
+      <div class="intent-chips__row">
+        <span class="intent-chips__label">Understood as</span>
+        <mat-chip-set aria-label="Extracted search filters">
+          @for (chip of chips(); track chip.key + ':' + (chip.value ?? chip.label)) {
+            <mat-chip class="intent-chip"
+                      [disabled]="disabled()"
+                      (removed)="remove.emit(chip)"
+                      [matTooltip]="'Remove ' + chip.label + ' and search again'">
+              <mat-icon matChipAvatar>{{ chip.icon }}</mat-icon>
+              {{ chip.label }}
+              <button matChipRemove type="button" [attr.aria-label]="'Remove ' + chip.label">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+    }
+  </div>
+}

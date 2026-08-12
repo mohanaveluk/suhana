@@ -1,0 +1,30 @@
+<div class="swr">
+  <mat-form-field appearance="outline" class="swr__field" subscriptSizing="dynamic">
+    <mat-icon matPrefix class="swr__icon">filter_list</mat-icon>
+    <input matInput
+           type="text"
+           placeholder="Search within current results..."
+           autocomplete="off"
+           [value]="value()"
+           (input)="value.set($any($event.target).value)"
+           aria-label="Search within current results" />
+    @if (value()) {
+      <button matSuffix mat-icon-button type="button" (click)="value.set('')" aria-label="Clear">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+  <mat-button-toggle-group [value]="searchService.viewMode()" aria-label="View mode" class="view-toggle">
+    <mat-button-toggle value="grid" (click)="searchService.setViewMode('grid')" matTooltip="Grid view">
+      <mat-icon>grid_view</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="list" (click)="searchService.setViewMode('list')" matTooltip="List view">
+      <mat-icon>view_list</mat-icon>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+  @if (value().trim()) {
+    <span class="swr__count">
+      {{ matchCount() }} of {{ totalCount() }} shown
+    </span>
+  }
+</div>

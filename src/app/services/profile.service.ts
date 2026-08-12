@@ -101,7 +101,7 @@ export class ProfileService {
 
     try {
       const res = await firstValueFrom(this.api.getProfiles(params));
-      const list = res.data ?? res;
+      const list = res.profiles ?? res;
       this.profiles.set(Array.isArray(list) ? list : []);
       this._currentPage.set(res.page ?? page);
       this._totalPages.set(res.totalPages ?? 1);
