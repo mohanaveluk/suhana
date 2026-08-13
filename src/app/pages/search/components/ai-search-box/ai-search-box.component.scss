@@ -47,7 +47,7 @@
     min-width: 0;
     background: #fff;
     border-radius: 8px;
-    font-size: 1.4em;
+    //font-size: 1.4em;
   }
 
   &__prefix { color: var(--suhana-rose-gold); margin: 0 6px 0 4px; }
@@ -58,7 +58,7 @@
     flex-shrink: 0;
     height: 56px;
     padding: 0 20px !important;
-
+    font-size: 1.1rem;
     mat-icon { margin-right: 6px; }
   }
 
@@ -66,6 +66,13 @@
     display: inline-block;
     margin-right: 6px;
     --mdc-circular-progress-active-indicator-color: #fff;
+    --mdc-circular-progress-active-indicator-color: white !important;
+    --mat-mdc-progress-spinner-active-indicator-color: white !important;
+    top: 4px;
+
+    ::ng-deep circle {
+      stroke: white !important;
+    }
   }
 
   &__alert {
@@ -83,6 +90,8 @@
 
     &--error { background: #fdecea; color: #c62828; }
     &--warn  { background: #fff8e1; color: #8d6e00; }
+
+
   }
 
   &__examples {
