@@ -1,0 +1,338 @@
+<div class="asa">
+
+  <!-- ── Header + global filters ─────────────────────────────────────────── -->
+  <header class="asa__header">
+    <div class="asa__heading">
+      <h1><mat-icon>insights</mat-icon> AI Search Analytics</h1>
+      <p>What members search for, what fails, and how often the AI fallback is paid for.</p>
+    </div>
+
+    <div class="asa__controls">
+      <mat-form-field appearance="outline" class="asa__range" subscriptSizing="dynamic">
+        <mat-label>Date range</mat-label>
+        <mat-select [value]="analytics.selectedDays()"
+                    (selectionChange)="onDaysChange($event.value)">
+          @for (r of dayRanges; track r.value) {
+            <mat-option [value]="r.value">{{ r.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-icon-button type="button" (click)="refresh()"
+              [disabled]="analytics.loading()" matTooltip="Refresh (bypasses cache)">
+        <mat-icon>refresh</mat-icon>
+      </button>
+
+      <button mat-stroked-button type="button" class="asa__export-btn"
+              [matMenuTriggerFor]="exportMenu">
+        <mat-icon>download</mat-icon> Export
+      </button>
+      <mat-menu #exportMenu="matMenu">
+        <button mat-menu-item type="button" (click)="exportCsv()">
+          <mat-icon>description</mat-icon><span>Export CSV</span>
+        </button>
+        <button mat-menu-item type="button" (click)="exportExcel()">
+          <mat-icon>table_chart</mat-icon><span>Export Excel</span>
+        </button>
+        <button mat-menu-item type="button" (click)="exportPdf()">
+          <mat-icon>picture_as_pdf</mat-icon><span>Export PDF</span>
+        </button>
+      </mat-menu>
+    </div>
+  </header>
+
+  @if (analytics.error(); as err) {
+    <div class="asa__alert" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ err }}</span>
+      <button mat-icon-button type="button" (click)="analytics.dismissError()" aria-label="Dismiss">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  <!-- ── Section 1: KPI cards ────────────────────────────────────────────── -->
+  <section class="asa__kpis" aria-label="Key metrics">
+
+    <div class="kpi kpi--total">
+      @if (analytics.loadingFallback()) {
+        <div class="kpi__skeleton"><span class="sk sk--value"></span><span class="sk sk--label"></span></div>
+      } @else {
+        <mat-icon class="kpi__icon">search</mat-icon>
+        <span class="kpi__value">{{ analytics.totalSearches() | number }}</span>
+        <span class="kpi__label">Total Searches</span>
+      }
+    </div>
+
+    <div class="kpi kpi--{{ analytics.fallbackLevel() }}"
+         matTooltip="Percentage of searches that required fallback matching instead of direct AI intent resolution.">
+      @if (analytics.loadingFallback()) {
+        <div class="kpi__skeleton"><span class="sk sk--value"></span><span class="sk sk--label"></span></div>
+      } @else {
+        <mat-icon class="kpi__icon">bolt</mat-icon>
+        <span class="kpi__value">{{ analytics.fallbackRatio() }}%</span>
+        <span class="kpi__label">AI Fallback Usage</span>
+      }
+    </div>
+
+    <div class="kpi kpi--accent">
+      @if (analytics.loadingTrends()) {
+        <div class="kpi__skeleton"><span class="sk sk--value"></span><span class="sk sk--label"></span></div>
+      } @else if (analytics.topTrend(); as t) {
+        <mat-icon class="kpi__icon">work</mat-icon>
+        <span class="kpi__value kpi__value--text" [matTooltip]="t.value">{{ t.value }}</span>
+        <span class="kpi__label">{{ t.count | number }} Searches · Top {{ analytics.selectedFacet() | titlecase }}</span>
+      } @else {
+        <mat-icon class="kpi__icon">work_off</mat-icon>
+        <span class="kpi__value kpi__value--text">—</span>
+        <span class="kpi__label">No trend data</span>
+      }
+    </div>
+
+    <div class="kpi kpi--gold">
+      @if (analytics.loadingTraits()) {
+        <div class="kpi__skeleton"><span class="sk sk--value"></span><span class="sk sk--label"></span></div>
+      } @else if (analytics.topTrait(); as t) {
+        <mat-icon class="kpi__icon">psychology</mat-icon>
+        <span class="kpi__value kpi__value--text" [matTooltip]="t.value">{{ t.value | titlecase }}</span>
+        <span class="kpi__label">{{ t.count | number }} Requests · Top Trait</span>
+      } @else {
+        <mat-icon class="kpi__icon">psychology_alt</mat-icon>
+        <span class="kpi__value kpi__value--text">—</span>
+        <span class="kpi__label">No trait data</span>
+      }
+    </div>
+  </section>
+
+  <!-- ── Section 2: AI fallback analytics ────────────────────────────────── -->
+  <section class="asa__section">
+    <h2 class="asa__section-title"><mat-icon>donut_large</mat-icon> AI Fallback Analytics</h2>
+
+    <div class="asa__split">
+      <mat-card class="panel" appearance="outlined">
+        @if (analytics.loadingFallback()) {
+          <div class="panel__loading"><mat-spinner diameter="40"></mat-spinner></div>
+        } @else if (analytics.totalSearches() === 0) {
+          <div class="empty"><mat-icon>donut_large</mat-icon><p>No search activity in this window.</p></div>
+        } @else {
+          <div class="chart chart--doughnut">
+            <canvas baseChart
+                    [type]="'doughnut'"
+                    [data]="fallbackChartData()"
+                    [options]="fallbackChartOptions"></canvas>
+          </div>
+        }
+      </mat-card>
+
+      <mat-card class="panel panel--metrics" appearance="outlined">
+        <h3 class="panel__title">Breakdown</h3>
+        <div class="metric"><span>Total Searches</span><strong>{{ analytics.totalSearches() | number }}</strong></div>
+        <mat-divider></mat-divider>
+        <div class="metric"><span>AI Success Searches</span><strong>{{ analytics.successCount() | number }}</strong></div>
+        <mat-divider></mat-divider>
+        <div class="metric"><span>Fallback Searches</span><strong>{{ analytics.fallbackCount() | number }}</strong></div>
+        <mat-divider></mat-divider>
+        <div class="metric">
+          <span>Fallback %</span>
+          <strong class="metric__badge metric__badge--{{ analytics.fallbackLevel() }}">
+            {{ analytics.fallbackRatio() }}%
+          </strong>
+        </div>
+        <p class="panel__note">
+          A rising ratio means the local dictionaries are drifting behind how members
+          phrase things — extending them is far cheaper than the inference.
+        </p>
+      </mat-card>
+    </div>
+  </section>
+
+  <!-- ── Section 3: Search trends ────────────────────────────────────────── -->
+  <section class="asa__section">
+    <h2 class="asa__section-title"><mat-icon>trending_up</mat-icon> Search Trends</h2>
+
+    <mat-card class="panel" appearance="outlined">
+      <mat-tab-group (selectedIndexChange)="onTabChange($event)" animationDuration="150ms">
+        @for (f of facets; track f.key) {
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">{{ f.icon }}</mat-icon> {{ f.label }}
+            </ng-template>
+          </mat-tab>
+        }
+      </mat-tab-group>
+
+      @if (analytics.loadingTrends()) {
+        <div class="panel__loading"><mat-spinner diameter="40"></mat-spinner></div>
+      } @else if (!analytics.trends().length) {
+        <div class="empty"><mat-icon>bar_chart</mat-icon><p>No trend data available.</p></div>
+      } @else {
+        <div class="chart" [class.chart--pie]="isPieFacet()" [class.chart--bar]="!isPieFacet()">
+          @if (isPieFacet()) {
+            <canvas baseChart [type]="'pie'" [data]="trendPieData()" [options]="trendPieOptions"></canvas>
+          } @else {
+            <canvas baseChart [type]="'bar'" [data]="trendBarData()" [options]="trendBarOptions"></canvas>
+          }
+        </div>
+
+        <mat-form-field appearance="outline" class="table-filter" subscriptSizing="dynamic">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput type="text" placeholder="Filter values…"
+                 [value]="trendFilter()"
+                 (input)="trendFilter.set($any($event.target).value)"
+                 aria-label="Filter trend values" />
+        </mat-form-field>
+
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Value</th>
+                <th class="num">Searches</th>
+                <th class="num">Share</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of trendRows(); track row.value) {
+                <tr>
+                  <td>
+                    <span class="data-table__label">{{ row.value }}</span>
+                    <span class="data-table__bar">
+                      <span class="data-table__bar-fill"
+                            [style.width]="barWidth(row.count, analytics.maxTrendCount())"></span>
+                    </span>
+                  </td>
+                  <td class="num"><strong>{{ row.count | number }}</strong></td>
+                  <td class="num">{{ sharePct(row.count) }}%</td>
+                </tr>
+              } @empty {
+                <tr><td colspan="3" class="data-table__empty">No values match “{{ trendFilter() }}”.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </mat-card>
+  </section>
+
+  <!-- ── Section 4: Popular personality traits ───────────────────────────── -->
+  <section class="asa__section">
+    <div class="asa__section-head">
+      <h2 class="asa__section-title"><mat-icon>psychology</mat-icon> Popular Personality Traits</h2>
+      <mat-button-toggle-group [value]="traitView()" class="view-switch"
+                               (change)="traitView.set($event.value)" aria-label="Trait view">
+        <mat-button-toggle value="cloud" matTooltip="Word cloud"><mat-icon>cloud</mat-icon></mat-button-toggle>
+        <mat-button-toggle value="chart" matTooltip="Chart"><mat-icon>bar_chart</mat-icon></mat-button-toggle>
+        <mat-button-toggle value="table" matTooltip="Table"><mat-icon>table_rows</mat-icon></mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <mat-card class="panel" appearance="outlined">
+      @if (analytics.loadingTraits()) {
+        <div class="panel__loading"><mat-spinner diameter="40"></mat-spinner></div>
+      } @else if (!analytics.popularTraits().length) {
+        <div class="empty"><mat-icon>psychology_alt</mat-icon><p>No personality trait data available.</p></div>
+      } @else if (traitView() === 'cloud') {
+        <div class="cloud">
+          @for (t of analytics.popularTraits(); track t.value) {
+            <span class="cloud__word cloud__word--{{ traitWeight(t.count, analytics.maxTraitCount()) }}"
+                  [matTooltip]="t.count + ' requests'">
+              {{ t.value }}
+            </span>
+          }
+        </div>
+      } @else if (traitView() === 'chart') {
+        <div class="chart chart--bar">
+          <canvas baseChart [type]="'bar'" [data]="traitBarData()" [options]="trendBarOptions"></canvas>
+        </div>
+      } @else {
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Trait</th><th class="num">Searches</th></tr></thead>
+            <tbody>
+              @for (t of analytics.popularTraits(); track t.value) {
+                <tr>
+                  <td>
+                    <span class="data-table__label">{{ t.value }}</span>
+                    <span class="data-table__bar">
+                      <span class="data-table__bar-fill data-table__bar-fill--gold"
+                            [style.width]="barWidth(t.count, analytics.maxTraitCount())"></span>
+                    </span>
+                  </td>
+                  <td class="num"><strong>{{ t.count | number }}</strong></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </mat-card>
+  </section>
+
+  <!-- ── Section 5: Failed searches ──────────────────────────────────────── -->
+  <section class="asa__section">
+    <h2 class="asa__section-title"><mat-icon>search_off</mat-icon> Failed Searches</h2>
+    <p class="asa__section-sub">
+      Zero-result queries. Each is either a dictionary gap the parser can be taught,
+      or a genuine catalogue gap worth acquiring profiles for.
+    </p>
+
+    <mat-card class="panel" appearance="outlined">
+      @if (analytics.loadingFailed()) {
+        <div class="panel__loading"><mat-spinner diameter="40"></mat-spinner></div>
+      } @else if (!analytics.failedSearches().length) {
+        <div class="empty"><mat-icon>check_circle</mat-icon><p>No failed searches found.</p></div>
+      } @else {
+        <mat-form-field appearance="outline" class="table-filter" subscriptSizing="dynamic">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput type="text" placeholder="Filter queries…"
+                 [value]="failedFilter()"
+                 (input)="onFailedFilter($any($event.target).value)"
+                 aria-label="Filter failed searches" />
+        </mat-form-field>
+
+        <div class="table-scroll">
+          <table mat-table [dataSource]="failedDataSource" matSort class="failed-table">
+
+            <ng-container matColumnDef="query">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Query</th>
+              <td mat-cell *matCellDef="let row" class="failed-table__query">{{ row.query }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="searchCount">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Search Count</th>
+              <td mat-cell *matCellDef="let row" class="num">
+                <span class="count-pill">{{ row.searchCount | number }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="averageResults">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Avg Results</th>
+              <td mat-cell *matCellDef="let row" class="num">{{ row.averageResults | number }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="num"></th>
+              <td mat-cell *matCellDef="let row" class="num">
+                <button mat-button type="button" class="detail-btn"
+                        (click)="openFailedDetail(row)">
+                  <mat-icon>visibility</mat-icon> View Details
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="failedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: failedColumns"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="data-table__empty" [attr.colspan]="failedColumns.length">
+                No queries match “{{ failedFilter() }}”.
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <mat-paginator [pageSizeOptions]="[10, 25, 50]" pageSize="10" showFirstLastButtons></mat-paginator>
+      }
+    </mat-card>
+  </section>
+</div>

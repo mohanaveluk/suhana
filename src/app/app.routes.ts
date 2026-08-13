@@ -97,6 +97,13 @@ export const routes: Routes = [
       import('./admin/feedback/admin-feedback.component').then(m => m.AdminFeedbackComponent),
   },
   {
+    path: 'admin/search-analytics',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/admin/ai-search-analytics/admin-ai-search-analytics.component')
+        .then(m => m.AdminAiSearchAnalyticsComponent),
+  },
+  {
     path: 'admin/edit-profile/:id',
     loadComponent: () =>
       import('./pages/admin-edit-profile/admin-edit-profile').then(m => m.AdminEditProfileComponent),
