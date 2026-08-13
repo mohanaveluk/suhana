@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { UserProfile, RefreshTokenResponse, MobileVerificationStatus, ProfileTrustIndicator } from '../models/user.model';
 import { AiSearchRequest, AiSearchResponse, SearchSuggestionsResponse } from '../models/ai-search.model';
+import { FacetCount, FailedSearch, FallbackRate, TrendFacet } from '../models/admin-search-analytics.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -612,6 +613,27 @@ export class ApiService {
   getAiSearchSuggestions(q: string, limit = 8): Observable<SearchSuggestionsResponse> {
     const params = new HttpParams().set('q', q).set('limit', limit);
     return this.http.get<SearchSuggestionsResponse>(`${this.baseUrl}/v1/search/ai/suggestions`, { params });
+  }
+
+  // Search Analytics — admin
+  adminGetFallbackRate(days: number): Observable<FallbackRate> {
+    const params = new HttpParams().set('days', days);
+    return this.http.get<FallbackRate>(`${this.baseUrl}/v1/admin/search-analytics/fallback-rate`, { params });
+  }
+
+  adminGetSearchTrends(facet: TrendFacet, limit: number, days: number): Observable<FacetCount[]> {
+    const params = new HttpParams().set('facet', facet).set('limit', limit).set('days', days);
+    return this.http.get<FacetCount[]>(`${this.baseUrl}/v1/admin/search-analytics/trends`, { params });
+  }
+
+  adminGetPopularTraits(limit: number, days: number): Observable<FacetCount[]> {
+    const params = new HttpParams().set('limit', limit).set('days', days);
+    return this.http.get<FacetCount[]>(`${this.baseUrl}/v1/admin/search-analytics/popular-traits`, { params });
+  }
+
+  adminGetFailedSearches(limit: number, days: number): Observable<FailedSearch[]> {
+    const params = new HttpParams().set('limit', limit).set('days', days);
+    return this.http.get<FailedSearch[]>(`${this.baseUrl}/v1/admin/search-analytics/failed-searches`, { params });
   }
 
   // Safety Tips — admin

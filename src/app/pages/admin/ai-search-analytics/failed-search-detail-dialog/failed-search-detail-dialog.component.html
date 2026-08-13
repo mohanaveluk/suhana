@@ -1,0 +1,57 @@
+<div class="fsd">
+  <div mat-dialog-title class="fsd__title">
+    <mat-icon class="fsd__title-icon">search_off</mat-icon>
+    <span>Failed Search Details</span>
+    <button mat-icon-button class="fsd__close" type="button" (click)="close()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="fsd__content">
+    <section class="fsd__query-block">
+      <span class="fsd__label">Search Query</span>
+      <div class="fsd__query">
+        <span>{{ data.item.query }}</span>
+        <button mat-icon-button type="button" (click)="copyQuery()" aria-label="Copy query">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+    </section>
+
+    <div class="fsd__stats">
+      <div class="fsd__stat">
+        <span class="fsd__stat-value">{{ data.item.searchCount }}</span>
+        <span class="fsd__stat-label">Search Count</span>
+      </div>
+      <div class="fsd__stat">
+        <span class="fsd__stat-value">{{ data.item.averageResults }}</span>
+        <span class="fsd__stat-label">Avg Results</span>
+      </div>
+      <div class="fsd__stat">
+        <span class="fsd__stat-value">{{ data.days }}d</span>
+        <span class="fsd__stat-label">Window</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <section class="fsd__hints">
+      <h3 class="fsd__hints-title">
+        <mat-icon>tips_and_updates</mat-icon> Possible Improvements
+      </h3>
+      <ul>
+        @for (hint of hints; track hint) {
+          <li>{{ hint }}</li>
+        }
+      </ul>
+      <p class="fsd__hints-note">
+        Suggestions are inferred from the query text on this screen — they are a starting
+        point for investigation, not a measurement from the API.
+      </p>
+    </section>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="fsd__actions" align="end">
+    <button mat-button type="button" (click)="close()">Close</button>
+  </mat-dialog-actions>
+</div>
