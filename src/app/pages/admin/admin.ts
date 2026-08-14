@@ -1,15 +1,63 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, OnInit, signal } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { AdminService } from '../../services';
 import { ProfileService } from '../../services';
+import { AuthService } from '../../services/auth.service';
+
+/** One entry in the admin navigation hub. Every route already exists. */
+export interface AdminLink {
+  title: string;
+  description: string;
+  icon: string;
+  route: string;
+  /** Short label for the Quick Access row. */
+  short: string;
+  /** Extra terms the search box should match on. */
+  keywords: string;
+}
+
+const ADMIN_LINKS: AdminLink[] = [
+  {
+    title: 'Match Fixed Dashboard',
+    description: 'Manage match-fixed workflows and approvals.',
+    icon: 'favorite',
+    route: '/match-fixed/admin',
+    short: 'Match Fixed',
+    keywords: 'match fixed workflow approval matchmaking',
+  },
+  {
+    title: 'Testimonials Review Dashboard',
+    description: 'Review and moderate testimonials.',
+    icon: 'rate_review',
+    route: '/testimonials/admin',
+    short: 'Testimonials',
+    keywords: 'testimonial review moderate success story rating',
+  },
+  {
+    title: 'Feedback Management',
+    description: 'Review user feedback and complaints.',
+    icon: 'feedback',
+    route: '/admin/feedback',
+    short: 'Feedback',
+    keywords: 'feedback complaint support ticket',
+  },
+  {
+    title: 'AI Search Analytics',
+    description: 'View AI search trends and analytics.',
+    icon: 'analytics',
+    route: '/admin/search-analytics',
+    short: 'Analytics',
+    keywords: 'ai search analytics trends fallback insights reports',
+  },
+];
 
 @Component({
   selector: 'app-admin',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TitleCasePipe, MaterialModule,
+    TitleCasePipe, MaterialModule, RouterModule,
   ],
   templateUrl: './admin.html',
   styleUrl: './admin.scss',
@@ -18,6 +66,25 @@ export class AdminComponent implements OnInit {
   protected readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
   protected readonly adminService = inject(AdminService);
+  protected readonly auth = inject(AuthService);
+
+  // ── Navigation hub ─────────────────────────────────────────────────────────
+  protected readonly adminLinks = ADMIN_LINKS;
+  protected readonly hubSearch = signal('');
+
+  protected readonly filteredLinks = computed<AdminLink[]>(() => {
+    const q = this.hubSearch().trim().toLowerCase();
+    if (!q) return ADMIN_LINKS;
+    return ADMIN_LINKS.filter(l =>
+      `${l.title} ${l.description} ${l.keywords}`.toLowerCase().includes(q));
+  });
+
+  /** Roles are stored lowercase ('admin'), so this reuses AuthService's check. */
+  protected readonly isAdmin = this.auth.isAdmin;
+
+  protected navigate(route: string): void {
+    void this.router.navigateByUrl(route);
+  }
   protected readonly displayedColumns = ['photo', 'name', 'age', 'gender', 'location', 'status', 'actions'];
   protected readonly matchAnalytics = this.adminService.getMatchAnalytics();
   protected readonly registrationTrends = this.adminService.registrationTrends;
@@ -47,6 +114,9 @@ export class AdminComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    // Non-admins get the permission notice instead — don't fire admin-only calls.
+    if (!this.isAdmin()) return;
+
     await this.runProfileLoad(() => this.profileService.loadProfiles({ status: 'all' }));
     await this.adminService.loadStats();
     await this.adminService.loadMatchAnalytics();

@@ -342,6 +342,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/v1/premium/subscribe/${planId}`, {});
   }
 
+  getRole(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/user/role`);
+  }
+
   // Admin
   getAdminStats(): Observable<any> {
     return this.http.get(`${this.baseUrl}/v1/admin/stats`);

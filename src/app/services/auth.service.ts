@@ -3,6 +3,7 @@ import { User, UserRole, MembershipTier } from '../models/user.model';
 import { ApiService } from './api.service';
 import { firstValueFrom, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { decryptValue } from '../shared/utils/crypto.util';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
   readonly user = this.currentUser.asReadonly();
   readonly authenticated = this.isAuthenticated.asReadonly();
   readonly userRole = computed<UserRole>(() => this.currentUser()?.role ?? 'guest');
-  readonly isAdmin = computed(() => this.userRole() === 'admin');
+  readonly isAdmin = computed(() => this.isUserAdmin());
   readonly isTester = computed(() => this.userRole() === 'tester');
   readonly isPremium = computed(() => {
     const tier = this.currentUser()?.membership;
@@ -136,6 +137,25 @@ export class AuthService {
 
   resendVerificationMail(userGuid: string): Observable<any> {
     return this.api.resendVerificationMail(userGuid);
+  }
+
+  async getRole(): Promise<string | null> {
+    try {
+      const res = await firstValueFrom(this.api.getRole());
+
+      let role = res?.role;
+      role.name = decryptValue(role.name);
+      return res?.role ?? null;
+    }
+    catch {
+      return null;
+    }
+  }
+
+  // check to see the role name is admin
+  async isUserAdmin(): Promise<boolean> {
+    const role = await this.getRole();
+    return role === 'admin';
   }
 
   private setSession(res: { access_token: string; refresh_token: string; user: Record<string, unknown> }): void {
