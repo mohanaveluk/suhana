@@ -9,9 +9,19 @@ export function encryptValue(value: string): string {
   return encrypted.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '~');
 }
 
+export function encrypt(value: string): string {
+  return CryptoJS.AES.encrypt(value, SECRET).toString();
+}
+
 export function decryptValue(encoded: string): string {
   // Restore standard base64 before decryption
   const encrypted = encoded.replace(/-/g, '+').replace(/_/g, '/').replace(/~/g, '=');
   const bytes = CryptoJS.AES.decrypt(encrypted, SECRET);
   return bytes.toString(CryptoJS.enc.Utf8);
+}
+
+export function decrypt<T = string>(cipherText: string, parseJson = false): T {
+  const bytes = CryptoJS.AES.decrypt(cipherText, SECRET);
+  const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+  return parseJson ? JSON.parse(decrypted) : (decrypted as unknown as T);
 }
