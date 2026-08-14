@@ -20,6 +20,7 @@ import {
   Feedback, FeedbackFilter, FeedbackStats, FeedbackStatus,
   FEEDBACK_CATEGORY_LABELS, STATUS_CONFIG,
 } from './feedback.model';
+import { AdminLayoutComponent } from '../../pages/admin/layout/admin-layout.component';
 
 // ── Inline confirmation dialog ────────────────────────────────────────────────
 interface ConfirmData {
@@ -83,6 +84,7 @@ export class AfConfirmDialogComponent {
   imports: [
     FormsModule, DatePipe, LowerCasePipe, RouterLink,
     MaterialModule, MatPaginatorModule, MatSidenavModule,
+    AdminLayoutComponent,
   ],
   templateUrl: './admin-feedback.component.html',
   styleUrl:    './admin-feedback.component.scss',

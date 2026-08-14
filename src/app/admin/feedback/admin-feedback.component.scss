@@ -3,15 +3,16 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── Sidenav container ─────────────────────────────────────────────────────────
+// Sits inside the admin shell, below the site header (64px) + admin bar (64px).
 .af-container {
-  min-height: 100vh;
+  min-height: calc(100vh - 128px);
   background: #f8fafc;
 }
 
 // ── Main content area ─────────────────────────────────────────────────────────
 .af-main {
   padding: 1.5rem 1.75rem 3rem;
-  min-height: 100vh;
+  min-height: calc(100vh - 128px);
   background: #f8fafc;
 
   @media (max-width: 768px) { padding: 1rem; }

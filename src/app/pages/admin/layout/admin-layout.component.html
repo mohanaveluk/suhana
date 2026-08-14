@@ -1,0 +1,117 @@
+@if (!auth.roleLoaded()) {
+
+  <!-- Role not yet confirmed — neither "admin" nor "denied" is true yet. -->
+  <div class="adm-gate">
+    <mat-spinner diameter="44"></mat-spinner>
+    <p>Verifying your access…</p>
+  </div>
+
+} @else if (!auth.isAdmin()) {
+
+  <section class="admin-denied">
+    <div class="adm-gate">
+      <mat-icon class="adm-gate__icon">lock</mat-icon>
+      <h2>Access Restricted</h2>
+      <p>You do not have permission to access this page.</p>
+      <a mat-raised-button class="suhana-btn-primary" routerLink="/">
+        <mat-icon>home</mat-icon> Go Home
+      </a>
+    </div>
+  </section>
+} @else {
+
+<div class="adm">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <mat-toolbar class="adm-bar">
+    <button mat-icon-button class="adm-bar__burger" type="button"
+            (click)="toggleNav()"
+            [matTooltip]="isHandset() ? 'Menu' : (collapsed() ? 'Expand sidebar' : 'Collapse sidebar')"
+            aria-label="Toggle navigation">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <a class="adm-bar__brand" routerLink="/admin" aria-label="Suhana Admin home">
+      <span class="adm-bar__logo"><mat-icon>favorite</mat-icon></span>
+      <span class="adm-bar__name">Suhana Admin</span>
+    </a>
+
+    <span class="adm-bar__spacer"></span>
+
+    <button mat-icon-button type="button" class="adm-bar__icon-btn"
+            matTooltip="Notifications" routerLink="/notifications"
+            aria-label="Notifications">
+      <mat-icon>notifications</mat-icon>
+    </button>
+
+    <button mat-button type="button" class="adm-bar__profile"
+            [matMenuTriggerFor]="profileMenu" aria-label="Account menu">
+      <span class="adm-bar__avatar">{{ initials }}</span>
+      <span class="adm-bar__identity">
+        <span class="adm-bar__identity-name">{{ adminName }}</span>
+        <span class="adm-bar__identity-mail">{{ auth.user()?.email }}</span>
+      </span>
+      <mat-icon class="adm-bar__caret">expand_more</mat-icon>
+    </button>
+
+    <mat-menu #profileMenu="matMenu" class="adm-profile-menu">
+      <div class="adm-profile-menu__head">
+        <span class="adm-profile-menu__name">{{ adminName }}</span>
+        <span class="adm-profile-menu__mail">{{ auth.user()?.email }}</span>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item type="button" routerLink="/profile">
+        <mat-icon>account_circle</mat-icon><span>My Profile</span>
+      </button>
+      <button mat-menu-item type="button" routerLink="/settings">
+        <mat-icon>settings</mat-icon><span>Settings</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item type="button" (click)="logout()">
+        <mat-icon>logout</mat-icon><span>Logout</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <!-- ── Sidebar + content ───────────────────────────────────────────────── -->
+  <mat-sidenav-container class="adm-shell" [hasBackdrop]="isHandset()">
+
+    <mat-sidenav class="adm-side"
+                 [class.adm-side--collapsed]="collapsed() && !isHandset()"
+                 [mode]="isHandset() ? 'over' : 'side'"
+                 [opened]="isHandset() ? drawerOpen() : true"
+                 (openedChange)="drawerOpen.set($event)"
+                 [fixedInViewport]="false">
+      <nav class="adm-nav" aria-label="Admin sections">
+        @for (item of nav; track item.route) {
+          <a class="adm-nav__item"
+             [routerLink]="item.route"
+             routerLinkActive="adm-nav__item--active"
+             [routerLinkActiveOptions]="{ exact: !!item.exact }"
+             (click)="onNavigate()"
+             [matTooltip]="collapsed() && !isHandset() ? item.title : ''"
+             matTooltipPosition="right">
+            <mat-icon class="adm-nav__icon">{{ item.icon }}</mat-icon>
+            <span class="adm-nav__text">
+              <span class="adm-nav__title">{{ item.title }}</span>
+              <span class="adm-nav__desc">{{ item.description }}</span>
+            </span>
+          </a>
+        }
+      </nav>
+
+      <div class="adm-side__foot">
+        <button mat-button type="button" class="adm-nav__logout" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span class="adm-nav__text">Logout</span>
+        </button>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="adm-content">
+      <ng-content></ng-content>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>
+
+}

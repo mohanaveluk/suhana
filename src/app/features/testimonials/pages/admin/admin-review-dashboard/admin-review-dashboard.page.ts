@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AdminReviewsService } from '../../../services/admin-reviews.service';
 import { AdminDashboardMetrics } from '../../../models/review.model';
+import { AdminLayoutComponent } from '../../../../../pages/admin/layout/admin-layout.component';
 
 @Component({
   selector: 'app-admin-review-dashboard-page',
@@ -17,6 +18,7 @@ import { AdminDashboardMetrics } from '../../../models/review.model';
   imports: [
     RouterLink, DecimalPipe,
     MatButtonModule, MatIconModule, MatCardModule, MatProgressSpinnerModule,
+    AdminLayoutComponent,
   ],
   templateUrl: './admin-review-dashboard.page.html',
   styleUrl:    './admin-review-dashboard.page.scss',

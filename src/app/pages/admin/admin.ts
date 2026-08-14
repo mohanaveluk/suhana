@@ -5,59 +5,14 @@ import { MaterialModule } from '../../shared/modules/material.module';
 import { AdminService } from '../../services';
 import { ProfileService } from '../../services';
 import { AuthService } from '../../services/auth.service';
-
-/** One entry in the admin navigation hub. Every route already exists. */
-export interface AdminLink {
-  title: string;
-  description: string;
-  icon: string;
-  route: string;
-  /** Short label for the Quick Access row. */
-  short: string;
-  /** Extra terms the search box should match on. */
-  keywords: string;
-}
-
-const ADMIN_LINKS: AdminLink[] = [
-  {
-    title: 'Match Fixed Dashboard',
-    description: 'Manage match-fixed workflows and approvals.',
-    icon: 'favorite',
-    route: '/match-fixed/admin',
-    short: 'Match Fixed',
-    keywords: 'match fixed workflow approval matchmaking',
-  },
-  {
-    title: 'Testimonials Review Dashboard',
-    description: 'Review and moderate testimonials.',
-    icon: 'rate_review',
-    route: '/testimonials/admin',
-    short: 'Testimonials',
-    keywords: 'testimonial review moderate success story rating',
-  },
-  {
-    title: 'Feedback Management',
-    description: 'Review user feedback and complaints.',
-    icon: 'feedback',
-    route: '/admin/feedback',
-    short: 'Feedback',
-    keywords: 'feedback complaint support ticket',
-  },
-  {
-    title: 'AI Search Analytics',
-    description: 'View AI search trends and analytics.',
-    icon: 'analytics',
-    route: '/admin/search-analytics',
-    short: 'Analytics',
-    keywords: 'ai search analytics trends fallback insights reports',
-  },
-];
+import { AdminLayoutComponent } from './layout/admin-layout.component';
+import { ADMIN_MODULES, AdminNavItem } from './admin-nav';
 
 @Component({
   selector: 'app-admin',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TitleCasePipe, MaterialModule, RouterModule,
+    TitleCasePipe, MaterialModule, RouterModule, AdminLayoutComponent,
   ],
   templateUrl: './admin.html',
   styleUrl: './admin.scss',
@@ -69,13 +24,13 @@ export class AdminComponent implements OnInit {
   protected readonly auth = inject(AuthService);
 
   // ── Navigation hub ─────────────────────────────────────────────────────────
-  protected readonly adminLinks = ADMIN_LINKS;
+  protected readonly adminLinks = ADMIN_MODULES;
   protected readonly hubSearch = signal('');
 
-  protected readonly filteredLinks = computed<AdminLink[]>(() => {
+  protected readonly filteredLinks = computed<AdminNavItem[]>(() => {
     const q = this.hubSearch().trim().toLowerCase();
-    if (!q) return ADMIN_LINKS;
-    return ADMIN_LINKS.filter(l =>
+    if (!q) return ADMIN_MODULES;
+    return ADMIN_MODULES.filter(l =>
       `${l.title} ${l.description} ${l.keywords}`.toLowerCase().includes(q));
   });
 
@@ -114,7 +69,10 @@ export class AdminComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    // Non-admins get the permission notice instead — don't fire admin-only calls.
+    // The layout gates what renders, but this component's ngOnInit still runs
+    // for a non-admin, so the admin-only fetches below need their own guard.
+    // loadRole() shares one in-flight request with the layout's call.
+    await this.auth.loadRole();
     if (!this.isAdmin()) return;
 
     await this.runProfileLoad(() => this.profileService.loadProfiles({ status: 'all' }));

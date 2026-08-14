@@ -1,35 +1,69 @@
+// Inside the admin shell the page owns its own gutters (no suhana-container).
 .admin-page {
-  padding-top: 32px;
-  padding-bottom: 64px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 26px 26px 64px;
+
+  @media (max-width: 900px) { padding: 20px 16px 48px; }
+  @media (max-width: 600px) { padding: 16px 12px 40px; }
 }
 
-// ── Access denied ─────────────────────────────────────────────────────────────
-.admin-denied {
+// ── Welcome banner ────────────────────────────────────────────────────────────
+.welcome {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  text-align: center;
-  padding: 80px 24px;
-  background: #faf7f8;
+  justify-content: space-between;
+  gap: 16px;
+  overflow: hidden;
+  padding: 26px 28px;
+  margin-bottom: 22px;
   border-radius: 20px;
-  box-shadow: 0 4px 24px var(--suhana-shadow, rgba(183, 110, 121, 0.15));
+  color: #fff;
+  background: var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
+  box-shadow: 0 8px 24px rgba(128, 0, 32, 0.22);
 
-  &__icon {
-    font-size: 52px;
-    width: 52px;
-    height: 52px;
-    color: var(--suhana-rose-gold-light, #d4a0a7);
+  h1 {
+    margin: 0 0 5px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
   }
 
-  h2 { margin: 0; color: var(--suhana-maroon); font-size: 1.35rem; }
-  p  { margin: 0 0 14px; color: var(--suhana-text-secondary); font-size: 0.92rem; }
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.88);
+  }
 
-  a mat-icon { margin-right: 6px; }
+  &__mark {
+    font-size: 76px;
+    width: 76px;
+    height: 76px;
+    color: rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 700px) {
+    padding: 20px;
+    h1 { font-size: 1.2rem; }
+    p  { font-size: 0.84rem; }
+    &__mark { display: none; }
+  }
 }
 
-// ── Admin navigation hub ──────────────────────────────────────────────────────
+
+// ── Quick actions row (outside the module panel) ──────────────────────────────
+.hub__quick {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+// ── Admin module panel ────────────────────────────────────────────────────────
 .hub {
   background: #faf7f8;
   border-radius: 20px;
@@ -38,14 +72,6 @@
   box-shadow: 0 4px 24px var(--suhana-shadow, rgba(183, 110, 121, 0.12));
 
   @media (max-width: 600px) { padding: 16px 14px 18px; border-radius: 16px; }
-
-  &__quick {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
 
   &__quick-label {
     font-size: 0.74rem;
@@ -87,10 +113,11 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
 
-    @media (max-width: 640px) { grid-template-columns: 1fr; }
+    @media (max-width: 1200px) { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 640px)  { grid-template-columns: 1fr; }
   }
 
   &__empty {

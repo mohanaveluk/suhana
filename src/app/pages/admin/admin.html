@@ -1,47 +1,38 @@
-@if (!isAdmin()) {
+<!-- Access is gated by app-admin-layout, which every admin page shares. -->
+<app-admin-layout>
+<div class="admin-page">
 
-  <div class="admin-page suhana-container">
-    <div class="admin-denied">
-      <mat-icon class="admin-denied__icon">lock</mat-icon>
-      <h2>Access Restricted</h2>
-      <p>You do not have permission to access this page.</p>
-      <a mat-raised-button class="suhana-btn-primary" routerLink="/">
-        <mat-icon>home</mat-icon> Go Home
-      </a>
+  <!-- ── Welcome ─────────────────────────────────────────────────────────── -->
+  <section class="welcome">
+    <div class="welcome__text">
+      <h1>Welcome Back, {{ auth.user()?.firstName || 'Administrator' }}</h1>
+      <p>Manage and monitor all Suhana Matrimony administrative operations.</p>
     </div>
-  </div>
+    <mat-icon class="welcome__mark">admin_panel_settings</mat-icon>
+  </section>
 
-} @else {
-
-<div class="admin-page suhana-container">
-  <div class="admin-header">
-    <h1><mat-icon>admin_panel_settings</mat-icon> Admin Control Center</h1>
-    <p>Manage all Suhana Matrimony administrative tools.</p>
-  </div>
-
-  <!-- ── Navigation hub ──────────────────────────────────────────────────── -->
-  <section class="hub" aria-label="Admin tools">
-
-    <!-- Quick Access -->
-    <div class="hub__quick">
-      <span class="hub__quick-label">Quick Access</span>
-      <div class="hub__quick-btns">
-        @for (link of adminLinks; track link.route) {
-          <button mat-stroked-button type="button" class="hub__quick-btn"
-                  (click)="navigate(link.route)"
-                  [matTooltip]="link.description">
-            <mat-icon>{{ link.icon }}</mat-icon> {{ link.short }}
-          </button>
-        }
-      </div>
+  <!-- ── Quick Actions ───────────────────────────────────────────────────── -->
+  <!-- <section class="hub__quick" aria-label="Quick actions">
+    <span class="hub__quick-label">Quick Actions</span>
+    <div class="hub__quick-btns">
+      @for (link of adminLinks; track link.route) {
+        <button mat-stroked-button type="button" class="hub__quick-btn"
+                (click)="navigate(link.route)"
+                [matTooltip]="link.description">
+          <mat-icon>{{ link.icon }}</mat-icon> {{ link.short }}
+        </button>
+      }
     </div>
+  </section> -->
 
+  <!-- ── Module cards ────────────────────────────────────────────────────── -->
+  <!-- <section class="hub" aria-label="Admin modules">
     <mat-form-field appearance="outline" class="hub__search" subscriptSizing="dynamic">
       <mat-icon matPrefix>search</mat-icon>
-      <input matInput type="text" placeholder="Search admin features..."
+      <input matInput type="text" placeholder="Search admin modules..."
              [value]="hubSearch()"
              (input)="hubSearch.set($any($event.target).value)"
-             aria-label="Search admin features" />
+             aria-label="Search admin modules" />
       @if (hubSearch()) {
         <button matSuffix mat-icon-button type="button" (click)="hubSearch.set('')" aria-label="Clear">
           <mat-icon>close</mat-icon>
@@ -69,13 +60,13 @@
       } @empty {
         <div class="hub__empty">
           <mat-icon>search_off</mat-icon>
-          <p>No admin features match &ldquo;{{ hubSearch() }}&rdquo;.</p>
+          <p>No admin modules match &ldquo;{{ hubSearch() }}&rdquo;.</p>
         </div>
       }
     </div>
   </section>
 
-  <mat-divider class="hub__divider"></mat-divider>
+  <mat-divider class="hub__divider"></mat-divider> -->
 
   <!-- Stats Cards -->
   <div class="stats-grid">
@@ -410,4 +401,4 @@
     </mat-tab>
   </mat-tab-group>
 </div>
-}
+</app-admin-layout>
