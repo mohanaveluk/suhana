@@ -12,10 +12,30 @@ export class AuthService {
   private readonly currentUser = signal<User | null>(null);
   public readonly isAuthenticated = signal(false);
 
+  /** Authoritative role from GET /role. Null until the call resolves. */
+  private readonly fetchedRole = signal<UserRole | null>(null);
+  private readonly roleResolved = signal(false);
+  /** Shared in-flight request so concurrent callers issue one API call. */
+  private roleRequest: Promise<UserRole> | null = null;
+
   readonly user = this.currentUser.asReadonly();
   readonly authenticated = this.isAuthenticated.asReadonly();
-  readonly userRole = computed<UserRole>(() => this.currentUser()?.role ?? 'guest');
-  readonly isAdmin = computed(() => this.isUserAdmin());
+
+  /**
+   * Real-time role from the API, falling back to the cached session role until
+   * that resolves so the first paint is not wrong.
+   *
+   * Must stay synchronous: templates read this directly, and a computed wrapping
+   * an async call yields a Promise, which is always truthy — every signed-in user
+   * would pass the check. Call loadRole() to refresh it.
+   */
+  readonly userRole = computed<UserRole>(() =>
+    this.fetchedRole() ?? this.currentUser()?.role ?? 'guest');
+
+  /** False until the role has been fetched at least once this session. */
+  readonly roleLoaded = this.roleResolved.asReadonly();
+
+  readonly isAdmin = computed(() => this.userRole() === 'admin');
   readonly isTester = computed(() => this.userRole() === 'tester');
   readonly isPremium = computed(() => {
     const tier = this.currentUser()?.membership;
@@ -29,6 +49,8 @@ export class AuthService {
         const user = JSON.parse(stored) as User;
         this.currentUser.set(user);
         this.isAuthenticated.set(true);
+        // Confirm the cached role against the API on boot.
+        void this.loadRole();
       } catch { /* ignore */ }
     }
   }
@@ -91,12 +113,18 @@ export class AuthService {
       };
       this.currentUser.set(demoUser);
       this.isAuthenticated.set(true);
+      // Demo sessions bypass the API, so publish the role directly.
+      this.fetchedRole.set(role);
+      this.roleResolved.set(true);
     }
   }
 
   logout(): void {
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
+    this.fetchedRole.set(null);
+    this.roleResolved.set(false);
+    this.roleRequest = null;
     localStorage.removeItem('suhana_token');
     localStorage.removeItem('suhana_user');
     localStorage.removeItem('refresh_token');
@@ -143,9 +171,9 @@ export class AuthService {
     try {
       const res = await firstValueFrom(this.api.getRole());
 
-      let role = res?.role;
+      let role = res || res?.role;
       role.name = decryptValue(role.name);
-      return res?.role ?? null;
+      return role?.name ?? null;
     }
     catch {
       return null;
@@ -156,6 +184,53 @@ export class AuthService {
   async isUserAdmin(): Promise<boolean> {
     const role = await this.getRole();
     return role === 'admin';
+  }
+
+  /**
+   * Fetches the role from the API and publishes it to `userRole`.
+   *
+   * Concurrent callers share one request. A failed or unrecognised response
+   * leaves the cached role in place rather than demoting the user — a flaky
+   * endpoint must not silently lock an admin out of their own screens.
+   */
+  async loadRole(force = false): Promise<UserRole> {
+    if (!this.isAuthenticated()) {
+      this.fetchedRole.set(null);
+      this.roleResolved.set(true);
+      return 'guest';
+    }
+
+    if (!force && this.roleRequest) return this.roleRequest;
+
+    this.roleRequest = this.getRole()
+      .then(name => {
+        const role = this.toUserRole(name);
+        if (!role) return this.userRole();
+
+        this.fetchedRole.set(role);
+        // Keep the cached session in step so the next reload starts correct.
+        if (this.currentUser() && this.currentUser()!.role !== role) {
+          this.patchUser({ role });
+        }
+        return role;
+      })
+      .catch(() => this.userRole())
+      .finally(() => {
+        this.roleResolved.set(true);
+        this.roleRequest = null;
+      });
+
+    return this.roleRequest;
+  }
+
+  private toUserRole(name: string | null | undefined): UserRole | null {
+    switch ((name ?? '').trim().toLowerCase()) {
+      case 'admin':      return 'admin';
+      case 'tester':     return 'tester';
+      case 'registered': return 'registered';
+      case 'guest':      return 'guest';
+      default:           return null;
+    }
   }
 
   private setSession(res: { access_token: string; refresh_token: string; user: Record<string, unknown> }): void {
@@ -179,5 +254,10 @@ export class AuthService {
     localStorage.setItem('suhana_user', JSON.stringify(user));
     this.currentUser.set(user);
     this.isAuthenticated.set(true);
+    // A fresh session must not inherit the previous user's role.
+    this.fetchedRole.set(null);
+    this.roleResolved.set(false);
+    this.roleRequest = null;
+    void this.loadRole(true);
   }
 }

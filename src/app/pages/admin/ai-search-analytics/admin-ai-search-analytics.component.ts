@@ -18,6 +18,7 @@ import {
   FailedSearchDetailDialogComponent, FailedSearchDetailData,
 } from './failed-search-detail-dialog/failed-search-detail-dialog.component';
 import { ExportSheet, exportCsv, exportExcel, exportPdf } from './analytics-export';
+import { AdminLayoutComponent } from '../layout/admin-layout.component';
 
 Chart.register(...registerables);
 
@@ -32,7 +33,7 @@ const PALETTE = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MaterialModule, MatTableModule, MatSortModule, MatPaginatorModule,
-    BaseChartDirective, DecimalPipe, TitleCasePipe,
+    BaseChartDirective, DecimalPipe, TitleCasePipe, AdminLayoutComponent,
   ],
   templateUrl: './admin-ai-search-analytics.component.html',
   styleUrl: './admin-ai-search-analytics.component.scss',

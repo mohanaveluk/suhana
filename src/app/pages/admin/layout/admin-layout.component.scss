@@ -1,0 +1,285 @@
+// The site header is sticky at the top of the viewport; the admin bar stacks
+// beneath it rather than replacing it.
+$site-header-h: 64px;
+$bar-h: 64px;
+$side-w: 280px;
+$side-w-collapsed: 72px;
+
+:host { display: block; }
+
+.adm { display: block; }
+
+// ─── Access gate (shared by every page using this layout) ──────────────────────
+.adm-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  min-height: calc(100vh - #{$site-header-h});
+  padding: 1px 24px;
+  background: #f7f5f6;
+
+  &__icon {
+    font-size: 52px;
+    width: 52px;
+    height: 52px;
+    color: var(--suhana-rose-gold-light, #d4a0a7);
+  }
+
+  h2 { margin: 0; color: var(--suhana-maroon); font-size: 1.35rem; }
+  p  { margin: 0 0 14px; color: var(--suhana-text-secondary); font-size: 0.92rem; }
+
+  a mat-icon { margin-right: 6px; }
+}
+
+// ─── Header ────────────────────────────────────────────────────────────────────
+.adm-bar {
+  //position: sticky;
+  top: $site-header-h;
+  z-index: 900;
+  height: $bar-h;
+  min-height: $bar-h;
+  padding: 0 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  &__burger { color: #4b5563; flex-shrink: 0; }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-left: 4px;
+    text-decoration: none;
+    min-width: 0;
+
+    &:hover { text-decoration: none; }
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
+    flex-shrink: 0;
+
+    mat-icon { color: #fff; font-size: 19px; width: 19px; height: 19px; }
+  }
+
+  &__name {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--suhana-maroon);
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+
+  &__spacer { flex: 1 1 auto; }
+
+  &__icon-btn { color: #6b7280; flex-shrink: 0; }
+
+  &__profile {
+    display: flex !important;
+    align-items: center;
+    gap: 9px;
+    height: 46px;
+    padding: 0 8px !important;
+    border-radius: 24px !important;
+    min-width: 0;
+
+    &:hover { background: #f9fafb; }
+  }
+
+  &__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    flex-shrink: 0;
+  }
+
+  &__identity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.25;
+    min-width: 0;
+    max-width: 190px;
+  }
+
+  &__identity-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  &__identity-mail {
+    font-size: 0.7rem;
+    color: #6b7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  &__caret { color: #9ca3af; flex-shrink: 0; }
+
+  // Identity collapses to just the avatar on small screens.
+  @media (max-width: 720px) {
+    &__identity { display: none; }
+    &__caret { display: none; }
+    &__name { display: none; }
+  }
+}
+
+// ─── Shell ─────────────────────────────────────────────────────────────────────
+.adm-shell {
+  min-height: calc(100vh - #{$site-header-h} - #{$bar-h});
+  background: #f7f5f6;
+}
+
+.adm-side {
+  width: $side-w;
+  border-right: none !important;
+  background: #1f2937 !important;
+  color: #fff;
+  transition: width 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+
+  &--collapsed { width: $side-w-collapsed; }
+
+  &__foot {
+    margin-top: auto;
+    padding: 10px 12px 18px;
+  }
+}
+
+.adm-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 12px 6px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    color: #d1d5db;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.18s ease, color 0.18s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    &--active {
+      background: var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(128, 0, 32, 0.35);
+
+      .adm-nav__desc { color: rgba(255, 255, 255, 0.78); }
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    font-size: 21px;
+    width: 21px;
+    height: 21px;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  &__title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__desc {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__logout {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    justify-content: flex-start !important;
+    padding: 10px 16px !important;
+    border-radius: 12px !important;
+    color: #f3a3a3 !important;
+
+    mat-icon { flex-shrink: 0; font-size: 20px; width: 20px; height: 20px; }
+    &:hover { background: rgba(255, 255, 255, 0.08); }
+  }
+}
+
+// Collapsed rail: icons only, centred.
+.adm-side--collapsed {
+  .adm-nav__item,
+  .adm-nav__logout {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    gap: 0;
+  }
+
+  .adm-nav__text { display: none; }
+}
+
+// ─── Content ───────────────────────────────────────────────────────────────────
+.adm-content {
+  background: #f7f5f6;
+  overflow-x: hidden;
+}
+
+// The sidenav scrolls with the page rather than trapping its own scroll.
+::ng-deep .adm-shell .mat-drawer-inner-container {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+::ng-deep .adm-profile-menu {
+  .adm-profile-menu__head {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px 10px;
+  }
+  .adm-profile-menu__name { font-size: 0.86rem; font-weight: 700; color: #111827; }
+  .adm-profile-menu__mail { font-size: 0.74rem; color: #6b7280; }
+}

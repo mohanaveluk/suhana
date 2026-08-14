@@ -5,12 +5,13 @@ import { MatchFixedService } from '../match-fixed.service';
 import { AdminDashboardResponse } from '../models/dashboard-metrics.model';
 import { SuccessStoryResponse } from '../models/success-story.model';
 import { MATCH_SOURCE_LABELS } from '../models/match-fixed.model';
+import { AdminLayoutComponent } from '../../../pages/admin/layout/admin-layout.component';
 
 @Component({
   selector: 'app-match-fixed-admin-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MaterialModule, DecimalPipe, DatePipe, SlicePipe],
+  imports: [MaterialModule, DecimalPipe, DatePipe, SlicePipe, AdminLayoutComponent],
   templateUrl: './match-fixed-admin-dashboard.component.html',
   styleUrl:    './match-fixed-admin-dashboard.component.scss',
 })
