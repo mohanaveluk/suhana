@@ -21,10 +21,10 @@ export interface GuestPromptData {
       <h2 class="gp__title">{{ data.title }}</h2>
       <p class="gp__msg">{{ data.message }}</p>
       <div class="gp__actions">
-        <button mat-raised-button class="suhana-btn-primary" type="button" (click)="go('/register')">
+        <button mat-raised-button class="suhana-btn-primary" type="button" (click)="goRegister()">
           <mat-icon>person_add</mat-icon> Register Free
         </button>
-        <button mat-stroked-button type="button" class="gp__login" (click)="go('/login')">
+        <button mat-stroked-button type="button" class="gp__login" (click)="goLogin()">
           <mat-icon>login</mat-icon> Login
         </button>
       </div>
@@ -73,9 +73,22 @@ export class GuestPromptDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<GuestPromptDialogComponent>);
   private readonly router = inject(Router);
 
-  protected go(path: string): void {
+  /**
+   * The page the guest was on when the prompt opened. Captured up front because
+   * the dialog does not change the URL, so this is the page they want back.
+   * LoginComponent already reads `returnUrl`, matching authGuard's convention.
+   */
+  private readonly returnUrl = this.router.url;
+
+  protected goLogin(): void {
     this.dialogRef.close();
-    void this.router.navigate([path]);
+    void this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl } });
+  }
+
+  /** Register ends at /registration-success, which has no returnUrl handling. */
+  protected goRegister(): void {
+    this.dialogRef.close();
+    void this.router.navigate(['/register']);
   }
 
   protected close(): void { this.dialogRef.close(); }

@@ -30,6 +30,7 @@ import {
   ShareProfileComponent,
   ShareProfileData,
 } from '../../shared/components/share-profile/share-profile.component';
+import { GuestPromptData, GuestPromptDialogComponent } from '../search/components/guest-prompt-dialog/guest-prompt-dialog.component';
 
 
 @Component({
@@ -64,6 +65,10 @@ export class ProfileViewComponent implements OnInit {
   protected readonly activeTabIdx  = signal(0);
   protected readonly hasProfileImage  = signal(false);
   protected readonly profileType = signal<'profile' | 'view'>(this.route.snapshot.data['profileType'] === 'view' ? 'view' : 'profile');
+
+  // ── Guest mode ──────────────────────────────────────────────────────────────
+  protected readonly isAuthenticated = computed(() => this.authService.authenticated());
+  protected readonly isGuest = computed(() => !this.isAuthenticated());
 
   // ── Derived ──────────────────────────────────────────────────────────────
   protected readonly primaryPhoto = computed<string>(() => {
@@ -146,6 +151,9 @@ export class ProfileViewComponent implements OnInit {
 
   private async loadProfile(id: string, routePath: string = 'profile-view'): Promise<void> {
     try {
+
+      const authd = this.isAuthenticated();
+
       const profile = await this.profileSvc.getProfileById(id, routePath);
       this.profile.set(profile);
       this.profileImageExist();
@@ -153,7 +161,7 @@ export class ProfileViewComponent implements OnInit {
       // Load trust indicator in background
       this.trustSvc.get(profile.userId).then(ti => this.trustIndicator.set(ti));
 
-      if (this.profileType() === 'profile') {
+      if (this.profileType() === 'profile' || authd) {
         const matchedDetail = await this.matchSvc.getMatchByUserId(profile.user?.id ?? '');
         this.matchedDetail.set(matchedDetail);
 
@@ -209,6 +217,14 @@ export class ProfileViewComponent implements OnInit {
     return /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i.test(url);
   }
 
+  protected openGuestPrompt(icon: string, title: string, message: string): void {
+    this.dialog.open(GuestPromptDialogComponent, {
+      data: { icon, title, message } satisfies GuestPromptData,
+      maxWidth: '92vw',
+      autoFocus: false,
+    });
+  }
+
   // ── Actions ───────────────────────────────────────────────────────────────
   protected async sendInterest(): Promise<void> {
     const toUserId = this.profile()?.user?.id;
@@ -220,10 +236,21 @@ export class ProfileViewComponent implements OnInit {
       return;
     }
 
-    if(this.profileType() === 'view') {
-      this.snackBar.open('You cannot send interest from a view-only profile.', 'OK', { duration: 3000 });
-      this.router.navigateByUrl('/login');
+    // Guests see the primary photo on the card but not the full gallery.
+    if (this.isGuest()) {
+      this.openGuestPrompt(
+        'photo_library',
+        'View all photos',
+        'Create a free account to view all photos on this profile.');
       return;
+    }    
+
+    if (this.profileType() === 'view') {
+      if (this.isGuest()) {
+        this.snackBar.open('You cannot send interest from a view-only profile.', 'OK', { duration: 3000 });
+        this.router.navigateByUrl('/login');
+        return;
+      }
     }
 
     const profile = this.profile()!;
@@ -246,6 +273,15 @@ export class ProfileViewComponent implements OnInit {
   protected async toggleShortlist(): Promise<void> {
     const userId = this.profile()?.user?.id;
     if (!userId) return;
+
+    // Guests see the primary photo on the card but not the full gallery.
+    if (this.isGuest()) {
+      this.openGuestPrompt(
+        'photo_library',
+        'View all photos',
+        'Create a free account to view all photos on this profile.');
+      return;
+    }
 
     const isSelf = this.isSelf();
     if (isSelf) {
@@ -283,11 +319,30 @@ export class ProfileViewComponent implements OnInit {
       return;
     }
 
+    // Guests see the primary photo on the card but not the full gallery.
+    if (this.isGuest()) {
+      this.openGuestPrompt(
+        'photo_library',
+        'View all photos',
+        'Create a free account to view all photos on this profile.');
+      return;
+    }    
+
     if (p) void this.router.navigate(['/chat'], { queryParams: { profileId: p.userId } });
   }
 
 
   protected async reportProfile(): Promise<void> {
+
+    // Guests see the primary photo on the card but not the full gallery.
+    if (this.isGuest()) {
+      this.openGuestPrompt(
+        'photo_library',
+        'View all photos',
+        'Create a free account to view all photos on this profile.');
+      return;
+    }    
+
     if(this.profileType() === 'view') {
       this.snackBar.open('You cannot report this profile from a view-only profile.', 'OK', { duration: 3000 });
       //this.router.navigateByUrl('/login');
