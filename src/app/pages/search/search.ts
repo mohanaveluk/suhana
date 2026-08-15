@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LowerCasePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
@@ -24,6 +24,12 @@ import { AiSearchBoxComponent } from './components/ai-search-box/ai-search-box.c
 import { AiIntentChipsComponent } from './components/ai-intent-chips/ai-intent-chips.component';
 import { AiSuggestionsPanelComponent } from './components/ai-suggestions-panel/ai-suggestions-panel.component';
 import { SearchWithinResultsComponent } from './components/search-within-results/search-within-results.component';
+import {
+  GuestPromptDialogComponent, GuestPromptData,
+} from './components/guest-prompt-dialog/guest-prompt-dialog.component';
+
+/** How many AI results a guest sees before the registration prompt. */
+const GUEST_AI_LIMIT = 6;
 
 @Component({
   selector: 'app-search',
@@ -44,6 +50,7 @@ export class SearchComponent implements OnInit {
   protected readonly searchService   = inject(SearchService);
   protected readonly commonService   = inject(CommonService);
   private readonly authService     = inject(AuthService);
+  private readonly router          = inject(Router);
 
   protected readonly filtersOpen    = signal(false);
   private readonly shortlistedIds  = signal<Set<string>>(new Set());
@@ -116,7 +123,8 @@ export class SearchComponent implements OnInit {
   }
 
   protected async runAiSearch(query: string): Promise<void> {
-    await this.ai.search(query);
+    // Guests get a capped preview; the AI panel shows the upsell alongside it.
+    await this.ai.search(query, 1, this.isGuest() ? GUEST_AI_LIMIT : 20);
     const intent = this.ai.searchIntent();
     if (intent) this.applyIntentToFilters(intent);
     this.ai.setTraditionalActive(this.traditionalIsActive());
@@ -206,23 +214,59 @@ export class SearchComponent implements OnInit {
     };
   }
 
+  // ── Guest mode ──────────────────────────────────────────────────────────────
+  protected readonly isAuthenticated = computed(() => this.authService.authenticated());
+  protected readonly isGuest = computed(() => !this.isAuthenticated());
+
+  /** Heading copy differs so guests understand they are browsing, not matching. */
+  protected readonly pageTitle = computed(() =>
+    this.isGuest() ? 'Browse Brides & Grooms' : 'Find Your Match');
+
+  protected readonly guestLimitReached = this.searchService.guestLimitReached;
+
+  /** Insert a registration CTA after every Nth profile card. */
+  protected readonly CTA_EVERY = 6;
+  protected shouldShowCta(index: number): boolean {
+    if (!this.isGuest()) return false;
+    const position = index + 1;
+    return position % this.CTA_EVERY === 0 && position < this.visibleProfiles().length;
+  }
+
   isSelf(profile: UserProfile | null | undefined): boolean {
-    return !!this.authService.user()?.id &&
-      this.authService.user()?.id === profile?.user?.id;
+    const myId = this.authService.user()?.id;
+    return !!myId && myId === profile?.user?.id;
+  }
+
+  /** Guests cannot act on a profile — buttons render disabled as a nudge. */
+  protected canAct(profile: UserProfile | null | undefined): boolean {
+    return this.isAuthenticated() && !this.isSelf(profile);
   }
 
   async ngOnInit(): Promise<void> {
-    
-    const userGender = this.authService.user()?.gender;
-    const defaultGender: 'bride' | 'groom' | '' =
-      userGender === 'groom' ? 'bride' :
-      userGender === 'bride' ? 'groom' : '';
-    if (defaultGender) {
-      this.searchService.setDefaultFilters({ gender: defaultGender });
+    const authed = this.isAuthenticated();
+
+    if (authed) {
+      const userGender = this.authService.user()?.gender;
+      const defaultGender: 'bride' | 'groom' | '' =
+        userGender === 'groom' ? 'bride' :
+        userGender === 'bride' ? 'groom' : '';
+      if (defaultGender) {
+        this.searchService.setDefaultFilters({ gender: defaultGender });
+      }
+    } else {
+      // Guests have no gender to match against — show everyone.
+      this.searchService.setDefaultFilters({ gender: '' });
+    }
+
+    // Both of the calls below require a bearer token. Firing them as a guest
+    // returns 401s and shows nothing useful, so they are skipped entirely.
+    if (!authed) {
+      await this.searchService.initialLoad(false);
+      return;
     }
 
     await Promise.all([
-      this.searchService.initialLoad(),
+      this.searchService.initialLoad(true),
       this.matchService.loadMatchesFromApi(),
       this.interestService.loadInterests(),
     ]);
@@ -246,7 +290,33 @@ export class SearchComponent implements OnInit {
     }
   }
 
+  /**
+   * Carries the current page as `returnUrl` so login sends the guest straight
+   * back here. Matches the convention authGuard and LoginComponent already use.
+   */
+  protected loginParams(): { returnUrl: string } {
+    return { returnUrl: this.router.url };
+  }
+
+  protected openGuestPrompt(icon: string, title: string, message: string): void {
+    this.dialog.open(GuestPromptDialogComponent, {
+      data: { icon, title, message } satisfies GuestPromptData,
+      maxWidth: '92vw',
+      autoFocus: false,
+    });
+  }
+
+  /** Registration nudge shown wherever a guest tries a members-only action. */
+  protected promptRegister(message = 'Create a free account to use this feature.'): void {
+    this.snackBar.open(message, 'Register Free', { duration: 6000 })
+      .onAction().subscribe(() => this.router.navigate(['/register']));
+  }
+
   async sendInterestFromCard(profile: UserProfile): Promise<void> {
+    if (this.isGuest()) {
+      this.promptRegister('Create a free account to send interest.');
+      return;
+    }
     const userId = profile.user?.id;
     if (!userId || this.isSelf(profile)) return;
     if (this.interestSentIds().has(userId)) return;
@@ -279,11 +349,25 @@ export class SearchComponent implements OnInit {
   }
 
   navigateToProfile(profileId: string): void {
+    if(this.isAuthenticated()) {
     window.location.href = `/profile-view/${profileId}`;
+    } else {
+      this.promptRegister('Create a free account to view profiles.');
+    }
   }
 
   openImageViewer(profile: UserProfile, event: MouseEvent): void {
     event.stopPropagation();
+
+    // Guests see the primary photo on the card but not the full gallery.
+    if (this.isGuest()) {
+      this.openGuestPrompt(
+        'photo_library',
+        'View all photos',
+        'Create a free account to view all photos on this profile.');
+      return;
+    }
+
     const urls = (profile.photos ?? [])
       .filter(p => !!p.url)
       .sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0))
@@ -331,6 +415,10 @@ export class SearchComponent implements OnInit {
   }
 
   async toggleShortlist(profile: UserProfile): Promise<void> {
+    if (this.isGuest()) {
+      this.promptRegister('Create a free account to shortlist profiles.');
+      return;
+    }
     const userId = profile.user?.id;
     if (!userId) return;
 

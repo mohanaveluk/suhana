@@ -82,7 +82,7 @@ export class ApiService {
   }
 
   // Profiles
-  getProfiles(params?: Record<string, string | number>): Observable<any> {
+  getProfiles(params?: Record<string, string | number | boolean>): Observable<any> {
     return this.http.get(`${this.baseUrl}/v1/profiles`, { params: params as any });
   }
 
@@ -566,6 +566,17 @@ export class ApiService {
     body: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/profiles/share`, data);
+  }
+
+  // Profile share by guest
+  shareProfileByGuest(data: {
+    receiverName: string;
+    toEmail: string[];
+    shareUrl: string;
+    subject: string;
+    body: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/profiles/gshare`, data);
   }
 
   // Contact
