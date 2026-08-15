@@ -44,10 +44,21 @@ export class SearchService {
   readonly availableOccupations = this._availableOccupations.asReadonly();
   readonly availableEducation   = this._availableEducation.asReadonly();
 
-  async initialLoad(): Promise<void> {
+  /** Guests see a capped preview before being asked to register. */
+  static readonly GUEST_RESULT_LIMIT = 20;
+
+  private readonly _isAuthenticated = signal(true);
+  readonly isAuthenticated = this._isAuthenticated.asReadonly();
+
+  /** True when a guest has hit the preview cap and more profiles exist. */
+  readonly guestLimitReached = computed(() =>
+    !this._isAuthenticated() && this._results().length >= SearchService.GUEST_RESULT_LIMIT);
+
+  async initialLoad(isAuthenticated = true): Promise<void> {
+    this._isAuthenticated.set(isAuthenticated);
     await Promise.all([
       this.loadLookupValues(),
-      this.executeSearch(this._filters(), false),
+      this.executeSearch(this._filters(), false, isAuthenticated),
     ]);
   }
 
@@ -82,7 +93,7 @@ export class SearchService {
   clearFilters(): void {
     clearTimeout(this.debounceTimer);
     this._filters.set({});
-    this.executeSearch({}, false);
+    this.executeSearch({}, false, this._isAuthenticated());
   }
 
   setViewMode(mode: 'grid' | 'list'): void {
@@ -90,18 +101,24 @@ export class SearchService {
   }
 
   async loadMore(): Promise<void> {
+    // Guests stop at the preview cap and get the registration prompt instead.
+    if (this.guestLimitReached()) return;
     if (!this.hasMore() || this._isLoading()) return;
-    await this.executeSearch(this._filters(), true);
+    await this.executeSearch(this._filters(), true, this._isAuthenticated());
   }
 
   private triggerDebounced(): void {
     clearTimeout(this.debounceTimer);
     this.debounceTimer = setTimeout(() => {
-      this.executeSearch(this._filters(), false);
+      this.executeSearch(this._filters(), false, this._isAuthenticated());
     }, 300);
   }
 
-  private async executeSearch(filters: SearchFilters, append: boolean): Promise<void> {
+  private async executeSearch(
+    filters: SearchFilters,
+    append: boolean,
+    isAuthenticated: boolean,
+  ): Promise<void> {
     this._isLoading.set(true);
     // Reset pagination metadata on new search so "Load More" hides while loading
     if (!append) {
@@ -110,25 +127,40 @@ export class SearchService {
     }
     const page = append ? this._currentPage() + 1 : 1;
     try {
-      const res = await firstValueFrom(this.api.getProfiles(this.toParams(filters, page)));
+      const res = await firstValueFrom(
+        this.api.getProfiles(this.toParams(filters, page, isAuthenticated)));
       const list = res.profiles ?? res;
-      const profiles = Array.isArray(list) ? list : [];
+      let profiles = Array.isArray(list) ? list : [];
+
       if (append) {
         this._results.update(existing => [...existing, ...profiles]);
       } else {
         this._results.set(profiles);
       }
+
+      // Belt and braces: enforce the guest cap client-side too, so the preview
+      // stays capped even if the API ignores the limit.
+      if (!isAuthenticated) {
+        this._results.update(all => all.slice(0, SearchService.GUEST_RESULT_LIMIT));
+      }
+
       if (res.page != null) this._currentPage.set(res.page);
       if (res.totalPages != null) this._totalPages.set(res.totalPages);
     } catch {
-      // keep existing results on error
+      // Keep existing results on error — a guest hitting a protected endpoint
+      // must still see a usable page rather than an empty one.
     } finally {
       this._isLoading.set(false);
     }
   }
 
-  private toParams(filters: SearchFilters, page: number): Record<string, string | number> {
-    const params: Record<string, string | number> = { page };
+  private toParams(
+    filters: SearchFilters,
+    page: number,
+    isAuthenticated: boolean,
+  ): Record<string, string | number | boolean> {
+    const params: Record<string, string | number | boolean> = { page, isAuthenticated };
+    if (!isAuthenticated) params['limit'] = SearchService.GUEST_RESULT_LIMIT;
     if (filters.query) params['query'] = filters.query;
     if (filters.gender) params['gender'] = filters.gender;
     if (filters.religions?.length) params['religion'] = filters.religions.join(',');

@@ -184,6 +184,7 @@ $footer-h: 68px;
     height: 17px;
     color: var(--suhana-text-secondary);
     transition: color 0.15s ease;
+    margin: 1px -1px 6px 0px;
   }
 
   &:hover mat-icon { color: var(--suhana-maroon); }
@@ -422,7 +423,7 @@ $footer-h: 68px;
   width: 28px !important;
   height: 28px !important;
   color: #dc2626 !important;
-  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  mat-icon { font-size: 15px; width: 15px; height: 15px; margin: 0px 0px 7px -2px;}
 }
 
 // ─── Success state ─────────────────────────────────────────────────────────────

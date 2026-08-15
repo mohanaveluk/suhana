@@ -35,8 +35,8 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/settings/settings').then(m => m.SettingsComponent),
   },
   {
+    // Public: guests browse a limited view and are nudged to register.
     path: 'search',
-    canActivate: [authGuard],
     loadComponent: () => import('./pages/search/search').then(m => m.SearchComponent),
   },
   {

@@ -1,7 +1,7 @@
 // Global header is position:sticky, min-height 64px
 $global-header-h: 64px;
 $topbar-h: 60px;
-$sidebar-w: 280px;
+$sidebar-w: 310px;
 
 // ─── Page shell ────────────────────────────────────────────────────────────────
 .search-page {
@@ -185,6 +185,144 @@ $sidebar-w: 280px;
   font-size: 0.82rem;
 }
 
+// ─── Guest mode ────────────────────────────────────────────────────────────────
+.search-title {
+  margin: 0 0 14px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--suhana-maroon);
+
+  @media (max-width: 600px) { font-size: 1.22rem; }
+}
+
+.guest-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  color: #fff;
+  background: var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
+  box-shadow: 0 6px 22px rgba(128, 0, 32, 0.22);
+
+  &__icon { font-size: 30px; width: 30px; height: 30px; opacity: 0.85; flex-shrink: 0; }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+
+    strong { font-size: 0.98rem; }
+    span { font-size: 0.85rem; color: rgba(255, 255, 255, 0.9); }
+  }
+
+  &__social {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+    font-size: 0.78rem !important;
+    color: rgba(255, 255, 255, 0.78) !important;
+
+    mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+
+    mat-icon { margin-right: 4px; font-size: 17px; width: 17px; height: 17px; }
+  }
+
+  &__login {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    color: #fff !important;
+  }
+
+  @media (max-width: 860px) {
+    flex-wrap: wrap;
+    &__actions { width: 100%; button { flex: 1; } }
+  }
+}
+
+// Registration card woven into the results grid.
+.cta-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 26px 20px;
+  border-radius: 16px !important;
+  border: 1.5px dashed var(--suhana-rose-gold) !important;
+  background: var(--suhana-gradient-light, linear-gradient(135deg, #f0d4d8 0%, #fde8e8 100%));
+
+  &__icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: var(--suhana-maroon);
+  }
+
+  h3 {
+    margin: 4px 0 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--suhana-maroon);
+  }
+
+  p {
+    margin: 0 0 10px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--suhana-text-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+}
+
+.guest-limit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 40px 24px;
+  margin-top: 24px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  box-shadow: 0 4px 20px var(--suhana-shadow);
+
+  mat-icon { font-size: 40px; width: 40px; height: 40px; color: var(--suhana-rose-gold-light); }
+  h3 { margin: 0; color: var(--suhana-maroon); font-size: 1.1rem; }
+  p  { margin: 0 0 12px; color: var(--suhana-text-secondary); font-size: 0.88rem; }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+
+    mat-icon { font-size: 17px; width: 17px; height: 17px; margin-right: 4px; }
+  }
+}
+
+.guest-action {
+  padding: 0 20px !important;
+}
+
 // ─── AI search metrics row ─────────────────────────────────────────────────────
 .results-info {
   flex-wrap: wrap;
@@ -255,7 +393,7 @@ $sidebar-w: 280px;
 // ─── Profile grid ──────────────────────────────────────────────────────────────
 .results-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
   gap: 20px;
 
   &.list-view {
@@ -460,8 +598,8 @@ $sidebar-w: 280px;
     display: flex;
     gap: 18px;
     padding: 8px 8px 14px;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-wrap: nowrap;
+    justify-content: space-around;
   }
 }
 
