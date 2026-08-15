@@ -56,6 +56,12 @@ function handle401(
 
   const storedRefreshToken = localStorage.getItem(REFRESH_KEY);
   if (!storedRefreshToken) {
+    // No session at all — this is a guest, not an expired login. Bouncing them
+    // to /login would break public pages, so surface the error and let the
+    // caller degrade gracefully.
+    if (!localStorage.getItem(TOKEN_KEY)) {
+      return throwError(() => new HttpErrorResponse({ status: 401, url: req.url }));
+    }
     clearSession(router);
     return throwError(() => new Error('Session expired. Please log in again.'));
   }

@@ -1,6 +1,7 @@
 import {
   Component, ChangeDetectionStrategy, inject, signal, computed, OnInit,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -9,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from '../../modules/material.module';
 import { ApiService } from '../../../services/api.service';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../../services';
 
 export interface ShareProfileData {
   profileCode: string;
@@ -30,6 +32,7 @@ const MAX_RECENT = 5;
 export class ShareProfileComponent implements OnInit {
   private readonly fb       = inject(FormBuilder);
   private readonly api      = inject(ApiService);
+  private readonly authService     = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   protected readonly dialogRef = inject<MatDialogRef<ShareProfileComponent>>(MatDialogRef);
   protected readonly data      = inject<ShareProfileData>(MAT_DIALOG_DATA);
@@ -51,15 +54,33 @@ export class ShareProfileComponent implements OnInit {
   protected readonly showPreview    = signal(false);
 
   // ── Computed ──────────────────────────────────────────────────────────────
+  /**
+   * Reads formStatus(), not form.valid: computed() only re-runs when a *signal*
+   * it read changes, and form.valid is a plain property. Reading it directly
+   * meant that filling the form after adding an email never re-evaluated this,
+   * so the submit button stayed disabled.
+   */
   protected readonly canSubmit = computed(
-    () => this.form.valid && this.emails().length > 0,
+    () => this.formStatus() === 'VALID' && this.emails().length > 0,
   );
+
+  // ── Guest mode ──────────────────────────────────────────────────────────────
+  protected readonly isAuthenticated = computed(() => this.authService.authenticated());
+  protected readonly isGuest = computed(() => !this.isAuthenticated());  
 
   // ── Form ──────────────────────────────────────────────────────────────────
   protected readonly form = this.fb.nonNullable.group({
     receiverName: ['', [Validators.required, Validators.minLength(2)]],
     subject:    ["A Matrimony Profile I'd Like to Share With You", Validators.required],
     message:    ['', Validators.maxLength(1000)],
+  });
+
+  /**
+   * Mirrors the form's validity into a signal so canSubmit() reacts to it.
+   * Declared after `form` because toSignal() reads it eagerly, unlike computed().
+   */
+  private readonly formStatus = toSignal(this.form.statusChanges, {
+    initialValue: this.form.status,
   });
 
   ngOnInit(): void {
@@ -160,19 +181,32 @@ export class ShareProfileComponent implements OnInit {
       }
       return;
     }
+    
+    const authed = this.isAuthenticated();
 
     this.isLoading.set(true);
     this.error.set(null);
     const v = this.form.value;
 
     try {
-      await firstValueFrom(this.api.shareProfile({
-        receiverName: v.receiverName!,
-        toEmail:    this.emails(),
-        shareUrl:   this.shareUrl,
-        subject:    v.subject!,
-        body:       v.message ?? '',
-      }));
+      if (!authed) {
+        await firstValueFrom(this.api.shareProfileByGuest({
+          receiverName: v.receiverName!,
+          toEmail: this.emails(),
+          shareUrl: this.shareUrl,
+          subject: v.subject!,
+          body: v.message ?? '',
+        }));
+      } else {
+        // Handle authenticated user case if needed
+        await firstValueFrom(this.api.shareProfile({
+          receiverName: v.receiverName!,
+          toEmail: this.emails(),
+          shareUrl: this.shareUrl,
+          subject: v.subject!,
+          body: v.message ?? '',
+        }));
+      }
       this.sharedWithList.set([...this.emails()]);
       this.saveRecentEmails(this.emails());
       this.successState.set(true);
