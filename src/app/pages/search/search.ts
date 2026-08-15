@@ -290,6 +290,14 @@ export class SearchComponent implements OnInit {
     }
   }
 
+  /**
+   * Carries the current page as `returnUrl` so login sends the guest straight
+   * back here. Matches the convention authGuard and LoginComponent already use.
+   */
+  protected loginParams(): { returnUrl: string } {
+    return { returnUrl: this.router.url };
+  }
+
   protected openGuestPrompt(icon: string, title: string, message: string): void {
     this.dialog.open(GuestPromptDialogComponent, {
       data: { icon, title, message } satisfies GuestPromptData,

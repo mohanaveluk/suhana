@@ -184,7 +184,7 @@
             <button mat-raised-button class="suhana-btn-primary" type="button" routerLink="/register">
               <mat-icon>person_add</mat-icon> Register Free
             </button>
-            <button mat-stroked-button type="button" class="guest-banner__login" routerLink="/login">
+            <button mat-stroked-button type="button" class="guest-banner__login" routerLink="/login" [queryParams]="loginParams()">
               <mat-icon>login</mat-icon> Login
             </button>
           </div>
@@ -379,7 +379,7 @@
                 <button mat-raised-button class="suhana-btn-primary" type="button" routerLink="/register">
                   Register Free
                 </button>
-                <button mat-stroked-button type="button" routerLink="/login">Login</button>
+                <button mat-stroked-button type="button" routerLink="/login" [queryParams]="loginParams()">Login</button>
               </div>
             </mat-card>
           }
@@ -411,7 +411,7 @@
             <button mat-raised-button class="suhana-btn-primary" type="button" routerLink="/register">
               <mat-icon>person_add</mat-icon> Register Free
             </button>
-            <button mat-stroked-button type="button" routerLink="/login">
+            <button mat-stroked-button type="button" routerLink="/login" [queryParams]="loginParams()">
               <mat-icon>login</mat-icon> Login
             </button>
           </div>
