@@ -12,7 +12,7 @@
           <mat-icon>favorite_border</mat-icon>
         </div>
         <h2>No Match Fixed Yet</h2>
-        <p>When you find your perfect partner, mark your match here and share your story with the Suhana community.</p>
+        <p>When you find your perfect partner, mark your match here and share your story with the Aurora community.</p>
         <a mat-raised-button class="suhana-btn-primary" routerLink="/match-fixed/new">
           <mat-icon>add_circle</mat-icon> Mark My Match Fixed
         </a>
@@ -24,7 +24,7 @@
           <mat-icon>favorite</mat-icon>
         </div>
         <h1>Your Match is Fixed!</h1>
-        <p>Congratulations — your love story is recorded on Suhana.</p>
+        <p>Congratulations — your love story is recorded on Aurora.</p>
       </div>
 
       <!-- Status badge -->
@@ -35,7 +35,7 @@
         {{ record()!.status === 'ACTIVE' ? 'Active' : 'Cancelled' }}
         @if (record()!.isMatchFromSuhana) {
           <span class="mmf-suhana-badge">
-            <mat-icon>verified</mat-icon> Suhana Match
+            <mat-icon>verified</mat-icon> Aurora Match
           </span>
         }
       </div>

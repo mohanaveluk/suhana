@@ -11,7 +11,7 @@
         <span>{{ authorInitials }}</span>
       }
     </div>
-    <span class="rc-amz__name">{{ review.author?.name ?? 'Suhana Member' }}</span>
+    <span class="rc-amz__name">{{ review.author?.name ?? 'Aurora Member' }}</span>
   </div>
 
   <!-- Stars + Title inline -->
@@ -96,7 +96,7 @@
 
   <!-- Col 2: Name + verified badge -->
   <div class="rc-row__author">
-    <span class="rc__author-name">{{ review.author?.name ?? 'Suhana Member' }}</span>
+    <span class="rc__author-name">{{ review.author?.name ?? 'Aurora Member' }}</span>
     <div class="rc-row__badges">
       <app-verified-badge [show]="review.isVerifiedReview" [showLabel]="false" />
       @if (review.isFeatured) {
@@ -178,7 +178,7 @@
 
       <div class="rc__author">
         <div class="rc__author-row">
-          <span class="rc__author-name">{{ review.author?.name ?? 'Suhana Member' }}</span>
+          <span class="rc__author-name">{{ review.author?.name ?? 'Aurora Member' }}</span>
           <app-verified-badge [show]="review.isVerifiedReview" [showLabel]="false" />
         </div>
         <div class="rc__meta">

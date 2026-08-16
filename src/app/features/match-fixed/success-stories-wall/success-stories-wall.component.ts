@@ -10,7 +10,7 @@ import { SuccessStoryDialogComponent } from '../success-story-dialog/success-sto
 
 const QUOTES: Record<string, string> = {
   default: 'Found love, found life.',
-  suhana:  'Suhana brought us together.',
+  suhana:  'Aurora brought us together.',
   family:  'Family knew best all along.',
   friend:  'A friend\'s introduction changed everything.',
 };
@@ -50,7 +50,7 @@ export class SuccessStoriesWallComponent implements OnInit {
   }
 
   isSuhana(story: SuccessStoryResponse): boolean {
-    return story.matchSource === 'SUHANA';
+    return story.matchSource === 'SUHANA' || story.matchSource === 'AURORA';
   }
 
   openStory(story: SuccessStoryResponse): void {

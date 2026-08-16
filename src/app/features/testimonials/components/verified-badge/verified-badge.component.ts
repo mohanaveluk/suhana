@@ -82,7 +82,7 @@ export class VerifiedBadgeComponent {
   get label(): string { return this.variant === 'marriage' ? 'Verified Marriage' : 'Verified'; }
   get tooltip(): string {
     return this.variant === 'marriage'
-      ? 'Marriage certificate verified by Suhana team'
+      ? 'Marriage certificate verified by Aurora team'
       : 'Verified member review';
   }
 }

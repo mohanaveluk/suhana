@@ -45,10 +45,10 @@ export class TermsOfServiceComponent {
   ];
 
   protected readonly socialLinks = {
-    facebookUrl:  'https://facebook.com/suhanamatrimony',
-    instagramUrl: 'https://instagram.com/suhanamatrimony',
-    youtubeUrl:   'https://youtube.com/@suhanamatrimony',
-    twitterUrl:   'https://x.com/suhanamatrimony',
+    facebookUrl:  'https://facebook.com/auroramatrimony',
+    instagramUrl: 'https://instagram.com/auroramatrimony',
+    youtubeUrl:   'https://youtube.com/@auroramatrimony',
+    twitterUrl:   'https://x.com/auroramatrimony',
   };
 
   @HostListener('window:scroll')

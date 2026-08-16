@@ -31,12 +31,12 @@ export class FaqComponent {
       icon: 'rocket_launch',
       items: [
         {
-          question: 'What is Suhana?',
-          answer: 'Suhana is an elegant matrimony platform that connects compatible life partners using AI-powered matching, detailed profile analysis, and cultural compatibility scoring. Designed for modern Indian singles seeking meaningful, long-term relationships.',
+          question: 'What is Aurora?',
+          answer: 'Aurora is an elegant matrimony platform that connects compatible life partners using AI-powered matching, detailed profile analysis, and cultural compatibility scoring. Designed for modern Indian singles seeking meaningful, long-term relationships.',
         },
         {
           question: 'How do I create an account?',
-          answer: `<h3 data-section-id="k5zcip" data-start="56" data-end="91">Creating your Suhana Matrimony account is simple and free:</h3>
+          answer: `<h3 data-section-id="k5zcip" data-start="56" data-end="91">Creating your Aurora Matrimony account is simple and free:</h3>
                     <ol data-start="153" data-end="437">
                     <li data-section-id="1x8xjcz" data-start="153" data-end="198">Click <strong data-start="162" data-end="181">"Register Free"</strong> on the homepage.</li>
                     <li data-section-id="jyvfto" data-start="199" data-end="265">Select whether you are registering as a <strong data-start="242" data-end="251">Bride</strong> or <strong data-start="255" data-end="264">Groom</strong>.</li>
@@ -54,7 +54,7 @@ export class FaqComponent {
                     <p data-start="439" data-end="458">After registration:</p>
                     <ol start="5" data-start="460" data-end="746">
                     <li data-section-id="1wkajbd" data-start="460" data-end="530">A verification email will be sent to your registered email address.</li>
-                    <li data-section-id="870km" data-start="531" data-end="599">Open your inbox and look for the email from <strong data-start="578" data-end="598">Suhana Matrimony</strong>.</li>
+                    <li data-section-id="870km" data-start="531" data-end="599">Open your inbox and look for the email from <strong data-start="578" data-end="598">Aurora Matrimony</strong>.</li>
                     <li data-section-id="7a4051" data-start="600" data-end="655">Click the <strong data-start="613" data-end="629">Verify Email</strong> button/link in the email.</li>
                     <li data-section-id="2lhe6o" data-start="656" data-end="746">Once your email address has been successfully verified, your account will be activated.</li>
                     </ol>
@@ -76,8 +76,8 @@ export class FaqComponent {
                     <p data-start="1138" data-end="1312" data-is-last-node="" data-is-only-node=""><strong data-start="1138" data-end="1146">Tip:</strong> If you do not receive the verification email within a few minutes, check your Spam or Junk folder, or use the <strong data-start="1257" data-end="1286">Resend Verification Email</strong> option on the login page.</p>`,
         },
         {
-          question: 'Is Suhana free to use?',
-          answer: 'Yes! Suhana offers a free membership that lets you create a profile, browse profiles, and receive AI-generated matches. Premium plans (Silver, Gold, Platinum) unlock unlimited messaging, advanced filters, priority listing, and more.',
+          question: 'Is Aurora free to use?',
+          answer: 'Yes! Aurora offers a free membership that lets you create a profile, browse profiles, and receive AI-generated matches. Premium plans (Silver, Gold, Platinum) unlock unlimited messaging, advanced filters, priority listing, and more.',
         },
         {
           question: 'How do I verify my email?',
@@ -138,9 +138,9 @@ export class FaqComponent {
           answer: 'When viewing a match, click "View AI Horoscope Match" to see a detailed compatibility report. It includes Guna Milan (36 points scoring), Manglik status comparison, and overall astrological compatibility between the two birth charts.',
         },
         {
-          question: 'How does AI-based Horoscope Matching work in Suhana?',
-          answer: `<p class="PDq2pG_selectionAnchorContainer" data-start="62" data-end="523">Suhana combines traditional Vedic astrology with AI-powered analysis to provide a comprehensive horoscope compatibility assessment. Using the birth details (date, time, and place of birth) or uploaded horoscope charts of both individuals, our system calculates key compatibility factors such as Guna Milan (36-point matching), Nakshatra compatibility, planetary positions, doshas, emotional compatibility, marriage harmony, and long-term relationship potential.</p>
-                    <p data-start="525" data-end="774">Instead of showing only complex astrological calculations, Suhana translates the results into simple, easy-to-understand compatibility scores and personalized insights, helping you and your family make informed matchmaking decisions with confidence.</p>
+          question: 'How does AI-based Horoscope Matching work in Aurora?',
+          answer: `<p class="PDq2pG_selectionAnchorContainer" data-start="62" data-end="523">Aurora combines traditional Vedic astrology with AI-powered analysis to provide a comprehensive horoscope compatibility assessment. Using the birth details (date, time, and place of birth) or uploaded horoscope charts of both individuals, our system calculates key compatibility factors such as Guna Milan (36-point matching), Nakshatra compatibility, planetary positions, doshas, emotional compatibility, marriage harmony, and long-term relationship potential.</p>
+                    <p data-start="525" data-end="774">Instead of showing only complex astrological calculations, Aurora translates the results into simple, easy-to-understand compatibility scores and personalized insights, helping you and your family make informed matchmaking decisions with confidence.</p>
                     <p data-start="776" data-end="951" data-is-last-node="" data-is-only-node=""><strong data-start="776" data-end="785">Note:</strong> Horoscope matching is provided as a guidance tool and should be considered along with personal preferences, values, lifestyle compatibility, and family expectations.</p>`,
         }
       ],

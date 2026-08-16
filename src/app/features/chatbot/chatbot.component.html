@@ -9,7 +9,7 @@
     (click)="togglePanel()"
     [class.cb-fab--open]="isOpen()"
     [attr.aria-label]="isOpen() ? 'Close AI assistant' : 'Open AI assistant'"
-    matTooltip="Suhana AI Assistant"
+    matTooltip="Aurora AI Assistant"
     matTooltipPosition="left">
     @if (isOpen()) {
       <mat-icon class="cb-fab-icon">close</mat-icon>
@@ -29,7 +29,7 @@
   <div
     class="cb-panel"
     role="dialog"
-    aria-label="Suhana AI Assistant chat window"
+    aria-label="Aurora AI Assistant chat window"
     aria-modal="false">
 
     <!-- ── Header ──────────────────────────────────────────────────────────── -->
@@ -40,7 +40,7 @@
       </div>
 
       <div class="cb-header-info">
-        <h3 class="cb-header-title">Suhana AI Assistant</h3>
+        <h3 class="cb-header-title">Aurora AI Assistant</h3>
         <p class="cb-header-sub">
           <span class="cb-online-indicator"></span>
           Online &bull; Ready to Help
