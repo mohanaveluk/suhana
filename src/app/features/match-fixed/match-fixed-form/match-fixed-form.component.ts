@@ -38,6 +38,7 @@ export class MatchFixedFormComponent implements OnDestroy {
 
   private static readonly SOURCE_ICONS: Record<MatchSourceType, string> = {
     [MatchSourceType.SUHANA]:          'favorite',
+    [MatchSourceType.AURORA]:          'favorite',
     [MatchSourceType.FAMILY]:          'family_restroom',
     [MatchSourceType.RELATIVE]:        'people',
     [MatchSourceType.FRIEND]:          'group',

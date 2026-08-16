@@ -27,7 +27,7 @@ const WELCOME_MESSAGE: ChatMessage = {
   timestamp: new Date(),
   feedback:  null,
   text: [
-    'Hello 👋 I\'m <strong>Suhana AI Assistant</strong>.<br><br>',
+    'Hello 👋 I\'m <strong>Aurora AI Assistant</strong>.<br><br>',
     'I can help you with:<br>',
     '&bull; Registration &amp; Login<br>',
     '&bull; Finding &amp; Viewing Matches<br>',
@@ -254,7 +254,7 @@ export class AiChatbotComponent implements OnInit, AfterViewChecked {
     const lines = this.messages()
       .filter(m => m.id !== 'welcome')
       .map(m => {
-        const who  = m.role === 'user' ? 'You' : 'Suhana AI';
+        const who  = m.role === 'user' ? 'You' : 'Aurora AI';
         const text = m.text.replace(/<[^>]*>/g, '');
         return `[${new Date(m.timestamp).toLocaleString()}] ${who}:\n${text}`;
       })

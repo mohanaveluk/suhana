@@ -66,10 +66,11 @@ $side-w-collapsed: 72px;
     width: 34px;
     height: 34px;
     border-radius: 10px;
-    background: var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
+    //background: var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 100%));
     flex-shrink: 0;
 
     mat-icon { color: #fff; font-size: 19px; width: 19px; height: 19px; }
+    img { width: 40px;}
   }
 
   &__name {

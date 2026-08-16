@@ -113,7 +113,7 @@ export class MatchFixedEditComponent implements OnInit, OnDestroy {
   }
 
   protected isSuhana(): boolean {
-    return this.record()?.matchSourceType === MatchSourceType.SUHANA;
+    return this.record()?.matchSourceType === MatchSourceType.SUHANA || this.record()?.matchSourceType === MatchSourceType.AURORA;
   }
 
   protected existingPhoto(type: 'partner' | 'engagement' | 'wedding'): { originalUrl: string; displayUrl: string; thumbnailUrl: string } | null {

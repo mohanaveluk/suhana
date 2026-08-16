@@ -73,9 +73,9 @@
       <mat-step [stepControl]="partnerStep3Form()" label="Partner">
         <div class="mff-step">
           @if (isSuhana()) {
-            <!-- Partner registered on Suhana -->
+            <!-- Partner registered on Aurora -->
             <form [formGroup]="suhanaPartnerForm">
-              <h2 class="mff-step__title">Find Your Suhana Partner</h2>
+              <h2 class="mff-step__title">Find Your Aurora Partner</h2>
               <p class="mff-step__sub">Provide their Profile ID or Profile Code to link your match.</p>
 
               <mat-form-field appearance="outline" class="mff-full-width">
@@ -245,7 +245,7 @@
             <mat-form-field appearance="outline" class="mff-full-width mff-textarea-field">
               <mat-label>Your Success Story</mat-label>
               <textarea matInput formControlName="successStory" rows="7"
-                        placeholder="We met through Suhana in 2023..."></textarea>
+                        placeholder="We met through Aurora in 2023..."></textarea>
               <mat-hint align="end">{{ storyLength() }} / 2000</mat-hint>
               @if (storyForm.controls.successStory.hasError('maxlength')) {
                 <mat-error>Story cannot exceed 2000 characters.</mat-error>
@@ -270,7 +270,7 @@
           <div class="mff-step">
             <h2 class="mff-step__title">Publication Permissions</h2>
             <p class="mff-step__sub">
-              Your story inspires others. Help us share it with the Suhana community.
+              Your story inspires others. Help us share it with the Aurora community.
             </p>
 
             <div class="mff-permission-cards">

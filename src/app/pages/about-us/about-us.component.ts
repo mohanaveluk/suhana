@@ -33,8 +33,9 @@ export class AboutUsComponent implements AfterViewInit {
     { icon: 'compare_arrows',  title: 'Match Comparison',        description: 'Compare up to 4 potential partners side-by-side with detailed compatibility breakdowns so you can decide with clarity.' },
     { icon: 'verified_user',   title: 'Verified Profiles',       description: 'Every profile is authenticated through face verification. You connect only with genuine people on a trustworthy platform.' },
     { icon: 'photo_lock',      title: 'Photo Privacy Controls',  description: 'Decide who sees your photos — everyone, mutual matches, or premium members only. Your comfort is always our priority.' },
+    { icon: 'mic',             title: 'Voice Introductions',     description: 'Express your personality through voice introductions. Share your thoughts and connect authentically before the first conversation.' },
     { icon: 'videocam',        title: 'Video Introductions',     description: 'Express your personality beyond photographs. Short video profiles help you connect authentically before the first conversation.' },
-    { icon: 'family_restroom', title: 'Family-Centric Design',   description: 'Suhana is thoughtfully designed to respectfully involve families in the journey — the way Indian traditions have always intended.' },
+    { icon: 'family_restroom', title: 'Family-Centric Design',   description: 'Aurora is thoughtfully designed to respectfully involve families in the journey — the way Indian traditions have always intended.' },
     { icon: 'manage_search',   title: 'Smart Search',            description: 'Intelligent multi-dimensional filters surface profiles that truly resonate with your values, lifestyle, and aspirations.' },
     { icon: 'insights',        title: 'Compatibility Insights',  description: 'Understand exactly why you match — from education and lifestyle to emotional temperament and shared life goals.' },
     { icon: 'lock',            title: 'Secure Communication',    description: 'End-to-end encrypted messaging, audio, and video calls ensure every conversation remains entirely private and safe.' },
@@ -53,7 +54,7 @@ export class AboutUsComponent implements AfterViewInit {
     { icon: 'handshake',         title: 'Respect',       description: 'We honour every individual\'s journey, boundaries, and the rich diversity of Indian traditions.',                 colorClass: 'value--respect' },
     { icon: 'security',          title: 'Privacy',       description: 'Your data and photographs are yours. Our privacy-first architecture ensures you remain in complete control.',      colorClass: 'value--privacy' },
     { icon: 'lightbulb',         title: 'Innovation',    description: 'We relentlessly advance our AI to make the path to your life partner more clear and more meaningful.',            colorClass: 'value--innovation' },
-    { icon: 'family_restroom',   title: 'Family',        description: 'Indian matchmaking is a family affair. Suhana is thoughtfully designed to welcome and honour that involvement.',  colorClass: 'value--family' },
+    { icon: 'family_restroom',   title: 'Family',        description: 'Indian matchmaking is a family affair. Aurora is thoughtfully designed to welcome and honour that involvement.',  colorClass: 'value--family' },
     { icon: 'workspace_premium', title: 'Commitment',    description: 'This is not a dating app. Every feature is oriented toward long-term partnership and lifelong commitment.',       colorClass: 'value--commitment' },
     { icon: 'diamond',           title: 'Authenticity',  description: 'Genuine profiles, real stories, verified faces. A space where real people find real, lasting connections.',       colorClass: 'value--authenticity' },
   ];
@@ -87,7 +88,7 @@ export class AboutUsComponent implements AfterViewInit {
   readonly faqs: FaqItem[] = [
     {
       question: 'How does AI matchmaking work?',
-      answer: 'Suhana\'s AI analyses your profile across 200+ compatibility dimensions — including lifestyle, values, education, career, family background, and personal preferences. It generates a compatibility score with each potential partner and provides a detailed explanation of why you match, empowering you to make a more informed and confident decision.',
+      answer: 'Aurora\'s AI analyses your profile across 200+ compatibility dimensions — including lifestyle, values, education, career, family background, and personal preferences. It generates a compatibility score with each potential partner and provides a detailed explanation of why you match, empowering you to make a more informed and confident decision.',
     },
     {
       question: 'How is horoscope compatibility calculated?',
@@ -95,7 +96,7 @@ export class AboutUsComponent implements AfterViewInit {
     },
     {
       question: 'Can I hide my photos from everyone?',
-      answer: 'Absolutely. Suhana offers granular photo privacy controls. You can show your photos to everyone, only to mutual matches, only to premium members, or keep them entirely hidden until you choose to share them personally. Your comfort and dignity always come first.',
+      answer: 'Absolutely. Aurora offers granular photo privacy controls. You can show your photos to everyone, only to mutual matches, only to premium members, or keep them entirely hidden until you choose to share them personally. Your comfort and dignity always come first.',
     },
     {
       question: 'Are all profiles verified?',
@@ -103,11 +104,11 @@ export class AboutUsComponent implements AfterViewInit {
     },
     {
       question: 'Can families participate in the matchmaking process?',
-      answer: 'Yes — and we genuinely encourage it. Suhana is designed with family involvement at heart. Families can review profiles, participate in communication decisions, and be present throughout the journey from match suggestions to final connection, honouring the Indian tradition of family-led matchmaking.',
+      answer: 'Yes — and we genuinely encourage it. Aurora is designed with family involvement at heart. Families can review profiles, participate in communication decisions, and be present throughout the journey from match suggestions to final connection, honouring the Indian tradition of family-led matchmaking.',
     },
     {
       question: 'Is my personal data secure?',
-      answer: 'Suhana uses enterprise-grade encryption for all data storage and communication. Your messages are end-to-end encrypted, your personal data is never sold to third parties, and you have complete control over your profile visibility. We are committed to being the most privacy-conscious matrimony platform in India.',
+      answer: 'Aurora uses enterprise-grade encryption for all data storage and communication. Your messages are end-to-end encrypted, your personal data is never sold to third parties, and you have complete control over your profile visibility. We are committed to being the most privacy-conscious matrimony platform in India.',
     },
   ];
 

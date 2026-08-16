@@ -3,7 +3,7 @@
   <div class="mr-page__header">
     <div>
       <h1 class="mr-page__title">My Reviews</h1>
-      <p class="mr-page__sub">Reviews you've written on Suhana</p>
+      <p class="mr-page__sub">Reviews you've written on Aurora</p>
     </div>
     <a mat-raised-button class="suhana-btn-primary" routerLink="/testimonials/submit-review"
        aria-label="Write a new review">
@@ -16,7 +16,7 @@
   } @else if (reviews().length === 0) {
     <app-empty-state icon="rate_review"
                      title="No reviews yet"
-                     message="Share your Suhana experience and help others find love!"
+                     message="Share your Aurora experience and help others find love!"
                      actionLabel="Write Your First Review"
                      routerLink="/testimonials/submit-review" />
   } @else {
