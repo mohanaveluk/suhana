@@ -27,6 +27,8 @@ import { SearchWithinResultsComponent } from './components/search-within-results
 import {
   GuestPromptDialogComponent, GuestPromptData,
 } from './components/guest-prompt-dialog/guest-prompt-dialog.component';
+import { onSelectSearchKeydown } from '../../shared/utils/select-search.util';
+import { SelectSearchDirective } from '../../shared/directives/select-search.directive';
 
 /** How many AI results a guest sees before the registration prompt. */
 const GUEST_AI_LIMIT = 6;
@@ -35,6 +37,7 @@ const GUEST_AI_LIMIT = 6;
   selector: 'app-search',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    SelectSearchDirective,
     FormsModule, LowerCasePipe, RouterLink, MaterialModule,
     AiSearchBoxComponent, AiIntentChipsComponent,
     AiSuggestionsPanelComponent, SearchWithinResultsComponent,
@@ -55,6 +58,9 @@ export class SearchComponent implements OnInit {
   protected readonly filtersOpen    = signal(false);
   private readonly shortlistedIds  = signal<Set<string>>(new Set());
   protected readonly interestSentIds = signal<Set<string>>(new Set());
+
+  /** Lets arrows/Enter reach mat-select while typing in a panel search box. */
+  protected readonly onSelectSearchKeydown = onSelectSearchKeydown;
 
   // Per-dropdown inline search text
   protected readonly citySearch       = signal('');

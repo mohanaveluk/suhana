@@ -1,7 +1,8 @@
 <div class="register-page">
   <div class="register-container">
     <div class="register-header">
-      <mat-icon class="heart-icon">favorite</mat-icon>
+      <!-- <mat-icon class="heart-icon">favorite</mat-icon> -->
+      <img src="/images/circle-hearts-trs.png" alt="Aurora Logo" class="logo-icon animate-fade-in-up" />
       <h1>Begin Your Journey</h1>
       <p>Create your profile on Aurora and find your perfect match</p>
     </div>
@@ -227,9 +228,23 @@
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Education Level</mat-label>
-                <mat-select formControlName="educationLevel">
-                  @for (e of availableEducation(); track e) {
+                <mat-select formControlName="educationLevel"
+                            [appSelectSearch]="educationSearch()"
+                            (openedChange)="!$event && educationSearch.set('')">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search education..."
+                           [value]="educationSearch()"
+                           (input)="educationSearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (e of filteredEducation(); track e) {
                     <mat-option [value]="e">{{ e }}</mat-option>
+                  }
+                  @if (filteredEducation().length === 0) {
+                    <div class="select-no-match">No results</div>
                   }
                 </mat-select>
                 @if (professionalForm.controls.educationLevel.hasError('required') && professionalForm.controls.educationLevel.touched) {
@@ -253,9 +268,23 @@
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Occupation</mat-label>
-                <mat-select formControlName="occupation">
-                  @for (o of availableOccupations(); track o) {
+                <mat-select formControlName="occupation"
+                            [appSelectSearch]="occupationSearch()"
+                            (openedChange)="!$event && occupationSearch.set('')">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search occupation..."
+                           [value]="occupationSearch()"
+                           (input)="occupationSearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (o of filteredOccupations(); track o) {
                     <mat-option [value]="o">{{ o }}</mat-option>
+                  }
+                  @if (filteredOccupations().length === 0) {
+                    <div class="select-no-match">No results</div>
                   }
                 </mat-select>
                 @if (professionalForm.controls.occupation.hasError('required') && professionalForm.controls.occupation.touched) {
@@ -320,18 +349,46 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Preferred Religions</mat-label>
-              <mat-select formControlName="preferredReligions" multiple>
-                @for (r of religions; track r) {
+              <mat-select formControlName="preferredReligions" multiple
+                          [appSelectSearch]="preferredReligionSearch()"
+                          (openedChange)="!$event && preferredReligionSearch.set('')">
+                <div class="select-search-box"
+                     (mousedown)="$event.stopPropagation()"
+                     (click)="$event.stopPropagation()">
+                  <mat-icon>search</mat-icon>
+                  <input placeholder="Search religion..."
+                         [value]="preferredReligionSearch()"
+                         (input)="preferredReligionSearch.set($any($event.target).value)"
+                         (keydown)="onSelectSearchKeydown($event)" />
+                </div>
+                @for (r of filteredPreferredReligions(); track r) {
                   <mat-option [value]="r">{{ r }}</mat-option>
+                }
+                @if (filteredPreferredReligions().length === 0) {
+                  <div class="select-no-match">No results</div>
                 }
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Preferred Education</mat-label>
-              <mat-select formControlName="preferredEducation" multiple>
-                @for (e of availableEducation(); track e) {
+              <mat-select formControlName="preferredEducation" multiple
+                          [appSelectSearch]="preferredEducationSearch()"
+                          (openedChange)="!$event && preferredEducationSearch.set('')">
+                <div class="select-search-box"
+                     (mousedown)="$event.stopPropagation()"
+                     (click)="$event.stopPropagation()">
+                  <mat-icon>search</mat-icon>
+                  <input placeholder="Search education..."
+                         [value]="preferredEducationSearch()"
+                         (input)="preferredEducationSearch.set($any($event.target).value)"
+                         (keydown)="onSelectSearchKeydown($event)" />
+                </div>
+                @for (e of filteredPreferredEducation(); track e) {
                   <mat-option [value]="e">{{ e }}</mat-option>
+                }
+                @if (filteredPreferredEducation().length === 0) {
+                  <div class="select-no-match">No results</div>
                 }
               </mat-select>
             </mat-form-field>

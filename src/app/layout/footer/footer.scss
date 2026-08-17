@@ -49,8 +49,32 @@
       letter-spacing: 1px;
     }
 
-    img {
+    .logo-icon {
       width: 64px;
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.2;
+    }
+
+    .brand-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: white;
+      letter-spacing: 1px;
+    }
+
+    .brand-tag-line {
+      margin-top: 3px;
+      font-size: 0.77rem;
+      font-weight: 500;
+      letter-spacing: .7px;
+      color: var(--suhana-blush);
+      margin-left: 1px;
     }
   }
 

@@ -44,19 +44,8 @@
         </button>
       </div>
 
-      <!-- Gender -->
-      <div class="filter-section">
-        <span class="filter-label">Gender</span>
-        <mat-button-toggle-group
-          class="gender-toggle"
-          [value]="searchService.filters().gender || 'all'"
-          aria-label="Gender"
-          (change)="onGenderChange($event.value)">
-          <mat-button-toggle value="all">All</mat-button-toggle>
-          <mat-button-toggle value="bride">Bride</mat-button-toggle>
-          <mat-button-toggle value="groom">Groom</mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
+      <!-- Gender now lives in <app-search-within-results>, which stays visible
+           on mobile where this sidebar is hidden. -->
 
       <!-- Religion -->
       <div class="filter-section">
@@ -65,13 +54,14 @@
           <mat-select multiple
             [value]="searchService.filters().religions ?? []"
             (selectionChange)="onFilterChange('religions', $event.value)"
+            [appSelectSearch]="religionSearch()"
             (openedChange)="!$event && religionSearch.set('')">
             <div class="select-search-box" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
               <mat-icon>search</mat-icon>
               <input placeholder="Search religion..."
                      [value]="religionSearch()"
                      (input)="religionSearch.set($any($event.target).value)"
-                     (keydown)="$event.stopPropagation()" />
+                     (keydown)="onSelectSearchKeydown($event)" />
             </div>
             @for (r of filteredReligions(); track r) {
               <mat-option [value]="r">{{ r }}</mat-option>
@@ -90,13 +80,14 @@
           <mat-select multiple class="lstbox"
             [value]="searchService.filters().locations ?? []"
             (selectionChange)="onFilterChange('locations', $event.value)"
+            [appSelectSearch]="citySearch()"
             (openedChange)="!$event && citySearch.set('')">
             <div class="select-search-box" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
               <mat-icon>search</mat-icon>
               <input placeholder="Search city..."
                      [value]="citySearch()"
                      (input)="citySearch.set($any($event.target).value)"
-                     (keydown)="$event.stopPropagation()" />
+                     (keydown)="onSelectSearchKeydown($event)" />
             </div>
             @for (c of filteredCities(); track c) {
               <mat-option [value]="c">{{ c }}</mat-option>
@@ -115,13 +106,14 @@
           <mat-select multiple
             [value]="searchService.filters().education ?? []"
             (selectionChange)="onFilterChange('education', $event.value)"
+            [appSelectSearch]="educationSearch()"
             (openedChange)="!$event && educationSearch.set('')">
             <div class="select-search-box" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
               <mat-icon>search</mat-icon>
               <input placeholder="Search education..."
                      [value]="educationSearch()"
                      (input)="educationSearch.set($any($event.target).value)"
-                     (keydown)="$event.stopPropagation()" />
+                     (keydown)="onSelectSearchKeydown($event)" />
             </div>
             @for (e of filteredEducation(); track e) {
               <mat-option [value]="e">{{ e }}</mat-option>
@@ -140,13 +132,14 @@
           <mat-select multiple
             [value]="searchService.filters().occupations ?? []"
             (selectionChange)="onFilterChange('occupations', $event.value)"
+            [appSelectSearch]="occupationSearch()"
             (openedChange)="!$event && occupationSearch.set('')">
             <div class="select-search-box" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
               <mat-icon>search</mat-icon>
               <input placeholder="Search occupation..."
                      [value]="occupationSearch()"
                      (input)="occupationSearch.set($any($event.target).value)"
-                     (keydown)="$event.stopPropagation()" />
+                     (keydown)="onSelectSearchKeydown($event)" />
             </div>
             @for (o of filteredOccupations(); track o) {
               <mat-option [value]="o">{{ o }}</mat-option>
@@ -239,13 +232,15 @@
       </div>
 
       <!-- Client-side narrowing of the loaded cards. Never calls the API. -->
-      @if (activeProfiles().length) {
-        <app-search-within-results
-          [(value)]="searchWithin"
-          [matchCount]="visibleProfiles().length"
-          [totalCount]="activeProfiles().length">
-        </app-search-within-results>
-      }
+      <!-- Always rendered: it now carries the Gender filter, which must stay
+           reachable even when the current filters return no profiles. -->
+      <app-search-within-results
+        [(value)]="searchWithin"
+        [matchCount]="visibleProfiles().length"
+        [totalCount]="activeProfiles().length"
+        [gender]="searchService.filters().gender || 'all'"
+        (genderChange)="onGenderChange($event)">
+      </app-search-within-results>
 
       <div class="results-grid" [class.list-view]="searchService.viewMode() === 'list'">
         @for (profile of visibleProfiles(); track profile.userId; let i = $index) {

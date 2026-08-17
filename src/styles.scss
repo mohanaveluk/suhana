@@ -32,6 +32,7 @@ body {
   --suhana-rose-gold: #b76e79;
   --suhana-rose-gold-light: #d4a0a7;
   --suhana-rose-gold-lighter: #f0d4d8;
+  --suhana-rose-light: #ec88a9; //#ec87a8
   --suhana-maroon: #800020;
   --suhana-maroon-bright: #a40029;
   --suhana-maroon-bright-light: #c30061;
@@ -186,6 +187,68 @@ body {
   50% { transform: scale(1.05); }
 }
 
+@keyframes floatLogo {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  15% {
+    transform: scale(1.08);
+  }
+
+  30% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.05);
+  }
+
+  60% {
+    transform: scale(1);
+  }
+}  
+
+@keyframes floatGlow {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 0 rgba(214, 152, 162, 0.3));
+  }
+
+  50% {
+    transform: translateY(-4px);
+    filter: drop-shadow(0 0 8px rgba(214, 152, 162, 0.6));
+  }
+}
+
+@keyframes sway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-3deg);
+  }
+
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
 .animate-fade-in-up { animation: fadeInUp 0.6s ease forwards; }
 .animate-fade-in { animation: fadeIn 0.5s ease forwards; }
 
@@ -297,6 +360,48 @@ a {
     align-items: center;
     justify-content: space-between;
   }
+}
+
+// ── Shared: searchable <mat-select> panel ─────────────────────────────────────
+// Place a .select-search-box div as the first child of <mat-select> and it
+// renders at the top of the dropdown panel; position:sticky keeps it visible
+// while the options scroll. Global because several pages use the pattern.
+.select-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: white;
+  border-bottom: 1px solid var(--suhana-rose-gold-lighter);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--suhana-text-secondary);
+    flex-shrink: 0;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 0.875rem;
+    background: transparent;
+    color: var(--suhana-text-primary);
+
+    &::placeholder { color: var(--suhana-text-secondary); }
+  }
+}
+
+.select-no-match {
+  padding: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--suhana-text-secondary);
 }
 
 // ── Mobile verification: country dropdown panel ───────────────────────────────

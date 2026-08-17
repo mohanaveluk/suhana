@@ -1,19 +1,34 @@
 <div class="swr">
-  <mat-form-field appearance="outline" class="swr__field" subscriptSizing="dynamic">
-    <mat-icon matPrefix class="swr__icon">filter_list</mat-icon>
-    <input matInput
-           type="text"
-           placeholder="Search within current results..."
-           autocomplete="off"
-           [value]="value()"
-           (input)="value.set($any($event.target).value)"
-           aria-label="Search within current results" />
-    @if (value()) {
-      <button matSuffix mat-icon-button type="button" (click)="value.set('')" aria-label="Clear">
-        <mat-icon>close</mat-icon>
-      </button>
-    }
-  </mat-form-field>
+  <!-- Narrowing the loaded cards is only meaningful when there are cards. -->
+  @if (totalCount() > 0) {
+    <mat-form-field appearance="outline" class="swr__field" subscriptSizing="dynamic">
+      <mat-icon matPrefix class="swr__icon">filter_list</mat-icon>
+      <input matInput
+             type="text"
+             placeholder="Search within current results..."
+             autocomplete="off"
+             [value]="value()"
+             (input)="value.set($any($event.target).value)"
+             aria-label="Search within current results" />
+      @if (value()) {
+        <button matSuffix mat-icon-button type="button" (click)="value.set('')" aria-label="Clear">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  }
+
+  <!-- Gender lives here as well as the sidebar, because the sidebar is hidden
+       below 960px and this row stays visible on mobile. -->
+  <mat-button-toggle-group class="swr__gender"
+                           [value]="gender()"
+                           aria-label="Gender"
+                           (change)="genderChange.emit($event.value)">
+    <mat-button-toggle value="all">All</mat-button-toggle>
+    <mat-button-toggle value="bride">Bride</mat-button-toggle>
+    <mat-button-toggle value="groom">Groom</mat-button-toggle>
+  </mat-button-toggle-group>
+
   <mat-button-toggle-group [value]="searchService.viewMode()" aria-label="View mode" class="view-toggle">
     <mat-button-toggle value="grid" (click)="searchService.setViewMode('grid')" matTooltip="Grid view">
       <mat-icon>grid_view</mat-icon>
@@ -22,6 +37,7 @@
       <mat-icon>view_list</mat-icon>
     </mat-button-toggle>
   </mat-button-toggle-group>
+
   @if (value().trim()) {
     <span class="swr__count">
       {{ matchCount() }} of {{ totalCount() }} shown
