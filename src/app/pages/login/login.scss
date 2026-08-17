@@ -28,6 +28,18 @@
     height: 40px;
   }
 
+  .logo-icon {
+    color: var(--suhana-rose-gold);
+    font-size: 28px;
+    //height: 28px;
+    width: 60px;
+    //animation: floatLogo 3s ease-in-out infinite;
+    //animation: heartbeat 2.5s ease-in-out infinite;
+    animation: floatGlow 4s ease-in-out infinite;
+    //animation: sway 5s ease-in-out infinite;
+    //transform-origin: center;    
+  }  
+
   h1 {
     font-size: 1.8rem;
     color: var(--suhana-maroon);

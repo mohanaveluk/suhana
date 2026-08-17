@@ -8,11 +8,14 @@ import { ProfileService } from '../../services';
 import { Gender } from '../../models/user.model';
 import { firstValueFrom } from 'rxjs';
 import { encryptValue } from '../../shared/utils/crypto.util';
+import { onSelectSearchKeydown } from '../../shared/utils/select-search.util';
+import { SelectSearchDirective } from '../../shared/directives/select-search.directive';
 
 @Component({
   selector: 'app-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    SelectSearchDirective,
     ReactiveFormsModule, RouterLink, MaterialModule,
   ],
   templateUrl: './register.html',
@@ -49,6 +52,44 @@ export class RegisterComponent implements OnInit {
   protected readonly occupations1 = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Government', 'Other'];
 
   protected readonly occupations = computed(() => this.availableOccupations());
+
+  /** Lets arrows/Enter reach mat-select while typing in the panel search box. */
+  protected readonly onSelectSearchKeydown = onSelectSearchKeydown;
+
+  // ── Searchable dropdowns ────────────────────────────────────────────────────
+  // Both lists come from the lookup API and can run to hundreds of entries, so
+  // the panels carry an inline filter box rather than making the user scroll.
+  protected readonly educationSearch  = signal('');
+  protected readonly occupationSearch = signal('');
+
+  protected readonly filteredEducation = computed(() => {
+    const q = this.educationSearch().trim().toLowerCase();
+    const all = this.availableEducation();
+    return q ? all.filter(e => e.toLowerCase().includes(q)) : all;
+  });
+
+  protected readonly filteredOccupations = computed(() => {
+    const q = this.occupationSearch().trim().toLowerCase();
+    const all = this.availableOccupations();
+    return q ? all.filter(o => o.toLowerCase().includes(q)) : all;
+  });
+
+  // Preference dropdowns keep their own filter text. preferredEducation draws
+  // from the same list as educationLevel, so sharing a signal would make typing
+  // in one panel filter the other.
+  protected readonly preferredReligionSearch  = signal('');
+  protected readonly preferredEducationSearch = signal('');
+
+  protected readonly filteredPreferredReligions = computed(() => {
+    const q = this.preferredReligionSearch().trim().toLowerCase();
+    return q ? this.religions.filter(r => r.toLowerCase().includes(q)) : this.religions;
+  });
+
+  protected readonly filteredPreferredEducation = computed(() => {
+    const q = this.preferredEducationSearch().trim().toLowerCase();
+    const all = this.availableEducation();
+    return q ? all.filter(e => e.toLowerCase().includes(q)) : all;
+  });
 
   // Step 1: Account
   protected readonly accountForm = this.fb.group({

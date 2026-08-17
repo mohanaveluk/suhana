@@ -32,18 +32,48 @@
     color: var(--suhana-rose-gold);
     font-size: 28px;
     //height: 28px;
-    width: 48px;
+    width: 60px;
+  }
+
+  .logo-content {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .logo-title {
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .logo-text {
     font-size: 1.5rem;
     font-weight: 600;
     letter-spacing: 1px;
-    background: var(--suhana-gradient);
+    background: var(--suhana-maroon);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  .logo-alt-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    background: var(--suhana-rose-light);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo-tagline {
+    font-size: 0.77rem;
+    font-weight: 500;
+    letter-spacing: 1.4px;
+    color: var(--suhana-rose-gold);
+    margin-top: 2px;
+    margin-left: 1px;
+  }  
 }
 
 .desktop-nav {
