@@ -14,6 +14,13 @@
 
   &__icon { color: var(--suhana-rose-gold); margin: 0 6px 0 4px; }
 
+  &__gender {
+    flex-shrink: 0;
+    background: #fff;
+
+    .mat-button-toggle { font-size: 0.82rem; width: 100%; }
+  }
+
   &__count {
     flex-shrink: 0;
     font-size: 0.78rem;
@@ -22,8 +29,14 @@
     white-space: nowrap;
   }
 
+  .view-toggle { flex-shrink: 0; background: #fff; }
+
   @media (max-width: 640px) {
     flex-wrap: wrap;
     &__field { flex-basis: 100%; }
+
+    // Gender takes the room; the view switch keeps its natural width.
+    &__gender { flex: 1; justify-content: space-evenly;}
+    &__count { flex-basis: 100%; }
   }
 }

@@ -517,6 +517,17 @@ $sidebar-w: 310px;
     }
   }
 
+  @media (max-width: 768px) {
+    .result-image { height: 220px; 
+    height: 330px;
+    background-size: cover;
+    background-position: center top;
+    position: relative;
+    cursor: pointer;
+    
+    }
+  }
+
   .verified-tag {
     position: absolute;
     top: 10px;

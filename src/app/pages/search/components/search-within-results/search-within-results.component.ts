@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, model, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, model, output, inject } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,15 @@ export class SearchWithinResultsComponent {
   readonly value = model<string>('');
   readonly matchCount = input<number>(0);
   readonly totalCount = input<number>(0);
+
+  /** Current gender filter: 'all' | 'bride' | 'groom'. */
+  readonly gender = input<string>('all');
+
+  /**
+   * Raised instead of writing to SearchService directly, so the page keeps its
+   * single entry point for filter edits (which also re-runs an active AI search).
+   */
+  readonly genderChange = output<string>();
 
     protected readonly searchService   = inject(SearchService);
   

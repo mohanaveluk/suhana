@@ -44,19 +44,8 @@
         </button>
       </div>
 
-      <!-- Gender -->
-      <div class="filter-section">
-        <span class="filter-label">Gender</span>
-        <mat-button-toggle-group
-          class="gender-toggle"
-          [value]="searchService.filters().gender || 'all'"
-          aria-label="Gender"
-          (change)="onGenderChange($event.value)">
-          <mat-button-toggle value="all">All</mat-button-toggle>
-          <mat-button-toggle value="bride">Bride</mat-button-toggle>
-          <mat-button-toggle value="groom">Groom</mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
+      <!-- Gender now lives in <app-search-within-results>, which stays visible
+           on mobile where this sidebar is hidden. -->
 
       <!-- Religion -->
       <div class="filter-section">
@@ -243,13 +232,15 @@
       </div>
 
       <!-- Client-side narrowing of the loaded cards. Never calls the API. -->
-      @if (activeProfiles().length) {
-        <app-search-within-results
-          [(value)]="searchWithin"
-          [matchCount]="visibleProfiles().length"
-          [totalCount]="activeProfiles().length">
-        </app-search-within-results>
-      }
+      <!-- Always rendered: it now carries the Gender filter, which must stay
+           reachable even when the current filters return no profiles. -->
+      <app-search-within-results
+        [(value)]="searchWithin"
+        [matchCount]="visibleProfiles().length"
+        [totalCount]="activeProfiles().length"
+        [gender]="searchService.filters().gender || 'all'"
+        (genderChange)="onGenderChange($event)">
+      </app-search-within-results>
 
       <div class="results-grid" [class.list-view]="searchService.viewMode() === 'list'">
         @for (profile of visibleProfiles(); track profile.userId; let i = $index) {
