@@ -18,6 +18,8 @@
   width: 100%;
   padding: 0 24px;
   min-height: 64px;
+
+
 }
 
 .logo {
@@ -146,6 +148,12 @@
     .login-btn, .register-btn {
       display: none;
     }
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-actions {
+    gap: 2px !important;
   }
 }
 
