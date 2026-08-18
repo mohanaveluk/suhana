@@ -18,6 +18,8 @@
   width: 100%;
   padding: 0 24px;
   min-height: 64px;
+
+
 }
 
 .logo {
@@ -74,7 +76,24 @@
     margin-top: 2px;
     margin-left: 1px;
   }  
+
+  @media (max-width: 640px){
+    .logo-icon {
+      width: 48px !important;
+    }
+    .logo-text{
+      font-size: 1.1rem !important;
+    }
+    .logo-alt-text {
+      font-size: 1.1rem !important;
+    }
+    .logo-tagline {
+      font-size: 0.65rem !important;
+    }
+  }
 }
+
+
 
 .desktop-nav {
   display: flex;
@@ -132,6 +151,12 @@
   }
 }
 
+@media (max-width: 640px) {
+  .auth-actions {
+    gap: 2px !important;
+  }
+}
+
 .mobile-menu-btn {
   display: none;
 
@@ -139,9 +164,8 @@
     display: inline-flex;
   }
 }
-
 .mat-mdc-icon-button {
-      padding: calc(calc(var(--mat-icon-button-state-layer-size, 40px) - var(--mat-icon-button-icon-size, 40px)) / 2) !important;
+  padding: calc(calc(var(--mat-icon-button-state-layer-size, 40px) - var(--mat-icon-button-icon-size, 40px)) / 2) !important;
 
   .mat-icon {
     font-size: 40px;
@@ -156,9 +180,19 @@
       height: 24px !important;
       //margin: -27px -21px;
       margin: -18px -18px;
-      
+
     }
-  }    
+  }
+
+  @media (max-width: 640px) {
+    .mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      margin: 4px 0px 0px 4px !important;
+    }
+  }
+
 }
 
 .mat-mdc-menu-panel{
