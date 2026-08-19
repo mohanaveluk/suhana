@@ -80,7 +80,7 @@ export class AuthService {
     await firstValueFrom(this.api.sendVerificationEmail(email));
   }
 
-  async register(data: { email: string; password: string; gender: string; mobile: string; firstName?: string; lastName?: string }): Promise<{ userId: string; tempGuid: string }> {
+  async register(data: { email: string; password: string; gender: string; mobile: string; firstName?: string; lastName?: string; timezone?: string }): Promise<{ userId: string; tempGuid: string }> {
     const payload = {
       firstName: data.firstName ?? 'unknown',
       lastName: data.lastName ?? 'unknown',
@@ -88,6 +88,7 @@ export class AuthService {
       password: data.password,
       gender: data.gender,
       mobile: data.mobile,
+    timezone: data.timezone,
       created_at: new Date().toISOString(),
       updated_at: null,
       role_guid: '',

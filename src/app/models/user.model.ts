@@ -69,6 +69,7 @@ export interface UserProfile {
   createdAt?: Date;
   updatedAt?: Date;
   tempGuid?: string;
+  timezone?: string;
   user?: User;
 }
 
