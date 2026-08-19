@@ -169,6 +169,7 @@ export class RegisterComponent implements OnInit {
         password: password ?? '',
         gender:   gender   as string,
         mobile:   mobile   ?? '',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       this.registeredUserId.set(userIdentity.userId);
       this.tempUserGuid.set(userIdentity.tempGuid);
@@ -347,6 +348,7 @@ export class RegisterComponent implements OnInit {
         status:              'active',
         profileCompleteness: 75,
         tempGuid: this.tempUserGuid() ?? '',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       const paramKey = encryptValue(this.accountForm.getRawValue().email ?? '');
       this.router.navigate(['/registration-success', paramKey]);
