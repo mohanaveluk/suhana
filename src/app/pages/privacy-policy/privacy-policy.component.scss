@@ -689,17 +689,17 @@ $gradient      : var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800
 // ═════════════════════════════════════════════════════════════════════════════
 // DARK MODE
 // ═════════════════════════════════════════════════════════════════════════════
-@media (prefers-color-scheme: dark) {
-  .pp-page     { background: #1a1218; }
-  .pp-toc      { background: #261e22; border-color: #3d2d33; }
-  .pp-card     { background: #261e22 !important; border-color: #3d2d33 !important; }
-  .pp-panel    { border-color: #3d2d33 !important; background: #2e2026 !important; }
-  .pp-usage-item, .pp-security-item { background: rgba(183,110,121,.08); border-color: rgba(183,110,121,.2); }
-  .pp-right-card { background: rgba(183,110,121,.08); border-color: rgba(183,110,121,.2); }
-  .pp-visibility-card { background: #261e22 !important; border-color: #3d2d33 !important; }
-  .pp-social   { background: linear-gradient(180deg, #1a1218, #221820); }
-  .pp-footer   { border-color: #3d2d33; }
-}
+// @media (prefers-color-scheme: dark) {
+//   .pp-page     { background: #1a1218; }
+//   .pp-toc      { background: #261e22; border-color: #3d2d33; }
+//   .pp-card     { background: #261e22 !important; border-color: #3d2d33 !important; }
+//   .pp-panel    { border-color: #3d2d33 !important; background: #2e2026 !important; }
+//   .pp-usage-item, .pp-security-item { background: rgba(183,110,121,.08); border-color: rgba(183,110,121,.2); }
+//   .pp-right-card { background: rgba(183,110,121,.08); border-color: rgba(183,110,121,.2); }
+//   .pp-visibility-card { background: #261e22 !important; border-color: #3d2d33 !important; }
+//   .pp-social   { background: linear-gradient(180deg, #1a1218, #221820); }
+//   .pp-footer   { border-color: #3d2d33; }
+// }
 
 
 // ═════════════════════════════════════════════════════════════════════════════
