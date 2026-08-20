@@ -230,3 +230,6 @@
     font-weight: 500;
   }
 }
+::ng-deep .mat-step-header {
+  pointer-events: none;
+}
