@@ -677,18 +677,18 @@ $gradient      : var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800
 // ═════════════════════════════════════════════════════════════════════════════
 // DARK MODE
 // ═════════════════════════════════════════════════════════════════════════════
-@media (prefers-color-scheme: dark) {
-  .tos-page                { background: #1a1218; }
-  .tos-toc                 { background: #261e22; border-color: #3d2d33; }
-  .tos-card                { background: #261e22 !important; border-color: #3d2d33 !important; }
-  .tos-panel               { border-color: #3d2d33 !important; background: #2e2026 !important; }
-  .tos-eligibility-item    { background: rgba(183,110,121,.08); border-color: rgba(183,110,121,.2); }
-  .tos-responsibility-item { background: rgba(46,125,50,.08); }
-  .tos-prohibited-item     { background: rgba(183,0,0,.08); border-color: rgba(183,0,0,.18); }
-  .tos-plan-card           { background: #261e22 !important; border-color: #3d2d33 !important; }
-  .tos-payment-item        { background: #261e22; border-color: #3d2d33; }
-  .tos-social              { background: linear-gradient(180deg, #1a1218, #221820); }
-}
+// @media (prefers-color-scheme: dark) {
+//   .tos-page                { background: #1a1218; }
+//   .tos-toc                 { background: #261e22; border-color: #3d2d33; }
+//   .tos-card                { background: #261e22 !important; border-color: #3d2d33 !important; }
+//   .tos-panel               { border-color: #3d2d33 !important; background: #2e2026 !important; }
+//   .tos-eligibility-item    { background: rgba(183,110,121,.08); border-color: rgba(183,110,121,.2); }
+//   .tos-responsibility-item { background: rgba(46,125,50,.08); }
+//   .tos-prohibited-item     { background: rgba(183,0,0,.08); border-color: rgba(183,0,0,.18); }
+//   .tos-plan-card           { background: #261e22 !important; border-color: #3d2d33 !important; }
+//   .tos-payment-item        { background: #261e22; border-color: #3d2d33; }
+//   .tos-social              { background: linear-gradient(180deg, #1a1218, #221820); }
+// }
 
 
 // ═════════════════════════════════════════════════════════════════════════════
