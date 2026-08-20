@@ -31,6 +31,7 @@ export class RegisterComponent implements OnInit {
   private readonly router        = inject(Router);
 
   protected readonly hidePassword       = signal(true);
+  protected readonly hideConfirmPassword       = signal(true);
   protected readonly isSubmitting       = signal(false);
   protected readonly registrationError  = signal<string | null>(null);
   protected readonly profileError       = signal<string | null>(null);
