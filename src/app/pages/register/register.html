@@ -2,7 +2,7 @@
   <div class="register-container">
     <div class="register-header">
       <!-- <mat-icon class="heart-icon">favorite</mat-icon> -->
-      <img src="/images/logo-hearts.3.png" alt="Aurora Logo" class="logo-icon animate-fade-in-up" />
+      <img src="/images/logo-th-trans.png" alt="Aurora Logo" class="logo-icon animate-fade-in-up" />
       <h1>Begin Your Journey</h1>
       <p>Create your profile on Aurora and find your perfect match</p>
     </div>
@@ -25,16 +25,22 @@
             }
             <h2>Create Your Account</h2>
 
-            <div class="gender-select">
+            <div class="gender-select"
+                 [class.gender-select--invalid]="accountForm.controls.gender.invalid && accountForm.controls.gender.touched">
               <label id="gender-label">I am registering as</label>
               <mat-radio-group formControlName="gender" aria-labelledby="gender-label">
                 <mat-radio-button value="bride">
-                  <mat-icon>female</mat-icon> Bride
+                  <mat-icon matTooltip="Female">female</mat-icon> Bride
                 </mat-radio-button>
                 <mat-radio-button value="groom">
-                  <mat-icon>male</mat-icon> Groom
+                  <mat-icon matTooltip="Male">male</mat-icon> Groom
                 </mat-radio-button>
               </mat-radio-group>
+              @if (accountForm.controls.gender.hasError('required') && accountForm.controls.gender.touched) {
+                <div class="gender-select__error">
+                  <mat-error>Please select your gender</mat-error>
+                </div>
+              }
             </div>
 
             <mat-form-field appearance="outline" class="full-width">
@@ -106,7 +112,7 @@
       </mat-step>
 
       <!-- STEP 2: Personal Details -->
-      <mat-step [stepControl]="personalForm" label="Personal" [editable]="false">
+      <mat-step [stepControl]="personalForm" label="Personal">
         <form [formGroup]="personalForm">
           <div class="step-content">
             @if (prefillNotice()) {
@@ -164,7 +170,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Religion</mat-label>
                 <mat-select formControlName="religion">
-                  @for (r of religions; track r) {
+                  @for (r of userReligions; track r) {
                     <mat-option [value]="r">{{ r }}</mat-option>
                   }
                 </mat-select>
@@ -187,10 +193,29 @@
                 }
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>City</mat-label>
-                <input matInput formControlName="city" />
-                @if (personalForm.controls.city.hasError('required') && personalForm.controls.city.touched) {
-                  <mat-error>City is required</mat-error>
+                <mat-label>Country</mat-label>
+                <mat-select formControlName="country"
+                            [appSelectSearch]="countrySearch()"
+                            (openedChange)="!$event && countrySearch.set('')"
+                            (selectionChange)="onCountryChange($event.value)">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search country..."
+                           [value]="countrySearch()"
+                           (input)="countrySearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (c of filteredCountries(); track c) {
+                    <mat-option [value]="c">{{ c }}</mat-option>
+                  }
+                  @if (filteredCountries().length === 0) {
+                    <div class="select-no-match">No results</div>
+                  }
+                </mat-select>
+                @if (personalForm.controls.country.hasError('required') && personalForm.controls.country.touched) {
+                  <mat-error>Country is required</mat-error>
                 }
               </mat-form-field>
             </div>
@@ -198,16 +223,34 @@
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>State</mat-label>
-                <input matInput formControlName="state" />
+                <mat-select formControlName="state"
+                            [appSelectSearch]="stateSearch()"
+                            (openedChange)="!$event && stateSearch.set('')">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search state..."
+                           [value]="stateSearch()"
+                           (input)="stateSearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (s of filteredStates(); track s) {
+                    <mat-option [value]="s">{{ s }}</mat-option>
+                  }
+                  @if (filteredStates().length === 0) {
+                    <div class="select-no-match">{{ statesLoading() ? 'Loading states...' : 'No results' }}</div>
+                  }
+                </mat-select>
                 @if (personalForm.controls.state.hasError('required') && personalForm.controls.state.touched) {
                   <mat-error>State is required</mat-error>
                 }
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Country</mat-label>
-                <input matInput formControlName="country" />
-                @if (personalForm.controls.country.hasError('required') && personalForm.controls.country.touched) {
-                  <mat-error>Country is required</mat-error>
+                <mat-label>City</mat-label>
+                <input matInput formControlName="city" />
+                @if (personalForm.controls.city.hasError('required') && personalForm.controls.city.touched) {
+                  <mat-error>City is required</mat-error>
                 }
               </mat-form-field>
             </div>
@@ -234,7 +277,8 @@
                 <mat-label>Education Level</mat-label>
                 <mat-select formControlName="educationLevel"
                             [appSelectSearch]="educationSearch()"
-                            (openedChange)="!$event && educationSearch.set('')">
+                            (openedChange)="!$event && educationSearch.set('')"
+                            (selectionChange)="onEducationChange($event.value)">
                   <div class="select-search-box"
                        (mousedown)="$event.stopPropagation()"
                        (click)="$event.stopPropagation()">
@@ -253,6 +297,8 @@
                 </mat-select>
                 @if (professionalForm.controls.educationLevel.hasError('required') && professionalForm.controls.educationLevel.touched) {
                   <mat-error>Education level is required</mat-error>
+                } @else if (professionalForm.controls.educationLevel.hasError('otherNotSpecified') && professionalForm.controls.educationLevel.touched) {
+                  <mat-error>Please specify your education level below</mat-error>
                 }
               </mat-form-field>
               <mat-form-field appearance="outline">
@@ -264,6 +310,23 @@
               </mat-form-field>
             </div>
 
+            @if (showCustomEducation()) {
+              <div class="custom-option-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Please specify your education level</mat-label>
+                  <input matInput
+                         [value]="customEducationValue()"
+                         (input)="customEducationValue.set($any($event.target).value)"
+                         (keydown.enter)="$event.preventDefault(); addCustomEducation()" />
+                </mat-form-field>
+                <button mat-stroked-button type="button" color="primary"
+                        [disabled]="!customEducationValue().trim()"
+                        (click)="addCustomEducation()">
+                  Add
+                </button>
+              </div>
+            }
+
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Institution (Optional)</mat-label>
               <input matInput formControlName="institution" />
@@ -274,7 +337,8 @@
                 <mat-label>Occupation</mat-label>
                 <mat-select formControlName="occupation"
                             [appSelectSearch]="occupationSearch()"
-                            (openedChange)="!$event && occupationSearch.set('')">
+                            (openedChange)="!$event && occupationSearch.set('')"
+                            (selectionChange)="onOccupationChange($event.value)">
                   <div class="select-search-box"
                        (mousedown)="$event.stopPropagation()"
                        (click)="$event.stopPropagation()">
@@ -293,6 +357,8 @@
                 </mat-select>
                 @if (professionalForm.controls.occupation.hasError('required') && professionalForm.controls.occupation.touched) {
                   <mat-error>Occupation is required</mat-error>
+                } @else if (professionalForm.controls.occupation.hasError('otherNotSpecified') && professionalForm.controls.occupation.touched) {
+                  <mat-error>Please specify your occupation below</mat-error>
                 }
               </mat-form-field>
               <mat-form-field appearance="outline">
@@ -300,6 +366,23 @@
                 <input matInput formControlName="company" />
               </mat-form-field>
             </div>
+
+            @if (showCustomOccupation()) {
+              <div class="custom-option-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Please specify your occupation</mat-label>
+                  <input matInput
+                         [value]="customOccupationValue()"
+                         (input)="customOccupationValue.set($any($event.target).value)"
+                         (keydown.enter)="$event.preventDefault(); addCustomOccupation()" />
+                </mat-form-field>
+                <button mat-stroked-button type="button" color="primary"
+                        [disabled]="!customOccupationValue().trim()"
+                        (click)="addCustomOccupation()">
+                  Add
+                </button>
+              </div>
+            }
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Annual Income (Optional)</mat-label>
