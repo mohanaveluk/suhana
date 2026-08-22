@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, ViewChild, OnInit, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ApiService, AuthService } from '../../services';
@@ -10,6 +10,29 @@ import { firstValueFrom } from 'rxjs';
 import { encryptValue } from '../../shared/utils/crypto.util';
 import { onSelectSearchKeydown } from '../../shared/utils/select-search.util';
 import { SelectSearchDirective } from '../../shared/directives/select-search.directive';
+
+interface CountryLookup {
+  id: string;
+  name: string;
+  isoCode: string;
+}
+
+interface StateLookup {
+  id: string;
+  code: string;
+  name: string;
+  countryId: string;
+}
+
+/** Blocks submitting the literal "Others" sentinel — the user must specify a value first. */
+function notLiteralOtherValidator(control: AbstractControl): ValidationErrors | null {
+  return control.value === 'Others' ? { otherNotSpecified: true } : null;
+}
+
+/** Dedupes a lookup list and appends a single trailing "Others" — the backend's own list may already include one. */
+function withTrailingOther(names: string[]): string[] {
+  return [...new Set(names.filter(n => n !== 'Others')), 'Others'];
+}
 
 @Component({
   selector: 'app-register',
@@ -41,17 +64,49 @@ export class RegisterComponent implements OnInit {
   private readonly _availableCities       = signal<string[]>([]);
   private readonly _availableOccupations  = signal<string[]>([]);
   private readonly _availableEducation    = signal<string[]>([]);
-  
+
   protected readonly availableCities      = this._availableCities.asReadonly();
   protected readonly availableOccupations = this._availableOccupations.asReadonly();
   protected readonly availableEducation   = this._availableEducation.asReadonly();
-  
-  protected readonly tempUserGuid      = signal<string | null>(null);
-  
-  protected readonly religions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist', 'Other'];
-  protected readonly educationLevels = ['High School', 'Bachelor\'s', 'Master\'s', 'PhD', 'MBA', 'Medical', 'Engineering', 'Other'];
-  protected readonly occupations1 = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Government', 'Other'];
 
+  protected readonly tempUserGuid      = signal<string | null>(null);
+
+  // ── Country / State lookups ─────────────────────────────────────────────────
+  private readonly _countries = signal<CountryLookup[]>([]);
+  private readonly _states    = signal<StateLookup[]>([]);
+
+  protected readonly countries      = this._countries.asReadonly();
+  protected readonly selectedCountryId = signal<string | null>(null);
+  protected readonly statesLoading  = signal(false);
+
+  protected readonly countryNames = computed(() => this.countries().map(c => c.name));
+  protected readonly stateNames   = computed(() => this._states().map(s => s.name));
+
+  protected readonly countrySearch = signal('');
+  protected readonly stateSearch   = signal('');
+
+  protected readonly filteredCountries = computed(() => {
+    const q = this.countrySearch().trim().toLowerCase();
+    const all = this.countryNames();
+    return q ? all.filter(c => c.toLowerCase().includes(q)) : all;
+  });
+
+  protected readonly filteredStates = computed(() => {
+    const q = this.stateSearch().trim().toLowerCase();
+    const all = this.stateNames();
+    return q ? all.filter(s => s.toLowerCase().includes(q)) : all;
+  });
+
+  // ── "Other" custom entry for Education / Occupation ─────────────────────────
+  protected readonly showCustomEducation  = signal(false);
+  protected readonly showCustomOccupation = signal(false);
+  protected readonly customEducationValue  = signal('');
+  protected readonly customOccupationValue = signal('');
+  
+  protected readonly religions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist'];
+  protected readonly educationLevels = ['High School', 'Bachelor\'s', 'Master\'s', 'PhD', 'MBA', 'Medical', 'Engineering'];
+  protected readonly occupations1 = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Government'];
+  protected readonly userReligions = [...this.religions, 'Others'];
   protected readonly occupations = computed(() => this.availableOccupations());
 
   /** Lets arrows/Enter reach mat-select while typing in the panel search box. */
@@ -77,18 +132,19 @@ export class RegisterComponent implements OnInit {
 
   // Preference dropdowns keep their own filter text. preferredEducation draws
   // from the same list as educationLevel, so sharing a signal would make typing
-  // in one panel filter the other.
+  // in one panel filter the others.
   protected readonly preferredReligionSearch  = signal('');
   protected readonly preferredEducationSearch = signal('');
 
   protected readonly filteredPreferredReligions = computed(() => {
     const q = this.preferredReligionSearch().trim().toLowerCase();
-    return q ? this.religions.filter(r => r.toLowerCase().includes(q)) : this.religions;
+    const all = ['Any', ...this.religions];
+    return q ? all.filter(r => r.toLowerCase().includes(q)) : all;
   });
 
   protected readonly filteredPreferredEducation = computed(() => {
     const q = this.preferredEducationSearch().trim().toLowerCase();
-    const all = this.availableEducation();
+    const all = ['Any', ...this.availableEducation()];
     return q ? all.filter(e => e.toLowerCase().includes(q)) : all;
   });
 
@@ -97,7 +153,7 @@ export class RegisterComponent implements OnInit {
     email:           ['', [Validators.required, Validators.email]],
     password:        ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required],
-    gender:          ['bride' as Gender, Validators.required],
+    gender:          ['' as Gender, Validators.required],
     mobile:          ['0', Validators.required],
     agreeTerms:      [false, Validators.requiredTrue],
   });
@@ -118,10 +174,10 @@ export class RegisterComponent implements OnInit {
 
   // Step 3: Professional
   protected readonly professionalForm = this.fb.group({
-    educationLevel: ['', Validators.required],
+    educationLevel: ['', [Validators.required, notLiteralOtherValidator]],
     educationField: ['', Validators.required],
     institution:    [''],
-    occupation:     ['', Validators.required],
+    occupation:     ['', [Validators.required, notLiteralOtherValidator]],
     company:        [''],
     annualIncome:   [''],
   });
@@ -137,20 +193,91 @@ export class RegisterComponent implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    await this.loadLookupValues();
+    await Promise.all([this.loadLookupValues(), this.loadCountries()]);
   }
 
   private async loadLookupValues(): Promise<void> {
     try {
       const res = await firstValueFrom(this.api.getLookupValues());
-      if (res.cities?.length)          this._availableCities.set(res.cities.map(c => c.name));
-      if (res.occupations?.length)     this._availableOccupations.set(res.occupations.map(o => o.name));
-      if (res.educationLevels?.length) this._availableEducation.set(res.educationLevels.map(e => e.name));
+      if (res.cities?.length)          this._availableCities.set([...new Set(res.cities.map(c => c.name))]);
+      if (res.occupations?.length)     this._availableOccupations.set(withTrailingOther(res.occupations.map(o => o.name)));
+      if (res.educationLevels?.length) this._availableEducation.set(withTrailingOther(res.educationLevels.map(e => e.name)));
     } catch {
       this._availableCities.set(['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Surat']);
-      this._availableOccupations.set(['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Architect', 'AI Engineer']);
-      this._availableEducation.set(['Bachelor', 'Master', 'PhD', 'MBA', 'Medical', 'Engineering', 'Diploma', 'B.Tech', 'M.Tech']);
+      this._availableOccupations.set(withTrailingOther(['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Architect', 'AI Engineer']));
+      this._availableEducation.set(withTrailingOther(['Bachelor', 'Master', 'PhD', 'MBA', 'Medical', 'Engineering', 'Diploma', 'B.Tech', 'M.Tech']));
     }
+  }
+
+  private async loadCountries(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.api.getCountries());
+      this._countries.set(res?.data ?? []);
+    } catch {
+      // Country dropdown stays empty — state lookup and location fields still work manually.
+    }
+    await this.selectCountryByName(this.personalForm.controls.country.value ?? '');
+  }
+
+  private async selectCountryByName(name: string): Promise<void> {
+    const country = this.countries().find(c => c.name === name);
+    if (!country) {
+      this.selectedCountryId.set(null);
+      this._states.set([]);
+      this.personalForm.controls.state.disable();
+      return;
+    }
+    this.selectedCountryId.set(country.id);
+    this.personalForm.controls.state.enable();
+    await this.loadStates(country.id);
+  }
+
+  private async loadStates(countryId: string): Promise<void> {
+    this.statesLoading.set(true);
+    try {
+      const states = await firstValueFrom(this.api.getCountryStates(countryId));
+      this._states.set(states ?? []);
+    } catch {
+      this._states.set([]);
+    } finally {
+      this.statesLoading.set(false);
+    }
+  }
+
+  protected async onCountryChange(name: string): Promise<void> {
+    this.personalForm.patchValue({ state: '' });
+    this.stateSearch.set('');
+    await this.selectCountryByName(name);
+  }
+
+  protected onEducationChange(value: string): void {
+    this.showCustomEducation.set(value === 'Others');
+    if (value !== 'Others') this.customEducationValue.set('');
+  }
+
+  protected onOccupationChange(value: string): void {
+    this.showCustomOccupation.set(value === 'Others');
+    if (value !== 'Others') this.customOccupationValue.set('');
+  }
+
+  protected addCustomEducation(): void {
+    const value = this.customEducationValue().trim();
+    if (!value) return;
+    this._availableEducation.update(list =>
+      list.includes(value) ? list : [...list.filter(v => v !== 'Others'), value, 'Others']);
+    this.professionalForm.patchValue({ educationLevel: value });
+    this.customEducationValue.set('');
+    this.showCustomEducation.set(false);
+  }
+
+  protected addCustomOccupation(): void {
+    const value = this.customOccupationValue().trim();
+    if (!value) return;
+    this._availableOccupations.update(list =>
+      list.includes(value) ? list : [...list.filter(v => v !== 'Others'), value, 'Others']);
+    this.professionalForm.patchValue({ occupation: value });
+    this.customOccupationValue.set('');
+    this.showCustomOccupation.set(false);
   }
 
   async onStep1Next(): Promise<void> {
@@ -243,7 +370,7 @@ export class RegisterComponent implements OnInit {
   // Returns true if any profile data was actually found and applied
   private async tryPrefillFromProfile(id: string): Promise<boolean> {
     try {
-      const res     = await firstValueFrom(this.api.getProfileByEmail(id));
+      const res     = await firstValueFrom(this.api.getProfileByNewEmail(id));
       const profile = res?.data ?? res;
       if (profile && (profile.firstName && profile.firstName !== 'unknown') && (profile.firstName || profile.location?.city || profile.education?.level)) {
         this.prefillFormsFromProfile(profile);
@@ -268,6 +395,10 @@ export class RegisterComponent implements OnInit {
       city:         p.location?.city    ?? '',
       state:        p.location?.state   ?? '',
       country:      p.location?.country ?? 'India',
+    });
+    void this.selectCountryByName(p.location?.country ?? 'India').then(() => {
+      // Re-apply the state now that its options have loaded from the resolved country.
+      this.personalForm.patchValue({ state: p.location?.state ?? '' });
     });
 
     // ── Step 3: Professional ──────────────────────────────────────────────────

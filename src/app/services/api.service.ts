@@ -94,6 +94,10 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/v1/profiles/email/${id}`);
   }
   
+  getProfileByNewEmail(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/profiles/newemail/${id}`);
+  }
+  
   getProfileById(id: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/v1/profiles/${id}`);
   }
@@ -403,6 +407,20 @@ export class ApiService {
     educationLevels: { id: number; name: string }[];
   }> {
     return this.http.get<any>(`${this.baseUrl}/v1/lookup/values`);
+  }
+
+  // Countries / States
+  getCountries(): Observable<{
+    status: boolean;
+    message: string;
+    data: { id: string; name: string; isoCode: string; createdAt: string }[];
+    timestamp: string;
+  }> {
+    return this.http.get<any>(`${this.baseUrl}/v1/countries`);
+  }
+
+  getCountryStates(countryId: string): Observable<{ id: string; code: string; name: string; countryId: string }[]> {
+    return this.http.get<any>(`${this.baseUrl}/v1/countries/${countryId}/states`);
   }
 
   // Notifications
