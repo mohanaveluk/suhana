@@ -258,5 +258,5 @@ $grad    : var(--suhana-gradient, linear-gradient(135deg, #b76e79 0%, #800020 10
 
 @media (prefers-color-scheme: dark) {
   //.rc { background: #261e22 !important; border-color: #3d2d33 !important; }
-  .rc--row { background: #261e22; border-bottom-color: #3d2d33; }
+  //.rc--row { background: #261e22; border-bottom-color: #3d2d33; }
 }
