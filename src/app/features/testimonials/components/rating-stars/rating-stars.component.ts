@@ -44,8 +44,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     mat-icon {
       font-size: 20px; width: 20px; height: 20px;
       color: #ccc; transition: color 0.12s, transform 0.12s;
-      &.filled { color: #c9a84c; }
-      &.half   { color: #c9a84c; }
+      &.filled { color: #cc9127; }
+      &.half   { color: #cc9127; }
     }
     .stars--interactive .star-btn:hover mat-icon,
     .stars--interactive .star-btn:focus mat-icon { transform: scale(1.2); }
@@ -54,7 +54,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       color: var(--suhana-text-primary, #3d2c2e);
     }
     :host([size='large']) mat-icon { font-size: 28px; width: 28px; height: 28px; }
-    :host([size='small']) mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    :host([size='small']) mat-icon { font-size: 16px; width: 16px; height: 16px; }
   `],
 })
 export class RatingStarsComponent {
