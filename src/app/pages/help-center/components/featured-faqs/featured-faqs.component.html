@@ -1,0 +1,25 @@
+<div class="ff-header">
+  <h2>Featured Questions</h2>
+  <a routerLink="/faq" class="ff-view-all">
+    Browse all FAQs <mat-icon>arrow_forward</mat-icon>
+  </a>
+</div>
+
+@if (loading()) {
+  <div class="ff-skeleton">
+    @for (_ of [1,2,3,4]; track $index) {
+      <div class="ff-sk"></div>
+    }
+  </div>
+} @else {
+  <mat-accordion class="ff-accordion" displayMode="flat">
+    @for (faq of faqs(); track faq.id) {
+      <mat-expansion-panel class="ff-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ faq.question }}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <p>{{ faq.answer }}</p>
+      </mat-expansion-panel>
+    }
+  </mat-accordion>
+}

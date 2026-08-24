@@ -1,0 +1,75 @@
+:host { display: block; }
+
+.ff-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--suhana-maroon);
+  }
+}
+
+.ff-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--suhana-rose-gold);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+
+  mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+  &:hover { color: var(--suhana-maroon); }
+}
+
+.ff-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.ff-panel {
+  border: 1px solid var(--suhana-rose-gold-lighter) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  overflow: hidden;
+
+  &.mat-expanded { border-color: var(--suhana-rose-gold) !important; }
+
+  ::ng-deep mat-panel-title {
+    font-weight: 500;
+    color: var(--suhana-text-primary);
+    font-size: 0.92rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--suhana-text-secondary);
+    line-height: 1.65;
+    font-size: 0.88rem;
+  }
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+@keyframes ff-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.ff-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.ff-sk {
+  height: 3rem;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f0d4d8 25%, #fde8e8 50%, #f0d4d8 75%);
+  background-size: 800px 100%;
+  animation: ff-shimmer 1.4s infinite linear;
+}

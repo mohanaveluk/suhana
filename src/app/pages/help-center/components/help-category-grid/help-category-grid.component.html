@@ -1,0 +1,27 @@
+<div class="hcg-grid">
+  @if (loading()) {
+    @for (_ of [1,2,3,4,5,6,7,8]; track $index) {
+      <div class="hcg-card hcg-card--skeleton">
+        <div class="hcg-sk hcg-sk--icon"></div>
+        <div class="hcg-sk hcg-sk--title"></div>
+        <div class="hcg-sk hcg-sk--line"></div>
+      </div>
+    }
+  } @else {
+    @for (cat of categories(); track cat.id) {
+      <button
+        type="button"
+        class="hcg-card"
+        [class.hcg-card--active]="selectedId() === cat.id"
+        [style.--cat-color]="cat.color"
+        [style.--cat-bg]="cat.bgColor"
+        (click)="toggle(cat.id)">
+        <span class="hcg-card__icon-ring">
+          <mat-icon>{{ cat.icon }}</mat-icon>
+        </span>
+        <h3>{{ cat.title }}</h3>
+        <p>{{ cat.description }}</p>
+      </button>
+    }
+  }
+</div>

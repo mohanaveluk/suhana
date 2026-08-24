@@ -1,0 +1,97 @@
+<div class="hs-wrap">
+  <div class="hs-input-row" [class.hs-input-row--open]="panelOpen()">
+    <mat-icon class="hs-icon">search</mat-icon>
+    <input
+      type="text"
+      class="hs-input"
+      placeholder="Search for answers — e.g. &quot;upload photos&quot;, &quot;premium plans&quot;…"
+      [value]="query()"
+      (input)="onInput($any($event.target).value)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (keydown)="onKeydown($event)"
+      aria-label="Search the Help Center"
+      role="combobox"
+      [attr.aria-expanded]="panelOpen()"
+      aria-autocomplete="list" />
+    @if (isSearching()) {
+      <mat-spinner class="hs-spinner" diameter="20"></mat-spinner>
+    } @else if (query()) {
+      <button class="hs-clear" type="button" (click)="clear()" aria-label="Clear search">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+
+  @if (panelOpen()) {
+    <div class="hs-panel" role="listbox">
+      @if (!query()) {
+        <!-- Recent + trending, shown before the visitor types anything -->
+        @if (recent().length) {
+          <div class="hs-panel__section">
+            <div class="hs-panel__heading">
+              <span>Recent Searches</span>
+              <button class="hs-panel__clear" type="button" (mousedown)="$event.preventDefault()" (click)="clearRecent()">Clear</button>
+            </div>
+            <div class="hs-chip-row">
+              @for (term of recent(); track term) {
+                <button class="hs-chip" type="button" (mousedown)="$event.preventDefault()" (click)="selectChip(term)">
+                  <mat-icon>history</mat-icon>{{ term }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+        <div class="hs-panel__section">
+          <div class="hs-panel__heading"><span>Trending Searches</span></div>
+          <div class="hs-chip-row">
+            @for (term of trending; track term) {
+              <button class="hs-chip" type="button" (mousedown)="$event.preventDefault()" (click)="selectChip(term)">
+                <mat-icon>trending_up</mat-icon>{{ term }}
+              </button>
+            }
+          </div>
+        </div>
+      } @else if (!isSearching() && hits().length === 0) {
+        <!-- No matches -->
+        <div class="hs-empty">
+          <mat-icon>search_off</mat-icon>
+          <p>We couldn't find an answer for "{{ query() }}".</p>
+          <a mat-stroked-button class="suhana-btn-outline" routerLink="/contact" (mousedown)="$event.preventDefault()">
+            Contact Support
+          </a>
+        </div>
+      } @else {
+        <!-- Results -->
+        <ul class="hs-results">
+          @for (hit of hits(); track hit.id; let i = $index) {
+            <li>
+              <button
+                type="button"
+                class="hs-result"
+                [class.hs-result--active]="activeIndex() === i"
+                role="option"
+                [attr.aria-selected]="activeIndex() === i"
+                (mousedown)="$event.preventDefault()"
+                (click)="selectHit(hit)">
+                <span class="hs-result__type" [attr.data-type]="hit.type">
+                  <mat-icon>
+                    @switch (hit.type) {
+                      @case ('category') { category }
+                      @case ('faq') { quiz }
+                      @default { article }
+                    }
+                  </mat-icon>
+                </span>
+                <span class="hs-result__text">
+                  <span class="hs-result__title" [innerHTML]="highlight(hit.title)"></span>
+                  <span class="hs-result__subtitle">{{ hit.subtitle }}</span>
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+</div>
