@@ -1,0 +1,52 @@
+<div class="pa-header">
+  <div>
+    <h2>Popular Articles</h2>
+    @if (selectedCategory(); as cat) {
+      <p class="pa-filter-note">
+        Filtered by <strong>{{ cat.title }}</strong>
+        <button type="button" class="pa-filter-clear" (click)="clearFilter.emit()">Clear</button>
+      </p>
+    }
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="pa-grid">
+    @for (_ of [1,2,3,4,5,6]; track $index) {
+      <div class="pa-card pa-card--skeleton">
+        <div class="pa-sk pa-sk--tag"></div>
+        <div class="pa-sk pa-sk--title"></div>
+        <div class="pa-sk pa-sk--line"></div>
+        <div class="pa-sk pa-sk--line pa-sk--short"></div>
+      </div>
+    }
+  </div>
+} @else if (filteredArticles().length === 0) {
+  <div class="pa-empty">
+    <mat-icon>inbox</mat-icon>
+    <p>No articles in this category yet.</p>
+    <button mat-button (click)="clearFilter.emit()">Clear filter</button>
+  </div>
+} @else {
+  <div class="pa-grid">
+    @for (article of filteredArticles(); track article.id) {
+      <a class="pa-card" [routerLink]="article.link">
+        @if (categoryOf(article); as cat) {
+          <span class="pa-card__tag" [style.color]="cat.color" [style.background]="cat.bgColor">
+            <mat-icon>{{ article.icon }}</mat-icon>{{ cat.title }}
+          </span>
+        }
+        <h3>{{ article.title }}</h3>
+        <p>{{ article.excerpt }}</p>
+        <div class="pa-card__meta">
+          <span><mat-icon>visibility</mat-icon>{{ article.viewCount | number }} views</span>
+          <span><mat-icon>schedule</mat-icon>{{ article.readTimeMinutes }} min read</span>
+        </div>
+        <div class="pa-card__footer">
+          <span class="pa-card__updated">Updated {{ article.updatedAt | date:'mediumDate' }}</span>
+          <span class="pa-card__cta">{{ article.linkLabel }} <mat-icon>arrow_forward</mat-icon></span>
+        </div>
+      </a>
+    }
+  </div>
+}

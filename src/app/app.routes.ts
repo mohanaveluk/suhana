@@ -241,6 +241,11 @@ export const routes: Routes = [
       import('./pages/faq/faq.component').then(m => m.FaqComponent),
   },
   {
+    path: 'help',
+    loadComponent: () =>
+      import('./pages/help-center/help-center.component').then(m => m.HelpCenterComponent),
+  },
+  {
     path: 'feedback',
     canActivate: [authGuard],
     loadComponent: () =>

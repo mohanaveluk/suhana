@@ -1,0 +1,80 @@
+<div class="hc-page">
+
+  <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+  <div class="hc-hero">
+    <div class="hc-hero__inner">
+      <mat-icon class="hc-hero__icon">support_agent</mat-icon>
+      <h1>How can we help you?</h1>
+      <p>Search our knowledge base or browse a topic below — answers to most questions take under a minute.</p>
+
+      <app-help-search (hitSelected)="onSearchHit($event)" />
+
+      <div class="hc-hero__badges">
+        <a routerLink="/safety-tips" class="hc-quick-link">
+          <mat-icon>shield</mat-icon> Safety Center
+        </a>
+        <a routerLink="/faq" class="hc-quick-link">
+          <mat-icon>quiz</mat-icon> Full FAQ
+        </a>
+        <a routerLink="/contact" class="hc-quick-link">
+          <mat-icon>mail</mat-icon> Contact Support
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hc-container suhana-container">
+
+    <!-- ── Categories ───────────────────────────────────────────────────────── -->
+    <section class="hc-section">
+      <h2 class="suhana-section-title">Browse by Category</h2>
+      <p class="suhana-section-subtitle">Select a topic to filter the articles below</p>
+      <app-help-category-grid
+        [categories]="categories()"
+        [loading]="categoriesLoading()"
+        [selectedId]="selectedCategoryId()"
+        (categorySelected)="onCategorySelected($event)" />
+    </section>
+
+    <!-- ── Popular Articles ─────────────────────────────────────────────────── -->
+    <section class="hc-section" #articlesAnchor>
+      <app-popular-articles
+        [articles]="articles()"
+        [categories]="categories()"
+        [loading]="articlesLoading()"
+        [selectedCategoryId]="selectedCategoryId()"
+        (clearFilter)="onCategorySelected(null)" />
+    </section>
+
+    <!-- ── Featured FAQs ────────────────────────────────────────────────────── -->
+    <section class="hc-section">
+      <app-featured-faqs [faqs]="faqs()" [loading]="faqsLoading()" />
+    </section>
+
+    <!-- ── Bottom CTA ───────────────────────────────────────────────────────── -->
+    <section class="hc-cta">
+      <div class="hc-cta-card hc-cta-card--safety">
+        <mat-icon>shield</mat-icon>
+        <div class="hc-cta-card__body">
+          <h3>Worried about something?</h3>
+          <p>Visit the Safety Center for guidance on reporting, blocking, and staying secure.</p>
+        </div>
+        <a mat-raised-button routerLink="/safety-tips" class="hc-cta-btn hc-cta-btn--safety">
+          Safety Center
+        </a>
+      </div>
+
+      <div class="hc-cta-card hc-cta-card--support">
+        <mat-icon>support_agent</mat-icon>
+        <div class="hc-cta-card__body">
+          <h3>Still need help?</h3>
+          <p>Our support team is happy to assist with anything not covered here.</p>
+        </div>
+        <a mat-raised-button routerLink="/contact" class="hc-cta-btn hc-cta-btn--support">
+          Contact Support
+        </a>
+      </div>
+    </section>
+
+  </div>
+</div>
