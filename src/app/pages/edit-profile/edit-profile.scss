@@ -140,7 +140,7 @@
 .ep-radio-btn {
   border: 1px solid var(--suhana-rose-gold-lighter);
   border-radius: 8px;
-  padding: 12px;
+  padding: 4px 12px;
   transition: border-color 0.2s, background 0.2s;
 
   &.mat-radio-checked {
@@ -156,6 +156,67 @@
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--suhana-rose-gold); }
   span { font-size: 0.875rem; }
+}
+
+.ep-radio-group--inline {
+  display: flex;
+  gap: 12px;
+  grid-template-columns: unset;
+}
+
+// ── Gender select (Basic Information) ───────────────────────────────────────
+.ep-gender-select {
+  margin-bottom: 16px;
+
+  &__label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--suhana-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  &--invalid {
+    .ep-gender-select__label { color: var(--mat-sys-error); }
+
+    .ep-radio-group {
+      border: 1px solid var(--mat-sys-error);
+      border-radius: 8px;
+      padding: 8px;
+    }
+  }
+
+  &__error {
+    margin-top: 6px;
+    font-size: 0.8rem;
+  }
+}
+
+// ── Custom "Others" entry (Education Level / Job Title / Working Status) ────
+.custom-option-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: -8px 0 16px;
+
+  mat-form-field { flex: 1; }
+
+  button { margin-top: 8px; }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    button { margin-top: 0; }
+  }
+}
+
+// ── Partner-preference age-range cross-field error ──────────────────────────
+.age-range-error {
+  font-size: 0.85em;
+  margin: -8px 0 16px;
 }
 
 .ep-divider { margin: 20px 0; }

@@ -1,9 +1,14 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators,
+} from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
+import { SelectSearchDirective } from '../../shared/directives/select-search.directive';
+import { onSelectSearchKeydown } from '../../shared/utils/select-search.util';
 import { ProfileService } from '../../services';
 import { ApiService } from '../../services/api.service';
 import {
@@ -29,6 +34,11 @@ import {
   MobileVerificationDialogData,
   MobileVerificationDialogResult,
 } from '../profile/mobile-verification-dialog/mobile-verification-dialog.component';
+import {
+  WeightEntryDialogComponent,
+  WeightEntryDialogData,
+  WeightEntryDialogResult,
+} from './weight-entry-dialog/weight-entry-dialog.component';
 import { firstValueFrom } from 'rxjs';
 import { CommonService } from '../../services/common.service';
 
@@ -38,10 +48,33 @@ const MAX_PHOTO_MB = 2;
 const ALLOWED_HOROSCOPE_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
 const MAX_HOROSCOPE_MB = 10;
 
+interface CountryLookup {
+  id: string;
+  name: string;
+  isoCode: string;
+}
+
+interface StateLookup {
+  id: string;
+  code: string;
+  name: string;
+  countryId: string;
+}
+
+/** Blocks submitting the literal "Others" sentinel — the user must specify a value first. */
+function notLiteralOtherValidator(control: AbstractControl): ValidationErrors | null {
+  return control.value === 'Others' ? { otherNotSpecified: true } : null;
+}
+
+/** Dedupes a lookup list and appends a single trailing "Others" — the backend's own list may already include one. */
+function withTrailingOther(names: string[]): string[] {
+  return [...new Set(names.filter(n => n !== 'Others')), 'Others'];
+}
+
 @Component({
   selector: 'app-edit-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, MaterialModule, TitleCasePipe],
+  imports: [ReactiveFormsModule, RouterLink, MaterialModule, TitleCasePipe, SelectSearchDirective],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.scss',
 })
@@ -53,6 +86,10 @@ export class EditProfileComponent implements OnInit {
   private readonly router         = inject(Router);
   private readonly dialog         = inject(MatDialog);
   private readonly voiceSvc       = inject(VoiceIntroductionService);
+  private readonly destroyRef     = inject(DestroyRef);
+
+  /** Lets arrows/Enter reach mat-select while typing in the panel search box. */
+  protected readonly onSelectSearchKeydown = onSelectSearchKeydown;
   protected readonly isLoading = signal(true);
   protected readonly isSaving = signal(false);
   protected readonly saveError = signal<string | null>(null);
@@ -83,13 +120,73 @@ export class EditProfileComponent implements OnInit {
   protected readonly user = signal<User | null>(null);
   protected readonly profileId = signal<string | null>(null);
 
-  private readonly _availableCities       = signal<string[]>([]);
-  private readonly _availableOccupations  = signal<string[]>([]);
-  private readonly _availableEducation    = signal<string[]>([]);
+  private readonly _availableCities            = signal<string[]>([]);
+  private readonly _availableOccupations       = signal<string[]>([]);
+  private readonly _availableEducation         = signal<string[]>([]);
+  private readonly _availableWorkingStatuses   = signal<string[]>(withTrailingOther(
+    ['Employed', 'Self-Employed', 'Business', 'Not Working', 'Student']));
 
-  protected readonly availableCities      = this._availableCities.asReadonly();
-  protected readonly availableOccupations = this._availableOccupations.asReadonly();
-  protected readonly availableEducation   = this._availableEducation.asReadonly();
+  protected readonly availableCities           = this._availableCities.asReadonly();
+  protected readonly availableOccupations      = this._availableOccupations.asReadonly();
+  protected readonly availableEducation        = this._availableEducation.asReadonly();
+  protected readonly availableWorkingStatuses  = this._availableWorkingStatuses.asReadonly();
+
+  // ── Country / State lookups ─────────────────────────────────────────────────
+  private readonly _countries = signal<CountryLookup[]>([]);
+  private readonly _states    = signal<StateLookup[]>([]);
+
+  protected readonly countries         = this._countries.asReadonly();
+  protected readonly selectedCountryId = signal<string | null>(null);
+  protected readonly statesLoading     = signal(false);
+
+  protected readonly countryNames = computed(() => this.countries().map(c => c.name));
+  protected readonly stateNames   = computed(() => this._states().map(s => s.name));
+
+  protected readonly countrySearch = signal('');
+  protected readonly stateSearch   = signal('');
+
+  protected readonly filteredCountries = computed(() => {
+    const q = this.countrySearch().trim().toLowerCase();
+    const all = this.countryNames();
+    return q ? all.filter(c => c.toLowerCase().includes(q)) : all;
+  });
+
+  protected readonly filteredStates = computed(() => {
+    const q = this.stateSearch().trim().toLowerCase();
+    const all = this.stateNames();
+    return q ? all.filter(s => s.toLowerCase().includes(q)) : all;
+  });
+
+  // ── Searchable dropdowns for Education Level / Job Title / Working Status ───
+  protected readonly educationSearch     = signal('');
+  protected readonly occupationSearch    = signal('');
+  protected readonly workingStatusSearch = signal('');
+
+  protected readonly filteredEducation = computed(() => {
+    const q = this.educationSearch().trim().toLowerCase();
+    const all = this.availableEducation();
+    return q ? all.filter(e => e.toLowerCase().includes(q)) : all;
+  });
+
+  protected readonly filteredOccupations = computed(() => {
+    const q = this.occupationSearch().trim().toLowerCase();
+    const all = this.availableOccupations();
+    return q ? all.filter(o => o.toLowerCase().includes(q)) : all;
+  });
+
+  protected readonly filteredWorkingStatuses = computed(() => {
+    const q = this.workingStatusSearch().trim().toLowerCase();
+    const all = this.availableWorkingStatuses();
+    return q ? all.filter(w => w.toLowerCase().includes(q)) : all;
+  });
+
+  // ── "Others" custom entry for Education Level / Job Title / Working Status ──
+  protected readonly showCustomEducation      = signal(false);
+  protected readonly showCustomOccupation     = signal(false);
+  protected readonly showCustomWorkingStatus  = signal(false);
+  protected readonly customEducationValue     = signal('');
+  protected readonly customOccupationValue    = signal('');
+  protected readonly customWorkingStatusValue = signal('');
 
   protected membershipIcon(tier: string): string {
     if (tier === 'platinum') return 'diamond';
@@ -176,6 +273,7 @@ export class EditProfileComponent implements OnInit {
     userId:      [''],
     firstName:    ['', [Validators.required, Validators.minLength(2)]],
     lastName:     ['', [Validators.required, Validators.minLength(2)]],
+    gender:       ['' as Gender, Validators.required],
     dateOfBirth:  [null as Date | null, Validators.required],
     height:       ['', Validators.required],
     weight:       [''],
@@ -203,17 +301,17 @@ export class EditProfileComponent implements OnInit {
 
   // ── Section 4: Education ────────────────────────────────────────────────────
   protected readonly educationForm = this.fb.group({
-    level:       ['', Validators.required],
+    level:       ['', [Validators.required, notLiteralOtherValidator]],
     field:       ['', Validators.required],
     institution: [''],
   });
 
   // ── Section 5: Occupation ───────────────────────────────────────────────────
   protected readonly occupationForm = this.fb.group({
-    title:         ['', Validators.required],
+    title:         ['', [Validators.required, notLiteralOtherValidator]],
     company:       [''],
     annualIncome:  [''],
-    workingStatus: ['Employed', Validators.required],
+    workingStatus: ['Employed', [Validators.required, notLiteralOtherValidator]],
   });
 
   // ── Section 6: Family ───────────────────────────────────────────────────────
@@ -229,12 +327,35 @@ export class EditProfileComponent implements OnInit {
   // ── Section 7: Horoscope ────────────────────────────────────────────────────
   protected readonly horoscopeForm = this.fb.group({
     dateOfBirth:   [null as Date | null],
-    timeOfBirth:   [''],
+    timeOfBirth:   [null as Date | null],
     placeOfBirth:  [''],
     rashi:         [''],
     nakshatra:     [''],
     manglikStatus: [''],
   });
+
+  /**
+   * Minimum legal marriageable age for the partner-preference range, based on
+   * the profile's own country (Location) and gender (Basic Information). India
+   * requires 21 for brides and 18 for grooms; everywhere else the floor is 18.
+   */
+  protected requiredPartnerMinAge(): number {
+    const country = (this.locationForm.controls.country.value ?? '').trim().toLowerCase();
+    const gender  = this.basicForm.controls.gender.value;
+    return country === 'india' && gender === 'bride' ? 21 : 18;
+  }
+
+  /** Cross-form validator — reads gender/country from the sibling forms at validation time. */
+  private readonly ageRangeValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+    const ageMin = group.get('ageMin')?.value;
+    const ageMax = group.get('ageMax')?.value;
+    if (ageMin === null || ageMin === '' || ageMax === null || ageMax === '') return null;
+
+    const requiredMinAge = this.requiredPartnerMinAge();
+    if (ageMin < requiredMinAge) return { ageMinBelowLegal: { requiredMinAge } };
+    if (ageMax < ageMin)         return { ageMaxBelowMin: true };
+    return null;
+  };
 
   // ── Section 8: Partner Preferences ─────────────────────────────────────────
   protected readonly preferencesForm = this.fb.group({
@@ -249,7 +370,28 @@ export class EditProfileComponent implements OnInit {
     locations:      [[] as string[]],
     foodPreference: ['' as FoodPreference | ''],
     familyType:     ['' as FamilyType | ''],
-  });
+  }, { validators: this.ageRangeValidator });
+
+  /** Friendly, customer-facing message for the current preferencesForm age-range error, if any. */
+  protected ageRangeErrorMessage(): string | null {
+    const errors = this.preferencesForm.errors;
+    if (!errors) return null;
+
+    if (errors['ageMinBelowLegal']) {
+      const requiredMinAge = errors['ageMinBelowLegal'].requiredMinAge as number;
+      const gender  = this.basicForm.controls.gender.value;
+      const country = (this.locationForm.controls.country.value ?? '').trim().toLowerCase();
+      const who   = gender === 'groom' ? 'grooms' : 'brides';
+      const where = country === 'india' ? 'India' : 'your country';
+      return `Minimum age criteria does not match — the preferred minimum age must be at least `
+        + `${requiredMinAge} for ${who} registering from ${where}. Please raise the minimum age below.`;
+    }
+    if (errors['ageMaxBelowMin']) {
+      return 'Minimum age criteria does not match — the maximum preferred age must be '
+        + 'greater than or equal to the minimum preferred age.';
+    }
+    return null;
+  }
 
   // ── Section 9: Photos & Privacy ─────────────────────────────────────────────
   protected readonly privacyForm = this.fb.group({
@@ -263,7 +405,6 @@ export class EditProfileComponent implements OnInit {
   protected readonly occupationList  = ['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Government', 'Other'];
   protected readonly heights         = ["4'10\"","4'11\"","5'0\"","5'1\"","5'2\"","5'3\"","5'4\"","5'5\"","5'6\"","5'7\"","5'8\"","5'9\"","5'10\"","5'11\"","6'0\"","6'1\"","6'2\"","6'3\""];
   protected readonly complexions     = ['Fair', 'Wheatish', 'Dusky', 'Dark'];
-  protected readonly workingStatuses = ['Employed', 'Self-Employed', 'Business', 'Not Working', 'Student'];
   protected readonly rashiList       = ['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
   protected readonly nakshatraList   = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Moola','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
   protected readonly manglikOptions  = ['Manglik', 'Non-Manglik', 'Partial Manglik', 'Unknown'];
@@ -288,7 +429,17 @@ export class EditProfileComponent implements OnInit {
   ];
 
   async ngOnInit(): Promise<void> {
-    await this.loadLookupValues();
+    // The age-range rule depends on country (Location) and gender (Basic Info), which live
+    // in sibling FormGroups — Angular only auto-revalidates a group's own descendants,
+    // so re-run preferencesForm's validity check whenever either one changes.
+    this.locationForm.controls.country.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.preferencesForm.updateValueAndValidity());
+    this.basicForm.controls.gender.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.preferencesForm.updateValueAndValidity());
+
+    await Promise.all([this.loadLookupValues(), this.loadCountries()]);
     await this.profileService.loadMyProfile();
     const profile = this.profileService.myProfile();
     if (profile) this.patchForms(profile);
@@ -301,6 +452,7 @@ export class EditProfileComponent implements OnInit {
     this.basicForm.patchValue({
       userId: p.userId ?? '',
       firstName: p.firstName, lastName: p.lastName,
+      gender: p.gender ?? p.user?.gender ?? '',
       dateOfBirth: p.dateOfBirth ? new Date(this.parseBackDateOnly(p.dateOfBirth.toString())) : null,
       height: p.height, weight: p.weight ?? '', complexion: p.complexion ?? '',
       aboutMe: p.aboutMe, videoIntroUrl: p.videoIntroUrl ?? '',
@@ -313,6 +465,10 @@ export class EditProfileComponent implements OnInit {
     this.locationForm.patchValue({
       city: p.location.city, state: p.location.state,
       country: p.location.country, willingToRelocate: p.location.willingToRelocate,
+    });
+    void this.selectCountryByName(p.location.country ?? 'India').then(() => {
+      // Re-apply the state now that its options have loaded from the resolved country.
+      this.locationForm.patchValue({ state: p.location.state ?? '' });
     });
     this.educationForm.patchValue({
       level: p.education.level, field: p.education.field,
@@ -333,7 +489,7 @@ export class EditProfileComponent implements OnInit {
     if (p.horoscope) {
       this.horoscopeForm.patchValue({
         dateOfBirth: p.horoscope.dateOfBirth ? new Date(p.horoscope.dateOfBirth) : new Date(this.parseBackDateOnly(p.dateOfBirth.toString())),
-        timeOfBirth: p.horoscope.timeOfBirth ?? '', 
+        timeOfBirth: this.parseTimeOfBirth(p.horoscope.timeOfBirth),
         placeOfBirth: p.horoscope.placeOfBirth ?? '',
         rashi: p.horoscope.rashi ?? '', 
         nakshatra: p.horoscope.nakshatra ?? '',
@@ -411,19 +567,120 @@ export class EditProfileComponent implements OnInit {
   private async loadLookupValues(): Promise<void> {
     try {
       const res = await firstValueFrom(this.api.getLookupValues());
-      if (res.cities?.length)          this._availableCities.set(res.cities.map(c => c.name));
-      if (res.occupations?.length)     this._availableOccupations.set(res.occupations.map(o => o.name));
-      if (res.educationLevels?.length) this._availableEducation.set(res.educationLevels.map(e => e.name));
+      if (res.cities?.length)          this._availableCities.set([...new Set(res.cities.map(c => c.name))]);
+      if (res.occupations?.length)     this._availableOccupations.set(withTrailingOther(res.occupations.map(o => o.name)));
+      if (res.educationLevels?.length) this._availableEducation.set(withTrailingOther(res.educationLevels.map(e => e.name)));
     } catch {
       this._availableCities.set(['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Surat']);
-      this._availableOccupations.set(['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Architect', 'AI Engineer']);
-      this._availableEducation.set(['Bachelor', 'Master', 'PhD', 'MBA', 'Medical', 'Engineering', 'Diploma', 'B.Tech', 'M.Tech']);
+      this._availableOccupations.set(withTrailingOther(['Software Engineer', 'Doctor', 'Lawyer', 'Business Analyst', 'Teacher', 'Designer', 'Entrepreneur', 'CA', 'Architect', 'AI Engineer']));
+      this._availableEducation.set(withTrailingOther(['Bachelor', 'Master', 'PhD', 'MBA', 'Medical', 'Engineering', 'Diploma', 'B.Tech', 'M.Tech']));
     }
+  }
+
+  private async loadCountries(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.api.getCountries());
+      this._countries.set(res?.data ?? []);
+    } catch {
+      // Country dropdown stays empty — state lookup and location fields still work manually.
+    }
+    await this.selectCountryByName(this.locationForm.controls.country.value ?? '');
+  }
+
+  private async selectCountryByName(name: string): Promise<void> {
+    const country = this.countries().find(c => c.name === name);
+    if (!country) {
+      this.selectedCountryId.set(null);
+      this._states.set([]);
+      this.locationForm.controls.state.disable();
+      return;
+    }
+    this.selectedCountryId.set(country.id);
+    this.locationForm.controls.state.enable();
+    await this.loadStates(country.id);
+  }
+
+  private async loadStates(countryId: string): Promise<void> {
+    this.statesLoading.set(true);
+    try {
+      const states = await firstValueFrom(this.api.getCountryStates(countryId));
+      this._states.set(states ?? []);
+    } catch {
+      this._states.set([]);
+    } finally {
+      this.statesLoading.set(false);
+    }
+  }
+
+  protected async onCountryChange(name: string): Promise<void> {
+    this.locationForm.patchValue({ state: '' });
+    this.stateSearch.set('');
+    await this.selectCountryByName(name);
+  }
+
+  protected onEducationChange(value: string): void {
+    this.showCustomEducation.set(value === 'Others');
+    if (value !== 'Others') this.customEducationValue.set('');
+  }
+
+  protected onOccupationChange(value: string): void {
+    this.showCustomOccupation.set(value === 'Others');
+    if (value !== 'Others') this.customOccupationValue.set('');
+  }
+
+  protected onWorkingStatusChange(value: string): void {
+    this.showCustomWorkingStatus.set(value === 'Others');
+    if (value !== 'Others') this.customWorkingStatusValue.set('');
+  }
+
+  protected addCustomEducation(): void {
+    const value = this.customEducationValue().trim();
+    if (!value) return;
+    this._availableEducation.update(list =>
+      list.includes(value) ? list : [...list.filter(v => v !== 'Others'), value, 'Others']);
+    this.educationForm.patchValue({ level: value });
+    this.customEducationValue.set('');
+    this.showCustomEducation.set(false);
+  }
+
+  protected addCustomOccupation(): void {
+    const value = this.customOccupationValue().trim();
+    if (!value) return;
+    this._availableOccupations.update(list =>
+      list.includes(value) ? list : [...list.filter(v => v !== 'Others'), value, 'Others']);
+    this.occupationForm.patchValue({ title: value });
+    this.customOccupationValue.set('');
+    this.showCustomOccupation.set(false);
+  }
+
+  protected addCustomWorkingStatus(): void {
+    const value = this.customWorkingStatusValue().trim();
+    if (!value) return;
+    this._availableWorkingStatuses.update(list =>
+      list.includes(value) ? list : [...list.filter(v => v !== 'Others'), value, 'Others']);
+    this.occupationForm.patchValue({ workingStatus: value });
+    this.customWorkingStatusValue.set('');
+    this.showCustomWorkingStatus.set(false);
   }
 
   async saveAll(): Promise<void> {
     this.saveError.set(null);
     this.saveSuccess.set(false);
+
+    this.basicForm.markAllAsTouched();
+    this.preferencesForm.markAllAsTouched();
+
+    if (this.basicForm.controls.gender.invalid) {
+      this.saveError.set('Please select your gender before saving.');
+      return;
+    }
+    if (this.preferencesForm.invalid) {
+      this.saveError.set(
+        this.ageRangeErrorMessage() ?? 'Minimum age criteria does not match. Please adjust your partner age preferences.',
+      );
+      return;
+    }
+
     this.isSaving.set(true);
 
     const basic  = this.basicForm.getRawValue();
@@ -443,6 +700,7 @@ export class EditProfileComponent implements OnInit {
       userId: basic.userId ?? '',
       firstName: basic.firstName ?? '',
       lastName:  basic.lastName ?? '',
+      gender: (basic.gender || undefined) as Gender | undefined,
       tempGuid: this.user()?.tempGuid,
       dateOfBirth: dob,
       age: Math.floor((Date.now() - new Date(dob).getTime()) / 31557600000),
@@ -475,7 +733,7 @@ export class EditProfileComponent implements OnInit {
       },
       horoscope: {
         dateOfBirth: horo.dateOfBirth ? new Date(horo.dateOfBirth) : dob,
-        timeOfBirth: horo.timeOfBirth || undefined,
+        timeOfBirth: this.formatTimeOfBirth(horo.timeOfBirth),
         placeOfBirth: horo.placeOfBirth || undefined,
         rashi: horo.rashi || undefined,
         nakshatra: horo.nakshatra || undefined,
@@ -589,6 +847,48 @@ export class EditProfileComponent implements OnInit {
     } finally {
       this.isUploadingHoroscopeDoc.set(false);
     }
+  }
+
+  /** Parses "HH:mm" (24h) or "hh:mm AM/PM" into a Date carrying just that time. */
+  protected parseTimeOfBirth(value: string | undefined | null): Date | null {
+    const trimmed = value?.trim();
+    if (!trimmed) return null;
+
+    const time = new Date();
+    const twentyFourHour = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+    if (twentyFourHour) {
+      time.setHours(Number(twentyFourHour[1]), Number(twentyFourHour[2]), 0, 0);
+      return time;
+    }
+
+    const twelveHour = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (twelveHour) {
+      const hours12 = Number(twelveHour[1]) % 12;
+      const isPm = twelveHour[3].toUpperCase() === 'PM';
+      time.setHours(isPm ? hours12 + 12 : hours12, Number(twelveHour[2]), 0, 0);
+      return time;
+    }
+
+    return null;
+  }
+
+  /** Formats a timeOfBirth Date back into "hh:mm AM/PM" for the backend. */
+  protected formatTimeOfBirth(value: Date | null | undefined): string | undefined {
+    if (!value) return undefined;
+    return value.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  }
+
+  protected openWeightDialog(): void {
+    const ref = this.dialog.open(WeightEntryDialogComponent, {
+      data: { currentWeight: this.basicForm.controls.weight.value ?? '' } satisfies WeightEntryDialogData,
+      width: '420px',
+      maxWidth: '96vw',
+      panelClass: 'suhana-dialog',
+      disableClose: false,
+    });
+    ref.afterClosed().subscribe((result: WeightEntryDialogResult | null) => {
+      if (result?.weight) this.basicForm.patchValue({ weight: result.weight });
+    });
   }
 
   parseDateOnly(date: string): Date {

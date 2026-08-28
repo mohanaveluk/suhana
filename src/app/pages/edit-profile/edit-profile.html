@@ -176,6 +176,24 @@
           </mat-expansion-panel-header>
 
           <form [formGroup]="basicForm" class="ep-form">
+            <div class="ep-gender-select"
+                 [class.ep-gender-select--invalid]="basicForm.controls.gender.invalid && basicForm.controls.gender.touched">
+              <label class="ep-gender-select__label" id="ep-gender-label">Gender</label>
+              <mat-radio-group formControlName="gender" aria-labelledby="ep-gender-label" class="ep-radio-group ep-radio-group--inline">
+                <mat-radio-button value="bride" color="primary" class="ep-radio-btn">
+                  <div class="ep-radio-content"><mat-icon>female</mat-icon><span>Bride</span></div>
+                </mat-radio-button>
+                <mat-radio-button value="groom" color="primary" class="ep-radio-btn">
+                  <div class="ep-radio-content"><mat-icon>male</mat-icon><span>Groom</span></div>
+                </mat-radio-button>
+              </mat-radio-group>
+              @if (basicForm.controls.gender.hasError('required') && basicForm.controls.gender.touched) {
+                <div class="ep-gender-select__error">
+                  <mat-error>Please select your gender</mat-error>
+                </div>
+              }
+            </div>
+
             <div class="ep-row">
               <mat-form-field appearance="outline">
                 <mat-label>First Name</mat-label>
@@ -245,8 +263,13 @@
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Weight (kg) — Optional</mat-label>
-                <input matInput formControlName="weight" placeholder="e.g. 65" />
+                <mat-label>Weight — Optional</mat-label>
+                <input matInput formControlName="weight" placeholder="e.g. 65 kg"
+                       readonly (click)="openWeightDialog()" />
+                <button mat-icon-button matSuffix type="button"
+                        (click)="openWeightDialog()" aria-label="Enter weight">
+                  <mat-icon>monitor_weight</mat-icon>
+                </button>
               </mat-form-field>
             </div>
 
@@ -358,18 +381,55 @@
           <form [formGroup]="locationForm" class="ep-form">
             <div class="ep-row">
               <mat-form-field appearance="outline">
-                <mat-label>City</mat-label>
-                <input matInput formControlName="city" />
+                <mat-label>Country</mat-label>
+                <mat-select formControlName="country"
+                            [appSelectSearch]="countrySearch()"
+                            (openedChange)="!$event && countrySearch.set('')"
+                            (selectionChange)="onCountryChange($event.value)">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search country..."
+                           [value]="countrySearch()"
+                           (input)="countrySearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (c of filteredCountries(); track c) {
+                    <mat-option [value]="c">{{ c }}</mat-option>
+                  }
+                  @if (filteredCountries().length === 0) {
+                    <div class="select-no-match">No results</div>
+                  }
+                </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>State</mat-label>
-                <input matInput formControlName="state" />
+                <mat-select formControlName="state"
+                            [appSelectSearch]="stateSearch()"
+                            (openedChange)="!$event && stateSearch.set('')">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search state..."
+                           [value]="stateSearch()"
+                           (input)="stateSearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (s of filteredStates(); track s) {
+                    <mat-option [value]="s">{{ s }}</mat-option>
+                  }
+                  @if (filteredStates().length === 0) {
+                    <div class="select-no-match">{{ statesLoading() ? 'Loading states...' : 'No results' }}</div>
+                  }
+                </mat-select>
               </mat-form-field>
             </div>
             <div class="ep-row">
               <mat-form-field appearance="outline">
-                <mat-label>Country</mat-label>
-                <input matInput formControlName="country" />
+                <mat-label>City</mat-label>
+                <input matInput formControlName="city" />
               </mat-form-field>
               <div class="ep-toggle-field">
                 <mat-slide-toggle formControlName="willingToRelocate" color="primary">
@@ -393,15 +453,53 @@
             <div class="ep-row">
               <mat-form-field appearance="outline">
                 <mat-label>Education Level</mat-label>
-                <mat-select formControlName="level">
-                  @for (e of availableEducation(); track e) { <mat-option [value]="e">{{ e }}</mat-option> }
+                <mat-select formControlName="level"
+                            [appSelectSearch]="educationSearch()"
+                            (openedChange)="!$event && educationSearch.set('')"
+                            (selectionChange)="onEducationChange($event.value)">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search education..."
+                           [value]="educationSearch()"
+                           (input)="educationSearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (e of filteredEducation(); track e) {
+                    <mat-option [value]="e">{{ e }}</mat-option>
+                  }
+                  @if (filteredEducation().length === 0) {
+                    <div class="select-no-match">No results</div>
+                  }
                 </mat-select>
+                @if (educationForm.controls.level.hasError('otherNotSpecified') && educationForm.controls.level.touched) {
+                  <mat-error>Please specify your education level below</mat-error>
+                }
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Field of Study</mat-label>
                 <input matInput formControlName="field" placeholder="e.g. Computer Science" />
               </mat-form-field>
             </div>
+
+            @if (showCustomEducation()) {
+              <div class="custom-option-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Please specify your education level</mat-label>
+                  <input matInput
+                         [value]="customEducationValue()"
+                         (input)="customEducationValue.set($any($event.target).value)"
+                         (keydown.enter)="$event.preventDefault(); addCustomEducation()" />
+                </mat-form-field>
+                <button mat-stroked-button type="button" color="primary"
+                        [disabled]="!customEducationValue().trim()"
+                        (click)="addCustomEducation()">
+                  Add
+                </button>
+              </div>
+            }
+
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Institution — Optional</mat-label>
               <input matInput formControlName="institution" placeholder="e.g. IIT Delhi" />
@@ -423,17 +521,92 @@
             <div class="ep-row">
               <mat-form-field appearance="outline">
                 <mat-label>Job Title</mat-label>
-                <mat-select formControlName="title">
-                  @for (o of availableOccupations(); track o) { <mat-option [value]="o">{{ o }}</mat-option> }
+                <mat-select formControlName="title"
+                            [appSelectSearch]="occupationSearch()"
+                            (openedChange)="!$event && occupationSearch.set('')"
+                            (selectionChange)="onOccupationChange($event.value)">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search job title..."
+                           [value]="occupationSearch()"
+                           (input)="occupationSearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (o of filteredOccupations(); track o) {
+                    <mat-option [value]="o">{{ o }}</mat-option>
+                  }
+                  @if (filteredOccupations().length === 0) {
+                    <div class="select-no-match">No results</div>
+                  }
                 </mat-select>
+                @if (occupationForm.controls.title.hasError('otherNotSpecified') && occupationForm.controls.title.touched) {
+                  <mat-error>Please specify your job title below</mat-error>
+                }
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Working Status</mat-label>
-                <mat-select formControlName="workingStatus">
-                  @for (w of workingStatuses; track w) { <mat-option [value]="w">{{ w }}</mat-option> }
+                <mat-select formControlName="workingStatus"
+                            [appSelectSearch]="workingStatusSearch()"
+                            (openedChange)="!$event && workingStatusSearch.set('')"
+                            (selectionChange)="onWorkingStatusChange($event.value)">
+                  <div class="select-search-box"
+                       (mousedown)="$event.stopPropagation()"
+                       (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                    <input placeholder="Search working status..."
+                           [value]="workingStatusSearch()"
+                           (input)="workingStatusSearch.set($any($event.target).value)"
+                           (keydown)="onSelectSearchKeydown($event)" />
+                  </div>
+                  @for (w of filteredWorkingStatuses(); track w) {
+                    <mat-option [value]="w">{{ w }}</mat-option>
+                  }
+                  @if (filteredWorkingStatuses().length === 0) {
+                    <div class="select-no-match">No results</div>
+                  }
                 </mat-select>
+                @if (occupationForm.controls.workingStatus.hasError('otherNotSpecified') && occupationForm.controls.workingStatus.touched) {
+                  <mat-error>Please specify your working status below</mat-error>
+                }
               </mat-form-field>
             </div>
+
+            @if (showCustomOccupation()) {
+              <div class="custom-option-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Please specify your job title</mat-label>
+                  <input matInput
+                         [value]="customOccupationValue()"
+                         (input)="customOccupationValue.set($any($event.target).value)"
+                         (keydown.enter)="$event.preventDefault(); addCustomOccupation()" />
+                </mat-form-field>
+                <button mat-stroked-button type="button" color="primary"
+                        [disabled]="!customOccupationValue().trim()"
+                        (click)="addCustomOccupation()">
+                  Add
+                </button>
+              </div>
+            }
+
+            @if (showCustomWorkingStatus()) {
+              <div class="custom-option-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Please specify your working status</mat-label>
+                  <input matInput
+                         [value]="customWorkingStatusValue()"
+                         (input)="customWorkingStatusValue.set($any($event.target).value)"
+                         (keydown.enter)="$event.preventDefault(); addCustomWorkingStatus()" />
+                </mat-form-field>
+                <button mat-stroked-button type="button" color="primary"
+                        [disabled]="!customWorkingStatusValue().trim()"
+                        (click)="addCustomWorkingStatus()">
+                  Add
+                </button>
+              </div>
+            }
+
             <div class="ep-row">
               <mat-form-field appearance="outline">
                 <mat-label>Company — Optional</mat-label>
@@ -513,8 +686,16 @@
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Time of Birth — Optional</mat-label>
-                <input matInput formControlName="timeOfBirth" placeholder="e.g. 10:30 AM" />
+                <input matInput [matTimepicker]="timeOfBirthPicker" formControlName="timeOfBirth"
+                       placeholder="e.g. 10:30 AM" />
                 <mat-icon matPrefix>schedule</mat-icon>
+                <mat-timepicker-toggle matSuffix [for]="timeOfBirthPicker"></mat-timepicker-toggle>
+                <mat-timepicker #timeOfBirthPicker interval="5m"></mat-timepicker>
+                @if (horoscopeForm.controls.timeOfBirth.hasError('matTimepickerParse')) {
+                  <mat-error>Enter a valid time (e.g. 10:30 AM)</mat-error>
+                } @else {
+                  <mat-hint>Type any exact time, e.g. 11:24 PM — or pick a close value</mat-hint>
+                }
               </mat-form-field>
             </div>
             <div class="ep-row">
@@ -665,6 +846,11 @@
                 <input matInput type="number" formControlName="ageMax" min="18" max="70" />
               </mat-form-field>
             </div>
+            @if (ageRangeErrorMessage(); as ageRangeError) {
+              <div class="age-range-error">
+                <mat-error>{{ ageRangeError }}</mat-error>
+              </div>
+            }
 
             <p class="ep-section-label">Height Range — Optional</p>
             <div class="ep-row">
@@ -703,12 +889,14 @@
               <mat-form-field appearance="outline">
                 <mat-label>Preferred Occupations</mat-label>
                 <mat-select formControlName="occupations" multiple>
+                  <mat-option value="Any">Any</mat-option>
                   @for (o of occupationList; track o) { <mat-option [value]="o">{{ o }}</mat-option> }
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Preferred Locations</mat-label>
                 <mat-select formControlName="locations" multiple>
+                  <mat-option value="Any">Any</mat-option>
                   @for (c of cities; track c) { <mat-option [value]="c">{{ c }}</mat-option> }
                 </mat-select>
               </mat-form-field>

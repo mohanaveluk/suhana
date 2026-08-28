@@ -27,7 +27,9 @@
 .banner-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(128, 0, 32, 0.7) 0%, rgba(183, 110, 121, 0.5) 100%);
+  //background: linear-gradient(135deg, rgba(128, 0, 32, 0.7) 0%, rgba(183, 110, 121, 0.5) 100%);
+  //background: linear-gradient(135deg, rgb(0 93 128 / 70%) 0%, rgb(172 110 183 / 50%) 100%) !important;
+  background: linear-gradient(135deg, rgb(207 205 180 / 70%) 0%, rgb(189 38 129 / 50%) 100%) !important;
 }
 
 .banner-content {

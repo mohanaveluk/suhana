@@ -164,6 +164,7 @@ export interface MatchResult {
   suggestedAt: Date;
   interestStatus?: string;
   trustIndicator?: string;
+  currentStep?: number;
   /** API returns this as 0 | 1; may also arrive as a boolean. */
   isMobileVerified?: boolean | number;
   user?: User;

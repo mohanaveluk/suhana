@@ -49,7 +49,7 @@
 
             <div class="sr-page__step-actions">
               <button mat-raised-button class="suhana-btn-primary" matStepperNext
-                      [disabled]="ratingForm.invalid" type="button">
+                      (click)="ratingForm.markAllAsTouched()" type="button">
                 Next <mat-icon>arrow_forward</mat-icon>
               </button>
             </div>
@@ -107,7 +107,7 @@
             <div class="sr-page__step-actions">
               <button mat-button type="button" matStepperPrevious>Back</button>
               <button mat-raised-button class="suhana-btn-primary" type="submit"
-                      [disabled]="detailForm.invalid || submitting()">
+                      (click)="detailForm.markAllAsTouched()" [disabled]="submitting()">
                 @if (submitting()) {
                   <mat-spinner diameter="20" />
                 } @else {

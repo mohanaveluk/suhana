@@ -433,6 +433,11 @@
                 <input matInput type="number" formControlName="ageMax" />
               </mat-form-field>
             </div>
+            @if (ageRangeErrorMessage(); as ageRangeError) {
+              <div class="age-range-error">
+                <mat-error>{{ ageRangeError }}</mat-error>
+              </div>
+            }
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Preferred Religions</mat-label>
