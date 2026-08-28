@@ -220,7 +220,7 @@
                 </div>
                 <div class="detail-item">
                   <mat-icon>location_on</mat-icon>
-                  <div><label>Location</label><span>{{ p.location.city }}, {{ p.location.state }}</span></div>
+                  <div><label>Location</label><span>{{ p.location.city }}, {{ p.location.state }}, {{ p.location.country }} </span></div>
                 </div>
                 <div class="detail-item">
                   <mat-icon>flight</mat-icon>
@@ -421,7 +421,14 @@
                   <div><label>Food Preference</label><span>{{ p.preferences.foodPreference | titlecase }}</span></div>
                 </div>
                 }
-               
+
+                @if (p.preferences.familyType) {
+                <div class="detail-item">
+                  <mat-icon>family_restroom</mat-icon>
+                  <div><label>Family Type</label><span>{{ p.preferences.familyType | titlecase }}</span></div>
+                </div>
+                }
+
                 @if (p.preferences.religions?.length) {
                 <div class="detail-item">
                   <mat-icon>temple_hindu</mat-icon>
@@ -509,7 +516,7 @@
                 <div class="details-grid">
                   <div class="detail-item">
                     <mat-icon>event</mat-icon>
-                    <div><label>Date of Birth</label><span>{{ p.dateOfBirth | date:'mediumDate' }}</span></div>
+                    <div><label>Date of Birth</label><span>{{ p.horoscope.dateOfBirth | date:'mediumDate' }}</span></div>
                   </div>
                   @if (p.horoscope.timeOfBirth) {
                     <div class="detail-item">

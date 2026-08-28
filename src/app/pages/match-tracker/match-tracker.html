@@ -18,9 +18,9 @@
 
         <div class="tracker-steps">
           @for (stepLabel of steps; track stepLabel; let si = $index) {
-            <div class="step" [class]="getStepStatus(item.step, si)">
+            <div class="step" [class]="getStepStatus(item.match.currentStep!, si)">
               <div class="step-circle">
-                @if (getStepStatus(item.step, si) === 'completed') {
+                @if (getStepStatus(item.match.currentStep!, si) === 'completed') {
                   <mat-icon>check</mat-icon>
                 } @else {
                   {{ si + 1 }}
@@ -35,18 +35,23 @@
         </div>
 
         <div class="tracker-status">
-          @switch (item.step) {
+          @switch (item.match.currentStep) {
             @case (0) {
+              <span class="status-text pending">
+                <mat-icon>schedule</mat-icon> Suggested — Shorlist to proceed
+              </span>
+            }
+            @case (1) {
               <span class="status-text pending">
                 <mat-icon>schedule</mat-icon> Shortlisted — Express interest to proceed
               </span>
             }
-            @case (1) {
+            @case (2) {
               <span class="status-text waiting">
                 <mat-icon>hourglass_empty</mat-icon> Waiting for reply from {{ item.match.profile.firstName }}
               </span>
             }
-            @case (2) {
+            @case (3) {
               <span class="status-text confirmed">
                 <mat-icon>check_circle</mat-icon> Mutual interest confirmed — Start chatting!
               </span>
@@ -55,21 +60,30 @@
         </div>
 
         <mat-card-actions>
-          @switch (item.step) {
+          @switch (item.match.currentStep) {
             @case (0) {
-              <button mat-raised-button class="suhana-btn-primary">
-                <mat-icon>favorite</mat-icon> Express Interest
+              <button mat-raised-button class="suhana-btn-primary"
+                      [disabled]="isProcessing(item.match.id)"
+                      (click)="addToShortlist(item.match)">
+                <mat-icon>favorite</mat-icon> Add to Shortlist
               </button>
             }
             @case (1) {
+              <button mat-raised-button class="suhana-btn-primary"
+                      [disabled]="isProcessing(item.match.id)"
+                      (click)="expressInterest(item.match)">
+                <mat-icon>favorite</mat-icon> Express Interest
+              </button>
+            }
+            @case (2) {
               <button mat-stroked-button class="suhana-btn-outline" disabled>
                 <mat-icon>schedule</mat-icon> Awaiting Response
               </button>
             }
-            @case (2) {
-              <a mat-raised-button routerLink="/chat" class="suhana-btn-primary">
+            @case (3) {
+              <button mat-raised-button class="suhana-btn-primary" (click)="startChat(item.match)">
                 <mat-icon>chat</mat-icon> Start Chat
-              </a>
+              </button>
             }
           }
         </mat-card-actions>

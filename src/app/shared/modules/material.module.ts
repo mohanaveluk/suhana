@@ -10,6 +10,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -42,6 +43,7 @@ const MATERIAL_MODULES = [
   MatCheckboxModule,
   MatRadioModule,
   MatDatepickerModule,
+  MatTimepickerModule,
   MatNativeDateModule,
   MatDividerModule,
   MatToolbarModule,

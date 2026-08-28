@@ -1,0 +1,36 @@
+<div class="wed">
+  <div mat-dialog-title class="wed__title">
+    <mat-icon class="wed__title-icon">monitor_weight</mat-icon>
+    <span>Enter Your Weight</span>
+    <button mat-icon-button class="wed__close-btn" (click)="cancel()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="wed__content">
+    <form [formGroup]="form" class="wed__form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="wed__value">
+        <mat-label>Weight</mat-label>
+        <input matInput type="number" formControlName="value" min="1" max="500" placeholder="e.g. 65" />
+        @if (form.controls.value.hasError('required') && form.controls.value.touched) {
+          <mat-error>Weight is required</mat-error>
+        } @else if (form.controls.value.invalid && form.controls.value.touched) {
+          <mat-error>Enter a realistic weight</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-button-toggle-group formControlName="unit" class="wed__unit" aria-label="Weight unit">
+        <mat-button-toggle value="kg">kg</mat-button-toggle>
+        <mat-button-toggle value="lb">lb</mat-button-toggle>
+      </mat-button-toggle-group>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="wed__actions" align="end">
+    <button mat-button type="button" (click)="cancel()">Cancel</button>
+    <button mat-raised-button class="suhana-btn-primary" type="button"
+            (click)="submit()" [disabled]="form.invalid">
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>

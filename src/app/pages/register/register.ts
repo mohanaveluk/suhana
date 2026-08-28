@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, inject, signal, ViewChild, OnInit, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, ViewChild, OnInit, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ApiService, AuthService } from '../../services';
@@ -52,6 +53,7 @@ export class RegisterComponent implements OnInit {
   private readonly auth          = inject(AuthService);
   private readonly profileService = inject(ProfileService);
   private readonly router        = inject(Router);
+  private readonly destroyRef    = inject(DestroyRef);
 
   protected readonly hidePassword       = signal(true);
   protected readonly hideConfirmPassword       = signal(true);
@@ -182,6 +184,29 @@ export class RegisterComponent implements OnInit {
     annualIncome:   [''],
   });
 
+  /**
+   * Minimum legal marriageable age for the partner-preference range, based on
+   * the registrant's own country (Step 2) and gender (Step 1). India requires
+   * 21 for brides and 18 for grooms; everywhere else the floor is 18 for both.
+   */
+  protected requiredPartnerMinAge(): number {
+    const country = (this.personalForm.controls.country.value ?? '').trim().toLowerCase();
+    const gender  = this.accountForm.controls.gender.value;
+    return country === 'india' && gender === 'bride' ? 21 : 18;
+  }
+
+  /** Cross-form validator — reads gender/country from the sibling forms at validation time. */
+  private readonly ageRangeValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+    const ageMin = group.get('ageMin')?.value;
+    const ageMax = group.get('ageMax')?.value;
+    if (ageMin === null || ageMin === '' || ageMax === null || ageMax === '') return null;
+
+    const requiredMinAge = this.requiredPartnerMinAge();
+    if (ageMin < requiredMinAge) return { ageMinBelowLegal: { requiredMinAge } };
+    if (ageMax < ageMin)         return { ageMaxBelowMin: true };
+    return null;
+  };
+
   // Step 4: Preferences
   protected readonly preferencesForm = this.fb.group({
     ageMin:             [21, Validators.required],
@@ -190,9 +215,40 @@ export class RegisterComponent implements OnInit {
     preferredLocations: [[] as string[]],
     preferredEducation: [[] as string[]],
     aboutMe:            ['', [Validators.required, Validators.minLength(50)]],
-  });
+  }, { validators: this.ageRangeValidator });
+
+  /** Friendly, customer-facing message for the current preferencesForm age-range error, if any. */
+  protected ageRangeErrorMessage(): string | null {
+    const errors = this.preferencesForm.errors;
+    if (!errors) return null;
+
+    if (errors['ageMinBelowLegal']) {
+      const requiredMinAge = errors['ageMinBelowLegal'].requiredMinAge as number;
+      const gender  = this.accountForm.controls.gender.value;
+      const country = (this.personalForm.controls.country.value ?? '').trim().toLowerCase();
+      const who   = gender === 'groom' ? 'grooms' : 'brides';
+      const where = country === 'india' ? 'India' : 'your country';
+      return `Minimum age criteria does not match — the preferred minimum age must be at least `
+        + `${requiredMinAge} for ${who} registering from ${where}. Please raise the minimum age below.`;
+    }
+    if (errors['ageMaxBelowMin']) {
+      return 'Minimum age criteria does not match — the maximum preferred age must be '
+        + 'greater than or equal to the minimum preferred age.';
+    }
+    return null;
+  }
 
   async ngOnInit(): Promise<void> {
+    // The age-range rule depends on country (Step 2) and gender (Step 1), which live
+    // in sibling FormGroups — Angular only auto-revalidates a group's own descendants,
+    // so re-run preferencesForm's validity check whenever either one changes.
+    this.personalForm.controls.country.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.preferencesForm.updateValueAndValidity());
+    this.accountForm.controls.gender.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.preferencesForm.updateValueAndValidity());
+
     await Promise.all([this.loadLookupValues(), this.loadCountries()]);
   }
 

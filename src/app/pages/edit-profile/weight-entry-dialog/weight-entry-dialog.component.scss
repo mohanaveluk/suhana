@@ -1,0 +1,38 @@
+$maroon: var(--suhana-maroon, #800020);
+$rose:   var(--suhana-rose-gold, #b76e79);
+
+.wed {
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: $maroon;
+    padding: 20px 24px 4px;
+
+    &-icon { color: $rose; font-size: 26px; width: 26px; height: 26px; }
+  }
+
+  &__close-btn {
+    margin-left: auto;
+    color: #888;
+  }
+
+  &__content {
+    padding: 12px 24px 8px !important;
+    min-width: min(340px, 88vw);
+  }
+
+  &__form {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  &__value { flex: 1; }
+
+  &__unit {
+    margin-top: 8px;
+  }
+}
