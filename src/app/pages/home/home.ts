@@ -36,7 +36,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       id: 1,
       //imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&h=600&fit=crop',
-      imageUrl: '/banners/banner1.png',
+      imageUrl: '/banners/banner4.png',
       title: 'Find Your Perfect Match',
       subtitle: 'AI-powered matchmaking that understands your heart\'s desires',
       ctaText: 'Start Your Journey',
@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       id: 2,
       //imageUrl: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1600&h=600&fit=crop',
-      imageUrl: '/banners/banner2.png',
+      imageUrl: '/banners/banner5.png',
       title: 'Where Traditions Meet Modern Love',
       subtitle: 'Trusted by thousands of families since 2024',
       ctaText: 'Browse Profiles',
@@ -54,10 +54,19 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       id: 3,
       //imageUrl: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1600&h=600&fit=crop',
-      imageUrl: '/banners/banner3.png',
+      imageUrl: '/banners/banner6.png',
       title: '92% Compatibility Match',
       subtitle: 'Smart insights powered by AI tell you exactly why you\'re meant to be',
       ctaText: 'See Your Matches',
+      ctaLink: '/matchmaking',
+    },
+    {
+      id: 4,
+      //imageUrl: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1600&h=600&fit=crop',
+      imageUrl: '/banners/banner7.png',
+      title: 'AI powered horoscope match',
+      subtitle: 'Get Kundli matching, compatibility scores, and dosha analysis based on Vedic astrology.',
+      ctaText: 'See Your compatibility',
       ctaLink: '/matchmaking',
     },
   ];
