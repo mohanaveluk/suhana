@@ -634,12 +634,15 @@
                     mat-raised-button
                     class="action-btn suhana-btn-primary"
                     (click)="sendInterest()"
-                    [disabled]="interestSent()"
+                    [disabled]="interestSent() || isConnected()"
+                    [matTooltip]="isConnected() ? 'You are already connected with this profile' : ''"
                   >
                     <mat-icon>{{ interestSent() ? 'check_circle' : 'send' }}</mat-icon>
                     {{ interestSent() ? 'Interest Sent!' : 'Send Interest' }}
                   </button>
-                  <button mat-stroked-button class="action-btn suhana-btn-outline" (click)="startChat()">
+                  <button mat-stroked-button class="action-btn suhana-btn-outline" (click)="startChat()"
+                          [disabled]="!isConnected()"
+                          [matTooltip]="isConnected() ? '' : 'Chat unlocks once you are connected with this profile'">
                     <mat-icon>chat</mat-icon> Start Chat
                   </button>
                   <button mat-stroked-button class="action-btn" (click)="toggleFavorite()">
@@ -685,21 +688,24 @@
           mat-raised-button
           class="suhana-btn-primary fab-interest"
           (click)="sendInterest()"
-          [disabled]="interestSent() || isSelf()"
+          [disabled]="interestSent() || isSelf() || isConnected()"
+          [matTooltip]="isConnected() ? 'You are already connected with this profile' : ''"
         >
           <mat-icon>{{ interestSent() ? 'check_circle' : 'send' }}</mat-icon>
           {{ interestSent() ? 'Interest Sent' : 'Send Interest' }}
         </button>
-
-        <button mat-stroked-button class="suhana-btn-outline fab-chat" (click)="startChat()" [disabled]="isSelf()">
+        
+        <button mat-stroked-button class="suhana-btn-outline fab-chat" (click)="startChat()"
+                [disabled]="isSelf() || !isConnected()"
+                [matTooltip]="isConnected() ? '' : 'Chat unlocks once you are connected with this profile'">
           <mat-icon>chat</mat-icon> Chat
         </button>
-
+      
         <button mat-icon-button class="fab-view" [matTooltip]="'View full profile'"
           [routerLink]="['/profile-view', theirProfile()!.userId]">
           <mat-icon>open_in_new</mat-icon>
         </button>
-
+        
         <button
           mat-stroked-button
           class="suhana-btn-outline fab-horoscope"

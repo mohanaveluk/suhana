@@ -372,6 +372,8 @@ export class ProfileMatchComponent implements OnInit {
   protected readonly error           = signal<string | null>(null);
   protected readonly isFavorited     = signal(false);
   protected readonly interestSent    = signal(false);
+  /** True once the match has reached "connected" — chat unlocks, sending interest no longer applies. */
+  protected readonly isConnected     = signal(false);
   protected readonly activeTab       = signal(0);
   protected readonly validationError = signal<'same-profile' | 'same-gender' | null>(null);
   protected readonly isGeneratingPdf = signal(false);
@@ -439,6 +441,7 @@ export class ProfileMatchComponent implements OnInit {
 
       const matchDetail = await this.matchSvc.getMatchByUserId(theirProfile.user?.id ?? '');
       this.isFavorited.set(matchDetail?.status === 'shortlisted');
+      this.isConnected.set(matchDetail?.status === 'connected');
 
       //get gallery to check if any photos are verified
       if (theirProfile) {
@@ -552,6 +555,11 @@ export class ProfileMatchComponent implements OnInit {
       return;
     }
 
+    if (this.isConnected()) {
+      this.snackBar.open('You are already connected with this profile.', 'OK', { duration: 3000 });
+      return;
+    }
+
     const theirProfile = this.theirProfile()!;
     const report = this.report();
     const defaultMessage = this.interestService.buildDefaultMessage(
@@ -602,6 +610,11 @@ export class ProfileMatchComponent implements OnInit {
     const isSelf = this.isSelf();
     if (isSelf) {
       this.snackBar.open('You cannot send chat request to your own profile.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    if (!this.isConnected()) {
+      this.snackBar.open('You can chat once you are connected with this profile.', 'OK', { duration: 3000 });
       return;
     }
 
