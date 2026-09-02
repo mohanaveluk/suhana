@@ -1,9 +1,10 @@
 import {
   Component, ChangeDetectionStrategy, inject, signal, computed,
-  OnInit, OnDestroy, ViewChild, ElementRef, effect,
+  OnInit, OnDestroy, ViewChild, ElementRef, effect, DestroyRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -34,6 +35,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
   private readonly callingService = inject(CallingService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   @ViewChild('messagesArea') private messagesAreaRef!: ElementRef<HTMLElement>;
   @ViewChild('imageFileInput') private imageFileInput!: ElementRef<HTMLInputElement>;
@@ -145,11 +148,37 @@ export class ChatComponent implements OnInit, OnDestroy {
     ]);
     this.isLoadingConversations.set(false);
 
-    // Open first conversation if any
-    const convs = this.chatService.allConversations();
-    if (convs.length > 0) {
-      await this.openConversation(convs[0]);
+    // Deep-link support: /chat?profileId=... preselects that partner's conversation
+    // (e.g. the "Start Chat" button on profile-view/profile-match). Subscribing —
+    // rather than only reading the snapshot once — also handles navigating to
+    // /chat?profileId=... again while this component instance is still alive.
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const profileId = params.get('profileId');
+        if (profileId) void this.openConversationForProfile(profileId);
+      });
+
+    // No profileId requested — fall back to the most recent conversation, as before.
+    if (!this.route.snapshot.queryParamMap.get('profileId')) {
+      const convs = this.chatService.allConversations();
+      if (convs.length > 0) {
+        await this.openConversation(convs[0]);
+      }
     }
+  }
+
+  /** Opens the conversation whose partner matches the ?profileId=... from the URL. */
+  private async openConversationForProfile(profileId: string): Promise<void> {
+    const conv = this.chatService.allConversations().find(c =>
+      c.partnerProfile?.id === profileId || c.partnerProfile?.userId === profileId,
+    );
+    if (!conv) {
+      this.snackBar.open('No existing conversation with this profile yet.', 'OK', { duration: 3000 });
+      return;
+    }
+    if (this.activeConv()?.id === conv.id) return; // already open
+    await this.openConversation(conv);
   }
 
   ngOnDestroy(): void {
