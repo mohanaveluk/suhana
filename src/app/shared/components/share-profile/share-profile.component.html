@@ -212,7 +212,7 @@
         <!-- Preview toggle ──────────────────────── -->
         <button mat-button class="sp-preview-toggle"
                 type="button"
-                (click)="showPreview.update(v => !v)"
+                (click)="togglePreview()"
                 [attr.aria-expanded]="showPreview()">
           <mat-icon>{{ showPreview() ? 'expand_less' : 'preview' }}</mat-icon>
           {{ showPreview() ? 'Hide' : 'Show' }} email preview
@@ -232,9 +232,24 @@
               <span class="sp-preview-label">Subject:</span>
               <span>{{ form.value.subject }}</span>
             </div>
-            <div class="sp-preview-body">
-              <p class="sp-preview-text">{{ form.value.message }}</p>
-            </div>
+
+            @if (isPreviewLoading()) {
+              <div class="sp-preview-loading">
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>Generating preview…</span>
+              </div>
+            } @else if (previewError()) {
+              <div class="sp-preview-error">
+                <mat-icon>error_outline</mat-icon>
+                <span>{{ previewError() }}</span>
+              </div>
+            } @else if (previewHtml()) {
+              <div class="sp-preview-body" [innerHTML]="previewHtml()"></div>
+            } @else {
+              <div class="sp-preview-body">
+                <p class="sp-preview-text">{{ form.value.message }}</p>
+              </div>
+            }
           </div>
         }
 

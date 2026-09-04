@@ -577,22 +577,28 @@ export class ApiService {
 
   // Profile share
   shareProfile(data: {
+    profileId?: string;
+    profileCode?: string;
     receiverName: string;
     toEmail: string[];
     shareUrl: string;
     subject: string;
     body: string;
+    preview?: boolean;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/profiles/share`, data);
   }
 
   // Profile share by guest
   shareProfileByGuest(data: {
+    profileId?: string;
+    profileCode?: string;
     receiverName: string;
     toEmail: string[];
     shareUrl: string;
     subject: string;
     body: string;
+    preview?: boolean;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/profiles/gshare`, data);
   }

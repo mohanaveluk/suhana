@@ -306,7 +306,7 @@ $footer-h: 68px;
   align-self: flex-start;
   font-size: 0.78rem !important;
   color: var(--suhana-text-secondary) !important;
-  padding: 0 6px !important;
+  padding: 0 16px !important;
   margin-bottom: 6px;
   height: 32px !important;
   min-height: 32px !important;
@@ -365,6 +365,12 @@ $footer-h: 68px;
 
 .sp-preview-body {
   padding: 0.625rem 0.875rem;
+  overflow-x: auto;
+  max-width: 100%;
+
+  // Backend-rendered HTML brings its own template styling — just keep it
+  // from overflowing or blowing out the drawer's fixed width.
+  ::ng-deep img, ::ng-deep table { max-width: 100%; }
 }
 
 .sp-preview-text {
@@ -374,6 +380,21 @@ $footer-h: 68px;
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.sp-preview-loading,
+.sp-preview-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.875rem;
+  font-size: 0.82rem;
+  color: var(--suhana-text-secondary);
+}
+
+.sp-preview-error {
+  color: var(--mat-sys-error, #b3261e);
+  mat-icon { color: var(--mat-sys-error, #b3261e); font-size: 18px; width: 18px; height: 18px; }
 }
 
 // ─── API Error card ────────────────────────────────────────────────────────────

@@ -420,12 +420,14 @@ export class ProfileViewComponent implements OnInit {
     this.dialog.open(ShareProfileComponent, {
       data: {
         profileCode,
+        profileId: p?.userId,
         profileName: p ? `${p.firstName} ${p.lastName}`.trim() : undefined,
+        profile: p!,
       } satisfies ShareProfileData,
       position:              { right: '0', top: '0' },
       height:                '100vh',
       maxHeight:             '100vh',
-      width:                 '500px',
+      width:                 '700px',
       maxWidth:              '100vw',
       panelClass:            'share-profile-drawer',
       disableClose:          false,
