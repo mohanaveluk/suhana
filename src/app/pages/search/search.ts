@@ -392,13 +392,15 @@ export class SearchComponent implements OnInit {
     if (!profile.profileCode) return;
     this.dialog.open(ShareProfileComponent, {
       data: {
+        profileId: profile.userId,
         profileCode: profile.profileCode,
         profileName: `${profile.firstName} ${profile.lastName}`.trim(),
+        profile: profile,
       } satisfies ShareProfileData,
       position:               { right: '0', top: '0' },
       height:                 '100vh',
       maxHeight:              '100vh',
-      width:                  '500px',
+      width:                  '700px',
       maxWidth:               '100vw',
       panelClass:             'share-profile-drawer',
       disableClose:           false,
