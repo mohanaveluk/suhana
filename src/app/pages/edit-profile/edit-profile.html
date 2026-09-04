@@ -241,12 +241,12 @@
                     <button mat-icon-button type="button" class="ep-mobile__edit"
                             (click)="openVerifyMobileDialog()"
                             matTooltip="Change mobile number and verify"
-                            aria-label="Change mobile number and verify">
+                            aria-label="Change mobile number and verify"  style="opacity: 0.5" disabled> <!-- this needs to be fixed and remove the disabled attribute -->
                       <mat-icon>edit</mat-icon>
                     </button>
                   } @else {
                     <button mat-stroked-button type="button" class="ep-mobile__verify"
-                            (click)="openVerifyMobileDialog()">
+                            (click)="openVerifyMobileDialog()" style="opacity: 0.5" disabled> <!-- this needs to be fixed and remove the disabled attribute -->
                       <mat-icon>gpp_maybe</mat-icon>
                       {{ commonService.hasMobile(user()?.mobile) ? 'Verify Mobile' : 'Add Mobile & Verify' }}
                     </button>
