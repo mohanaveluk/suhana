@@ -245,7 +245,7 @@
                         </span>
                       } @else {
                         <button mat-button class="mobile-verify-btn" type="button"
-                                (click)="openVerifyMobileDialog()">
+                                (click)="openVerifyMobileDialog()"  style="opacity: 0.5" disabled> <!-- this needs to be fixed and remove the disabled attribute -->
                           <mat-icon>verified_user</mat-icon>
                           {{ commonService.hasMobile(u.mobile) ? 'Verify Mobile' : 'Add Mobile & Verify' }}
                         </button>
