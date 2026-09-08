@@ -11,10 +11,12 @@
         <div class="banner-content">
           <h1>{{ slide.title }}</h1>
           <p>{{ slide.subtitle }}</p>
-          <a mat-raised-button [routerLink]="slide.ctaLink" class="suhana-btn-primary banner-cta">
-            {{ slide.ctaText }}
-            <mat-icon>arrow_forward</mat-icon>
-          </a>
+          @if(slide.ctaText && slide.ctaLink) {
+            <a mat-raised-button [routerLink]="slide.ctaLink" class="suhana-btn-primary banner-cta">
+              {{ slide.ctaText }}
+              <mat-icon>arrow_forward</mat-icon>
+            </a>
+          }
         </div>
       </div>
     }

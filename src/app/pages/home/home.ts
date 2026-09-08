@@ -69,6 +69,15 @@ export class HomeComponent implements OnInit, OnDestroy {
       ctaText: 'See Your compatibility',
       ctaLink: '/matchmaking',
     },
+    {
+      id: 5,
+      //imageUrl: '',
+      imageUrl: '/banners/banner8.png',
+      title: '', //'Voice & Video introduction',
+      subtitle: '', //'Upload a 30-60 second video or voice introduction to showcase your personality and build trust before meeting.',
+      ctaText: '',
+      ctaLink: '',
+    },    
   ];
 
   protected readonly featuredProfiles = signal<UserProfile[]>([]);

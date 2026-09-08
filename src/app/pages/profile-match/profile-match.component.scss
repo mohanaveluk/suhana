@@ -666,6 +666,8 @@
   align-items: center;
   gap: 10px;
   font-size: 0.8rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #ffe9e9;
 
   .mini-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
   .mini-label { color: var(--suhana-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
