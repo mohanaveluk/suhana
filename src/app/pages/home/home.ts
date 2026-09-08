@@ -1,14 +1,15 @@
-import { Component, ChangeDetectionStrategy, signal, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { BannerSlide, UserProfile } from '../../models/user.model';
-import { AuthService, ProfileService } from '../../services';
+import { AuthService, ProfileService, ProfileVisitService } from '../../services';
 import { FeaturedSuccessStoriesComponent } from "../../features/match-fixed/featured-success-stories/featured-success-stories.component";
 import { SuccessStatsComponent } from "../../features/match-fixed/success-stats/success-stats.component";
 import { SuccessStoriesWallComponent } from "../../features/match-fixed/success-stories-wall/success-stories-wall.component";
 import { FeaturedTestimonialsComponent } from "../../features/testimonials/components/featured-testimonials/featured-testimonials.component";
+import { RecentlyVisitedProfileComponent } from '../../shared/components/recently-visited-profile/recently-visited-profile';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,8 @@ import { FeaturedTestimonialsComponent } from "../../features/testimonials/compo
     FeaturedSuccessStoriesComponent,
     SuccessStatsComponent,
     SuccessStoriesWallComponent,
-    FeaturedTestimonialsComponent
+    FeaturedTestimonialsComponent,
+    RecentlyVisitedProfileComponent,
 ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
@@ -27,10 +29,21 @@ export class HomeComponent implements OnInit, OnDestroy {
   private readonly profileService = inject(ProfileService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly authService = inject(AuthService);
+  private readonly profileVisitService = inject(ProfileVisitService);
   private bannerInterval: ReturnType<typeof setInterval> | null = null;
 
   protected readonly currentSlide = signal(0);
   protected readonly hoveredCard = signal<string | null>(null);
+
+  /**
+   * RecentlyVisitedProfileComponent stays mounted unconditionally below (so it
+   * still runs its own fetch/guest/empty-state logic exactly as it does
+   * everywhere else) — this only controls whether the wrapping section is
+   * visible, reading the same shared ProfileVisitService signal the component
+   * itself populates. Guests never populate it (the component skips fetching
+   * when signed out), so the section naturally stays hidden for them too.
+   */
+  protected readonly hasRecentlyVisited = computed(() => this.profileVisitService.profiles().length > 0);
 
   protected readonly bannerSlides: BannerSlide[] = [
     {

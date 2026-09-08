@@ -83,6 +83,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/shortlist/shortlist').then(m => m.ShortlistComponent),
   },
   {
+    path: 'recently-visited',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/recently-visited/recently-visited.component').then(m => m.RecentlyVisitedComponent),
+  },
+  {
     path: 'chat',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/chat/chat').then(m => m.ChatComponent),

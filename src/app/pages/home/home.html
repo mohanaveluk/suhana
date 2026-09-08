@@ -209,3 +209,15 @@
     </div>
   </div>
 </section>
+
+<!-- ═══════════════ RECENTLY VISITED ═══════════════ -->
+<!-- [hidden], not @if: the component underneath must stay mounted so it keeps
+     running its own fetch — hasRecentlyVisited() reads the same shared signal
+     it populates. Using @if here would hide it before it could ever fetch,
+     so it could never turn true. -->
+<section class="suhana-section recently-visited-section" aria-label="Recently visited profiles"
+         [hidden]="!hasRecentlyVisited()">
+  <div class="suhana-container">
+    <app-recently-visited-profile viewMode="carousel"></app-recently-visited-profile>
+  </div>
+</section>

@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { UserProfile, RefreshTokenResponse, MobileVerificationStatus, ProfileTrustIndicator } from '../models/user.model';
 import { AiSearchRequest, AiSearchResponse, SearchSuggestionsResponse } from '../models/ai-search.model';
 import { FacetCount, FailedSearch, FallbackRate, TrendFacet } from '../models/admin-search-analytics.model';
+import { PaginatedProfileVisits, ProfileVisitMutationResult, VisitStats } from '../models/profile-visit.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -687,6 +688,29 @@ export class ApiService {
   }
   adminDeleteSafetyTip(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/v1/admin/safety-tips/${id}`);
+  }
+
+  // Profile Visits — "recently viewed" history
+  getRecentProfileVisits(page = 1, limit = 20): Observable<PaginatedProfileVisits> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
+    return this.http.get<PaginatedProfileVisits>(`${this.baseUrl}/v1/profile-visits/recent`, { params });
+  }
+
+  getFrequentProfileVisits(page = 1, limit = 20): Observable<PaginatedProfileVisits> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
+    return this.http.get<PaginatedProfileVisits>(`${this.baseUrl}/v1/profile-visits/frequent`, { params });
+  }
+
+  getProfileVisitStats(): Observable<VisitStats> {
+    return this.http.get<VisitStats>(`${this.baseUrl}/v1/profile-visits/stats`);
+  }
+
+  deleteProfileVisit(profileId: string): Observable<ProfileVisitMutationResult> {
+    return this.http.delete<ProfileVisitMutationResult>(`${this.baseUrl}/v1/profile-visits/${profileId}`);
+  }
+
+  clearProfileVisitHistory(): Observable<ProfileVisitMutationResult> {
+    return this.http.delete<ProfileVisitMutationResult>(`${this.baseUrl}/v1/profile-visits`);
   }
 
 }
