@@ -1,0 +1,19 @@
+<div class="rv-page suhana-container">
+  <div class="rv-header">
+    <button mat-icon-button routerLink="/search" aria-label="Back to search">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="rv-header__text">
+      <h1><mat-icon>history</mat-icon> Recently Visited Profiles</h1>
+      <p>Everyone you've viewed, most recent first</p>
+    </div>
+  </div>
+
+  <app-recently-visited-profile
+    viewMode="grid"
+    [showHeader]="false"
+    [showStats]="true"
+    [showActions]="true"
+    [limit]="50">
+  </app-recently-visited-profile>
+</div>

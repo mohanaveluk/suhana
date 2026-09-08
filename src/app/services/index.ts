@@ -11,3 +11,4 @@ export { InterestService } from './interest.service';
 export { HeartbeatService } from './heartbeat.service';
 export { NotificationService } from './notification.service';
 export type { AppNotification, NotificationType } from './notification.service';
+export { ProfileVisitService } from './profile-visit.service';

@@ -427,4 +427,12 @@
       }
     </main>
   </div>
+
+  <!-- ═══════════════ RECENTLY VISITED ═══════════════ -->
+  <!-- Hides itself for guests/empty history — see RecentlyVisitedProfileComponent. -->
+  <section class="suhana-section recently-visited-section" aria-label="Recently visited profiles" [hidden]="!hasRecentlyVisited()">
+    <div class="suhana-container">
+      <app-recently-visited-profile viewMode="carousel"></app-recently-visited-profile>
+    </div>
+  </section>  
 </div>

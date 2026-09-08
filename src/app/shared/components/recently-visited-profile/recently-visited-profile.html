@@ -1,0 +1,160 @@
+<div class="rvp" [class.rvp--carousel]="effectiveViewMode() === 'carousel'">
+
+  @if (!isAuthenticated()) {
+    <!-- ── Guest state — endpoints are all auth-only, don't even attempt them ── -->
+    <div class="rvp-guest">
+      <mat-icon>lock_outline</mat-icon>
+      <p>Login to view your recently visited profiles.</p>
+      <div class="rvp-guest__actions">
+        <a mat-raised-button class="suhana-btn-primary" routerLink="/register">
+          <mat-icon>person_add</mat-icon> Register Free
+        </a>
+        <a mat-stroked-button routerLink="/login" [queryParams]="loginParams()">
+          <mat-icon>login</mat-icon> Login
+        </a>
+      </div>
+    </div>
+  } @else {
+
+    @if (showHeader()) {
+      <div class="rvp-header">
+        <h2><mat-icon>history</mat-icon> Recently Visited Profiles</h2>
+        <a class="rvp-header__view-all" routerLink="/recently-visited">
+          View All <mat-icon>chevron_right</mat-icon>
+        </a>
+      </div>
+    }
+
+    @if (showStats() && stats(); as s) {
+      <div class="rvp-stats">
+        <div class="rvp-stat-card">
+          <span class="rvp-stat-card__value">{{ s.totalVisitedProfiles }}</span>
+          <span class="rvp-stat-card__label">Profiles Viewed</span>
+        </div>
+        <div class="rvp-stat-card">
+          <span class="rvp-stat-card__value">{{ s.visitedToday }}</span>
+          <span class="rvp-stat-card__label">Visited Today</span>
+        </div>
+        <div class="rvp-stat-card">
+          <span class="rvp-stat-card__value">{{ s.visitedThisWeek }}</span>
+          <span class="rvp-stat-card__label">Visited This Week</span>
+        </div>
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="rvp-skeleton" [class.rvp-skeleton--carousel]="effectiveViewMode() === 'carousel'">
+        @for (_ of [1,2,3,4,5]; track $index) {
+          <div class="rvp-sk-card">
+            <div class="rvp-sk rvp-sk--photo"></div>
+            <div class="rvp-sk rvp-sk--line"></div>
+            <div class="rvp-sk rvp-sk--line rvp-sk--short"></div>
+          </div>
+        }
+      </div>
+    } @else if (profiles().length === 0) {
+      <div class="rvp-empty">
+        <mat-icon>history</mat-icon>
+        <p>You haven't viewed any profiles yet.</p>
+        <a mat-raised-button class="suhana-btn-primary" routerLink="/search">
+          <mat-icon>search</mat-icon> Browse Profiles
+        </a>
+      </div>
+    } @else {
+
+      @if (effectiveViewMode() === 'carousel') {
+        <div class="rvp-carousel">
+          <button mat-icon-button class="rvp-nav rvp-nav--prev" type="button"
+                  (click)="scrollPrev()" aria-label="Previous profiles">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <div class="rvp-track" #track>
+            @for (visit of profiles(); track visit.profileId) {
+              <div class="rvp-track__item">
+                <mat-card class="rvp-card" appearance="outlined" (click)="viewProfile(visit)">
+                  <div class="rvp-card__image" [style.background-image]="commonService.cardBg(visit.photoUrl ?? undefined)">
+                    @if (visit.visitCount > 1) {
+                      <span class="rvp-card__visit-badge">Viewed {{ visit.visitCount }} times</span>
+                    }
+                    @if (showActions()) {
+                      <button mat-icon-button class="rvp-card__remove-btn" type="button"
+                              [disabled]="removingIds().has(visit.profileId)"
+                              (click)="removeFromHistory(visit, $event)"
+                              matTooltip="Remove from history" aria-label="Remove from history">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    }
+                  </div>
+                  <mat-card-content>
+                    <h3 class="rvp-card__name">{{ visit.name }}{{ visit.age ? ', ' + visit.age : '' }}</h3>
+                    @if (visit.city) {
+                      <p class="rvp-card__meta"><mat-icon>location_on</mat-icon> {{ visit.city }}{{ visit.state ? ', ' + visit.state : '' }}</p>
+                    }
+                    <p class="rvp-card__visited"><mat-icon>schedule</mat-icon> Last viewed: {{ timeAgo(visit.lastVisitedAt) }}</p>
+                  </mat-card-content>
+                  @if (showActions()) {
+                    <mat-card-actions>
+                      <button mat-raised-button class="suhana-btn-primary rvp-card__view-btn" type="button"
+                              (click)="viewProfile(visit); $event.stopPropagation()">
+                        <mat-icon>person</mat-icon> View Profile
+                      </button>
+                    </mat-card-actions>
+                  }
+                </mat-card>
+              </div>
+            }
+          </div>
+
+          <button mat-icon-button class="rvp-nav rvp-nav--next" type="button"
+                  (click)="scrollNext()" aria-label="Next profiles">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      } @else {
+        @if (showActions() && profiles().length > 0) {
+          <div class="rvp-toolbar">
+            <button mat-button class="rvp-clear-btn" type="button" (click)="clearHistory()">
+              <mat-icon>delete_sweep</mat-icon> Clear All History
+            </button>
+          </div>
+        }
+        <div class="rvp-grid">
+          @for (visit of profiles(); track visit.profileId) {
+            <mat-card class="rvp-card" appearance="outlined" (click)="viewProfile(visit)">
+              <div class="rvp-card__image" [style.background-image]="commonService.cardBg(visit.photoUrl ?? undefined)">
+                @if (visit.visitCount > 1) {
+                  <span class="rvp-card__visit-badge">Viewed {{ visit.visitCount }} times</span>
+                }
+                @if (showActions()) {
+                  <button mat-icon-button class="rvp-card__remove-btn" type="button"
+                          [disabled]="removingIds().has(visit.profileId)"
+                          (click)="removeFromHistory(visit, $event)"
+                          matTooltip="Remove from history" aria-label="Remove from history">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                }
+              </div>
+              <mat-card-content>
+                <h3 class="rvp-card__name">{{ visit.name }}{{ visit.age ? ', ' + visit.age : '' }}</h3>
+                @if (visit.city) {
+                  <p class="rvp-card__meta"><mat-icon>location_on</mat-icon> {{ visit.city }}{{ visit.state ? ', ' + visit.state : '' }}</p>
+                }
+                <p class="rvp-card__visited"><mat-icon>schedule</mat-icon> Last viewed: {{ timeAgo(visit.lastVisitedAt) }}</p>
+              </mat-card-content>
+              @if (showActions()) {
+                <mat-card-actions>
+                  <button mat-raised-button class="suhana-btn-primary rvp-card__view-btn" type="button"
+                          (click)="viewProfile(visit); $event.stopPropagation()">
+                    <mat-icon>person</mat-icon> View Profile
+                  </button>
+                </mat-card-actions>
+              }
+            </mat-card>
+          }
+        </div>
+      }
+    }
+  }
+
+</div>

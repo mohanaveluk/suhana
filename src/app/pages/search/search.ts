@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../shared/modules/material.module';
-import { AuthService, SearchService } from '../../services';
+import { AuthService, ProfileVisitService, SearchService } from '../../services';
 import { SearchFilters } from '../../services/search.service';
 import { MatchService } from '../../services';
 import { InterestService } from '../../services/interest.service';
@@ -29,6 +29,7 @@ import {
 } from './components/guest-prompt-dialog/guest-prompt-dialog.component';
 import { onSelectSearchKeydown } from '../../shared/utils/select-search.util';
 import { SelectSearchDirective } from '../../shared/directives/select-search.directive';
+import { RecentlyVisitedProfileComponent } from '../../shared/components/recently-visited-profile/recently-visited-profile';
 
 /** How many AI results a guest sees before the registration prompt. */
 const GUEST_AI_LIMIT = 6;
@@ -41,6 +42,7 @@ const GUEST_AI_LIMIT = 6;
     FormsModule, LowerCasePipe, RouterLink, MaterialModule,
     AiSearchBoxComponent, AiIntentChipsComponent,
     AiSuggestionsPanelComponent, SearchWithinResultsComponent,
+    RecentlyVisitedProfileComponent,
   ],
   templateUrl: './search.html',
   styleUrl: './search.scss',
@@ -53,6 +55,7 @@ export class SearchComponent implements OnInit {
   protected readonly searchService   = inject(SearchService);
   protected readonly commonService   = inject(CommonService);
   private readonly authService     = inject(AuthService);
+  private readonly profileVisitService = inject(ProfileVisitService);
   private readonly router          = inject(Router);
 
   protected readonly filtersOpen    = signal(false);
@@ -68,6 +71,18 @@ export class SearchComponent implements OnInit {
   protected readonly educationSearch  = signal('');
   protected readonly religionSearch   = signal('');
 
+
+  /**
+   * RecentlyVisitedProfileComponent stays mounted unconditionally below (so it
+   * still runs its own fetch/guest/empty-state logic exactly as it does
+   * everywhere else) — this only controls whether the wrapping section is
+   * visible, reading the same shared ProfileVisitService signal the component
+   * itself populates. Guests never populate it (the component skips fetching
+   * when signed out), so the section naturally stays hidden for them too.
+   */
+  protected readonly hasRecentlyVisited = computed(() => this.profileVisitService.profiles().length > 0);
+
+  
   protected readonly filteredCities = computed(() => {
     const q = this.citySearch().toLowerCase().trim();
     const all = this.searchService.availableCities();

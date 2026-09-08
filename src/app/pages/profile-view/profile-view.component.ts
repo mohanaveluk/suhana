@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../shared/modules/material.module';
-import { GalleryService, MatchService, ProfileService } from '../../services';
+import { GalleryService, MatchService, ProfileService, ProfileVisitService } from '../../services';
 import { AuthService } from '../../services/auth.service';
 import { InterestService } from '../../services/interest.service';
 import { UserProfile, ProfilePhoto, MatchResult, ProfileTrustIndicator } from '../../models/user.model';
@@ -31,13 +31,14 @@ import {
   ShareProfileData,
 } from '../../shared/components/share-profile/share-profile.component';
 import { GuestPromptData, GuestPromptDialogComponent } from '../search/components/guest-prompt-dialog/guest-prompt-dialog.component';
+import { RecentlyVisitedProfileComponent } from '../../shared/components/recently-visited-profile/recently-visited-profile';
 
 
 @Component({
   selector: 'app-profile-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, RouterLink, MaterialModule],
+  imports: [CommonModule, RouterLink, MaterialModule, RecentlyVisitedProfileComponent],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.scss',
 })
@@ -48,6 +49,7 @@ export class ProfileViewComponent implements OnInit {
   private readonly authService    = inject(AuthService);
   private readonly interestService = inject(InterestService);
   private readonly matchSvc       = inject(MatchService);
+  private readonly profileVisitService = inject(ProfileVisitService);
   private readonly gallerySvc  = inject(GalleryService);
   private readonly dialog         = inject(MatDialog);
   private readonly snackBar       = inject(MatSnackBar);
@@ -69,6 +71,16 @@ export class ProfileViewComponent implements OnInit {
   // ── Guest mode ──────────────────────────────────────────────────────────────
   protected readonly isAuthenticated = computed(() => this.authService.authenticated());
   protected readonly isGuest = computed(() => !this.isAuthenticated());
+
+  /**
+   * RecentlyVisitedProfileComponent stays mounted unconditionally below (so it
+   * still runs its own fetch/guest/empty-state logic exactly as it does
+   * everywhere else) — this only controls whether the wrapping section is
+   * visible, reading the same shared ProfileVisitService signal the component
+   * itself populates. Guests never populate it (the component skips fetching
+   * when signed out), so the section naturally stays hidden for them too.
+   */
+  protected readonly hasRecentlyVisited = computed(() => this.profileVisitService.profiles().length > 0);
 
   // ── Derived ──────────────────────────────────────────────────────────────
   protected readonly primaryPhoto = computed<string>(() => {
