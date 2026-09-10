@@ -45,10 +45,10 @@ export class TermsOfServiceComponent {
   ];
 
   protected readonly socialLinks = {
-    facebookUrl:  'https://facebook.com/auroramatrimony',
-    instagramUrl: 'https://instagram.com/auroramatrimony',
-    youtubeUrl:   'https://youtube.com/@auroramatrimony',
-    twitterUrl:   'https://x.com/auroramatrimony',
+    facebookUrl:  'https://facebook.com/aurora.matrimony',
+    instagramUrl: 'https://instagram.com/aurora.matrimony',
+    youtubeUrl:   'https://youtube.com/@aurora.matrimony',
+    twitterUrl:   'https://x.com/aurora.matrimony',
   };
 
   @HostListener('window:scroll')
