@@ -40,10 +40,10 @@ export class PrivacyPolicyComponent {
   ];
 
   protected readonly socialLinks = {
-    facebookUrl:  'https://facebook.com/suhanamatrimony',
-    instagramUrl: 'https://instagram.com/suhanamatrimony',
-    youtubeUrl:   'https://youtube.com/@suhanamatrimony',
-    twitterUrl:   'https://x.com/suhanamatrimony',
+    facebookUrl:  'https://facebook.com/aurora.matrimony',
+    instagramUrl: 'https://instagram.com/aurora.matrimony',
+    youtubeUrl:   'https://youtube.com/@aurora.matrimony',
+    twitterUrl:   'https://x.com/aurora.matrimony',    
   };
 
   @HostListener('window:scroll')
