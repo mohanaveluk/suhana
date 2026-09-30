@@ -20,24 +20,36 @@
     </a>
 
     <!-- Desktop Navigation -->
-    <nav class="desktop-nav" aria-label="Main navigation">
-      <a mat-button routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Home</a>
-      <a mat-button routerLink="/about" routerLinkActive="active-link">About us</a>
-      <a mat-button routerLink="/search" routerLinkActive="active-link">Search</a>
-      <a mat-button routerLink="/matchmaking" routerLinkActive="active-link">Matches</a>
+    <nav class="desktop-nav" aria-label="Main navigation" #desktopNav (mouseleave)="onNavLeave()" (focusout)="onNavLeave()">
+      <span class="nav-glow" [class.nav-glow--visible]="glowVisible()"
+            [style.left.px]="glowLeft()" [style.width.px]="glowWidth()" aria-hidden="true"></span>
+
+      <a mat-button routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
+         (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">Home</a>
+      <a mat-button routerLink="/about" routerLinkActive="active-link"
+         (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">About us</a>
+      <a mat-button routerLink="/search" routerLinkActive="active-link"
+         (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">Search</a>
+      <a mat-button routerLink="/matchmaking" routerLinkActive="active-link"
+         (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">Matches</a>
       @if (auth.authenticated()) {
-        <a mat-button routerLink="/shortlist" routerLinkActive="active-link">Shortlist</a>
-        <a mat-button routerLink="/chat" routerLinkActive="active-link">
+        <a mat-button routerLink="/shortlist" routerLinkActive="active-link"
+           (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">Shortlist</a>
+        <a mat-button routerLink="/chat" routerLinkActive="active-link"
+           (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">
           <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small">chat</mat-icon>
           Messages
         </a>
       }
-      <a mat-button routerLink="/safety-tips" routerLinkActive="active-link">
+      <a mat-button routerLink="/safety-tips" routerLinkActive="active-link"
+         (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">
         <mat-icon>verified_user</mat-icon> Safety
       </a>
-      <a mat-button routerLink="/contact" routerLinkActive="active-link">Contact</a>
+      <a mat-button routerLink="/contact" routerLinkActive="active-link"
+         (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">Contact</a>
       @if (auth.isAdmin() || auth.isTester()) {
-        <a mat-button routerLink="/admin" routerLinkActive="active-link">
+        <a mat-button routerLink="/admin" routerLinkActive="active-link"
+           (mouseenter)="onNavLinkHover($event)" (focus)="onNavLinkHover($event)">
           <mat-icon>admin_panel_settings</mat-icon>
           Admin
         </a>

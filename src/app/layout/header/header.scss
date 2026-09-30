@@ -98,25 +98,37 @@
 
 
 .desktop-nav {
+  position: relative; // anchors .nav-glow's absolute left/width to this row
   display: flex;
   align-items: center;
   gap: 4px;
 
   a {
+    position: relative; // stay above .nav-glow (z-index 0)
+    z-index: 1;
     color: var(--suhana-text-secondary);
     font-weight: 450;
     letter-spacing: 0.3px;
     border-radius: 24px;
-    transition: all 0.2s ease;
+    background: transparent; // the glow pill is the highlight now, not a flat fill
+    transition: color 0.2s ease, transform .25s ease; 
+
+    // Silence Material's own hover/focus state layer so only the glass pill shows.
+    --mat-text-button-hover-state-layer-opacity: 0;
+    --mat-text-button-focus-state-layer-opacity: 0;
+    --mat-text-button-pressed-state-layer-opacity: 0;
+
+    ::ng-deep .mat-mdc-button-persistent-ripple::before { opacity: 0 !important; }
 
     &:hover {
       color: var(--suhana-maroon);
-      background: var(--suhana-blush);
+      //background: #ffffff; // fallback for browsers that don't support backdrop-filter
+      transform: translateY(-1px);
     }
 
     &.active-link {
       color: var(--suhana-maroon);
-      background: var(--suhana-rose-gold-lighter);
+      font-weight: 600;
     }
 
     mat-icon {
@@ -129,6 +141,121 @@
 
   @media (max-width: 960px) {
     display: none;
+  }
+}
+
+// ── Liquid-glass highlight ───────────────────────────────────────────────────
+// One pill glides between nav links (position set from JS via offsetLeft/Width)
+// instead of each link owning its own static hover/active fill. The glassy read
+// comes from low-alpha layers + a bright rim + a diagonal specular sheen —
+// backdrop-filter alone does little against the solid-white toolbar.
+.nav-glow {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: 0;
+  z-index: 0;
+  border-radius: 22px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.88);
+  transition:
+    left  0.42s cubic-bezier(0.34, 1.4, 0.5, 1),
+    width 0.42s cubic-bezier(0.34, 1.4, 0.5, 1),
+    opacity 0.28s ease,
+    transform 0.28s ease;
+
+  // Mostly see-through body with only a whisper of rose-gold in the far corner.
+  // Liquid Glass
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.45) 0%,
+      rgba(255,255,255,.18) 40%,
+      rgba(255,255,255,.08) 100%
+    );
+  backdrop-filter:
+    blur(22px)
+    saturate(220%)
+    brightness(1.15);
+
+  -webkit-backdrop-filter:
+    blur(22px)
+    saturate(220%)
+    brightness(1.15);
+
+  border: 1px solid rgba(255,255,255,.35);
+
+  box-shadow:
+    0 8px 30px rgba(128,0,32,.15),
+    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 0 -1px 0 rgba(255,255,255,.2);
+
+  overflow: hidden;
+
+  // Diagonal specular reflection — the "liquid glass" sheen.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,.5),
+      transparent 45%
+    );
+    pointer-events: none;
+  }
+
+  &::before {
+  content: '';
+  position: absolute;
+
+  top: 0;
+  left: -50%;
+
+  width: 60%;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.55),
+    transparent
+  );
+
+  transform: skewX(-25deg);
+
+  animation: liquidShine 4s linear infinite;    
+  }
+
+  &--visible {
+    opacity: 1;
+    transform: scale(1);
+    animation:
+    glassFloat 6s ease-in-out infinite;
+  }
+}
+
+@keyframes liquidShine {
+  from {
+    left: -50%;
+  }
+
+  to {
+    left: 140%;
+  }
+}
+
+@keyframes glassFloat {
+  0%,100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-1px);
   }
 }
 
