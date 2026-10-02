@@ -90,10 +90,12 @@ export interface HoroscopeReport {
     personTwo: SideByComparisonPerson;
   };
   finalRecommendation: FinalRecommendation;
-  horoscopeGeneration: HoroscopeGeneration;
+  /** Can be absent/null from the API — the Birth Charts and Planet Positions sub-tabs hide their content when it is. */
+  horoscopeGeneration?: HoroscopeGeneration;
   areasForUnderstanding: string[];
   compatibilityDashboard: CompatibilityDashboard;
-  planetaryCompatibility: PlanetaryCompatibility;
+  /** Can be absent/null from the API — this.ts already optional-chains past it (see loadReport/overallScore). */
+  planetaryCompatibility?: PlanetaryCompatibility;
   advancedAstrologyDetails: AdvancedAstrologyDetails;
 }
 
@@ -185,7 +187,8 @@ export interface PlanetaryCompatibility {
   };
   planets: Record<string, PlanetCompatibilityEntry>;
   confidenceScore: number;
-  marriageProspects: string;
+  /** Can be absent/null from the API — the Marriage Prospects card is hidden when it is. */
+  marriageProspects?: string | null;
 }
 
 export interface HoroscopeGenPerson {
