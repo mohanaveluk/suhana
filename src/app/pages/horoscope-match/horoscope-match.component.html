@@ -254,17 +254,18 @@
             </strong>
           </div>
         </div>
-        <div class="hm-stat-divider"></div>
-        <div class="hm-stat-item">
-          <mat-icon>verified</mat-icon>
-          <div>
-            <span class="hm-stat-label">Confidence</span>
-            <strong class="hm-stat-value"
-              [style.color]="getScoreColor(hr.planetaryCompatibility.confidenceScore)">
-              {{ hr.planetaryCompatibility.confidenceScore }}%
-            </strong>
+        @if (hr.planetaryCompatibility; as pc) {
+          <div class="hm-stat-divider"></div>
+          <div class="hm-stat-item">
+            <mat-icon>verified</mat-icon>
+            <div>
+              <span class="hm-stat-label">Confidence</span>
+              <strong class="hm-stat-value" [style.color]="getScoreColor(pc.confidenceScore)">
+                {{ pc.confidenceScore }}%
+              </strong>
+            </div>
           </div>
-        </div>
+        }
       </div>
     </div>
 
@@ -724,22 +725,24 @@
           <div class="hm-tab-content">
 
             <!-- Marriage Prospects — always visible above sub-tabs -->
-            @if (hr.planetaryCompatibility.marriageProspects) {
-              <mat-card class="hm-marriage-card" appearance="outlined">
-                <mat-card-header>
-                  <mat-icon mat-card-avatar class="icon-rose">church</mat-icon>
-                  <mat-card-title>Marriage Prospects</mat-card-title>
-                  <mat-card-subtitle>
-                    Confidence:
-                    <strong [style.color]="getScoreColor(hr.planetaryCompatibility.confidenceScore)">
-                      {{ hr.planetaryCompatibility.confidenceScore }}%
-                    </strong>
-                  </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                  <p>{{ hr.planetaryCompatibility.marriageProspects }}</p>
-                </mat-card-content>
-              </mat-card>
+            @if (hr.planetaryCompatibility; as pc) {
+              @if (pc.marriageProspects) {
+                <mat-card class="hm-marriage-card" appearance="outlined">
+                  <mat-card-header>
+                    <mat-icon mat-card-avatar class="icon-rose">church</mat-icon>
+                    <mat-card-title>Marriage Prospects</mat-card-title>
+                    <mat-card-subtitle>
+                      Confidence:
+                      <strong [style.color]="getScoreColor(pc.confidenceScore)">
+                        {{ pc.confidenceScore }}%
+                      </strong>
+                    </mat-card-subtitle>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <p>{{ pc.marriageProspects }}</p>
+                  </mat-card-content>
+                </mat-card>
+              }
             }
 
             <!-- ── Inner sub-tabs ────────────────────────────────────────── -->
@@ -752,19 +755,26 @@
                   <mat-icon class="hm-inner-tab-icon">grid_on</mat-icon>Birth Charts
                 </ng-template>
                 <div class="hm-inner-tab-content">
-                  <app-birth-chart
-                    [personOne]="hr.horoscopeGeneration.personOne"
-                    [personTwo]="hr.horoscopeGeneration.personTwo"
-                    [personOneName]="p1.firstName"
-                    [personTwoName]="p2.firstName"
-                    [personOneDob]="p1.dateOfBirth"
-                    [personTwoDob]="p2.dateOfBirth"
-                    [personOneTime]="p1.horoscope.timeOfBirth ? p1.horoscope.timeOfBirth : ''"
-                    [personTwoTime]="p2.horoscope.timeOfBirth ? p2.horoscope.timeOfBirth : ''"
-                    [personOnePlace]="p1.horoscope.placeOfBirth ? p1.horoscope.placeOfBirth : ''"
-                    [personTwoPlace]="p2.horoscope.placeOfBirth ? p2.horoscope.placeOfBirth : ''"
-                    >
-                  </app-birth-chart>
+                  @if (hr.horoscopeGeneration; as hg) {
+                    <app-birth-chart
+                      [personOne]="hg.personOne"
+                      [personTwo]="hg.personTwo"
+                      [personOneName]="p1.firstName"
+                      [personTwoName]="p2.firstName"
+                      [personOneDob]="p1.dateOfBirth"
+                      [personTwoDob]="p2.dateOfBirth"
+                      [personOneTime]="p1.horoscope.timeOfBirth ? p1.horoscope.timeOfBirth : ''"
+                      [personTwoTime]="p2.horoscope.timeOfBirth ? p2.horoscope.timeOfBirth : ''"
+                      [personOnePlace]="p1.horoscope.placeOfBirth ? p1.horoscope.placeOfBirth : ''"
+                      [personTwoPlace]="p2.horoscope.placeOfBirth ? p2.horoscope.placeOfBirth : ''"
+                      >
+                    </app-birth-chart>
+                  } @else {
+                    <div class="hm-section-empty">
+                      <mat-icon>grid_on</mat-icon>
+                      <p>Birth chart data is not available for this match.</p>
+                    </div>
+                  }
                 </div>
               </mat-tab>
 
@@ -824,10 +834,11 @@
                   <mat-icon class="hm-inner-tab-icon">public</mat-icon>Planets
                 </ng-template>
                 <div class="hm-inner-tab-content">
+                  @if (hr.horoscopeGeneration; as hg) {
                   <div class="hm-planets-grid">
                     @for (person of [
-                      { label: p1.firstName, planets: planetsPersonOne(), gen: hr.horoscopeGeneration.personOne },
-                      { label: p2.firstName, planets: planetsPersonTwo(), gen: hr.horoscopeGeneration.personTwo }
+                      { label: p1.firstName, planets: planetsPersonOne(), gen: hg.personOne },
+                      { label: p2.firstName, planets: planetsPersonTwo(), gen: hg.personTwo }
                     ]; track person.label) {
                       <mat-card class="hm-planet-col-card" appearance="outlined">
                         <mat-card-header>
@@ -871,6 +882,12 @@
                       </mat-card>
                     }
                   </div>
+                  } @else {
+                    <div class="hm-section-empty">
+                      <mat-icon>public</mat-icon>
+                      <p>Planet position data is not available for this match.</p>
+                    </div>
+                  }
                 </div>
               </mat-tab>
 
@@ -907,6 +924,11 @@
                         </div>
                       </mat-card-content>
                     </mat-card>
+                  } @else {
+                    <div class="hm-section-empty">
+                      <mat-icon>all_inclusive</mat-icon>
+                      <p>Compatibility data is not available for this match.</p>
+                    </div>
                   }
                 </div>
               </mat-tab>

@@ -85,6 +85,27 @@
   &.state-upgrade { color: var(--suhana-gold); }
 }
 
+// ── Inline "section not available" state (within a sub-tab, not the whole page) ──
+.hm-section-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--suhana-text-secondary);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: var(--suhana-gold);
+    opacity: 0.7;
+  }
+
+  p { margin: 0; font-size: 0.9rem; }
+}
+
 // ── Upgrade prompt (membership error) ────────────────────────────────────────
 .hm-upgrade-card {
   max-width: 600px !important;
