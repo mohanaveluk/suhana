@@ -1,0 +1,155 @@
+<main class="pp-page">
+  <div class="pp-container">
+    <p class="pp-sr-only" aria-live="polite">{{ liveMessage() }}</p>
+
+    @switch (status()) {
+      @case ('loading') {
+        <div class="pp-state" role="status">
+          <mat-spinner diameter="48" />
+          <p>Preparing your personality assessment…</p>
+        </div>
+      }
+
+      @case ('no-profile') {
+        <div class="pp-state">
+          <div class="pp-state__icon" aria-hidden="true"><mat-icon>person_add</mat-icon></div>
+          <h2>Complete your profile first</h2>
+          <p>{{ errorMessage() }}</p>
+          <div class="pp-state__actions">
+            <a mat-raised-button class="suhana-btn-primary" routerLink="/profile/edit">Complete my profile</a>
+            <a mat-stroked-button class="suhana-btn-outline" routerLink="/personality">Back</a>
+          </div>
+        </div>
+      }
+
+      @case ('error') {
+        <div class="pp-state" role="alert">
+          <div class="pp-state__icon" aria-hidden="true"><mat-icon>cloud_off</mat-icon></div>
+          <h2>Something went wrong</h2>
+          <p>{{ errorMessage() }}</p>
+          <div class="pp-state__actions">
+            <button mat-raised-button class="suhana-btn-primary" (click)="load()">Try again</button>
+            <a mat-stroked-button class="suhana-btn-outline" routerLink="/personality">Back</a>
+          </div>
+        </div>
+      }
+
+      @default {
+        <!-- ── Header + overall progress ───────────────────────── -->
+        <header class="pa-header">
+          <div class="pa-header__text">
+            <p class="pa-eyebrow">Aurora Personality Assessment</p>
+            <h1>Tell us how you see yourself</h1>
+            <p class="pa-header__hint">
+              There are no right or wrong answers — choose what feels most natural, not what you think is ideal.
+            </p>
+          </div>
+          <div class="pa-progress">
+            <div class="pa-progress__labels">
+              <span><strong>{{ answeredCount() }}</strong> of {{ totalQuestions() }} answered</span>
+              <span>{{ progressPct() }}%</span>
+            </div>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="progressPct()"
+              aria-label="Overall assessment progress" />
+          </div>
+        </header>
+
+        <!-- ── Section stepper ──────────────────────────────────── -->
+        <nav class="pa-steps" aria-label="Assessment sections">
+          @for (section of sections(); track section.meta.code; let i = $index) {
+            @let stat = sectionStats()[i];
+            <button
+              type="button"
+              class="pa-step"
+              [class.pa-step--active]="i === sectionIndex()"
+              [class.pa-step--complete]="stat.complete"
+              [disabled]="!canOpenSection(i)"
+              [attr.aria-current]="i === sectionIndex() ? 'step' : null"
+              [attr.aria-label]="'Section ' + (i + 1) + ': ' + section.meta.title + ', ' + stat.answered + ' of ' + stat.total + ' answered'"
+              (click)="goToSection(i)">
+              <span class="pa-step__icon" [style.background]="section.meta.color" aria-hidden="true">
+                <mat-icon>{{ stat.complete ? 'check' : section.meta.icon }}</mat-icon>
+              </span>
+              <span class="pa-step__text" aria-hidden="true">
+                <span class="pa-step__title">{{ section.meta.title }}</span>
+                <span class="pa-step__count">{{ stat.answered }}/{{ stat.total }}</span>
+              </span>
+            </button>
+          }
+        </nav>
+
+        <!-- ── Current section ──────────────────────────────────── -->
+        @if (currentSection(); as section) {
+          <section class="pa-section" [attr.aria-labelledby]="'pa-section-title-' + section.meta.code">
+            <div class="pa-section__intro" id="pp-section-top" [style.--accent]="section.meta.color">
+              <span class="pa-section__icon" aria-hidden="true"><mat-icon>{{ section.meta.icon }}</mat-icon></span>
+              <div>
+                <p class="pa-section__step">Section {{ sectionIndex() + 1 }} of {{ sections().length }} · {{ section.meta.label }}</p>
+                <h2 [id]="'pa-section-title-' + section.meta.code">{{ section.meta.title }}</h2>
+                <p class="pa-section__question">{{ section.meta.question }}</p>
+              </div>
+            </div>
+
+            <div class="pa-questions">
+              @for (question of section.questions; track question.id; let qi = $index) {
+                <app-question-card
+                  [question]="question"
+                  [control]="controlFor(question)"
+                  [number]="section.offset + qi"
+                  [showError]="showErrors()"
+                  (answered)="onAnswered($event)" />
+              }
+            </div>
+          </section>
+        }
+
+        <!-- ── Footer navigation ────────────────────────────────── -->
+        <div class="pa-nav" id="pp-section-nav">
+          <button
+            mat-stroked-button
+            class="suhana-btn-outline"
+            type="button"
+            (click)="previous()"
+            [disabled]="isFirstSection() || status() === 'submitting'">
+            <mat-icon>arrow_back</mat-icon> Back
+          </button>
+
+          <button mat-button type="button" class="pa-nav__save" (click)="saveAndExit()" [disabled]="status() === 'submitting'">
+            <mat-icon>bookmark_border</mat-icon> Save &amp; exit
+          </button>
+
+          @if (!isLastSection()) {
+            <!-- Kept enabled on purpose: clicking with gaps highlights what's missing. -->
+            <button mat-raised-button class="suhana-btn-primary" type="button" (click)="next()">
+              Next section <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+            </button>
+          } @else {
+            <button
+              mat-raised-button
+              class="suhana-btn-primary"
+              type="button"
+              (click)="submit()"
+              [disabled]="status() === 'submitting'">
+              <span class="pa-nav__label">
+                @if (status() === 'submitting') {
+                  <mat-spinner diameter="20" class="pa-nav__spinner" /> Calculating…
+                } @else {
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> See my personality type
+                }
+              </span>
+            </button>
+          }
+        </div>
+
+        @if (!allAnswered()) {
+          <p class="pa-footnote">
+            <mat-icon aria-hidden="true">lock</mat-icon>
+            Your answers are saved on this device as you go and are only used to build your personality profile.
+          </p>
+        }
+      }
+    }
+  </div>
+</main>

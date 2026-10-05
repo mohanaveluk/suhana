@@ -1,0 +1,114 @@
+<main class="pp-page">
+  <div class="pp-container">
+    <!-- ── Hero ─────────────────────────────────────────────────── -->
+    <section class="ph-hero" aria-labelledby="ph-title">
+      @if (loading()) {
+        <div class="ph-hero__loading" role="status">
+          <mat-spinner diameter="40" />
+          <span>Loading your personality profile…</span>
+        </div>
+      } @else if (completed() && result(); as r) {
+        <p class="ph-eyebrow">Your Aurora personality</p>
+        <app-type-badge [type]="r.personalityType ?? ''" size="lg" [showLabels]="true" />
+        <h1 id="ph-title">{{ r.personalityType }} · {{ r.insights?.title }}</h1>
+        <p class="ph-hero__lead">{{ r.insights?.summary }}</p>
+        <div class="pp-actions">
+          <a mat-raised-button class="suhana-btn-primary" routerLink="/personality/result">
+            <mat-icon>insights</mat-icon> View full result
+          </a>
+          <a mat-stroked-button class="suhana-btn-outline" routerLink="/personality/assessment">
+            <mat-icon>replay</mat-icon> Retake assessment
+          </a>
+          <a mat-stroked-button class="suhana-btn-outline" routerLink="/matchmaking">
+            <mat-icon>favorite</mat-icon> Explore matches
+          </a>
+        </div>
+      } @else {
+        <div class="ph-hero__icon" aria-hidden="true"><mat-icon>psychology</mat-icon></div>
+        <p class="ph-eyebrow">Aurora Personality Assessment</p>
+        <h1 id="ph-title">Discover the personality behind your perfect match</h1>
+        <p class="ph-hero__lead">
+          Answer 32 short statements to reveal your personality type, how you communicate and what you
+          need in a partner — then see how compatible you are with the members you like.
+        </p>
+        <ul class="ph-facts" aria-label="About the assessment">
+          <li><mat-icon aria-hidden="true">quiz</mat-icon> 32 statements</li>
+          <li><mat-icon aria-hidden="true">schedule</mat-icon> About {{ minutes }} minutes</li>
+          <li><mat-icon aria-hidden="true">save</mat-icon> Progress saved as you go</li>
+        </ul>
+        <div class="pp-actions">
+          <a mat-raised-button class="suhana-btn-primary ph-cta" routerLink="/personality/assessment">
+            <mat-icon>{{ draftCount() ? 'play_arrow' : 'auto_awesome' }}</mat-icon>
+            {{ draftCount() ? 'Continue where you left off (' + draftCount() + ' answered)' : 'Start the assessment' }}
+          </a>
+        </div>
+        @if (error()) {
+          <p class="ph-error" role="alert"><mat-icon aria-hidden="true">error_outline</mat-icon> {{ error() }}</p>
+        }
+      }
+    </section>
+
+    <!-- ── What we measure ──────────────────────────────────────── -->
+    <section aria-labelledby="ph-dimensions-title">
+      <h2 id="ph-dimensions-title" class="ph-section-title">What the assessment measures</h2>
+      <div class="ph-dimensions">
+        @for (d of dimensions; track d.code) {
+          <article class="ph-dimension" [style.--accent]="d.color">
+            <span class="ph-dimension__icon" aria-hidden="true"><mat-icon>{{ d.icon }}</mat-icon></span>
+            <h3>{{ d.title }}</h3>
+            <p class="ph-dimension__label">{{ d.label }}</p>
+            <p class="ph-dimension__question">{{ d.question }}</p>
+            <div class="ph-dimension__poles">
+              @for (pole of d.poleLabels; track pole) {
+                <span>{{ pole }}</span>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <!-- ── How it works ─────────────────────────────────────────── -->
+    <section class="ph-steps" aria-labelledby="ph-steps-title">
+      <h2 id="ph-steps-title" class="ph-section-title">How it works</h2>
+      <ol>
+        <li>
+          <span class="ph-steps__num" aria-hidden="true">1</span>
+          <div><h3>Answer honestly</h3><p>Rate each statement from Strongly Agree to Strongly Disagree.</p></div>
+        </li>
+        <li>
+          <span class="ph-steps__num" aria-hidden="true">2</span>
+          <div><h3>Discover your type</h3><p>Get your four-letter type, dimension scores and a confidence score.</p></div>
+        </li>
+        <li>
+          <span class="ph-steps__num" aria-hidden="true">3</span>
+          <div><h3>Match with insight</h3><p>Compare personalities with any member who has also taken the assessment.</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ── The 16 types ─────────────────────────────────────────── -->
+    <section aria-labelledby="ph-types-title">
+      <h2 id="ph-types-title" class="ph-section-title">The 16 Aurora personality types</h2>
+      <ul class="ph-types">
+        @for (t of types; track t.code) {
+          <li class="ph-type" [class.ph-type--mine]="isMine(t.code)">
+            <app-type-badge [type]="t.code" size="sm" />
+            <div class="ph-type__text">
+              <span class="ph-type__title">
+                {{ t.title }}
+                @if (isMine(t.code)) { <span class="ph-type__you">You</span> }
+              </span>
+              <span class="ph-type__tagline">{{ t.tagline }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <p class="ph-privacy">
+      <mat-icon aria-hidden="true">shield</mat-icon>
+      Your personality type is shown on your profile to help members understand you better. Individual answers are never shared.
+    </p>
+  </div>
+</main>

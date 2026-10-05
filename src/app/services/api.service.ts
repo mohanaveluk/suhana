@@ -6,6 +6,10 @@ import { UserProfile, RefreshTokenResponse, MobileVerificationStatus, ProfileTru
 import { AiSearchRequest, AiSearchResponse, SearchSuggestionsResponse } from '../models/ai-search.model';
 import { FacetCount, FailedSearch, FallbackRate, TrendFacet } from '../models/admin-search-analytics.model';
 import { PaginatedProfileVisits, ProfileVisitMutationResult, VisitStats } from '../models/profile-visit.model';
+import {
+  AssessmentResult, PersonalityCompatibility, PersonalityQuestionsResponse,
+  StartAssessmentResponse, SubmitAssessmentRequest,
+} from '../features/personality/models/personality.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -711,6 +715,39 @@ export class ApiService {
 
   clearProfileVisitHistory(): Observable<ProfileVisitMutationResult> {
     return this.http.delete<ProfileVisitMutationResult>(`${this.baseUrl}/v1/profile-visits`);
+  }
+
+  // Personality Assessment
+  getPersonalityQuestions(lang?: string): Observable<PersonalityQuestionsResponse> {
+    const params = lang ? new HttpParams().set('lang', lang) : undefined;
+    return this.http.get<PersonalityQuestionsResponse>(`${this.baseUrl}/v1/personality/questions`, { params });
+  }
+
+  startPersonalityAssessment(profileId?: string): Observable<StartAssessmentResponse> {
+    return this.http.post<StartAssessmentResponse>(
+      `${this.baseUrl}/v1/personality/assessment/start`,
+      profileId ? { profileId } : {},
+    );
+  }
+
+  submitPersonalityAssessment(dto: SubmitAssessmentRequest): Observable<AssessmentResult> {
+    return this.http.post<AssessmentResult>(`${this.baseUrl}/v1/personality/assessment/submit`, dto);
+  }
+
+  getMyPersonalityResult(): Observable<AssessmentResult> {
+    return this.http.get<AssessmentResult>(`${this.baseUrl}/v1/personality/profile/me`);
+  }
+
+  getPersonalityResult(profileId: string): Observable<AssessmentResult> {
+    return this.http.get<AssessmentResult>(
+      `${this.baseUrl}/v1/personality/profile/${encodeURIComponent(profileId)}`,
+    );
+  }
+
+  getPersonalityCompatibility(profileIdA: string, profileIdB: string): Observable<PersonalityCompatibility> {
+    return this.http.get<PersonalityCompatibility>(
+      `${this.baseUrl}/v1/personality/match/${encodeURIComponent(profileIdA)}/${encodeURIComponent(profileIdB)}`,
+    );
   }
 
 }

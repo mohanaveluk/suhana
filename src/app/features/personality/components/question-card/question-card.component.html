@@ -1,0 +1,40 @@
+<fieldset
+  class="qc"
+  [id]="'pq-' + question().id"
+  [class.qc--answered]="control().value !== null"
+  [class.qc--error]="showError() && control().invalid">
+  <legend class="qc__statement">
+    <span class="qc__num" aria-hidden="true">{{ number() }}</span>
+    <span class="qc__text">{{ question().text }}</span>
+  </legend>
+
+  <div class="qc__scale">
+    <span class="qc__end qc__end--agree" aria-hidden="true">Agree</span>
+
+    <div class="qc__options">
+      @for (option of question().options; track option.id) {
+        <label [class]="optionClass(option)">
+          <input
+            type="radio"
+            class="qc__input"
+            [name]="'pq-' + question().id"
+            [value]="option.id"
+            [formControl]="control()"
+            (change)="answered.emit(question().id)" />
+          <span class="qc__dot" aria-hidden="true">
+            <mat-icon>check</mat-icon>
+          </span>
+          <span class="qc__label">{{ option.text }}</span>
+        </label>
+      }
+    </div>
+
+    <span class="qc__end qc__end--disagree" aria-hidden="true">Disagree</span>
+  </div>
+
+  @if (showError() && control().invalid) {
+    <p class="qc__error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon> Please choose an answer for this statement.
+    </p>
+  }
+</fieldset>

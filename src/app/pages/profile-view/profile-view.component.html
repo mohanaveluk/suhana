@@ -187,6 +187,14 @@
             @if (p.caste) {
               <span class="hero-chip" role="listitem">{{ p.caste }}</span>
             }
+            @if (theirPersonality(); as tp) {
+              <span role="listitem">
+                <button type="button" class="hero-chip hero-chip--personality" (click)="openPersonalityTab()"
+                        [attr.aria-label]="'Personality type ' + tp.personalityType + ', ' + tp.insights?.title + '. Open personality tab.'">
+                  <mat-icon aria-hidden="true">psychology</mat-icon>{{ tp.personalityType }} · {{ tp.insights?.title }}
+                </button>
+              </span>
+            }
           </div>
 
           <!-- Quick stats grid -->
@@ -252,6 +260,17 @@
                 [attr.aria-label]="'View match compatibility with ' + p.firstName">
                 <mat-icon>compare_arrows</mat-icon> View Match
               </button>
+            }
+
+            @if (personalityProfileId() && !isSelf()) {
+              <a
+                mat-stroked-button
+                class="action-match"
+                [routerLink]="['/personality/compatibility', personalityProfileId()]"
+                [queryParams]="{ name: p.firstName }"
+                [attr.aria-label]="'View personality compatibility with ' + p.firstName">
+                <mat-icon>psychology</mat-icon> Personality Match
+              </a>
             }
 
             <button
@@ -776,7 +795,92 @@
               </div>
             </mat-tab>
 
-            <!-- ── Tab 5: Horoscope (conditional) ────── -->
+            <!-- ── Tab 5: Personality (signed-in viewers; index = PERSONALITY_TAB_INDEX) ── -->
+            @if (isAuthenticated() && personalityProfileId()) {
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="tab-icon">psychology</mat-icon>
+                  <span class="tab-text">Personality</span>
+                </ng-template>
+
+                <div class="tab-content">
+                  @if (personalityLoading()) {
+                    <div class="personality-loading" role="status">
+                      <mat-spinner diameter="32" />
+                      <span>Loading personality details…</span>
+                    </div>
+                  } @else if (personalityError()) {
+                    <mat-card class="info-card" appearance="outlined">
+                      <mat-card-content>
+                        <div class="personality-empty" role="alert">
+                          <mat-icon aria-hidden="true">cloud_off</mat-icon>
+                          <p>{{ personalityError() }}</p>
+                          <button mat-stroked-button class="suhana-btn-outline" type="button" (click)="loadPersonality()">Try again</button>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                  } @else if (personalityStatus(); as ps) {
+                    @if (ps.state === 'self') {
+                      <!-- Own profile: your result, or an invitation to take the test -->
+                      @if (ps.mine?.available) {
+                        <mat-card class="info-card" appearance="outlined">
+                          <mat-card-content>
+                            <app-personality-profile-card [result]="ps.mine!" [detailsLink]="['/personality/result']" />
+                          </mat-card-content>
+                        </mat-card>
+                      } @else {
+                        <app-personality-prompt variant="card" placement="profile-view" />
+                      }
+                    } @else {
+                      <!-- Their personality -->
+                      <mat-card class="info-card" appearance="outlined">
+                        <mat-card-header>
+                          <div class="card-header-inner">
+                            <div class="card-header-icon"><mat-icon>psychology</mat-icon></div>
+                            <mat-card-title>{{ p.firstName }}'s Personality</mat-card-title>
+                          </div>
+                        </mat-card-header>
+                        <mat-card-content>
+                          @if (theirPersonality(); as tp) {
+                            <app-personality-profile-card
+                              [result]="tp"
+                              [name]="p.firstName"
+                              [detailsLink]="['/personality/result', personalityProfileId()!]"
+                              [detailsQuery]="{ name: p.firstName }" />
+                          } @else {
+                            <div class="personality-empty">
+                              <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+                              <p>{{ p.firstName }} hasn’t completed the Aurora Personality Assessment yet.</p>
+                            </div>
+                          }
+                        </mat-card-content>
+                      </mat-card>
+
+                      <!-- Your personality match -->
+                      <mat-card class="info-card" appearance="outlined">
+                        <mat-card-header>
+                          <div class="card-header-inner">
+                            <div class="card-header-icon"><mat-icon>diversity_1</mat-icon></div>
+                            <mat-card-title>Your Personality Match</mat-card-title>
+                          </div>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <app-personality-match-panel
+                            mode="compact"
+                            [status]="ps"
+                            [theirName]="p.firstName"
+                            [detailsLink]="['/personality/compatibility', personalityProfileId()!]"
+                            [detailsQuery]="{ name: p.firstName }"
+                            (retry)="loadPersonality()" />
+                        </mat-card-content>
+                      </mat-card>
+                    }
+                  }
+                </div>
+              </mat-tab>
+            }
+
+            <!-- ── Tab 6: Horoscope (conditional) ────── -->
             @if (showHoroscopeTab() && p.horoscope) {
               <mat-tab>
                 <ng-template mat-tab-label>

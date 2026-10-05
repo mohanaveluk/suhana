@@ -1,0 +1,83 @@
+<main class="pp-page">
+  <div class="pp-container">
+    <nav class="pcp-toolbar" aria-label="Compatibility actions">
+      <button mat-button type="button" (click)="back()"><mat-icon>arrow_back</mat-icon> Back</button>
+    </nav>
+
+    @switch (state()) {
+      @case ('loading') {
+        <div class="pp-state" role="status">
+          <mat-spinner diameter="48" />
+          <p>Comparing personalities…</p>
+        </div>
+      }
+
+      @case ('ready') {
+        <header class="pp-header">
+          <div class="pp-header__icon" aria-hidden="true"><mat-icon>diversity_1</mat-icon></div>
+          <h1>Personality compatibility</h1>
+          <p>How your personality and {{ otherName() }}'s fit together — and how to make the most of it.</p>
+        </header>
+        @if (compatibility(); as c) {
+          <app-personality-compatibility [compatibility]="c" nameA="You" [nameB]="otherName()" />
+        }
+        <div class="pp-actions">
+          <a mat-stroked-button class="suhana-btn-outline"
+             [routerLink]="['/personality/result', otherProfileId()]" [queryParams]="{ name: otherName() }">
+            <mat-icon>person_search</mat-icon> View {{ otherName() }}'s personality
+          </a>
+          <a mat-stroked-button class="suhana-btn-outline" routerLink="/personality/result">
+            <mat-icon>insights</mat-icon> My personality
+          </a>
+        </div>
+      }
+
+      @case ('self-missing') {
+        <div class="pp-state">
+          <div class="pp-state__icon" aria-hidden="true"><mat-icon>psychology</mat-icon></div>
+          <h2>Take the assessment to compare</h2>
+          <p>
+            Complete the Aurora Personality Assessment to see how your personality fits with {{ otherName() }}'s.
+            It takes about 6 minutes.
+          </p>
+          <div class="pp-state__actions">
+            <a mat-raised-button class="suhana-btn-primary" routerLink="/personality/assessment">Start the assessment</a>
+          </div>
+        </div>
+      }
+
+      @case ('other-missing') {
+        <div class="pp-state">
+          <div class="pp-state__icon" aria-hidden="true"><mat-icon>hourglass_empty</mat-icon></div>
+          <h2>Compatibility not available yet</h2>
+          <p>{{ message() }}</p>
+          <div class="pp-state__actions">
+            <a mat-stroked-button class="suhana-btn-outline" routerLink="/personality/result">View my personality</a>
+          </div>
+        </div>
+      }
+
+      @case ('self') {
+        <div class="pp-state">
+          <div class="pp-state__icon" aria-hidden="true"><mat-icon>person</mat-icon></div>
+          <h2>That’s your own profile</h2>
+          <p>Choose another member’s profile to see your personality compatibility.</p>
+          <div class="pp-state__actions">
+            <a mat-raised-button class="suhana-btn-primary" routerLink="/matchmaking">Browse matches</a>
+          </div>
+        </div>
+      }
+
+      @case ('error') {
+        <div class="pp-state" role="alert">
+          <div class="pp-state__icon" aria-hidden="true"><mat-icon>cloud_off</mat-icon></div>
+          <h2>Something went wrong</h2>
+          <p>{{ message() }}</p>
+          <div class="pp-state__actions">
+            <button mat-raised-button class="suhana-btn-primary" type="button" (click)="load()">Try again</button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</main>

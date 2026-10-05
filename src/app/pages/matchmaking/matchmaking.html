@@ -28,6 +28,15 @@
     </div>
   </div>
 
+  <!-- Personality nudge — only on the member's own matches, not matchmaking/:profileId -->
+  @if (!selectedProfile()) {
+    <app-personality-prompt
+      class="personality-banner"
+      variant="banner"
+      placement="matchmaking"
+      [dismissible]="true" />
+  }
+
   @if (isLoading()) {
     <div class="loading-state">
       <div class="loading-spinner">

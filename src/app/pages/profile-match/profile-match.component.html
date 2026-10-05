@@ -206,6 +206,19 @@
             <span>{{ report()!.matchLabel }}</span>
           </div>
 
+          <!-- Personality: a separate lens, shown beside (not inside) the profile match % -->
+          @if (personalityPill(); as pill) {
+            <button
+              type="button"
+              class="personality-pill"
+              [class]="'personality-pill personality-pill--' + pill.tone"
+              (click)="openPersonalityTab()"
+              [attr.aria-label]="pill.text + '. Open the personality tab.'">
+              <mat-icon aria-hidden="true">{{ pill.icon }}</mat-icon>
+              <span>{{ pill.text }}</span>
+            </button>
+          }
+
           <div class="hero-hearts">
             <mat-icon class="heart-icon">favorite</mat-icon>
           </div>
@@ -437,7 +450,30 @@
           </div>
         </mat-tab>
 
-        <!-- ═══════════ TAB 3: DETAILS ═══════════ -->
+        <!-- ═══════════ TAB 3: PERSONALITY (index must match PERSONALITY_TAB_INDEX) ═══════════ -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">psychology</mat-icon> Personality
+          </ng-template>
+
+          <div class="tab-content">
+            <p class="personality-intro">
+              Profile compatibility looks at your backgrounds, values and lifestyle. Personality compatibility looks at
+              how you think, decide and communicate — from the Aurora Personality Assessment. They're shown side by side,
+              not combined, so each one stays meaningful on its own.
+            </p>
+            <app-personality-match-panel
+              [status]="personalityStatus()"
+              [loading]="personalityLoading()"
+              [error]="personalityError()"
+              [theirName]="theirProfile()!.firstName"
+              [profileCompatibility]="report()!.overallPercentage"
+              mode="full"
+              (retry)="loadPersonality()" />
+          </div>
+        </mat-tab>
+
+        <!-- ═══════════ TAB 4: DETAILS ═══════════ -->
         <mat-tab>
           <ng-template mat-tab-label>
             <mat-icon class="tab-icon">expand_circle_down</mat-icon> Details
@@ -509,7 +545,7 @@
           </div>
         </mat-tab>
 
-        <!-- ═══════════ TAB 4: RECOMMENDATION ═══════════ -->
+        <!-- ═══════════ TAB 5: RECOMMENDATION ═══════════ -->
         <mat-tab>
           <ng-template mat-tab-label>
             <mat-icon class="tab-icon">recommend</mat-icon> Recommendation

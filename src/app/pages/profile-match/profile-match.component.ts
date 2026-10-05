@@ -25,6 +25,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { PdfReportService } from './pdf-report.service';
 import { HoroscopeMatchService } from '../horoscope-match/horoscope-match.service';
 import { KundliMatching } from '../horoscope-match/horoscope-match.model';
+import { PersonalityService } from '../../features/personality/services/personality.service';
+import { PersonalityMatchStatus } from '../../features/personality/models/personality.model';
+import { PersonalityMatchPanelComponent } from '../../features/personality/components/personality-match-panel/personality-match-panel.component';
+import { profileIdOf, toErrorMessage } from '../../features/personality/utils/personality.utils';
+
+/** Index of the Personality tab in the template's mat-tab-group. */
+const PERSONALITY_TAB_INDEX = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Interfaces & Types
@@ -344,7 +351,7 @@ export function generateMatchReport(myProfile: UserProfile, theirProfile: UserPr
   selector: 'app-profile-match',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, RouterLink, MaterialModule],
+  imports: [CommonModule, RouterLink, MaterialModule, PersonalityMatchPanelComponent],
   templateUrl: './profile-match.component.html',
   styleUrl: './profile-match.component.scss',
 })
@@ -361,9 +368,36 @@ export class ProfileMatchComponent implements OnInit {
   private readonly pdfService      = inject(PdfReportService);
   private readonly horoscopeSvc    = inject(HoroscopeMatchService);
   private readonly trustSvc        = inject(ProfileTrustIndicatorService);
+  private readonly personalitySvc  = inject(PersonalityService);
 
   // ── State ────────────────────────────────────────────────────────────────
   protected readonly myProfile          = signal<UserProfile | null>(null);
+
+  // Personality match — a second, independent lens beside the profile score
+  // (deliberately not blended into report().overallPercentage).
+  protected readonly personalityStatus  = signal<PersonalityMatchStatus | null>(null);
+  protected readonly personalityLoading = signal(false);
+  protected readonly personalityError   = signal<string | null>(null);
+
+  /** One-line personality summary for the hero, under the main match ring. */
+  protected readonly personalityPill = computed<{ icon: string; text: string; tone: string } | null>(() => {
+    if (this.personalityLoading()) return { icon: 'psychology', text: 'Checking personality…', tone: 'muted' };
+    const s = this.personalityStatus();
+    const name = this.theirProfile()?.firstName ?? 'They';
+    switch (s?.state) {
+      case 'ready':
+        return {
+          icon: 'psychology',
+          text: `Personality ${s.compatibility?.compatibilityScore ?? 0}% · ${s.compatibility?.compatibilityLevel ?? ''}`,
+          tone: 'ready',
+        };
+      case 'self-missing':  return { icon: 'psychology', text: 'Take the personality test to compare', tone: 'action' };
+      case 'other-missing': return { icon: 'hourglass_empty', text: `${name} yet to take personality test`, tone: 'pending' };
+      case 'both-missing':  return { icon: 'psychology', text: 'Personality test pending for both', tone: 'action' };
+      case 'guest':         return { icon: 'lock', text: 'Sign in for personality match', tone: 'muted' };
+      default:              return null;
+    }
+  });
   protected readonly theirProfile       = signal<UserProfile | null>(null);
   protected readonly theirTrustIndicator = signal<ProfileTrustIndicator | null>(null);
   protected readonly report          = signal<ProfileMatchReport | null>(null);
@@ -392,6 +426,35 @@ export class ProfileMatchComponent implements OnInit {
   );
 
   protected readonly gallaryImages = computed<GalleryImage[]>(() => this.gallery() ?? []);
+
+  // ── Personality match ─────────────────────────────────────────────────────
+
+  protected async loadPersonality(): Promise<void> {
+    // Guests see a fallback "my profile" here, not their own — personality needs a session.
+    if (!this.authService.authenticated() || !this.profileSvc.myProfile()) {
+      this.personalityStatus.set({ state: 'guest', mine: null, theirs: null, compatibility: null });
+      return;
+    }
+    const theirProfileId = profileIdOf(this.theirProfile());
+    if (!theirProfileId) {
+      this.personalityError.set('Personality details aren’t available for this profile.');
+      return;
+    }
+
+    this.personalityLoading.set(true);
+    this.personalityError.set(null);
+    try {
+      this.personalityStatus.set(await this.personalitySvc.getMatchStatus(theirProfileId));
+    } catch (err) {
+      this.personalityError.set(toErrorMessage(err, 'We couldn’t load the personality match.'));
+    } finally {
+      this.personalityLoading.set(false);
+    }
+  }
+
+  protected openPersonalityTab(): void {
+    this.activeTab.set(PERSONALITY_TAB_INDEX);
+  }
 
   protected trustLabel(level: string): string {
     if (level === 'GREEN_FLAG') return 'Highly Active Profile';
@@ -456,6 +519,8 @@ export class ProfileMatchComponent implements OnInit {
           this.validationError.set('same-gender');
         } else {
           this.report.set(generateMatchReport(myProfile, theirProfile));
+          // Background: never delays or breaks the main report.
+          void this.loadPersonality();
         }
       } else {
         this.error.set('Could not load your profile. Please ensure you are logged in.');

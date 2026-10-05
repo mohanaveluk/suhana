@@ -1,0 +1,64 @@
+<main class="pp-page">
+  <div class="pp-container">
+    @if (loading()) {
+      <div class="pp-state" role="status">
+        <mat-spinner diameter="48" />
+        <p>Loading personality result…</p>
+      </div>
+    } @else if (error()) {
+      <div class="pp-state" role="alert">
+        <div class="pp-state__icon" aria-hidden="true"><mat-icon>cloud_off</mat-icon></div>
+        <h2>Something went wrong</h2>
+        <p>{{ error() }}</p>
+        <div class="pp-state__actions">
+          <button mat-raised-button class="suhana-btn-primary" (click)="load()">Try again</button>
+        </div>
+      </div>
+    } @else if (available() && result(); as r) {
+      <nav class="pr-toolbar" aria-label="Result actions">
+        <button mat-button type="button" (click)="back()"><mat-icon>arrow_back</mat-icon> Back</button>
+      </nav>
+
+      <app-personality-result [result]="r" [subjectName]="isOwn() ? null : (name() ?? 'This member')" />
+
+      <div class="pp-actions">
+        @if (isOwn()) {
+          <a mat-raised-button class="suhana-btn-primary" routerLink="/matchmaking">
+            <mat-icon>favorite</mat-icon> Find compatible matches
+          </a>
+          <a mat-stroked-button class="suhana-btn-outline" routerLink="/personality/assessment">
+            <mat-icon>replay</mat-icon> Retake assessment
+          </a>
+          <a mat-stroked-button class="suhana-btn-outline" routerLink="/personality">
+            <mat-icon>explore</mat-icon> All personality types
+          </a>
+        } @else {
+          <a
+            mat-raised-button
+            class="suhana-btn-primary"
+            [routerLink]="['/personality/compatibility', profileId()]"
+            [queryParams]="{ name: name() }">
+            <mat-icon>compare_arrows</mat-icon> Check our compatibility
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="pp-state">
+        <div class="pp-state__icon" aria-hidden="true"><mat-icon>psychology</mat-icon></div>
+        @if (isOwn()) {
+          <h2>You haven’t taken the assessment yet</h2>
+          <p>Discover your personality type in about 6 minutes and see how compatible you are with other members.</p>
+          <div class="pp-state__actions">
+            <a mat-raised-button class="suhana-btn-primary" routerLink="/personality/assessment">Start the assessment</a>
+          </div>
+        } @else {
+          <h2>No personality result yet</h2>
+          <p>{{ result()?.message ?? 'This member has not completed the Aurora Personality Assessment yet.' }}</p>
+          <div class="pp-state__actions">
+            <button mat-stroked-button class="suhana-btn-outline" type="button" (click)="back()">Go back</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</main>

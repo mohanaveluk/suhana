@@ -452,6 +452,38 @@
     mat-icon { font-size: 15px; width: 15px; height: 15px; color: var(--suhana-gold-light, #e8d5a0); }
     &:hover { background: rgba(255,255,255,0.28); transform: translateY(-1px); }
   }
+
+  // Personality type — clickable, opens the Personality tab.
+  .hero-chip--personality {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-color: var(--suhana-gold-light, #e8d5a0);
+    background: rgba(201, 168, 76, 0.22);
+
+    &:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  }
+}
+
+// ── Personality tab ──────────────────────────────────────
+.personality-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 4px;
+  color: var(--suhana-text-secondary);
+}
+
+.personality-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--suhana-text-secondary);
+
+  mat-icon { color: var(--suhana-rose-gold); }
+  p { margin: 0; line-height: 1.6; }
 }
 
 // ── Quick stats ──────────────────────────────────────────

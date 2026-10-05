@@ -20,13 +20,14 @@ import {
   VoiceIntroductionDialogData,
   VoiceIntroductionDialogResult,
 } from './voice-introduction-dialog/voice-introduction-dialog.component';
+import { PersonalityPromptComponent } from '../../features/personality/components/personality-prompt/personality-prompt.component';
 
 
 @Component({
   selector: 'app-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink, TitleCasePipe, DatePipe, LowerCasePipe, MaterialModule,
+    RouterLink, TitleCasePipe, DatePipe, LowerCasePipe, MaterialModule, PersonalityPromptComponent,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',

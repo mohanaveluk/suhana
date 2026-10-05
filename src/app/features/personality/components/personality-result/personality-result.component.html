@@ -1,0 +1,89 @@
+@let r = result();
+
+<article class="pr" [attr.aria-label]="heading()">
+  <!-- ── Hero: type ─────────────────────────────────────────── -->
+  <section class="pr-hero">
+    <p class="pr-hero__eyebrow">{{ heading() }}</p>
+    <app-type-badge [type]="r.personalityType ?? ''" size="lg" [showLabels]="true" />
+    <h2 class="pr-hero__title">{{ r.personalityType }} · {{ typeTitle() }}</h2>
+    @if (r.insights?.summary) {
+      <p class="pr-hero__summary">{{ r.insights?.summary }}</p>
+    }
+    @if (r.completedDate) {
+      <p class="pr-hero__date">
+        <mat-icon aria-hidden="true">event_available</mat-icon>
+        Completed {{ r.completedDate | date: 'mediumDate' }}
+      </p>
+    }
+  </section>
+
+  <div class="pr-grid">
+    <!-- ── Dimension scores ──────────────────────────────────── -->
+    <section class="pr-card pr-card--dimensions" aria-labelledby="pr-dimensions-title">
+      <h3 id="pr-dimensions-title" class="pr-card__title">
+        <mat-icon aria-hidden="true">tune</mat-icon> Dimension scores
+      </h3>
+      <div class="pr-dimensions">
+        @for (d of dimensions(); track d.dimension) {
+          <div class="pr-dimension">
+            <span class="pr-dimension__icon" aria-hidden="true"><mat-icon>{{ dimensionIcon(d) }}</mat-icon></span>
+            <div class="pr-dimension__body">
+              <span class="pr-dimension__section">{{ dimensionTitle(d) }}</span>
+              <app-dimension-score-bar [score]="d" [showRaw]="showRawScores()" />
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ── Confidence ────────────────────────────────────────── -->
+    <section class="pr-card pr-card--confidence" aria-labelledby="pr-confidence-title">
+      <h3 id="pr-confidence-title" class="pr-card__title">
+        <mat-icon aria-hidden="true">verified</mat-icon> Confidence score
+      </h3>
+      <div class="pr-confidence">
+        <app-score-ring [value]="r.confidence?.score ?? 0" label="Confidence" [size]="148" />
+        <span class="pr-level" [class]="'pr-level pr-level--' + confidenceLevel().toLowerCase()">
+          {{ confidenceLevel() }} confidence
+        </span>
+        <p class="pr-confidence__copy">{{ confidenceCopy() }}</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ── Description / insights ──────────────────────────────── -->
+  @if (r.insights; as insights) {
+    <section class="pr-card pr-insights" aria-labelledby="pr-insights-title">
+      <h3 id="pr-insights-title" class="pr-card__title">
+        <mat-icon aria-hidden="true">auto_awesome</mat-icon> Personality description
+      </h3>
+
+      <div class="pr-insights__grid">
+        <div class="pr-insights__col">
+          <h4><mat-icon aria-hidden="true">star</mat-icon> Strengths</h4>
+          <ul>
+            @for (s of insights.strengths; track s) {
+              <li>{{ s }}</li>
+            }
+          </ul>
+        </div>
+        <div class="pr-insights__col">
+          <h4><mat-icon aria-hidden="true">trending_up</mat-icon> Growth areas</h4>
+          <ul>
+            @for (g of insights.growthAreas; track g) {
+              <li>{{ g }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="pr-relationships">
+        <mat-icon aria-hidden="true">favorite</mat-icon>
+        <div>
+          <h4>In relationships</h4>
+          <p>{{ insights.inRelationships }}</p>
+        </div>
+      </div>
+    </section>
+  }
+</article>
