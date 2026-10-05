@@ -7,12 +7,13 @@ import { ProfileService } from '../../services';
 import { InterestService } from '../../services/interest.service';
 import { MatchResult, UserProfile } from '../../models/user.model';
 import { CommonService } from '../../services/common.service';
+import { PersonalityPromptComponent } from '../../features/personality/components/personality-prompt/personality-prompt.component';
 
 @Component({
   selector: 'app-matchmaking',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink, MaterialModule,
+    RouterLink, MaterialModule, PersonalityPromptComponent,
   ],
   templateUrl: './matchmaking.html',
   styleUrl: './matchmaking.scss',

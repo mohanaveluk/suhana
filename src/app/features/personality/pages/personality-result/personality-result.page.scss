@@ -1,0 +1,13 @@
+@use '../../styles/personality-shared' as pp;
+
+.pp-page {
+  @include pp.page-shell(1080px);
+  @include pp.state-block;
+  @include pp.actions-row;
+}
+
+.pr-toolbar {
+  display: flex;
+
+  button { color: var(--suhana-maroon); }
+}

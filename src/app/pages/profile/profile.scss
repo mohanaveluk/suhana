@@ -142,6 +142,11 @@
   &--platinum { background: linear-gradient(90deg, #1a1a2e, #0f3460); color: #90caf9; border: 1px solid rgba(100,160,255,0.4); }
 }
 
+// ── Personality Assessment prompt (between header and membership card) ───────
+.personality-prompt {
+  margin-bottom: 20px;
+}
+
 // ── Membership Card (banner between header and tabs) ──────────────────────────
 .membership-card {
   display: flex;

@@ -1,0 +1,111 @@
+@let c = compatibility();
+
+<article class="pc" aria-label="Personality compatibility">
+  <!-- ── Hero: score ────────────────────────────────────────── -->
+  <section class="pc-hero">
+    <div class="pc-hero__people">
+      <div class="pc-person">
+        <app-type-badge [type]="typeA()" />
+        <span class="pc-person__name">{{ nameA() }}</span>
+        <span class="pc-person__title">{{ typeTitle(typeA()) }}</span>
+      </div>
+
+      <div class="pc-hero__score">
+        <app-score-ring [value]="c.compatibilityScore ?? 0" label="Compatibility" [size]="164" />
+      </div>
+
+      <div class="pc-person">
+        <app-type-badge [type]="typeB()" />
+        <span class="pc-person__name">{{ nameB() }}</span>
+        <span class="pc-person__title">{{ typeTitle(typeB()) }}</span>
+      </div>
+    </div>
+
+    <div class="pc-hero__verdict">
+      <span [class]="'pc-level pc-level--' + level().toLowerCase()">
+        <mat-icon aria-hidden="true">{{ levelCopy().icon }}</mat-icon> {{ level() }} match
+      </span>
+      <p>{{ levelCopy().headline }}</p>
+    </div>
+  </section>
+
+  <!-- ── Dimension breakdown ─────────────────────────────────── -->
+  <section class="pc-card" aria-labelledby="pc-breakdown-title">
+    <h3 id="pc-breakdown-title" class="pc-card__title">
+      <mat-icon aria-hidden="true">tune</mat-icon> How you compare
+    </h3>
+    <ul class="pc-breakdown">
+      @for (d of breakdown(); track d.dimension) {
+        <li class="pc-breakdown__row">
+          <div class="pc-breakdown__label">
+            <span class="pc-breakdown__name">{{ dimensionLabel(d) }}</span>
+            <span class="pc-breakdown__poles">
+              {{ nameA() }}: <strong>{{ poleLabel(d.poleA) }}</strong> · {{ nameB() }}: <strong>{{ poleLabel(d.poleB) }}</strong>
+            </span>
+          </div>
+          <span [class]="'pc-chip ' + (d.aligned ? 'pc-chip--aligned' : 'pc-chip--complement')">
+            {{ d.aligned ? 'Shared' : 'Complementary' }}
+          </span>
+          <div class="pc-breakdown__bar" role="img"
+               [attr.aria-label]="dimensionLabel(d) + ' compatibility ' + d.score + ' percent'">
+            <span [style.width.%]="d.score" [style.background]="dimensionColor(d)"></span>
+          </div>
+          <span class="pc-breakdown__score" aria-hidden="true">{{ d.score }}%</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- ── Communication style ─────────────────────────────────── -->
+  @if (c.communicationStyle; as style) {
+    <section class="pc-card pc-style" aria-labelledby="pc-style-title">
+      <h3 id="pc-style-title" class="pc-card__title">
+        <mat-icon aria-hidden="true">forum</mat-icon> Communication style
+      </h3>
+      <p class="pc-style__label">{{ style.label }}</p>
+      <p class="pc-style__desc">{{ style.description }}</p>
+    </section>
+  }
+
+  <!-- ── Strengths / Challenges / Recommendations ───────────── -->
+  <div class="pc-columns">
+    <section class="pc-card pc-list pc-list--strengths" aria-labelledby="pc-strengths-title">
+      <h3 id="pc-strengths-title" class="pc-card__title">
+        <mat-icon aria-hidden="true">thumb_up</mat-icon> Strengths
+      </h3>
+      <ul>
+        @for (s of c.strengths ?? []; track s) {
+          <li><mat-icon aria-hidden="true">check_circle</mat-icon><span>{{ s }}</span></li>
+        }
+      </ul>
+    </section>
+
+    <section class="pc-card pc-list pc-list--challenges" aria-labelledby="pc-challenges-title">
+      <h3 id="pc-challenges-title" class="pc-card__title">
+        <mat-icon aria-hidden="true">report_problem</mat-icon> Potential challenges
+      </h3>
+      <ul>
+        @for (ch of c.potentialChallenges ?? []; track ch) {
+          <li><mat-icon aria-hidden="true">info</mat-icon><span>{{ ch }}</span></li>
+        }
+      </ul>
+    </section>
+
+    <section class="pc-card pc-list pc-list--tips" aria-labelledby="pc-tips-title">
+      <h3 id="pc-tips-title" class="pc-card__title">
+        <mat-icon aria-hidden="true">lightbulb</mat-icon> Recommendations
+      </h3>
+      <ul>
+        @for (tip of recommendations(); track tip) {
+          <li><mat-icon aria-hidden="true">tips_and_updates</mat-icon><span>{{ tip }}</span></li>
+        }
+      </ul>
+    </section>
+  </div>
+
+  <p class="pc-note">
+    <mat-icon aria-hidden="true">info_outline</mat-icon>
+    Personality compatibility is one perspective among many. Shared values, family expectations and open
+    conversation matter just as much.
+  </p>
+</article>

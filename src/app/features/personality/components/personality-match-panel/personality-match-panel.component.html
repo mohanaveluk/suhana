@@ -1,0 +1,125 @@
+@if (loading()) {
+  <div class="pmp-loading" role="status">
+    <mat-spinner diameter="28" />
+    <span>Checking personality match…</span>
+  </div>
+} @else if (error()) {
+  <div class="pmp-message pmp-message--error" role="alert">
+    <mat-icon aria-hidden="true">cloud_off</mat-icon>
+    <div class="pmp-message__body">
+      <p>{{ error() }}</p>
+      <button mat-stroked-button class="suhana-btn-outline" type="button" (click)="retry.emit()">Try again</button>
+    </div>
+  </div>
+} @else {
+  @switch (state()) {
+    <!-- ── Signed out ─────────────────────────────────────────── -->
+    @case ('guest') {
+      <div class="pmp-message">
+        <mat-icon aria-hidden="true">lock</mat-icon>
+        <div class="pmp-message__body">
+          <h3>Personality compatibility</h3>
+          <p>Sign in to see how your personality fits with {{ theirName() }}’s.</p>
+          <a mat-raised-button class="suhana-btn-primary" routerLink="/login">Sign in</a>
+        </div>
+      </div>
+    }
+
+    <!-- ── Both completed ─────────────────────────────────────── -->
+    @case ('ready') {
+      @if (mode() === 'compact') {
+        <div class="pmp-compact">
+          <app-score-ring [value]="score()" label="Personality" [size]="125" />
+          <div class="pmp-compact__body">
+            <span [class]="'pmp-level pmp-level--' + level().toLowerCase()">
+              <mat-icon aria-hidden="true">{{ levelCopy().icon }}</mat-icon> {{ level() }} personality match
+            </span>
+            @if (compatibility()?.communicationStyle?.label; as label) {
+              <p class="pmp-compact__style"><mat-icon aria-hidden="true">forum</mat-icon> {{ label }}</p>
+            }
+            @if (topStrength()) {
+              <p class="pmp-compact__strength">{{ topStrength() }}</p>
+            }
+            @if (detailsLink(); as link) {
+              <a mat-button class="pmp-link" [routerLink]="link" [queryParams]="detailsQuery()">
+                See full personality match <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+              </a>
+            }
+          </div>
+        </div>
+      } @else {
+        @if (insight(); as i) {
+          <section class="pmp-lenses" aria-label="Overall reading">
+            <div class="pmp-lens">
+              <span class="pmp-lens__value">{{ profileCompatibility() }}%</span>
+              <span class="pmp-lens__label">Profile compatibility</span>
+              <span class="pmp-lens__hint">Background, values &amp; lifestyle</span>
+            </div>
+            <div class="pmp-lens">
+              <span class="pmp-lens__value">{{ score() }}%</span>
+              <span class="pmp-lens__label">Personality compatibility</span>
+              <span class="pmp-lens__hint">How you think, decide &amp; communicate</span>
+            </div>
+            <div class="pmp-lens pmp-lens--insight">
+              <mat-icon aria-hidden="true">{{ i.icon }}</mat-icon>
+              <div>
+                <strong>{{ i.title }}</strong>
+                <p>{{ i.message }}</p>
+              </div>
+            </div>
+          </section>
+        }
+        @if (compatibility(); as c) {
+          <app-personality-compatibility [compatibility]="c" nameA="You" [nameB]="theirName()" />
+        }
+      }
+    }
+  }
+}
+
+<!-- ── One or both still to complete: each person's status + next step ── -->
+@if (!loading() && !error() && (state() === 'self-missing' || state() === 'other-missing' || state() === 'both-missing')) {
+  <section class="pmp-status" aria-label="Personality assessment status">
+    <ul class="pmp-status__rows">
+      @for (row of statusRows(); track row.who) {
+        <li class="pmp-status__row" [class.pmp-status__row--done]="row.done">
+          <mat-icon aria-hidden="true">{{ row.done ? 'check_circle' : 'hourglass_empty' }}</mat-icon>
+          <span class="pmp-status__who">{{ row.who }}</span>
+          @if (row.done && row.type) {
+            <app-type-badge [type]="row.type" size="sm" />
+            <span class="pmp-status__title">{{ row.title }}</span>
+          } @else {
+            <span class="pmp-status__pending">Yet to complete the personality assessment</span>
+          }
+        </li>
+      }
+    </ul>
+
+    @switch (state()) {
+      @case ('self-missing') {
+        <p class="pmp-status__message">
+          {{ theirName() }} has completed the Aurora Personality Assessment. Complete yours to unlock your personality
+          match — it takes about 6 minutes.
+        </p>
+        <a mat-raised-button class="suhana-btn-primary" routerLink="/personality/assessment">
+          <mat-icon>psychology</mat-icon> Take the assessment
+        </a>
+      }
+      @case ('other-missing') {
+        <p class="pmp-status__message">
+          {{ theirName() }} hasn’t completed the personality assessment yet, so we can’t show a personality match.
+          It will appear here as soon as they do.
+        </p>
+      }
+      @case ('both-missing') {
+        <p class="pmp-status__message">
+          Neither of you has completed the personality assessment yet. Take yours now so your personality match is ready
+          the moment {{ theirName() }} completes theirs.
+        </p>
+        <a mat-raised-button class="suhana-btn-primary" routerLink="/personality/assessment">
+          <mat-icon>psychology</mat-icon> Take the assessment
+        </a>
+      }
+    }
+  </section>
+}

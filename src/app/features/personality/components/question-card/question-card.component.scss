@@ -1,0 +1,184 @@
+$agree: var(--suhana-maroon);
+$disagree: var(--suhana-rose-gold);
+
+.qc {
+  margin: 0;
+  padding: 24px 24px 20px;
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 18px var(--suhana-shadow);
+  transition: border-color 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+  scroll-margin-top: 120px;
+
+  &--answered {
+    border-color: var(--suhana-rose-gold-light);
+  }
+
+  &--error {
+    border-color: #c62828;
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.12);
+  }
+}
+
+.qc__statement {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 20px;
+  float: left; // lets the legend behave as a normal block inside the fieldset
+}
+
+.qc__scale {
+  clear: both;
+}
+
+.qc__num {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--suhana-maroon);
+  background: var(--suhana-blush);
+}
+
+.qc__text {
+  font-size: 1.08rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--suhana-text-primary);
+  padding-top: 3px;
+}
+
+.qc__scale {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qc__end {
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  &--agree { color: $agree; }
+  &--disagree { color: var(--suhana-text-secondary); }
+}
+
+.qc__options {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.qc__opt {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: center;
+  user-select: none;
+}
+
+// Visually hidden but focusable — the circle is the visual control.
+.qc__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+
+.qc__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: #fff;
+  transition: transform 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+
+  mat-icon {
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 150ms ease, transform 150ms ease;
+  }
+}
+
+.qc__opt--lg .qc__dot { width: 52px; height: 52px; mat-icon { font-size: 26px; width: 26px; height: 26px; } }
+.qc__opt--md .qc__dot { width: 42px; height: 42px; mat-icon { font-size: 22px; width: 22px; height: 22px; } }
+.qc__opt--sm .qc__dot { width: 34px; height: 34px; mat-icon { font-size: 18px; width: 18px; height: 18px; } }
+
+.qc__opt--agree { color: $agree; }
+.qc__opt--disagree { color: $disagree; }
+.qc__opt--neutral { color: #9e8a8c; }
+
+.qc__label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--suhana-text-secondary);
+  line-height: 1.25;
+}
+
+.qc__opt:hover .qc__dot {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 6px var(--suhana-blush);
+}
+
+.qc__input:checked + .qc__dot {
+  background: currentColor;
+  transform: scale(1.04);
+
+  mat-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.qc__input:checked ~ .qc__label {
+  color: var(--suhana-text-primary);
+  font-weight: 700;
+}
+
+.qc__input:focus-visible + .qc__dot {
+  outline: 3px solid var(--suhana-maroon-bright);
+  outline-offset: 3px;
+}
+
+.qc__error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 16px 0 0;
+  font-size: 0.85rem;
+  color: #c62828;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+@media (max-width: 640px) {
+  .qc { padding: 20px 14px 16px; }
+  .qc__text { font-size: 1rem; }
+  .qc__end { display: none; }
+  .qc__label { font-size: 0.68rem; }
+  .qc__opt--lg .qc__dot { width: 44px; height: 44px; }
+  .qc__opt--md .qc__dot { width: 36px; height: 36px; }
+  .qc__opt--sm .qc__dot { width: 30px; height: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qc, .qc__dot, .qc__dot mat-icon { transition: none; }
+}

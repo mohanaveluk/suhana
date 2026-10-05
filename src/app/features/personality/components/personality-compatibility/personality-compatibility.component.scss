@@ -1,0 +1,179 @@
+.pc {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pc-hero {
+  padding: 32px 24px;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 10px 32px var(--suhana-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+
+  &__people {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+  }
+
+  &__verdict {
+    text-align: center;
+
+    p { margin: 8px 0 0; color: var(--suhana-text-secondary); font-size: 1rem; }
+  }
+}
+
+.pc-person {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+
+  &__name { font-weight: 700; color: var(--suhana-maroon); font-size: 1.05rem; }
+  &__title { font-size: 0.85rem; color: var(--suhana-text-secondary); }
+}
+
+.pc-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  &--excellent { background: #e8f5e9; color: #1b5e20; }
+  &--good { background: var(--suhana-blush); color: var(--suhana-maroon); }
+  &--moderate { background: #fff8e1; color: #7a4f01; }
+  &--challenging { background: #f3e5f5; color: #5b2a6e; }
+}
+
+.pc-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 6px 22px var(--suhana-shadow);
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px;
+    font-size: 1.1rem;
+    color: var(--suhana-maroon);
+
+    mat-icon { color: var(--suhana-rose-gold); }
+  }
+}
+
+.pc-breakdown {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  &__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'label chip'
+      'bar score';
+    gap: 8px 14px;
+    align-items: center;
+  }
+
+  &__label { grid-area: label; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  &__name { font-weight: 600; color: var(--suhana-text-primary); }
+  &__poles { font-size: 0.82rem; color: var(--suhana-text-secondary); }
+
+  &__bar {
+    grid-area: bar;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--suhana-rose-gold-lighter);
+    overflow: hidden;
+
+    span { display: block; height: 100%; border-radius: inherit; transition: width 700ms ease; }
+  }
+
+  &__score { grid-area: score; font-weight: 700; color: var(--suhana-maroon); font-size: 0.9rem; min-width: 42px; text-align: right; }
+}
+
+.pc-chip {
+  grid-area: chip;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  &--aligned { background: #e8f5e9; color: #1b5e20; }
+  &--complement { background: #fff8e1; color: #7a4f01; }
+}
+
+.pc-style {
+  &__label { margin: 0 0 6px; font-size: 1.15rem; font-weight: 700; color: var(--suhana-maroon); }
+  &__desc { margin: 0; line-height: 1.7; color: var(--suhana-text-primary); }
+}
+
+.pc-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.pc-list {
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+
+  li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    line-height: 1.6;
+    color: var(--suhana-text-primary);
+    font-size: 0.92rem;
+
+    mat-icon { flex: 0 0 auto; font-size: 20px; width: 20px; height: 20px; margin-top: 2px; }
+  }
+
+  &--strengths li mat-icon { color: #2e7d32; }
+  &--challenges li mat-icon { color: #b26a00; }
+  &--tips li mat-icon { color: var(--suhana-gold); }
+}
+
+.pc-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--suhana-text-secondary);
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex: 0 0 auto; }
+}
+
+@media (max-width: 1000px) {
+  .pc-columns { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .pc-hero { padding: 24px 14px; }
+  .pc-hero__people { grid-template-columns: 1fr 1fr; }
+  .pc-hero__score { grid-column: 1 / -1; display: flex; justify-content: center; order: -1; }
+  .pc-card { padding: 20px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-breakdown__bar span { transition: none; }
+}

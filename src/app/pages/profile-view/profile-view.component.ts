@@ -32,13 +32,25 @@ import {
 } from '../../shared/components/share-profile/share-profile.component';
 import { GuestPromptData, GuestPromptDialogComponent } from '../search/components/guest-prompt-dialog/guest-prompt-dialog.component';
 import { RecentlyVisitedProfileComponent } from '../../shared/components/recently-visited-profile/recently-visited-profile';
+import { PersonalityService } from '../../features/personality/services/personality.service';
+import { PersonalityMatchStatus } from '../../features/personality/models/personality.model';
+import { PersonalityProfileCardComponent } from '../../features/personality/components/personality-profile-card/personality-profile-card.component';
+import { PersonalityMatchPanelComponent } from '../../features/personality/components/personality-match-panel/personality-match-panel.component';
+import { PersonalityPromptComponent } from '../../features/personality/components/personality-prompt/personality-prompt.component';
+import { profileIdOf, toErrorMessage } from '../../features/personality/utils/personality.utils';
+
+/** Index of the Personality tab — tabs 0–3 (About, Career, Family, Preferences) are always present. */
+const PERSONALITY_TAB_INDEX = 4;
 
 
 @Component({
   selector: 'app-profile-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, RouterLink, MaterialModule, RecentlyVisitedProfileComponent],
+  imports: [
+    CommonModule, RouterLink, MaterialModule, RecentlyVisitedProfileComponent,
+    PersonalityProfileCardComponent, PersonalityMatchPanelComponent, PersonalityPromptComponent,
+  ],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.scss',
 })
@@ -54,6 +66,19 @@ export class ProfileViewComponent implements OnInit {
   private readonly dialog         = inject(MatDialog);
   private readonly snackBar       = inject(MatSnackBar);
   private readonly trustSvc       = inject(ProfileTrustIndicatorService);
+  private readonly personalitySvc = inject(PersonalityService);
+
+  // ── Personality (signed-in viewers only) ────────────────────────────────────
+  protected readonly personalityStatus  = signal<PersonalityMatchStatus | null>(null);
+  protected readonly personalityLoading = signal(false);
+  protected readonly personalityError   = signal<string | null>(null);
+  /** profiles.id for the personality API (arrives as `userId` — see profileIdOf). */
+  protected readonly personalityProfileId = computed(() => profileIdOf(this.profile()));
+  /** The viewed member's result, when they've completed the assessment. */
+  protected readonly theirPersonality = computed(() => {
+    const theirs = this.personalityStatus()?.theirs;
+    return theirs?.available ? theirs : null;
+  });
 
   // ── State ────────────────────────────────────────────────────────────────
   protected readonly profile       = signal<UserProfile | null>(null);
@@ -161,6 +186,34 @@ export class ProfileViewComponent implements OnInit {
     void this.loadProfile(id, routePath);
   }
 
+  // ── Personality ───────────────────────────────────────────────────────────
+
+  protected async loadPersonality(): Promise<void> {
+    const profileId = this.personalityProfileId();
+    this.personalityStatus.set(null);
+    this.personalityError.set(null);
+    // Personality data needs a session; guests simply don't get the tab.
+    if (!this.isAuthenticated() || !profileId) return;
+
+    this.personalityLoading.set(true);
+    try {
+      if (this.isSelf()) {
+        const mine = await this.personalitySvc.loadMyResult();
+        this.personalityStatus.set({ state: 'self', mine, theirs: mine, compatibility: null });
+      } else {
+        this.personalityStatus.set(await this.personalitySvc.getMatchStatus(profileId));
+      }
+    } catch (err) {
+      this.personalityError.set(toErrorMessage(err, 'We couldn’t load personality details.'));
+    } finally {
+      this.personalityLoading.set(false);
+    }
+  }
+
+  protected openPersonalityTab(): void {
+    this.activeTabIdx.set(PERSONALITY_TAB_INDEX);
+  }
+
   private async loadProfile(id: string, routePath: string = 'profile-view'): Promise<void> {
     try {
 
@@ -169,6 +222,9 @@ export class ProfileViewComponent implements OnInit {
       const profile = await this.profileSvc.getProfileById(id, routePath);
       this.profile.set(profile);
       this.profileImageExist();
+
+      // Personality loads in the background — never blocks the profile.
+      void this.loadPersonality();
 
       // Load trust indicator in background
       this.trustSvc.get(profile.userId).then(ti => this.trustIndicator.set(ti));

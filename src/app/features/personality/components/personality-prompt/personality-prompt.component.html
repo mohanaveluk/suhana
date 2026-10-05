@@ -1,0 +1,87 @@
+@switch (state()) {
+  @case ('done') {
+    @if (result(); as r) {
+      <section class="ppc ppc--done" [attr.aria-labelledby]="titleId">
+        <app-type-badge [type]="r.personalityType ?? ''" />
+        <div class="ppc__body">
+          <p class="ppc__eyebrow">Your personality type</p>
+          <h2 class="ppc__title" [id]="titleId">{{ r.personalityType }} · {{ r.insights?.title }}</h2>
+          <p class="ppc__text">
+            {{ r.confidence?.level }} confidence · Members can now see how your personality fits with theirs.
+          </p>
+        </div>
+        <div class="ppc__actions">
+          <a mat-stroked-button class="suhana-btn-outline" routerLink="/personality/result">
+            <mat-icon>insights</mat-icon> View result
+          </a>
+          <a mat-button class="ppc__secondary" routerLink="/personality/assessment">
+            <mat-icon>replay</mat-icon> Retake
+          </a>
+        </div>
+      </section>
+    }
+  }
+
+  @case ('hidden') {}
+
+  @default {
+    @if (variant() === 'banner') {
+      <section class="ppb" [attr.aria-labelledby]="titleId">
+        <span class="ppb__icon" aria-hidden="true"><mat-icon>psychology</mat-icon></span>
+        <p class="ppb__text" [id]="titleId">
+          @if (state() === 'resume') {
+            <strong>You’re part-way through your personality assessment.</strong>
+            Finish it to see how your personality fits with these matches.
+          } @else {
+            <strong>See how your personalities fit.</strong>
+            Take the {{ minutes }}-minute assessment to unlock personality compatibility with your matches.
+          }
+        </p>
+        <a mat-raised-button class="suhana-btn-primary ppb__cta" routerLink="/personality/assessment">
+          {{ state() === 'resume' ? 'Continue' : 'Take the assessment' }}
+        </a>
+        @if (dismissible()) {
+          <button mat-icon-button type="button" class="ppb__close" (click)="dismiss()"
+                  aria-label="Remind me later" matTooltip="Remind me later">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </section>
+    } @else {
+      <section class="ppc" [attr.aria-labelledby]="titleId">
+        <span class="ppc__icon" aria-hidden="true"><mat-icon>psychology</mat-icon></span>
+        <div class="ppc__body">
+          <p class="ppc__eyebrow">Aurora Personality Assessment</p>
+          <h2 class="ppc__title" [id]="titleId">
+            {{ state() === 'resume' ? 'Finish your personality assessment' : 'Discover your personality type' }}
+          </h2>
+          <p class="ppc__text">
+            @if (state() === 'resume') {
+              You’ve answered {{ draftCount() }} of 32 statements — pick up right where you left off.
+            } @else {
+              Unlock personality compatibility with your matches and help members understand the real you.
+            }
+          </p>
+          <ul class="ppc__facts" aria-label="About the assessment">
+            <li><mat-icon aria-hidden="true">quiz</mat-icon> 32 statements</li>
+            <li><mat-icon aria-hidden="true">schedule</mat-icon> About {{ minutes }} minutes</li>
+            <li><mat-icon aria-hidden="true">save</mat-icon> Progress saved</li>
+          </ul>
+        </div>
+        <div class="ppc__actions">
+          <a mat-raised-button class="suhana-btn-primary" routerLink="/personality/assessment">
+            <mat-icon>{{ state() === 'resume' ? 'play_arrow' : 'auto_awesome' }}</mat-icon>
+            {{ state() === 'resume' ? 'Continue assessment' : 'Take the assessment' }}
+          </a>
+          <a mat-button class="ppc__secondary" routerLink="/personality">Learn more</a>
+        </div>
+        @if (dismissible()) {
+          <button mat-icon-button type="button" class="ppc__close" (click)="dismiss()"
+                  aria-label="Remind me later" matTooltip="Remind me later">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </section>
+    }
+  }
+}

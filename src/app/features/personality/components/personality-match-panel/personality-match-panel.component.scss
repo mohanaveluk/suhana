@@ -1,0 +1,160 @@
+:host { display: block; }
+
+.pmp-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  color: var(--suhana-text-secondary);
+}
+
+.pmp-message {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: var(--suhana-gradient-light);
+
+  > mat-icon { color: var(--suhana-maroon); flex: 0 0 auto; }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    h3 { margin: 0; color: var(--suhana-maroon); font-size: 1rem; }
+    p { margin: 0; line-height: 1.6; color: var(--suhana-text-primary); }
+  }
+
+  &--error > mat-icon { color: #c62828; }
+}
+
+// ── Compact ready state ──────────────────────────────────────────────────────
+.pmp-compact {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  &__body { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
+
+  &__style {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-weight: 600;
+    color: var(--suhana-text-primary);
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--suhana-rose-gold); }
+  }
+
+  &__strength { margin: 0; font-size: 0.88rem; line-height: 1.55; color: var(--suhana-text-secondary); }
+}
+
+.pmp-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  mat-icon { font-size: 17px; width: 17px; height: 17px; }
+
+  &--excellent { background: #e8f5e9; color: #1b5e20; }
+  &--good { background: var(--suhana-blush); color: var(--suhana-maroon); }
+  &--moderate { background: #fff8e1; color: #7a4f01; }
+  &--challenging { background: #f3e5f5; color: #5b2a6e; }
+}
+
+.pmp-link { color: var(--suhana-maroon); padding-left: 0; }
+
+// ── Two lenses (full ready state) ────────────────────────────────────────────
+.pmp-lenses {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pmp-lens {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 6px 20px var(--suhana-shadow);
+
+  &__value { font-size: 1.9rem; font-weight: 800; color: var(--suhana-maroon); line-height: 1.1; }
+  &__label { font-weight: 700; color: var(--suhana-text-primary); }
+  &__hint { font-size: 0.8rem; color: var(--suhana-text-secondary); }
+
+  &--insight {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--suhana-gradient-light);
+    box-shadow: none;
+    border: 1px solid var(--suhana-rose-gold-lighter);
+
+    > mat-icon { color: var(--suhana-maroon); flex: 0 0 auto; }
+    strong { color: var(--suhana-maroon); }
+    p { margin: 4px 0 0; line-height: 1.6; color: var(--suhana-text-primary); font-size: 0.9rem; }
+  }
+}
+
+// ── Status (someone still to complete) ───────────────────────────────────────
+.pmp-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+
+  &__rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px dashed var(--suhana-rose-gold-light);
+
+    > mat-icon { color: #b26a00; }
+
+    &--done {
+      border-style: solid;
+      border-color: var(--suhana-rose-gold-lighter);
+
+      > mat-icon { color: #2e7d32; }
+    }
+  }
+
+  &__who { font-weight: 700; color: var(--suhana-text-primary); min-width: 90px; }
+  &__title { font-size: 0.88rem; color: var(--suhana-text-secondary); }
+  &__pending { font-size: 0.88rem; color: #7a4f01; }
+  &__message { margin: 0; line-height: 1.6; color: var(--suhana-text-primary); }
+}
+
+@media (max-width: 900px) {
+  .pmp-lenses { grid-template-columns: 1fr 1fr; }
+  .pmp-lens--insight { grid-column: 1 / -1; }
+}
+
+@media (max-width: 520px) {
+  .pmp-compact { flex-direction: column; align-items: flex-start; }
+}

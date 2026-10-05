@@ -263,6 +263,12 @@ export const routes: Routes = [
       import('./features/testimonials/testimonials.routes').then(m => m.TESTIMONIALS_ROUTES),
   },
   {
+    path: 'personality',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/personality/personality.routes').then(m => m.PERSONALITY_ROUTES),
+  },
+  {
     path: '**',
     loadComponent: () =>
       import('./pages/not-found/not-found').then(m => m.NotFoundComponent),

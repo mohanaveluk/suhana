@@ -481,6 +481,44 @@
   }
 }
 
+// Personality lens under the main ring — opens the Personality tab.
+.personality-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--suhana-rose-gold-light);
+  background: #fff;
+  color: var(--suhana-maroon);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 32px;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+  &:hover { transform: translateY(-1px); box-shadow: 0 4px 12px var(--suhana-shadow); }
+  &:focus-visible { outline: 3px solid var(--suhana-maroon-bright); outline-offset: 2px; }
+
+  &--ready   { background: var(--suhana-gradient); color: #fff; border-color: transparent; }
+  &--action  { background: var(--suhana-blush); }
+  &--pending { background: #fff8e1; color: #7a4f01; border-color: #f3d38a; }
+  &--muted   { color: var(--suhana-text-secondary); }
+
+  @media (prefers-reduced-motion: reduce) { transition: none; }
+}
+
+.personality-intro {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--suhana-text-secondary);
+}
+
 .match-level-badge {
   display: flex;
   align-items: center;
