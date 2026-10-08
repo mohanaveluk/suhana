@@ -54,6 +54,8 @@ export interface SearchProfileResult {
   user: User | null;
   userId: string;
   profileCode: string | null;
+  /** Personality type, e.g. 'INFJ'; null when not taken. Only filled for signed-in callers. */
+  personalityType?: string | null;
   firstName: string;
   lastName: string | null;
   age: number | null;
@@ -444,6 +446,7 @@ export function toUserProfile(r: SearchProfileResult): UserProfile {
     status: (r.status as ProfileStatus) ?? 'active',
     profileCompleteness: r.profileCompleteness ?? 0,
     profileCode: r.profileCode ?? undefined,
+    personalityType: r.personalityType ?? null,
     lastActive: r.lastActive ? new Date(r.lastActive) : undefined,
     user: r.user ?? undefined,
   };

@@ -60,6 +60,8 @@ export interface UserProfile {
   status: ProfileStatus;
   profileCompleteness: number;
   profileCode?: string;
+  /** Aurora Personality Assessment type (e.g. 'INFJ'). Only sent in signed-in search results; null/absent when not taken. */
+  personalityType?: string | null;
   isProfileVerified?: boolean;
   isProfileLocked?: boolean;
   isProfileReported?: boolean;
