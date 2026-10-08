@@ -51,7 +51,7 @@
     }
 
     .logo-icon {
-      width: 11rem;
+      width: 15rem;
       flex-shrink: 0;
     }
 
@@ -81,9 +81,10 @@
 
   .brand-tagline {
     color: #dbbcc0; // #baa0a3;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     line-height: 1.6;
     margin-bottom: 20px;
+    margin-top: -40px;
   }
 }
 

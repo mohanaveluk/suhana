@@ -528,6 +528,15 @@ $sidebar-w: 310px;
     }
   }
 
+  // Personality type pill — bottom-left, clear of the right-hand viewer/share buttons.
+  .result-personality {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    max-width: calc(100% - 64px);
+    z-index: 1;
+  }
+
   .verified-tag {
     position: absolute;
     top: 10px;
@@ -632,7 +641,7 @@ $sidebar-w: 310px;
     align-items: center;
     gap: 8px;
 
-    .inline-spinner { display: inline-flex; }
+    .inline-spinner { display: inline-flex;     margin-bottom: -3px;}
     mat-icon { margin-bottom: -3px; }
 
     &:not([disabled]):hover {

@@ -256,6 +256,12 @@
                 </div>
               }
 
+              <!-- Personality type (members who took the assessment; renders nothing otherwise) -->
+              <app-personality-type-chip
+                class="result-personality"
+                variant="overlay"
+                [type]="profile.personalityType" />
+
 
               <!-- Photo viewer trigger -->
               @if (profile.photos && profile.photos.length) {

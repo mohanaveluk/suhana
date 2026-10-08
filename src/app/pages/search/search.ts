@@ -30,6 +30,7 @@ import {
 import { onSelectSearchKeydown } from '../../shared/utils/select-search.util';
 import { SelectSearchDirective } from '../../shared/directives/select-search.directive';
 import { RecentlyVisitedProfileComponent } from '../../shared/components/recently-visited-profile/recently-visited-profile';
+import { PersonalityTypeChipComponent } from '../../features/personality/components/personality-type-chip/personality-type-chip.component';
 
 /** How many AI results a guest sees before the registration prompt. */
 const GUEST_AI_LIMIT = 6;
@@ -39,7 +40,7 @@ const GUEST_AI_LIMIT = 6;
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     SelectSearchDirective,
-    FormsModule, LowerCasePipe, RouterLink, MaterialModule,
+    FormsModule, LowerCasePipe, RouterLink, MaterialModule, PersonalityTypeChipComponent,
     AiSearchBoxComponent, AiIntentChipsComponent,
     AiSuggestionsPanelComponent, SearchWithinResultsComponent,
     RecentlyVisitedProfileComponent,
