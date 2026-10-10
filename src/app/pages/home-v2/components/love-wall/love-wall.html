@@ -1,0 +1,40 @@
+@if (loading()) {
+  <div class="wall" aria-busy="true" aria-label="Loading love stories">
+    @for (s of skeletons; track s) { <div class="tile sk"></div> }
+  </div>
+} @else if (error()) {
+  <div class="state" role="alert">
+    <mat-icon>cloud_off</mat-icon>
+    <p>We couldn't load love stories right now.</p>
+    <button mat-stroked-button type="button" (click)="retry.emit()">Try again</button>
+  </div>
+} @else if (stories().length === 0) {
+  <div class="state">
+    <mat-icon>favorite_border</mat-icon>
+    <p>Real stories from our members will be shared here.</p>
+    <a mat-stroked-button routerLink="/success-stories">Visit success stories</a>
+  </div>
+} @else {
+  <div class="wall">
+    @for (s of stories(); track s.id) {
+      <button type="button" class="tile" (click)="openStory.emit(s)"
+              [attr.aria-label]="'Read the story of ' + couple(s)">
+        @if (photo(s)) {
+          <img [src]="photo(s)" alt="" loading="lazy" decoding="async" (error)="onImgError(s)" />
+        } @else {
+          <span class="noimg" aria-hidden="true"><mat-icon>favorite</mat-icon></span>
+        }
+        <span class="shade" aria-hidden="true"></span>
+        <span class="meta">
+          <span class="tag">{{ milestone(s) }}@if (milestoneDate(s); as d) { · {{ d | date: 'MMM y' }} }</span>
+          <strong>{{ couple(s) }}</strong>
+          @if (excerpt(s)) { <span class="excerpt">{{ excerpt(s) }}</span> }
+          <span class="read">Read their story <mat-icon>arrow_forward</mat-icon></span>
+        </span>
+      </button>
+    }
+  </div>
+  <div class="more">
+    <a mat-stroked-button routerLink="/success-stories">Explore all stories <mat-icon>arrow_forward</mat-icon></a>
+  </div>
+}

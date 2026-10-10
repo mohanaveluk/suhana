@@ -71,11 +71,18 @@
           <div class="flip-card-front">
             <div class="card-image" [style.background-image]="cardBg(profile.photos[0]?.url)">
               <div class="card-image-overlay"></div>
+              
               @if (profile.photos[0]?.isVerified) {
                 <div class="verified-badge" aria-label="Verified profile">
                   <mat-icon>verified</mat-icon>
                 </div>
               }
+
+              <div class="personality-type-container">
+                @if (profile.personalityType) {
+                  <app-personality-type-chip class="ptype" variant="overlay" [type]="profile.personalityType" />
+                }                 
+              </div>
               <div class="card-front-info">
                 <h3>{{ profile.firstName }}, {{ profile.age }}</h3>
                 <p><mat-icon>location_on</mat-icon> {{ profile.location.city }}</p>

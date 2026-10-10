@@ -1,0 +1,57 @@
+@if (loading()) {
+  <div class="universe sk" aria-busy="true" aria-label="Loading featured stories"></div>
+} @else if (count() === 0) {
+  <div class="empty">
+    <mat-icon>auto_stories</mat-icon>
+    <p>Featured love stories will appear here soon.</p>
+  </div>
+} @else {
+  <div class="universe" tabindex="0" role="group" aria-roledescription="carousel"
+       aria-label="Featured success stories. Use left and right arrow keys to browse."
+       (keydown)="onKey($event)" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+    @if (backdrop()) {
+      <div class="backdrop" aria-hidden="true" [style.background-image]="'url(' + backdrop() + ')'"></div>
+    }
+    <div class="veil" aria-hidden="true"></div>
+
+    <div class="stage">
+      @for (s of slides(); track s.story.id) {
+        <article class="slide" [class.active]="s.isActive" [style.--off]="s.off"
+                 [attr.data-d]="s.off < 0 ? -s.off : s.off">
+          <button type="button" class="slide-hit" (click)="onSlide(s)" [attr.tabindex]="s.off === 0 || (s.off > -2 && s.off < 2) ? 0 : -1"
+                  [attr.aria-label]="s.isActive ? 'Open the story of ' + couple(s.story) : 'Show the story of ' + couple(s.story)">
+            @if (photo(s.story)) {
+              <img [src]="photo(s.story)" [alt]="s.isActive ? 'Photo of ' + couple(s.story) : ''" loading="lazy"
+                   decoding="async" draggable="false" (error)="onImgError(s.story)" />
+            } @else {
+              <span class="noimg" aria-hidden="true"><mat-icon>favorite</mat-icon></span>
+            }
+            <span class="glow" aria-hidden="true"></span>
+          </button>
+        </article>
+      }
+    </div>
+
+    @if (current(); as s) {
+      <div class="caption" aria-live="polite">
+        <div class="kicker">
+          <span class="tag">{{ milestone(s) }}</span>
+          @if (milestoneDate(s); as d) { <span class="date">{{ d | date: 'MMM y' }}</span> }
+        </div>
+        <h3>{{ couple(s) }}</h3>
+        @if (excerpt(s)) { <p>{{ excerpt(s) }}</p> }
+        <button mat-flat-button type="button" class="open" (click)="openStory.emit(s)">
+          View story <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    }
+
+    @if (count() > 1) {
+      <div class="nav">
+        <button mat-icon-button type="button" (click)="step(-1)" aria-label="Previous story"><mat-icon>chevron_left</mat-icon></button>
+        <span class="pos" aria-hidden="true">{{ (active() % count()) + 1 }} / {{ count() }}</span>
+        <button mat-icon-button type="button" (click)="step(1)" aria-label="Next story"><mat-icon>chevron_right</mat-icon></button>
+      </div>
+    }
+  </div>
+}

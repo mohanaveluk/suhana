@@ -95,6 +95,7 @@ export class ProfileService {
       ...this._baseFilters(),
       page,
       limit: ProfileService.PAGE_SIZE,
+      isAuthenticated: this.auth.isAuthenticated() ? 'true' : 'false'
     };
     const term = this._searchTerm();
     if (term) params['query'] = term;

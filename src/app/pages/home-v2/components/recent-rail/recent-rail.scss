@@ -1,0 +1,85 @@
+:host { display: block; }
+
+.rail-wrap { position: relative; }
+
+.track {
+  list-style: none; margin: 0; padding: 8px 4px 20px;
+  display: flex; gap: 18px;
+  overflow-x: auto; scroll-snap-type: x proximity; scroll-padding: 0 4px;
+  scrollbar-width: thin; scrollbar-color: var(--av2-rose-gold) transparent;
+  // Let the next card peek in from the right edge.
+  mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+}
+
+.item {
+  flex: 0 0 236px; scroll-snap-align: start; min-width: 0;
+  &.sk {
+    height: 330px; border-radius: 22px;
+    background: linear-gradient(100deg, #f1dfe2 30%, #fbf1f2 50%, #f1dfe2 70%) 0 0 / 220% 100%;
+    animation: shimmer 1.4s linear infinite;
+  }
+}
+@keyframes shimmer { to { background-position: -220% 0; } }
+
+.pcard {
+  all: unset; box-sizing: border-box; display: block; width: 100%; cursor: pointer;
+  border-radius: 22px; overflow: hidden;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(253, 232, 232, 0.8));
+  border: 1px solid rgba(201, 168, 76, 0.45);
+  box-shadow: 0 12px 30px rgba(128, 0, 32, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+
+  &:hover, &:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--av2-gold);
+    box-shadow: 0 0 0 2px var(--av2-gold), 0 22px 44px rgba(128, 0, 32, 0.24);
+  }
+  &:focus-visible { outline: 3px solid var(--av2-maroon); outline-offset: 3px; }
+
+  .photo {
+    position: relative; display: block; width: 100%; aspect-ratio: 1 / 1.05; background: #e9d3d6;
+    img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
+    img[src$='avatar-default.svg'] { object-fit: contain; padding: 0%; background: linear-gradient(160deg, #f6dfe2, #ecc9cf); }
+    .badge {
+      position: absolute; top: 10px; right: 10px; padding: 2px 9px; border-radius: 999px;
+      font-size: 0.75rem; font-weight: 600; color: #3a0010; background: var(--av2-gold-light);
+    }
+  }
+  .body { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px 14px; min-width: 0; }
+  strong { font-size: 1.02rem; color: var(--av2-maroon-dark); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sub {
+    display: flex; align-items: center; gap: 4px; font-size: 0.82rem; color: var(--suhana-text-secondary, #6b5557);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    mat-icon { font-size: 15px; width: 15px; height: 15px; flex: none; color: var(--av2-rose-gold); }
+  }
+  .go {
+    margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; font-weight: 600; color: var(--av2-maroon);
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  }
+}
+
+.chev {
+  position: absolute; top: 40%; z-index: 2; background: #fff !important; color: var(--av2-maroon);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  &.left { left: -12px; } &.right { right: -12px; }
+}
+
+.state {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 16px; text-align: center;
+  color: var(--suhana-text-secondary, #6b5557);
+  mat-icon { font-size: 38px; width: 38px; height: 38px; color: var(--av2-rose-gold); }
+}
+
+@media (max-width: 640px) {
+  .chev { display: none; }   // touch scrolling is the primary interaction here
+  .item { flex-basis: 70%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pcard { transition: none; }
+  .pcard:hover, .pcard:focus-visible { transform: none; }
+  .item.sk { animation: none; }
+}

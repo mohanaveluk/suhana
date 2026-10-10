@@ -1,0 +1,122 @@
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" aria-label="Welcome to Aurora Matrimony"
+         (mouseenter)="setSlideHeld(true)" (mouseleave)="setSlideHeld(false)"
+         (focusin)="setSlideHeld(true)" (focusout)="setSlideHeld(false)">
+  @for (s of bannerSlides; track s.id; let i = $index) {
+    <div class="hero-bg" [class.on]="currentSlide() === i" aria-hidden="true"
+         [style.background-image]="'url(' + s.imageUrl + ')'"></div>
+  }
+  <div class="hero-veil" aria-hidden="true"></div>
+  <div class="hero-copy">
+    @if (slide().title) {
+      <p class="eyebrow">Aurora Matrimony</p>
+      <h1>{{ slide().title }}</h1>
+      <p class="lead">{{ slide().subtitle }}</p>
+      @if (slide().ctaText && slide().ctaLink) {
+        <a mat-flat-button class="gold-btn" [routerLink]="slide().ctaLink">
+          {{ slide().ctaText }} <mat-icon>arrow_forward</mat-icon>
+        </a>
+      }
+    }
+  </div>
+  <div class="hero-dots">
+    @for (s of bannerSlides; track s.id; let i = $index) {
+      <button type="button" [class.on]="currentSlide() === i" (click)="goToSlide(i)"
+              [attr.aria-current]="currentSlide() === i ? 'true' : null" [attr.aria-label]="'Show highlight ' + (i + 1)"></button>
+    }
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURED PROFILES — ORBIT ═══════════════ -->
+<section class="band band-dark profiles-band" aria-labelledby="fp-title">
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="wrap">
+    <header class="head light">
+      <p class="eyebrow">Featured Profiles</p>
+      <h2 id="fp-title">Meet Members Circling Their Perfect Match</h2>
+      <p class="sub">Verified members, gently orbiting. Tap a card to bring it forward, or open the profile.</p>
+    </header>
+    <app-profile-orbit [profiles]="featuredProfiles()" [loading]="profilesLoading()" [error]="profilesError()"
+                       (viewProfile)="openProfile($event)" (retry)="loadProfiles()" />
+    <div class="cta-row">
+      <a mat-stroked-button class="ghost-btn" routerLink="/search">Browse all profiles <mat-icon>arrow_forward</mat-icon></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURED STORIES — CINEMATIC ═══════════════ -->
+<section class="band band-night" aria-labelledby="fs-title">
+  <div class="wrap">
+    <header class="head light">
+      <p class="eyebrow">Aurora Story Universe</p>
+      <h2 id="fs-title">Stories That Began With a Hello</h2>
+      <p class="sub">A few of the journeys our members chose to share.</p>
+    </header>
+    <app-story-universe [stories]="featuredStories()" [loading]="featuredLoading()" (openStory)="openStory($event)" />
+  </div>
+</section>
+
+<!-- ═══════════════ LOVE STORIES WALL — EDITORIAL ═══════════════ -->
+<section class="band band-ivory" aria-labelledby="lw-title">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow dark">The Love Stories Wall</p>
+      <h2 id="lw-title">A Living Wall of Connections</h2>
+      <p class="sub">Real couples, in their own words.</p>
+    </header>
+    <app-love-wall [stories]="wallStories()" [loading]="wallLoading()" [error]="wallError()"
+                   (openStory)="openStory($event)" (retry)="loadWall()" />
+  </div>
+</section>
+
+<!-- ═══════════════ SUCCESS STATS (existing, API-backed) ═══════════════ -->
+<app-success-stats />
+
+<!-- ═══════════════ RECENT CONNECTIONS (signed-in members only) ═══════════════ -->
+@if (isAuthenticated()) {
+  <section class="band band-blush" aria-labelledby="rc-title">
+    <div class="wrap">
+      <header class="head">
+        <p class="eyebrow dark">Your Recent Connections</p>
+        <h2 id="rc-title">Pick Up Where You Left Off</h2>
+        <p class="sub">Profiles you've recently looked at, newest first.</p>
+      </header>
+      <app-recent-rail />
+    </div>
+  </section>
+}
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section class="band band-ivory" aria-labelledby="how-title">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow dark">How Aurora Works</p>
+      <h2 id="how-title">Four Simple Steps to Your Story</h2>
+    </header>
+    <ol class="steps">
+      @for (s of steps; track s.title; let i = $index) {
+        <li>
+          <span class="num">{{ i + 1 }}</span>
+          <mat-icon aria-hidden="true">{{ s.icon }}</mat-icon>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.desc }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ TESTIMONIALS (existing) ═══════════════ -->
+<app-featured-testimonials />
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="band band-dark cta" aria-labelledby="cta-title">
+  <div class="wrap center">
+    <h2 id="cta-title">Ready to Find Your Perfect Match?</h2>
+    <p class="sub">Let Aurora's AI help you find your ideal life partner.</p>
+    <div class="cta-row">
+      <a mat-flat-button class="gold-btn" routerLink="/register">Register as Bride <mat-icon>arrow_forward</mat-icon></a>
+      <a mat-stroked-button class="ghost-btn" routerLink="/register">Register as Groom <mat-icon>arrow_forward</mat-icon></a>
+    </div>
+  </div>
+</section>

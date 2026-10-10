@@ -1,0 +1,80 @@
+<div class="orbit" [class.reduced]="reduced">
+  @if (loading()) {
+    <div class="orbit-stage" aria-busy="true" aria-label="Loading featured profiles">
+      @for (s of skeletons; track s) {
+        <div class="card sk" [style.--off]="s - 2" [attr.data-d]="s === 2 ? 0 : (s === 1 || s === 3 ? 1 : 2)"></div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="state" role="alert">
+      <mat-icon>cloud_off</mat-icon>
+      <p>We couldn't load featured profiles right now.</p>
+      <button mat-stroked-button type="button" (click)="retry.emit()">Try again</button>
+    </div>
+  } @else if (count() === 0) {
+    <div class="state">
+      <mat-icon>favorite_border</mat-icon>
+      <p>New featured profiles will appear here soon.</p>
+    </div>
+  } @else {
+    <div class="orbit-stage" tabindex="0" role="group" aria-roledescription="carousel"
+         aria-label="Featured profiles. Use left and right arrow keys to browse."
+         (keydown)="onKey($event)"
+         (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)"
+         (pointercancel)="onPointerCancel()"
+         (mouseenter)="setHeld(true)" (mouseleave)="setHeld(false)"
+         (focusin)="setHeld(true)" (focusout)="setHeld(false)">
+      <div class="arc-line" aria-hidden="true"></div>
+
+      @for (c of cards(); track c.i) {
+        <article class="card"
+                 [class.active]="c.isActive"
+                 [class.jump]="jumping().has(c.i)"
+                 [style.--off]="c.off"
+                 [attr.data-d]="c.depth"
+                 [attr.aria-hidden]="c.depth > radius() ? 'true' : null">
+          <button type="button" class="card-hit" (click)="onCardClick(c)"
+                  [attr.tabindex]="c.depth > radius() ? -1 : 0"
+                  [attr.aria-label]="c.isActive ? 'View full profile of ' + fullName(c.profile) : 'Bring ' + fullName(c.profile) + ' to the front'">
+            <img [src]="photo(c.profile)" [alt]="c.isActive ? 'Photo of ' + c.profile.firstName : ''"
+                 loading="lazy" decoding="async" draggable="false" (error)="onImgError($event)" />
+            <span class="shade"></span>
+            @if (c.profile.personalityType) {
+              <app-personality-type-chip class="ptype" variant="overlay" [type]="c.profile.personalityType" />
+            }
+            @if (isVerified(c.profile)) {
+              <mat-icon class="verified" aria-label="Verified profile">verified</mat-icon>
+            }
+            <span class="info">
+              <strong>{{ c.profile.firstName }}@if (c.profile.age) {, {{ c.profile.age }}}</strong>
+              @if (jobOf(c.profile); as job) { <span class="line">{{ job }}</span> }
+              @if (cityOf(c.profile); as city) {
+                <span class="line"><mat-icon>location_on</mat-icon>{{ city }}</span>
+              }
+              @if (c.isActive) { <span class="cta">View profile <mat-icon>arrow_forward</mat-icon></span> }
+            </span>
+          </button>
+        </article>
+      }
+    </div>
+
+    <div class="controls">
+      <button mat-icon-button type="button" (click)="step(-1)" aria-label="Previous profile"><mat-icon>chevron_left</mat-icon></button>
+      <div class="dots">
+        @for (p of profiles(); track $index) {
+          <button type="button" class="dot" [class.on]="$index === active()"
+                  [attr.aria-current]="$index === active() ? 'true' : null" [attr.aria-label]="'Show ' + p.firstName"
+                  (click)="goTo($index)"></button>
+        }
+      </div>
+      <button mat-icon-button type="button" (click)="step(1)" aria-label="Next profile"><mat-icon>chevron_right</mat-icon></button>
+      <button mat-icon-button type="button" class="play" (click)="togglePlay()"
+              [attr.aria-label]="playing() ? 'Pause automatic rotation' : 'Resume automatic rotation'">
+        <mat-icon>{{ playing() ? 'pause' : 'play_arrow' }}</mat-icon>
+      </button>
+    </div>
+    <p class="sr-only" aria-live="polite">
+      @if (current(); as p) { Showing {{ fullName(p) }}, {{ active() + 1 }} of {{ count() }} }
+    </p>
+  }
+</div>

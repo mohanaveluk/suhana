@@ -1,0 +1,101 @@
+:host { display: block; }
+
+// 12-column grid; tile footprints repeat every 6 items so the layout reads as curated, not random.
+.wall {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 84px;
+  grid-auto-flow: dense;
+  gap: 14px;
+}
+
+.tile {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  grid-column: span 4;
+  grid-row: span 4;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #3a0a18;
+  box-shadow: 0 10px 28px var(--suhana-shadow, rgba(183, 110, 121, 0.15));
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+
+  &:nth-child(6n + 1) { grid-column: span 6; grid-row: span 5; }
+  &:nth-child(6n + 2) { grid-column: span 3; grid-row: span 5; }
+  &:nth-child(6n + 3) { grid-column: span 3; grid-row: span 5; }
+  &:nth-child(6n + 4) { grid-column: span 4; grid-row: span 4; }
+  &:nth-child(6n + 5) { grid-column: span 4; grid-row: span 4; border-radius: 120px 120px 20px 20px; }
+  &:nth-child(6n)     { grid-column: span 4; grid-row: span 4; }
+
+  img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+  .noimg {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--av2-maroon), #3a0a18);
+    mat-icon { font-size: 56px; width: 56px; height: 56px; color: var(--av2-gold); opacity: 0.75; }
+  }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(30, 0, 10, 0.9)); }
+
+  .meta {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 18px; color: #fff;
+    display: flex; flex-direction: column; gap: 4px;
+    strong { font-family: var(--av2-serif); font-size: 1.25rem; font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; }
+    .tag { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--av2-gold-light); }
+    .excerpt {
+      font-size: 0.9rem; line-height: 1.45; color: rgba(255, 255, 255, 0.86);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .read {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; font-weight: 600; color: var(--av2-gold-light);
+      max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.35s ease;
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    }
+  }
+
+  &:hover, &:focus-visible {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 44px rgba(92, 0, 24, 0.3);
+    img { transform: scale(1.06); }
+    .read { max-height: 24px; opacity: 1; margin-top: 4px; }
+  }
+  &:focus-visible { outline: 3px solid var(--av2-gold); outline-offset: 3px; }
+
+  &.sk {
+    background: linear-gradient(100deg, #ecd9dc 30%, #f8eaec 50%, #ecd9dc 70%) 0 0 / 220% 100%;
+    animation: shimmer 1.4s linear infinite; cursor: default;
+  }
+}
+@keyframes shimmer { to { background-position: -220% 0; } }
+
+.more { text-align: center; margin-top: 28px;
+  a { border-color: var(--av2-maroon); color: var(--av2-maroon); border-radius: 999px; } }
+
+.state {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 48px 16px; text-align: center;
+  color: var(--suhana-text-secondary, #6b5557);
+  mat-icon { font-size: 40px; width: 40px; height: 40px; color: var(--suhana-rose-gold, #b76e79); }
+}
+
+@media (max-width: 900px) {
+  .wall { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 90px; }
+  .tile, .tile:nth-child(n) { grid-column: span 1; grid-row: span 3; border-radius: 20px; }
+  .tile:nth-child(5n + 1) { grid-column: span 2; grid-row: span 3; }
+}
+
+@media (max-width: 560px) {
+  .wall { grid-template-columns: 1fr; grid-auto-rows: auto; gap: 14px; }
+  .tile, .tile:nth-child(n) { grid-column: auto; grid-row: auto; aspect-ratio: 4 / 4.4; }
+  // No hover on touch — always show the call to action.
+  .tile .read { max-height: 24px; opacity: 1; margin-top: 4px; }
+}
+
+@media (hover: none) { .tile .read { max-height: 24px; opacity: 1; margin-top: 4px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .tile, .tile img, .tile .read { transition: none; }
+  .tile:hover, .tile:focus-visible { transform: none; }
+  .tile:hover img, .tile:focus-visible img { transform: none; }
+  .tile.sk { animation: none; }
+}
