@@ -10,6 +10,7 @@ import { SuccessStatsComponent } from "../../features/match-fixed/success-stats/
 import { SuccessStoriesWallComponent } from "../../features/match-fixed/success-stories-wall/success-stories-wall.component";
 import { FeaturedTestimonialsComponent } from "../../features/testimonials/components/featured-testimonials/featured-testimonials.component";
 import { RecentlyVisitedProfileComponent } from '../../shared/components/recently-visited-profile/recently-visited-profile';
+import { PersonalityTypeChipComponent } from '../../features/personality/components/personality-type-chip/personality-type-chip.component';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,7 @@ import { RecentlyVisitedProfileComponent } from '../../shared/components/recentl
     SuccessStoriesWallComponent,
     FeaturedTestimonialsComponent,
     RecentlyVisitedProfileComponent,
+    PersonalityTypeChipComponent
 ],
   templateUrl: './home.html',
   styleUrl: './home.scss',

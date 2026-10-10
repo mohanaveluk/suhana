@@ -1,0 +1,158 @@
+:host { display: block; }
+
+.orbit {
+  --r: 540px;            // arc radius
+  --step: 19deg;         // angle between neighbouring cards
+  --cw: 220px;
+  --ch: 300px;
+  --stage-h: 590px;
+  position: relative;
+}
+
+.orbit-stage {
+  position: relative;
+  height: var(--stage-h);
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+  outline: none;
+  &:focus-visible { box-shadow: inset 0 0 0 2px var(--av2-gold); border-radius: 16px; }
+}
+
+// Faint golden track the cards travel along.
+.arc-line {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--ch) / 2 + 20px);
+  width: calc(var(--r) * 2);
+  height: calc(var(--r) * 2);
+  margin-left: calc(var(--r) * -1);
+  border-radius: 50%;
+  border: 1px dashed rgba(232, 213, 160, 0.28);
+  pointer-events: none;
+}
+
+// Position on the arc comes from CSS trig on --off (integer slot offset from the active card),
+// so Angular only ever updates one custom property per card.
+.card {
+  --a: calc(var(--off) * var(--step));
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  width: var(--cw);
+  height: var(--ch);
+  margin-left: calc(var(--cw) / -2);
+  transform-origin: 50% 50%;
+  transform:
+    translate(calc(#{'sin(var(--a))'} * var(--r)), calc((1 - #{'cos(var(--a))'}) * var(--r)))
+    rotate(var(--a))
+    scale(0.82);
+  opacity: 0.85;
+  border-radius: 18px;
+  transition: transform 0.9s cubic-bezier(.22, .8, .24, 1), opacity 0.6s ease, filter 0.6s ease;
+  will-change: transform;
+
+  &[data-d='0'] { z-index: 10; opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1.14); }
+  &[data-d='1'] { z-index: 9; }
+  &[data-d='2'] { z-index: 8; opacity: 0.62; filter: saturate(0.8); }
+  &[data-d='3'] { z-index: 7; opacity: 0.38; filter: saturate(0.6); }
+  &[data-d='4'] { z-index: 1; opacity: 0; pointer-events: none; }
+  &.jump { transition: none; }
+
+  &.active {
+    box-shadow: 0 0 0 2px var(--av2-gold), 0 28px 60px rgba(0, 0, 0, 0.55), 0 0 60px rgba(201, 168, 76, 0.28);
+  }
+  &:not(.active) { box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4); }
+}
+
+.card-hit {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+  cursor: pointer;
+  background: #2a0a12;
+  &:focus-visible { outline: 3px solid var(--av2-gold-light); outline-offset: 3px; }
+
+  img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; pointer-events: none; }
+  // Members without a photo: centre the default avatar on a warm gradient instead of stretching it.
+  img[src$='avatar-default.svg'] { object-fit: contain; padding: 22% 22% 40%; background: linear-gradient(160deg, #6e0a26, #34000d); }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 38%, rgba(40, 0, 12, 0.92) 100%); }
+  // Personality chip: top-left, mirroring the verified badge top-right; leaves room for it.
+  .ptype { position: absolute; top: 10px; left: 10px; max-width: calc(100% - 52px); }
+  .verified {
+    position: absolute; top: 10px; right: 10px; color: var(--av2-gold-light);
+    font-size: 22px; width: 22px; height: 22px; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+  }
+  .info {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 14px;
+    display: flex; flex-direction: column; gap: 2px; color: #fff;
+    strong { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.2px; }
+    .line {
+      display: flex; align-items: center; gap: 4px; font-size: 0.82rem; color: rgba(255, 255, 255, 0.82);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      mat-icon { font-size: 14px; width: 14px; height: 14px; color: var(--av2-rose-gold-light); }
+    }
+    .cta {
+      margin-top: 8px; align-self: flex-start; display: inline-flex; align-items: center; gap: 4px;
+      padding: 6px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: #3a0010;
+      background: linear-gradient(135deg, var(--av2-gold-light), var(--av2-gold));
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    }
+  }
+}
+
+.card.sk {
+  opacity: 0.5;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.16) 50%, rgba(255, 255, 255, 0.05) 70%) 0 0 / 220% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer { to { background-position: -220% 0; } }
+
+.controls {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px;
+  button[mat-icon-button] { color: var(--av2-gold-light); }
+  .dots { display: flex; gap: 8px; padding: 0 8px; flex-wrap: wrap; justify-content: center; }
+  .dot {
+    all: unset; box-sizing: border-box; width: 9px; height: 9px; border-radius: 50%; cursor: pointer;
+    background: rgba(255, 255, 255, 0.28); transition: width 0.3s, background 0.3s;
+    &.on { width: 26px; border-radius: 6px; background: var(--av2-gold); }
+    &:focus-visible { outline: 2px solid var(--av2-gold-light); outline-offset: 3px; }
+  }
+}
+
+.state {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 56px 16px; text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  mat-icon { font-size: 40px; width: 40px; height: 40px; color: var(--av2-rose-gold-light); }
+  button { color: var(--av2-gold-light); border-color: var(--av2-gold); }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+// ── Tablet ──────────────────────────────────────────────────────────────
+@media (max-width: 1024px) {
+  .orbit { --r: 440px; --step: 21deg; --cw: 190px; --ch: 262px; --stage-h: 520px; }
+  .card[data-d='3'] { opacity: 0; pointer-events: none; }
+}
+
+// ── Mobile: compact arc, centred card with its neighbours peeking out ─────
+@media (max-width: 640px) {
+  .orbit { --r: 300px; --step: 33deg; --cw: 205px; --ch: 285px; --stage-h: 385px; }
+  .card {
+    top: 14px;
+    &[data-d='2'], &[data-d='3'] { opacity: 0; pointer-events: none; }
+  }
+  .card[data-d='0'] { transform: translate(0, 0) rotate(0deg) scale(1.04); }
+  .arc-line { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: opacity 0.2s linear; will-change: auto; }
+  .card.sk { animation: none; }
+  .dot { transition: none; }
+}
