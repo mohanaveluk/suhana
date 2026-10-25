@@ -84,8 +84,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       ctaText: 'See Your compatibility',
       ctaLink: '/matchmaking',
     },
+    { id: 5, imageUrl: '/banners/banner9.png', title: '16 Personality Match', midTitle: 'ENTJ ♥ INFJ', subtitle: 'Discover how your personalities connect. AI-powered insights reveal your strengths, communication styles, and relationship dynamics.', ctaText: 'Discover Your Type', ctaLink: '/personality' },
     {
-      id: 5,
+      id: 6,
       //imageUrl: '',
       imageUrl: '/banners/banner8.png',
       title: '', //'Voice & Video introduction',
@@ -101,7 +102,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     { icon: 'psychology', title: 'AI-Powered Matching', desc: 'Smart algorithms analyze 50+ parameters to find your ideal partner with detailed compatibility scores.' },
     { icon: 'verified_user', title: 'Verified Profiles', desc: 'Every profile undergoes thorough verification for authenticity, giving you peace of mind.' },
     { icon: 'lock', title: 'Privacy Controls', desc: 'You control who sees your photos. Choose from mutual matches, premium members, or approval-based access.' },
-    { icon: 'auto_awesome', title: 'Horoscope Matching', desc: 'Optional Kundli Milan integration for traditional compatibility checks based on birth details.' },
+    { icon: 'auto_awesome', title: 'Personality & Horoscope Matching', desc: 'Discover personality compatibility by comparing 16 personality types, such as ENTJ and INFJ, alongside optional Vedic horoscope matching with Kundli Milan for a more meaningful connection.' },
     { icon: 'videocam', title: 'Video Introductions', desc: 'Upload 30-60 second videos to showcase your personality and build trust before meeting.' },
     { icon: 'chat_bubble', title: 'Smart Chat', desc: 'Chat unlocks on mutual interest with AI-suggested icebreakers to kick off great conversations.' },
   ];
@@ -122,7 +123,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.bannerInterval = setInterval(() => {
       this.currentSlide.update(i => (i + 1) % this.bannerSlides.length);
-    }, 5000);
+    }, 15000);
   }
 
   ngOnDestroy(): void {

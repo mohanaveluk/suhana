@@ -225,6 +225,19 @@
                   <mat-icon>location_on</mat-icon>
                   <div><label>Location</label><span>{{ p.location.city }}, {{ p.location.state }}, {{ p.location.country }} </span></div>
                 </div>
+                @if (p.location.addressLine1 || p.location.addressLine2) {
+                  <div class="detail-item">
+                    <mat-icon>home</mat-icon>
+                    <div>
+                      <label>Address</label>
+                      <span>
+                        @if (p.location.addressLine1) { {{ p.location.addressLine1 }} }
+                        @if (p.location.addressLine1 && p.location.addressLine2) { <br /> }
+                        @if (p.location.addressLine2) { {{ p.location.addressLine2 }} }
+                      </span>
+                    </div>
+                  </div>
+                }
                 <div class="detail-item">
                   <mat-icon>flight</mat-icon>
                   <div><label>Willing to Relocate</label><span>{{ p.location.willingToRelocate ? 'Yes' : 'No' }}</span></div>
@@ -359,10 +372,30 @@
             <mat-card-header><mat-card-title>Family Details</mat-card-title></mat-card-header>
             <mat-card-content>
               <div class="details-grid">
-                <div class="detail-item">
-                  <mat-icon>family_restroom</mat-icon>
-                  <div><label>Family Type</label><span>{{ p.familyDetails.familyType | titlecase }}</span></div>
-                </div>
+                @if (p.familyDetails.fatherName) {
+                  <div class="detail-item">
+                    <mat-icon>man</mat-icon>
+                    <div><label>Father's Name</label><span>{{ p.familyDetails.fatherName }}</span></div>
+                  </div>
+                }
+                @if (p.familyDetails.motherName) {
+                  <div class="detail-item">
+                    <mat-icon>woman</mat-icon>
+                    <div><label>Mother's Name</label><span>{{ p.familyDetails.motherName }}</span></div>
+                  </div>
+                }
+                @if (p.familyDetails.brothers) {
+                  <div class="detail-item">
+                    <mat-icon>group</mat-icon>
+                    <div><label>Brother(s)</label><span>{{ p.familyDetails.brothers }}</span></div>
+                  </div>
+                }
+                @if (p.familyDetails.sisters) {
+                  <div class="detail-item">
+                    <mat-icon>group</mat-icon>
+                    <div><label>Sister(s)</label><span>{{ p.familyDetails.sisters }}</span></div>
+                  </div>
+                }
                 @if (p.familyDetails.fatherOccupation) {
                   <div class="detail-item">
                     <mat-icon>person</mat-icon>
@@ -375,6 +408,10 @@
                     <div><label>Mother's Occupation</label><span>{{ p.familyDetails.motherOccupation }}</span></div>
                   </div>
                 }
+                <div class="detail-item">
+                  <mat-icon>family_restroom</mat-icon>
+                  <div><label>Family Type</label><span>{{ p.familyDetails.familyType | titlecase }}</span></div>
+                </div>
                 @if (p.familyDetails.siblings !== undefined) {
                   <div class="detail-item">
                     <mat-icon>group</mat-icon>
@@ -543,6 +580,18 @@
                     <div class="detail-item">
                       <mat-icon>auto_awesome</mat-icon>
                       <div><label>Nakshatra (Birth Star)</label><span>{{ p.horoscope.nakshatra }}</span></div>
+                    </div>
+                  }
+                  @if (p.horoscope.lagna) {
+                    <div class="detail-item">
+                      <mat-icon>wb_twilight</mat-icon>
+                      <div><label>Lagna (Ascendant)</label><span>{{ p.horoscope.lagna }}</span></div>
+                    </div>
+                  }
+                  @if (p.horoscope.tossing) {
+                    <div class="detail-item">
+                      <mat-icon>stars</mat-icon>
+                      <div><label>Tossing</label><span>{{ p.horoscope.tossing }}</span></div>
                     </div>
                   }
                   @if (p.horoscope.manglikStatus) {

@@ -49,6 +49,7 @@ export class HomeV2Component implements OnInit {
     { id: 2, imageUrl: '/banners/banner5.png', title: 'Where Traditions Meet Modern Love', subtitle: 'Trusted by thousands of families since 2024', ctaText: 'Browse Profiles', ctaLink: '/search' },
     { id: 3, imageUrl: '/banners/banner6.png', title: 'Compatibility, Explained', subtitle: 'Smart insights powered by AI tell you exactly why you\'re meant to be', ctaText: 'See Your Matches', ctaLink: '/matchmaking' },
     { id: 4, imageUrl: '/banners/banner7.png', title: 'AI-Powered Horoscope Match', subtitle: 'Get Kundli matching, compatibility scores, and dosha analysis based on Vedic astrology.', ctaText: 'See Your Compatibility', ctaLink: '/matchmaking' },
+    { id: 6, imageUrl: '/banners/banner9.png', title: '16 Personality Match', midTitle: 'ENTJ ♥ INFJ', subtitle: 'Discover how your personalities connect. AI-powered insights reveal your strengths, communication styles, and relationship dynamics.', ctaText: 'Discover Your Type', ctaLink: '/personality' },
     { id: 5, imageUrl: '/banners/banner8.png', title: '', subtitle: '', ctaText: '', ctaLink: '' },
   ];
   protected readonly currentSlide = signal(0);
@@ -66,6 +67,15 @@ export class HomeV2Component implements OnInit {
   protected readonly wallStories = signal<SuccessStoryResponse[]>([]);
   protected readonly wallLoading = signal(true);
   protected readonly wallError = signal(false);
+
+  protected readonly features = [
+    { icon: 'psychology', title: 'AI-Powered Matching', desc: 'Smart algorithms analyze 50+ parameters to find your ideal partner with detailed compatibility scores.' },
+    { icon: 'verified_user', title: 'Verified Profiles', desc: 'Every profile undergoes thorough verification for authenticity, giving you peace of mind.' },
+    { icon: 'lock', title: 'Privacy Controls', desc: 'You control who sees your photos. Choose from mutual matches, premium members, or approval-based access.' },
+    { icon: 'auto_awesome', title: 'Personality & Horoscope Matching', desc: 'Discover personality compatibility by comparing 16 personality types, such as ENTJ and INFJ, alongside optional Vedic horoscope matching with Kundli Milan for a more meaningful connection.' },
+    { icon: 'videocam', title: 'Video Introductions', desc: 'Upload 30-60 second videos to showcase your personality and build trust before meeting.' },
+    { icon: 'chat_bubble', title: 'Smart Chat', desc: 'Chat unlocks on mutual interest with AI-suggested icebreakers to kick off great conversations.' },
+  ];
 
   protected readonly steps = [
     { icon: 'person_add', title: 'Create Profile', desc: 'Register as a bride or groom and complete your profile with preferences, photos, and family details.' },

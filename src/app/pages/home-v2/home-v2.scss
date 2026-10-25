@@ -24,11 +24,14 @@
   }
   &-veil {
     position: absolute; inset: 0;
-    background: linear-gradient(100deg, rgba(60, 0, 18, 0.92) 0%, rgba(92, 0, 24, 0.7) 45%, rgba(92, 0, 24, 0.15) 100%);
+    //background: linear-gradient(100deg, rgb (145 0 43 / 0.92) 0%,  rgb(255 186 204 / 0.7) 45%, rgb(92 0 24 / 0.15) 100%)
+    background:   linear-gradient(100deg, rgb(60 0 18 / 0.92) 0%, rgba(92, 0, 24, 0.3) 25%, rgb(92 0 24 / 0.15) 100%);
+    //background: linear-gradient(100deg, rgba(226, 88, 129, 0.92) 0%, rgba(175, 100, 120, 0.7) 45%, rgba(0, 0, 0, 0.15) 100%);
   }
   &-copy {
     position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 64px 24px 80px;
     h1 { font-family: var(--av2-serif); font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.08; margin: 8px 0 14px; max-width: 14em; color: #fff; font-weight: 600; }
+    h2 { font-family: var(--av2-serif); font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.1; margin: 0 0 16px; color: #fcd679; font-weight: 600; }
     .lead { font-size: 1.15rem; max-width: 36em; color: rgba(255, 255, 255, 0.88); margin: 0 0 26px; }
   }
   &-dots {
@@ -55,7 +58,8 @@
   color: #fff;
 }
 .band-ivory { background: var(--av2-ivory); }
-.band-blush { background: linear-gradient(180deg, var(--av2-blush), var(--av2-ivory)); }
+.band-blush1 { background: linear-gradient(180deg, var(--av2-blush), var(--av2-ivory)); }
+.band-blush { background: var(--suhana-gradient-light); }
 
 .profiles-band { padding-bottom: 56px; }
 .glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; opacity: 0.35;
@@ -106,6 +110,29 @@
     border-radius: 50%; font-weight: 700; font-size: 0.9rem; color: #3a0010; background: linear-gradient(135deg, var(--av2-gold-light), var(--av2-gold));
   }
 }
+
+// ── Why choose Aurora ────────────────────────────────────────────────────
+.features {
+  list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+}
+.feature {
+  background: #fff; border-radius: 18px; padding: 32px 24px; text-align: center;
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  box-shadow: 0 2px 12px rgba(183, 110, 121, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  &:hover { transform: translateY(-4px); box-shadow: 0 12px 32px var(--suhana-shadow, rgba(183, 110, 121, 0.15)); }
+  .feature-icon {
+    width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 16px; display: grid; place-items: center;
+    background: var(--suhana-gradient-light, linear-gradient(135deg, #f0d4d8, #fde8e8));
+    mat-icon { font-size: 28px; width: 28px; height: 28px; color: var(--av2-maroon); }
+  }
+  h3 { margin: 0 0 8px; font-size: 1.05rem; color: var(--av2-maroon); }
+  p { margin: 0; font-size: 0.93rem; line-height: 1.6; color: var(--suhana-text-secondary, #6b5557); }
+}
+
+@media (max-width: 960px) { .features { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+@media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .feature { transition: none; &:hover { transform: none; } } }
 
 @media (max-width: 960px) { .steps { grid-template-columns: repeat(2, 1fr); gap: 28px 16px; } }
 
