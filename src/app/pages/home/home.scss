@@ -56,6 +56,18 @@
     @media (max-width: 768px) { font-size: 2rem; }
   }
 
+  h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffd122; //#ffdcc7;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+    animation: fadeInUp 0.8s ease;
+    line-height: normal;
+
+    @media (max-width: 768px) { font-size: 2rem; }
+  }
+
   p {
     font-size: 1.2rem;
     opacity: 0.9;

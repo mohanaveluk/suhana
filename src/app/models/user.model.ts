@@ -93,6 +93,9 @@ export interface Location {
   state: string;
   country: string;
   willingToRelocate: boolean;
+  /** Street address — private; only present for authenticated viewers. */
+  addressLine1?: string | null;
+  addressLine2?: string | null;
 }
 
 export interface Education {
@@ -126,6 +129,12 @@ export interface FamilyDetails {
   familyType: FamilyType;
   fatherOccupation?: string;
   motherOccupation?: string;
+  /** Private; only present for authenticated viewers. */
+  fatherName?: string | null;
+  motherName?: string | null;
+  /** Free text, e.g. "1 elder brother (married)" — distinct from the numeric `siblings`. */
+  brothers?: string | null;
+  sisters?: string | null;
   siblings?: number;
   familyValues?: string;
   familyPreferenceNote?: string;
@@ -149,6 +158,8 @@ export interface HoroscopeDetails {
   placeOfBirth?: string;
   rashi?: string;
   nakshatra?: string;
+  lagna?: string;
+  tossing?: string;
   manglikStatus?: string;
   documentUrl?: string;
 }
@@ -290,6 +301,7 @@ export interface BannerSlide {
   imageUrl: string;
   title: string;
   subtitle: string;
+  midTitle?: string;
   ctaText: string;
   ctaLink: string;
 }

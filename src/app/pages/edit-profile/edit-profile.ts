@@ -297,6 +297,8 @@ export class EditProfileComponent implements OnInit {
     state:             ['', Validators.required],
     country:           ['India', Validators.required],
     willingToRelocate: [false],
+    addressLine1:      ['', Validators.maxLength(255)],
+    addressLine2:      ['', Validators.maxLength(255)],
   });
 
   // ── Section 4: Education ────────────────────────────────────────────────────
@@ -319,6 +321,10 @@ export class EditProfileComponent implements OnInit {
     familyType:           ['nuclear' as FamilyType, Validators.required],
     fatherOccupation:     [''],
     motherOccupation:     [''],
+    fatherName:           ['', Validators.maxLength(150)],
+    motherName:           ['', Validators.maxLength(150)],
+    brothers:             ['', Validators.maxLength(255)],
+    sisters:              ['', Validators.maxLength(255)],
     siblings:             [0],
     familyValues:         [''],
     familyPreferenceNote: [''],
@@ -331,6 +337,8 @@ export class EditProfileComponent implements OnInit {
     placeOfBirth:  [''],
     rashi:         [''],
     nakshatra:     [''],
+    lagna:         ['', Validators.maxLength(100)],
+    tossing:       ['', Validators.maxLength(100)],
     manglikStatus: [''],
   });
 
@@ -465,6 +473,7 @@ export class EditProfileComponent implements OnInit {
     this.locationForm.patchValue({
       city: p.location.city, state: p.location.state,
       country: p.location.country, willingToRelocate: p.location.willingToRelocate,
+      addressLine1: p.location.addressLine1 ?? '', addressLine2: p.location.addressLine2 ?? '',
     });
     void this.selectCountryByName(p.location.country ?? 'India').then(() => {
       // Re-apply the state now that its options have loaded from the resolved country.
@@ -482,6 +491,10 @@ export class EditProfileComponent implements OnInit {
       familyType: p.familyDetails.familyType,
       fatherOccupation: p.familyDetails.fatherOccupation ?? '',
       motherOccupation: p.familyDetails.motherOccupation ?? '',
+      fatherName: p.familyDetails.fatherName ?? '',
+      motherName: p.familyDetails.motherName ?? '',
+      brothers: p.familyDetails.brothers ?? '',
+      sisters: p.familyDetails.sisters ?? '',
       siblings: p.familyDetails.siblings ?? 0,
       familyValues: p.familyDetails.familyValues ?? '',
       familyPreferenceNote: p.familyDetails.familyPreferenceNote ?? '',
@@ -493,6 +506,8 @@ export class EditProfileComponent implements OnInit {
         placeOfBirth: p.horoscope.placeOfBirth ?? '',
         rashi: p.horoscope.rashi ?? '', 
         nakshatra: p.horoscope.nakshatra ?? '',
+        lagna: p.horoscope.lagna ?? '',
+        tossing: p.horoscope.tossing ?? '',
         manglikStatus: p.horoscope.manglikStatus ?? '',
       });
       this.horoscopeDocUrl.set(p.horoscope.documentUrl ?? null);
@@ -717,6 +732,8 @@ export class EditProfileComponent implements OnInit {
       location: {
         city: loc.city ?? '', state: loc.state ?? '',
         country: loc.country ?? 'India', willingToRelocate: loc.willingToRelocate ?? false,
+        addressLine1: (loc.addressLine1 ?? '').trim(),
+        addressLine2: (loc.addressLine2 ?? '').trim(),
       },
       education: { level: edu.level ?? '', field: edu.field ?? '', institution: edu.institution || undefined },
       occupation: {
@@ -727,6 +744,10 @@ export class EditProfileComponent implements OnInit {
         familyType: (fam.familyType ?? 'nuclear') as FamilyType,
         fatherOccupation: fam.fatherOccupation || undefined,
         motherOccupation: fam.motherOccupation || undefined,
+        fatherName: (fam.fatherName ?? '').trim(),
+        motherName: (fam.motherName ?? '').trim(),
+        brothers: (fam.brothers ?? '').trim(),
+        sisters: (fam.sisters ?? '').trim(),
         siblings: fam.siblings   ?? undefined,
         familyValues: fam.familyValues || undefined,
         familyPreferenceNote: fam.familyPreferenceNote || undefined,
@@ -737,6 +758,8 @@ export class EditProfileComponent implements OnInit {
         placeOfBirth: horo.placeOfBirth || undefined,
         rashi: horo.rashi || undefined,
         nakshatra: horo.nakshatra || undefined,
+        lagna: (horo.lagna ?? '').trim(),
+        tossing: (horo.tossing ?? '').trim(),
         manglikStatus: horo.manglikStatus || undefined,
         documentUrl: this.horoscopeDocUrl() || undefined,
       },

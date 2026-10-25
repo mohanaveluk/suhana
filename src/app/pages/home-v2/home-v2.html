@@ -11,6 +11,9 @@
     @if (slide().title) {
       <p class="eyebrow">Aurora Matrimony</p>
       <h1>{{ slide().title }}</h1>
+      @if (slide().midTitle) {
+        <h2>{{ slide().midTitle }}</h2>
+      }
       <p class="lead">{{ slide().subtitle }}</p>
       @if (slide().ctaText && slide().ctaLink) {
         <a mat-flat-button class="gold-btn" [routerLink]="slide().ctaLink">
@@ -103,6 +106,26 @@
         </li>
       }
     </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ WHY CHOOSE AURORA ═══════════════ -->
+<section class="band band-blush" aria-labelledby="why-title">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow dark">Why Choose Aurora?</p>
+      <h2 id="why-title">Smart Features for a Delightful Search</h2>
+      <p class="sub">Smart features that make finding your life partner a delightful experience</p>
+    </header>
+    <ul class="features">
+      @for (f of features; track f.title) {
+        <li class="feature">
+          <span class="feature-icon" aria-hidden="true"><mat-icon>{{ f.icon }}</mat-icon></span>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.desc }}</p>
+        </li>
+      }
+    </ul>
   </div>
 </section>
 

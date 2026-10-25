@@ -381,6 +381,17 @@
           <form [formGroup]="locationForm" class="ep-form">
             <div class="ep-row">
               <mat-form-field appearance="outline">
+                <mat-label>Address Line 1 — Optional</mat-label>
+                <input matInput formControlName="addressLine1" maxlength="255" autocomplete="address-line1" />
+                <mat-icon matPrefix>home</mat-icon>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Address Line 2 — Optional</mat-label>
+                <input matInput formControlName="addressLine2" maxlength="255" autocomplete="address-line2" />
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
                 <mat-label>Country</mat-label>
                 <mat-select formControlName="country"
                             [appSelectSearch]="countrySearch()"
@@ -634,15 +645,24 @@
           <form [formGroup]="familyForm" class="ep-form">
             <div class="ep-row">
               <mat-form-field appearance="outline">
-                <mat-label>Family Type</mat-label>
-                <mat-select formControlName="familyType">
-                  <mat-option value="nuclear">Nuclear</mat-option>
-                  <mat-option value="joint">Joint</mat-option>
-                </mat-select>
+                <mat-label>Father's Name — Optional</mat-label>
+                <input matInput formControlName="fatherName" maxlength="150" />
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Number of Siblings</mat-label>
-                <input matInput type="number" formControlName="siblings" min="0" max="10" />
+                <mat-label>Mother's Name — Optional</mat-label>
+                <input matInput formControlName="motherName" maxlength="150" />
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Brother(s) — Optional</mat-label>
+                <input matInput formControlName="brothers" maxlength="255"
+                       placeholder="e.g. 1 elder brother (married)" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Sister(s) — Optional</mat-label>
+                <input matInput formControlName="sisters" maxlength="255"
+                       placeholder="e.g. 1 younger sister" />
               </mat-form-field>
             </div>
             <div class="ep-row">
@@ -653,6 +673,19 @@
               <mat-form-field appearance="outline">
                 <mat-label>Mother's Occupation — Optional</mat-label>
                 <input matInput formControlName="motherOccupation" />
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Family Type</mat-label>
+                <mat-select formControlName="familyType">
+                  <mat-option value="nuclear">Nuclear</mat-option>
+                  <mat-option value="joint">Joint</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Number of Siblings</mat-label>
+                <input matInput type="number" formControlName="siblings" min="0" max="10" />
               </mat-form-field>
             </div>
             <mat-form-field appearance="outline" class="full-width">
@@ -673,7 +706,7 @@
             <mat-panel-title class="ep-panel-title">
               <mat-icon>auto_awesome</mat-icon> Horoscope Details
             </mat-panel-title>
-            <mat-panel-description>Rashi, nakshatra &amp; manglik status</mat-panel-description>
+            <mat-panel-description>Rashi, nakshatra, lagna &amp; manglik status</mat-panel-description>
           </mat-expansion-panel-header>
 
           <form [formGroup]="horoscopeForm" class="ep-form">
@@ -726,6 +759,16 @@
                   <mat-option value="">Not specified</mat-option>
                   @for (n of nakshatraList; track n) { <mat-option [value]="n">{{ n }}</mat-option> }
                 </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="ep-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Lagna (Ascendant) — Optional</mat-label>
+                <input matInput formControlName="lagna" maxlength="100" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Tossing — Optional</mat-label>
+                <input matInput formControlName="tossing" maxlength="100" />
               </mat-form-field>
             </div>
 
