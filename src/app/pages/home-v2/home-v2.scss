@@ -50,7 +50,8 @@
 .wrap { position: relative; max-width: 1280px; margin: 0 auto; padding: 0 24px; &.center { text-align: center; } }
 
 .band-dark {
-  background: radial-gradient(ellipse at 50% 0%, #6e0a26 0%, var(--av2-maroon-dark) 55%, #34000d 100%);
+  //background: radial-gradient(ellipse at 50% 0%, #6e0a26 0%, var(--av2-maroon-dark) 55%, #34000d 100%);
+  background: radial-gradient(ellipse at 50% 0%, #6e0a26 0%, #8e2157 55%, #34000d 100%);
   color: #fff;
 }
 .band-night {
