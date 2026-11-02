@@ -1,5 +1,5 @@
 import {
-  Component, ChangeDetectionStrategy, inject, signal, computed, OnInit,
+  Component, ChangeDetectionStrategy, ElementRef, inject, signal, computed, viewChild, OnInit,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -41,6 +41,8 @@ export class ShareProfileComponent implements OnInit {
   private readonly sanitizer = inject(DomSanitizer);
   protected readonly dialogRef = inject<MatDialogRef<ShareProfileComponent>>(MatDialogRef);
   protected readonly data      = inject<ShareProfileData>(MAT_DIALOG_DATA);
+
+  private readonly emailInput = viewChild<ElementRef<HTMLInputElement>>('emailInput');
 
   protected readonly shareUrl = `${window.location.origin}/view/${this.data.profileCode}`;
 
@@ -127,17 +129,39 @@ export class ShareProfileComponent implements OnInit {
     parts.forEach(p => this.tryAddEmail(p));
   }
 
-  private tryAddEmail(email: string): void {
+  /**
+   * Turns whatever is still typed in the recipient box into chips, exactly as pressing
+   * Enter would. Returns false if some of it is not a valid address (it is left in the
+   * box and an error is shown) so callers can stop instead of sending without it.
+   */
+  private commitPendingEmail(): boolean {
+    const input = this.emailInput()?.nativeElement;
+    const raw = (input?.value ?? '').trim();
+    if (!input || !raw) return true;
+
+    const leftovers: string[] = [];
+    for (const part of raw.split(/[,;\s]+/).map(s => s.trim()).filter(Boolean)) {
+      const result = this.tryAddEmail(part);
+      if (result === 'invalid') leftovers.push(part);
+    }
+    input.value = leftovers.join(', ');
+    if (leftovers.length === 0) this.emailError.set(null); // a duplicate is not a reason to block sending
+    return leftovers.length === 0;
+  }
+
+  /** 'added' | 'duplicate' (already in the list — harmless) | 'invalid' */
+  private tryAddEmail(email: string): 'added' | 'duplicate' | 'invalid' {
     if (!EMAIL_RE.test(email)) {
       this.emailError.set(`"${email}" is not a valid email address.`);
-      return;
+      return 'invalid';
     }
     if (this.emails().includes(email)) {
       this.emailError.set(`"${email}" is already added.`);
-      return;
+      return 'duplicate';
     }
     this.emailError.set(null);
     this.emails.update(list => [...list, email]);
+    return 'added';
   }
 
   // ── Link actions ──────────────────────────────────────────────────────────
@@ -355,6 +379,7 @@ export class ShareProfileComponent implements OnInit {
   /** "Show email preview" toggle — fetches the rendered template on each open, since form fields may have changed. */
   protected async togglePreview(): Promise<void> {
     const next = !this.showPreview();
+    if (next) this.commitPendingEmail(); // so the preview's "To:" includes an email typed but not yet confirmed
     this.showPreview.set(next);
     if (next) await this.loadPreview();
   }
@@ -400,6 +425,9 @@ export class ShareProfileComponent implements OnInit {
   // ── Submit ────────────────────────────────────────────────────────────────
   protected async sendShare(): Promise<void> {
     this.form.markAllAsTouched();
+    // Apply an email that was typed but never confirmed with Enter/comma.
+    // If it's invalid, tryAddEmail has already shown why — don't send without it.
+    if (!this.commitPendingEmail()) return;
     if (!this.canSubmit()) {
       if (!this.emails().length) {
         this.emailError.set('Please add at least one recipient email address.');
