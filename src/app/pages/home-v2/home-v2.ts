@@ -45,12 +45,12 @@ export class HomeV2Component implements OnInit {
 
   // ── Hero (same slides as the original home page) ──────────────────────────
   protected readonly bannerSlides: BannerSlide[] = [
-    { id: 1, imageUrl: '/banners/banner4.png', title: 'Find Your Perfect Match', subtitle: 'AI-powered matchmaking that understands your heart\'s desires', ctaText: 'Start Your Journey', ctaLink: '/register' },
-    { id: 2, imageUrl: '/banners/banner5.png', title: 'Where Traditions Meet Modern Love', subtitle: 'Trusted by thousands of families since 2024', ctaText: 'Browse Profiles', ctaLink: '/search' },
-    { id: 3, imageUrl: '/banners/banner6.png', title: 'Compatibility, Explained', subtitle: 'Smart insights powered by AI tell you exactly why you\'re meant to be', ctaText: 'See Your Matches', ctaLink: '/matchmaking' },
-    { id: 4, imageUrl: '/banners/banner7.png', title: 'AI-Powered Horoscope Match', subtitle: 'Get Kundli matching, compatibility scores, and dosha analysis based on Vedic astrology.', ctaText: 'See Your Compatibility', ctaLink: '/matchmaking' },
-    { id: 6, imageUrl: '/banners/banner9.png', title: '16 Personality Match', midTitle: 'ENTJ ♥ INFJ', subtitle: 'Discover how your personalities connect. AI-powered insights reveal your strengths, communication styles, and relationship dynamics.', ctaText: 'Discover Your Type', ctaLink: '/personality' },
-    { id: 5, imageUrl: '/banners/banner8.png', title: '', subtitle: '', ctaText: '', ctaLink: '' },
+    { id: 1, imageUrl: '/banners/banner9.png', title: '16 Personality Match', midTitle: 'ENTJ ♥ INFJ', subtitle: 'Discover how your personalities connect. AI-powered insights reveal your strengths, communication styles, and relationship dynamics.', ctaText: 'Discover Your Type', ctaLink: '/personality' },
+    { id: 2, imageUrl: '/banners/banner12.png', title: 'Find Your Perfect Match', subtitle: 'AI-powered matchmaking that understands your heart\'s desires', ctaText: 'Start Your Journey', ctaLink: '/register' },
+    { id: 3, imageUrl: '/banners/banner10.png', title: 'Where Traditions Meet Modern Love', subtitle: 'Trusted by thousands of families since 2024', ctaText: 'Browse Profiles', ctaLink: '/search' },
+    { id: 4, imageUrl: '/banners/banner6.png', title: 'Compatibility, Explained', subtitle: 'Smart insights powered by AI tell you exactly why you\'re meant to be', ctaText: 'See Your Matches', ctaLink: '/matchmaking' },
+    { id: 5, imageUrl: '/banners/banner7.png', title: 'AI-Powered Horoscope Match', subtitle: 'Get Kundli matching, compatibility scores, and dosha analysis based on Vedic astrology.', ctaText: 'See Your Compatibility', ctaLink: '/matchmaking' },
+    { id: 6, imageUrl: '/banners/banner8.png', title: '', subtitle: '', ctaText: '', ctaLink: '' },
   ];
   protected readonly currentSlide = signal(0);
   protected readonly slideHeld = signal(false);
