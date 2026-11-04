@@ -1,0 +1,153 @@
+<div class="pp" role="img" [attr.aria-label]="title() + ' of ' + name()">
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <header class="pp-head">
+    <!-- <svg class="pp-flower pp-flower--l" viewBox="0 0 120 120" aria-hidden="true">
+      <g fill="#d98aa0" opacity=".55">
+        <circle cx="40" cy="40" r="16"/><circle cx="64" cy="34" r="14"/><circle cx="76" cy="58" r="14"/>
+        <circle cx="52" cy="70" r="15"/><circle cx="30" cy="62" r="13"/>
+      </g>
+      <circle cx="53" cy="52" r="9" fill="#e8c46a" opacity=".8"/>
+    </svg>
+    <svg class="pp-flower pp-flower--r" viewBox="0 0 120 120" aria-hidden="true">
+      <g fill="#d98aa0" opacity=".55">
+        <circle cx="40" cy="40" r="16"/><circle cx="64" cy="34" r="14"/><circle cx="76" cy="58" r="14"/>
+        <circle cx="52" cy="70" r="15"/><circle cx="30" cy="62" r="13"/>
+      </g>
+      <circle cx="53" cy="52" r="9" fill="#e8c46a" opacity=".8"/>
+    </svg> -->
+    <!-- <img class="pp-flower pp-flower--l" src="images/orose-tns.png" alt="" aria-hidden="true">
+    <img class="pp-flower pp-flower--r" src="images/dahila-tns.png" alt="" aria-hidden="true"> -->
+    <img class="pp-flower pp-flower--l" src="images/flower.svg" alt="" aria-hidden="true">
+    <img class="pp-flower pp-flower--r" src="images/flower.svg" alt="" aria-hidden="true">
+    <div class="pp-id">
+      @if (code()) { <div>Profile ID · <strong>{{ code() }}</strong></div> }
+      <div class="pp-id-site">{{ contact.website }}</div>
+    </div>
+
+    <div class="pp-logo" role="presentation" [style.background-image]="logoCss()"></div>
+    <div class="pp-brand">AURORA MATRIMONY</div>
+    <div class="pp-tag"><span></span>WHERE FOREVER BEGINS<span></span></div>
+  </header>
+
+  <div class="pp-ribbon"><span>{{ title() }}</span></div>
+
+  <!-- ═══════════ BODY ═══════════ -->
+  <main class="pp-body">
+
+    <section class="pp-top">
+      <div class="pp-photo">
+        <div class="pp-photo-arch">
+          @if (photoSrc()) {
+            <div class="pp-photo-img" [style.background-image]="'url(' + photoSrc() + ')'"></div>
+          } @else {
+            <div class="pp-photo-empty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="icons.person"/></svg>
+              <span>Photo on request</span>
+            </div>
+          }
+        </div>
+        <!-- <svg class="pp-flower pp-flower--photo" viewBox="0 0 120 120" aria-hidden="true">
+          <g fill="#f2a5b5" opacity=".85">
+            <circle cx="40" cy="40" r="17"/><circle cx="66" cy="34" r="15"/><circle cx="78" cy="60" r="15"/>
+            <circle cx="52" cy="72" r="16"/><circle cx="30" cy="62" r="14"/>
+          </g>
+          <circle cx="54" cy="54" r="9" fill="#e8c46a"/>
+        </svg> -->
+      </div>
+
+      <div class="pp-intro">
+        <h1 class="pp-name">{{ name() }}</h1>
+        @if (meta()) { <p class="pp-meta">{{ meta() }}</p> }
+        @if (tagline()) { <p class="pp-quote">“{{ tagline() }}”</p> }
+
+        @if (personal().length) {
+          <div class="pp-card pp-card--personal">
+            <h2><span>PERSONAL DETAILS</span></h2>
+            <div class="pp-grid">
+              @for (r of personal(); track r.k) {
+                <div class="pp-kv"><span class="k">{{ r.k }}</span><span class="v">{{ r.v }}</span></div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="pp-mid" [class.pp-mid--single]="!horoscope().length">
+      @if (career().length) {
+        <div class="pp-card">
+          <h2><svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="icons.school"/></svg><span>EDUCATION &amp; CAREER</span></h2>
+          @for (r of career(); track r.k) {
+            <div class="pp-kv pp-kv--stack"><span class="k">{{ r.k }}</span><span class="v">{{ r.v }}</span></div>
+          }
+        </div>
+      }
+
+      @if (horoscope().length) {
+        <div class="pp-card pp-card--horo">
+          <h2><svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="icons.star"/></svg><span>HOROSCOPE</span></h2>
+          <div class="pp-horo">
+            <div class="pp-horo-rows">
+              @for (r of horoscope(); track r.k) {
+                <div class="pp-kv pp-kv--stack"><span class="k">{{ r.k }}</span><span class="v">{{ r.v }}</span></div>
+              }
+            </div>
+            <figure class="pp-chart">
+              <svg viewBox="0 0 200 200" aria-hidden="true">
+                <rect x="1" y="1" width="198" height="198" fill="#fffaf2" stroke="#5c0018" stroke-width="2"/>
+                <path d="M1 1 L199 199 M199 1 L1 199 M100 1 L199 100 L100 199 L1 100 Z" fill="none" stroke="#5c0018" stroke-width="1.6"/>
+                @for (h of houses; track h.n) {
+                  @if (h.n === 1 && hasLagna()) {
+                    <text [attr.x]="h.x" [attr.y]="h.y + 14" class="asc" text-anchor="middle">Asc</text>
+                  }
+                  <text [attr.x]="h.x" [attr.y]="h.y" class="hn" text-anchor="middle">{{ h.n }}</text>
+                }
+              </svg>
+              <figcaption>Lagna chart</figcaption>
+            </figure>
+          </div>
+        </div>
+      }
+    </section>
+
+    @if (preferences().length) {
+      <section class="pp-card pp-card--prefs">
+        <h2><svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="icons.heart"/></svg><span>PARTNER PREFERENCES</span></h2>
+        <div class="pp-prefs">
+          @for (r of preferences(); track r.k) {
+            <div class="pp-kv pp-kv--stack"><span class="k">{{ r.k }}</span><span class="v">{{ r.v }}</span></div>
+          }
+        </div>
+        <p class="pp-note">Family details are shared through Aurora on request.</p>
+      </section>
+    }
+
+    <section class="pp-icons">
+      @for (h of highlights; track h.label) {
+        <div class="pp-icon">
+          <span class="pp-icon-dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="h.icon"/></svg></span>
+          <span class="pp-icon-label">{{ h.label }}</span>
+        </div>
+      }
+    </section>
+  </main>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="pp-foot">
+    <div class="pp-foot-h">REGISTER TODAY TO GET YOUR PERFECT LIFE PARTNER!</div>
+    <div class="pp-foot-s">Discover your suitable life partner with Aurora</div>
+    <div class="pp-foot-row">
+      <div class="pp-foot-contact">
+        <div class="pp-foot-label">Contact / WhatsApp</div>
+        <div class="pp-foot-phone">
+          <!-- <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="icons.phone"/></svg> -->
+          <img class="" style="width: 60px; height: 60px;" src="images/phone-icon-tns.png" alt="" aria-hidden="true">
+          <span>{{ contact.phone }}</span>
+        </div>
+      </div>
+      <div class="pp-foot-trust">Trustworthy &amp;<br />Verified Profiles</div>
+    </div>
+    <div class="pp-foot-site">{{ contact.website }}</div>
+  </footer>
+</div>

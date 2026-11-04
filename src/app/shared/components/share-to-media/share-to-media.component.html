@@ -1,0 +1,150 @@
+<div class="stm-drawer">
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <div class="stm-header">
+    <div class="stm-header-content">
+      <div class="stm-header-icon" aria-hidden="true"><mat-icon>campaign</mat-icon></div>
+      <div class="stm-header-text">
+        <h2 class="stm-title">Share to Media</h2>
+        <p class="stm-subtitle">Turn this profile into a shareable card for WhatsApp, Instagram, Facebook or email.</p>
+      </div>
+    </div>
+    <button mat-icon-button class="stm-close" type="button" (click)="close()" aria-label="Close share panel">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- ═══════════ BODY ═══════════ -->
+  <div class="stm-body">
+
+    <!-- Poster preview (scaled) -->
+    <div #previewBox class="stm-preview">
+      @if (!photoReady()) {
+        <div class="stm-preview-loading" role="status"><mat-spinner diameter="28"></mat-spinner><span>Loading photo…</span></div>
+      }
+      <div class="stm-preview-frame" [style.width.px]="posterW * scale()" [style.height.px]="posterH * scale()">
+        <div class="stm-preview-scale" [style.transform]="'scale(' + scale() + ')'">
+          @if (data.profile) {
+            <app-profile-poster [profile]="data.profile" [photoSrc]="photoSrc()" [logoSrc]="logoSrc()" />
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (photoNote()) {
+      <p class="stm-note" role="status"><mat-icon>info</mat-icon><span>{{ photoNote() }}</span></p>
+    }
+
+    @if (isWorking()) {
+      <div class="stm-progress" role="status" aria-live="polite">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <span>{{ busyLabel() }}</span>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="stm-error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error() }}</span>
+        <button mat-icon-button type="button" (click)="error.set(null)" aria-label="Dismiss"><mat-icon>close</mat-icon></button>
+      </div>
+    }
+
+    <!-- Share targets -->
+    <section class="stm-section" aria-labelledby="stm-share-h">
+      <h3 id="stm-share-h">Share the card</h3>
+      <div class="stm-targets">
+        <button mat-stroked-button type="button" class="stm-btn stm-btn--wa" (click)="shareWhatsApp()" [disabled]="!photoReady() || isWorking()">
+          <mat-icon>chat</mat-icon><span>WhatsApp</span>
+        </button>
+        <button mat-stroked-button type="button" class="stm-btn stm-btn--fb" (click)="shareFacebook()" [disabled]="!photoReady() || isWorking()">
+          <mat-icon>thumb_up</mat-icon><span>Facebook</span>
+        </button>
+        <button mat-stroked-button type="button" class="stm-btn stm-btn--ig" (click)="shareInstagram()" [disabled]="!photoReady() || isWorking()">
+          <mat-icon>photo_camera</mat-icon><span>Instagram</span>
+        </button>
+        @if (canNativeShare()) {
+          <button mat-stroked-button type="button" class="stm-btn" (click)="shareNative()" [disabled]="!photoReady() || isWorking()">
+            <mat-icon>ios_share</mat-icon><span>More apps…</span>
+          </button>
+        }
+        <button mat-stroked-button type="button" class="stm-btn" (click)="download()" [disabled]="!photoReady() || isWorking()">
+          <mat-icon>download</mat-icon><span>Download</span>
+        </button>
+        <button mat-stroked-button type="button" class="stm-btn" (click)="copyImage()" [disabled]="!photoReady() || isWorking()">
+          <mat-icon>content_copy</mat-icon><span>Copy image</span>
+        </button>
+        <button mat-stroked-button type="button" class="stm-btn" (click)="copyImageLink()" [disabled]="!photoReady() || isWorking()">
+          <mat-icon>link</mat-icon><span>Copy image link</span>
+        </button>
+      </div>
+      <p class="stm-hint">
+        <mat-icon>lock</mat-icon>
+        <span>
+          WhatsApp, Facebook and Instagram ask you to sign in or authorise sharing on their own page if you aren't
+          already signed in. Aurora never sees your social credentials. Instagram has no web share link, so on a
+          computer the card is saved and the caption copied for you to post.
+        </span>
+      </p>
+    </section>
+
+    <mat-divider></mat-divider>
+
+    <!-- Email with embedded poster -->
+    <section class="stm-section" aria-labelledby="stm-email-h">
+      <h3 id="stm-email-h">Email the card</h3>
+
+      @if (emailSent().length) {
+        <div class="stm-sent" role="status">
+          <mat-icon>check_circle</mat-icon>
+          <span>Sent to {{ emailSent().join(', ') }}. The card is embedded in the email.</span>
+          <button mat-button type="button" (click)="emailSent.set([])">Send another</button>
+        </div>
+      } @else {
+        <form [formGroup]="form" class="stm-form" novalidate (ngSubmit)="sendEmail()">
+          <mat-form-field appearance="outline">
+            <mat-label>Receiver name</mat-label>
+            <input matInput formControlName="receiverName" autocomplete="name" />
+            @if (form.controls.receiverName.touched && form.controls.receiverName.invalid) {
+              <mat-error>Enter the receiver's name (at least 2 characters).</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Recipient email(s)</mat-label>
+            <input matInput formControlName="emails" placeholder="name@example.com, other@example.com" autocomplete="email" />
+            <mat-hint>Separate several addresses with commas.</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Message</mat-label>
+            <textarea matInput rows="3" formControlName="message" maxlength="1000"></textarea>
+          </mat-form-field>
+
+          @if (emailError()) {
+            <p class="stm-field-error" role="alert">{{ emailError() }}</p>
+          }
+
+          <button mat-raised-button class="suhana-btn-primary stm-send" type="submit"
+                  (click)="form.markAllAsTouched()"
+                  [disabled]="!photoReady() || isWorking() || emailBusy()">
+            @if (emailBusy()) { <mat-spinner diameter="18"></mat-spinner> } @else { <mat-icon>send</mat-icon> }
+            {{ emailBusy() ? 'Sending…' : 'Send email' }}
+          </button>
+        </form>
+      }
+    </section>
+  </div>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <div class="stm-footer">
+    <button mat-stroked-button class="stm-cancel" type="button" (click)="close()">Close</button>
+  </div>
+</div>
+
+<!-- Full-size twin used for capture; kept off-screen so the scaled preview is never what gets rasterised. -->
+<div class="stm-offscreen" aria-hidden="true">
+  @if (data.profile && photoReady()) {
+    <app-profile-poster #capture [profile]="data.profile" [photoSrc]="photoSrc()" [logoSrc]="logoSrc()" />
+  }
+</div>
