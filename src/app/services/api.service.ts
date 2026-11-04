@@ -139,6 +139,14 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/v1/images/proxy`, { params, responseType: 'blob' });
   }
 
+  /** Stores the rendered "share profile" card at profile-media/{profileId}-{datetime}.jpg; resolves { data: { imageUrl, fileName } }. */
+  uploadProfileMediaImage(profileId: string, image: Blob): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', image, 'profile-card.jpg');
+    formData.append('profileId', profileId);
+    return this.http.post(`${this.baseUrl}/v1/images/profile-media`, formData);
+  }
+
   /** Stores a rendered profile poster at social-media/{profileId}-{datetime}.jpg; resolves { data: { imageUrl, fileName } }. */
   uploadSocialMediaImage(profileId: string, image: Blob): Observable<any> {
     const formData = new FormData();

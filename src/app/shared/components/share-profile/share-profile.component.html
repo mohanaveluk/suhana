@@ -58,18 +58,23 @@
         <button mat-stroked-button class="sp-quick-btn sp-quick-btn--whatsapp"
                 type="button"
                 (click)="shareViaWhatsApp()"
+                [disabled]="mediaBusy() !== 'idle'"
                 matTooltip="Share via WhatsApp">
           <mat-icon>chat</mat-icon>
-          <span>WhatsApp</span>
+          <span>{{ mediaBusy() === 'whatsapp' ? 'Preparing image…' : 'WhatsApp' }}</span>
         </button>
         <button mat-stroked-button class="sp-quick-btn sp-quick-btn--email"
                 type="button"
                 (click)="shareViaEmailClient()"
+                [disabled]="mediaBusy() !== 'idle'"
                 matTooltip="Open in email app">
           <mat-icon>email</mat-icon>
-          <span>Email App</span>
+          <span>{{ mediaBusy() === 'email' ? 'Preparing image…' : 'Email App' }}</span>
         </button>
       </div>
+      @if (mediaNote()) {
+        <p class="sp-media-note" role="status">{{ mediaNote() }}</p>
+      }
     </div>
 
     <mat-divider class="sp-divider"></mat-divider>
