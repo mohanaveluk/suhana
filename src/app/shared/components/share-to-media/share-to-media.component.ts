@@ -9,6 +9,7 @@ import { MaterialModule } from '../../modules/material.module';
 import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services';
 import { ShareProfileData } from '../share-profile/share-profile.component';
+import { renderElementToJpeg } from '../../utils/html-capture.util';
 import { POSTER_HEIGHT, POSTER_WIDTH, ProfilePosterComponent } from './profile-poster/profile-poster.component';
 
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
@@ -153,40 +154,13 @@ export class ShareToMediaComponent {
     if (!el) throw new Error('Poster is not ready yet.');
     this.busy.set('rendering');
     try {
-      const html2canvas = (await import('html2canvas')).default;
-      await document.fonts?.ready;
-      const canvas = await html2canvas(el, {
-        scale: CAPTURE_SCALE,
-        useCORS: true,
-        backgroundColor: '#fffaf2',
-        logging: false,
+      const blob = await renderElementToJpeg(el, {
         width: POSTER_WIDTH,
         height: POSTER_HEIGHT,
-        windowWidth: POSTER_WIDTH,
-        windowHeight: POSTER_HEIGHT,
-        scrollX: 0,
-        scrollY: 0,
-        // The live poster sits off-screen inside the dialog, whose overflow/transform/position
-        // would clip or offset it. In html2canvas's private copy of the page, lift it out to the
-        // body at 0,0 so it is painted exactly as designed.
-        // Everything else in the copy (sticky app toolbar, dialog backdrop and drawer — all
-        // position:fixed with high z-index) is removed too, otherwise it paints over the poster's header.
-        onclone: (doc, cloned) => {
-          // While a dialog is open the CDK locks page scroll with `html { position: fixed; top: -<scrollY>px }`
-          // (class cdk-global-scrollblock). The clone inherits that, which shoves the poster out of view and
-          // exports a blank image whenever the page was scrolled. Neutralise it, and drop everything else.
-          doc.documentElement.className = '';
-          doc.body.className = '';
-          doc.body.replaceChildren(cloned);
-          Object.assign(doc.documentElement.style, {
-            position: 'static', top: 'auto', left: 'auto', margin: '0', padding: '0',
-            background: 'transparent', overflow: 'visible', width: `${POSTER_WIDTH}px`, height: `${POSTER_HEIGHT}px`,
-          });
-          Object.assign(doc.body.style, { margin: '0', padding: '0', overflow: 'visible', width: `${POSTER_WIDTH}px`, height: `${POSTER_HEIGHT}px`, position: 'relative' });
-          Object.assign(cloned.style, { position: 'absolute', left: '0', top: '0', margin: '0', transform: 'none' });        },
+        scale: CAPTURE_SCALE,
+        quality: JPEG_QUALITY,
+        backgroundColor: '#fffaf2',
       });
-      const blob = await new Promise<Blob | null>(res => canvas.toBlob(res, 'image/jpeg', JPEG_QUALITY));
-      if (!blob) throw new Error('Could not create the image.');
       this.blob = blob;
       return blob;
     } finally {
