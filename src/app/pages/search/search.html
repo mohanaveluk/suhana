@@ -315,6 +315,13 @@
                 </button>
 
                 <button mat-menu-item
+                        (click)="shareToMedia(profile, $event)"
+                        [disabled]="isGuest() || !profile.profileCode">
+                  <mat-icon>campaign</mat-icon>
+                  <span>Share to media</span>
+                </button>
+
+                <button mat-menu-item
                         (click)="sendInterestFromCard(profile)"
                         [disabled]="isGuest() || isSelf(profile) || interestSentIds().has(profile.user?.id ?? '')">
                   <mat-icon>{{ interestSentIds().has(profile.user?.id ?? '') ? 'check_circle' : 'favorite' }}</mat-icon>

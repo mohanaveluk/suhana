@@ -16,6 +16,7 @@ import {
   ShareProfileComponent,
   ShareProfileData,
 } from '../../shared/components/share-profile/share-profile.component';
+import { ShareToMediaComponent } from '../../shared/components/share-to-media/share-to-media.component';
 import { AiSearchService } from '../../services/ai-search.service';
 import {
   IntentChip, SearchIntent, SearchMode, SEARCH_MODE_LABELS,
@@ -412,6 +413,30 @@ export class SearchComponent implements OnInit {
         profileCode: profile.profileCode,
         profileName: `${profile.firstName} ${profile.lastName}`.trim(),
         profile: profile,
+      } satisfies ShareProfileData,
+      position:               { right: '0', top: '0' },
+      height:                 '100vh',
+      maxHeight:              '100vh',
+      width:                  '700px',
+      maxWidth:               '100vw',
+      panelClass:             'share-profile-drawer',
+      disableClose:           false,
+      autoFocus:              false,
+      enterAnimationDuration: '0ms',
+      exitAnimationDuration:  '0ms',
+    });
+  }
+
+  /** Opens the poster/social-media share drawer for a profile card. Members only — the upload endpoint is authenticated. */
+  shareToMedia(profile: UserProfile, event: MouseEvent): void {
+    event.stopPropagation();
+    if (!profile.profileCode) return;
+    this.dialog.open(ShareToMediaComponent, {
+      data: {
+        profileId: profile.userId,
+        profileCode: profile.profileCode,
+        profileName: `${profile.firstName} ${profile.lastName}`.trim(),
+        profile,
       } satisfies ShareProfileData,
       position:               { right: '0', top: '0' },
       height:                 '100vh',

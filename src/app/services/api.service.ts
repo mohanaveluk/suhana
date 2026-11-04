@@ -133,6 +133,20 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/v1/images/upload-variants`, formData);
   }
 
+  /** Downloads one of our stored images through the API (the bucket has no CORS headers, so a canvas cannot read it directly). */
+  fetchStoredImage(url: string): Observable<Blob> {
+    const params = new HttpParams().set('url', url);
+    return this.http.get(`${this.baseUrl}/v1/images/proxy`, { params, responseType: 'blob' });
+  }
+
+  /** Stores a rendered profile poster at social-media/{profileId}-{datetime}.jpg; resolves { data: { imageUrl, fileName } }. */
+  uploadSocialMediaImage(profileId: string, image: Blob): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', image, 'profile-poster.jpg');
+    formData.append('profileId', profileId);
+    return this.http.post(`${this.baseUrl}/v1/images/social-media`, formData);
+  }
+
   uploadAdmxPhoto(id: string, file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file, file.name);
@@ -589,9 +603,24 @@ export class ApiService {
     shareUrl: string;
     subject: string;
     body: string;
+    posterImageUrl?: string;
     preview?: boolean;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/profiles/share`, data);
+  }
+
+  shareMediaProfile(data: {
+    profileId?: string;
+    profileCode?: string;
+    receiverName: string;
+    toEmail: string[];
+    shareUrl: string;
+    subject: string;
+    body: string;
+    posterImageUrl?: string;
+    preview?: boolean;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/profiles/share-media`, data);
   }
 
   // Profile share by guest
@@ -603,9 +632,24 @@ export class ApiService {
     shareUrl: string;
     subject: string;
     body: string;
+    posterImageUrl?: string;
     preview?: boolean;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/profiles/gshare`, data);
+  }
+
+  shareMediaProfileByGuest(data: {
+    profileId?: string;
+    profileCode?: string;
+    receiverName: string;
+    toEmail: string[];
+    shareUrl: string;
+    subject: string;
+    body: string;
+    posterImageUrl?: string;
+    preview?: boolean;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/profiles/gshare-media`, data);
   }
 
   // Contact
