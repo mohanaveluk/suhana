@@ -310,15 +310,15 @@
                 </button>
 
                 <button mat-menu-item (click)="shareProfile(profile, $event)">
-                  <mat-icon>share</mat-icon>
-                  <span>Share Profile</span>
+                  <mat-icon>mail</mat-icon>
+                  <span>Send Mail</span>
                 </button>
 
                 <button mat-menu-item
                         (click)="shareToMedia(profile, $event)"
                         [disabled]="isGuest() || !profile.profileCode">
-                  <mat-icon>campaign</mat-icon>
-                  <span>Share to media</span>
+                  <mat-icon>share</mat-icon>
+                  <span>Share Profile</span>
                 </button>
 
                 <button mat-menu-item
