@@ -128,7 +128,7 @@
           <button mat-raised-button class="suhana-btn-primary stm-send" type="submit"
                   (click)="form.markAllAsTouched()"
                   [disabled]="!photoReady() || isWorking() || emailBusy()">
-            @if (emailBusy()) { <mat-spinner diameter="18"></mat-spinner> } @else { <mat-icon>send</mat-icon> }
+            @if (emailBusy()) { <mat-spinner diameter="18" class="sp-spinner"></mat-spinner> } @else { <mat-icon>send</mat-icon> }
             {{ emailBusy() ? 'Sending…' : 'Send email' }}
           </button>
         </form>

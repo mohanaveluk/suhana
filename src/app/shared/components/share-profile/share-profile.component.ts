@@ -583,9 +583,16 @@ export class ShareProfileComponent implements OnInit {
         const src = img.getAttribute('src') ?? '';
         if (src.startsWith('https://storage.googleapis.com/')) {
           try {
-            const local = URL.createObjectURL(await firstValueFrom(this.api.fetchStoredImage(src)));
-            blobUrls.push(local);
-            img.src = local;
+            const fetched = await firstValueFrom(this.api.fetchStoredImage(src));
+            if (fetched.type.includes('svg')) {
+              // e.g. the default avatar. SVGs may have no intrinsic size, which breaks the crop/round
+              // step and html2canvas, so turn it into a plain bitmap first.
+              img.src = await this.rasterizeSvg(fetched);
+            } else {
+              const local = URL.createObjectURL(fetched);
+              blobUrls.push(local);
+              img.src = local;
+            }
           } catch {
             img.removeAttribute('src'); // not one of ours / unavailable: leave it out rather than break the export
           }
@@ -604,6 +611,34 @@ export class ShareProfileComponent implements OnInit {
     } finally {
       host.remove();
       blobUrls.forEach(u => URL.revokeObjectURL(u));
+    }
+  }
+
+  /** Draws an SVG onto a canvas (max 512px on its long side, aspect taken from its viewBox) and returns a PNG data URL. */
+  private async rasterizeSvg(svg: Blob): Promise<string> {
+    const text = await svg.text();
+    const vb = /viewBox\s*=\s*["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text);
+    const wAttr = /<svg[^>]*\swidth\s*=\s*["']([\d.]+)/i.exec(text), hAttr = /<svg[^>]*\sheight\s*=\s*["']([\d.]+)/i.exec(text);
+    const vw = vb ? +vb[1] : wAttr ? +wAttr[1] : 1;
+    const vh = vb ? +vb[2] : hAttr ? +hAttr[1] : 1;
+    const scale = 512 / Math.max(vw, vh);
+    const w = Math.max(1, Math.round(vw * scale)), h = Math.max(1, Math.round(vh * scale));
+
+    // Give the SVG explicit dimensions so it renders at a known size in every browser.
+    const sized = text.replace(/<svg\b([^>]*)>/i, (_m, attrs: string) =>
+      `<svg${attrs.replace(/\s(width|height)\s*=\s*["'][^"']*["']/gi, '')} width="${w}" height="${h}">`);
+    const url = URL.createObjectURL(new Blob([sized], { type: 'image/svg+xml' }));
+    try {
+      const image = new Image();
+      image.src = url;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d')!.drawImage(image, 0, 0, w, h);
+      return canvas.toDataURL('image/png');
+    } finally {
+      URL.revokeObjectURL(url);
     }
   }
 
