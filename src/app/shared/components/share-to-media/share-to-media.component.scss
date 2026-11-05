@@ -163,6 +163,11 @@ $footer-h: 64px;
   pointer-events: none;
 }
 
+.sp-spinner {
+  display: inline-flex;
+  margin-bottom: -4px;
+}
+
 @media (max-width: 480px) {
   .stm-body { padding: 1rem; }
   .stm-footer { padding: 0 1rem; }
