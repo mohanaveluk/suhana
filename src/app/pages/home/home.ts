@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     { icon: 'verified_user', title: 'Verified Profiles', desc: 'Every profile undergoes thorough verification for authenticity, giving you peace of mind.' },
     { icon: 'lock', title: 'Privacy Controls', desc: 'You control who sees your photos. Choose from mutual matches, premium members, or approval-based access.' },
     { icon: 'auto_awesome', title: 'Personality & Horoscope Matching', desc: 'Discover personality compatibility by comparing 16 personality types, such as ENTJ and INFJ, alongside optional Vedic horoscope matching with Kundli Milan for a more meaningful connection.' },
-    { icon: 'videocam', title: 'Video Introductions', desc: 'Upload 30-60 second videos to showcase your personality and build trust before meeting.' },
+    { icon: 'videocam', title: 'Voice & Video Introductions', desc: 'Upload 30-60 second videos to showcase your personality and build trust before meeting.' },
     { icon: 'chat_bubble', title: 'Smart Chat', desc: 'Chat unlocks on mutual interest with AI-suggested icebreakers to kick off great conversations.' },
   ];
 
