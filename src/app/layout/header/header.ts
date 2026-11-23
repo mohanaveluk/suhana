@@ -4,6 +4,7 @@ import { MaterialModule } from '../../shared/modules/material.module';
 import { AuthService } from '../../services';
 import { ProfileService } from '../../services/profile.service';
 import { EmailHistoryService } from '../../pages/notifications/notification.service';
+import { MemberInteractionsService } from '../../features/my-interests/services/member-interactions.service';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,8 @@ import { EmailHistoryService } from '../../pages/notifications/notification.serv
 export class HeaderComponent {
   protected readonly auth               = inject(AuthService);
   protected readonly emailHistoryService = inject(EmailHistoryService);
+  /** New-interest and unread-message counts for the nav badges. */
+  protected readonly interactions = inject(MemberInteractionsService);
   private   readonly profileSvc         = inject(ProfileService);
   private   readonly router             = inject(Router);
   protected readonly mobileMenuOpen     = signal(false);

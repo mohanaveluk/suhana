@@ -26,9 +26,16 @@
       <a mat-button routerLink="/search" routerLinkActive="active-link">Search</a>
       <a mat-button routerLink="/matchmaking" routerLinkActive="active-link">Matches</a>
       @if (auth.authenticated()) {
+        <a mat-button routerLink="/my-interests" routerLinkActive="active-link"
+           [attr.aria-label]="interactions.newInterestCount() ? 'My Interests, ' + interactions.newInterestCount() + ' new' : 'My Interests'">
+          <mat-icon [matBadge]="interactions.newInterestCount() || null" matBadgeColor="warn" matBadgeSize="small"
+                    [matBadgeHidden]="!interactions.newInterestCount()" aria-hidden="true">favorite</mat-icon>
+          My Interests
+        </a>
         <a mat-button routerLink="/shortlist" routerLinkActive="active-link">Shortlist</a>
         <a mat-button routerLink="/chat" routerLinkActive="active-link">
-          <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small">chat</mat-icon>
+          <mat-icon [matBadge]="interactions.newMessageCount() || null" matBadgeColor="warn" matBadgeSize="small"
+                    [matBadgeHidden]="!interactions.newMessageCount()" aria-hidden="true">chat</mat-icon>
           Messages
         </a>
       }
@@ -82,6 +89,10 @@
           <a mat-menu-item routerLink="/profile">
             <mat-icon>person</mat-icon>
             <span>My Profile</span>
+          </a>
+          <a mat-menu-item routerLink="/my-interests">
+            <mat-icon>favorite</mat-icon>
+            <span>My Interests</span>
           </a>
           <a mat-menu-item routerLink="/shortlist">
             <mat-icon>bookmark</mat-icon>
@@ -161,6 +172,11 @@
           notifications
         </mat-icon>
         Notifications
+      </a>
+      <a routerLink="/my-interests" (click)="toggleMobileMenu()">
+        <mat-icon [matBadge]="interactions.newInterestCount() || null" matBadgeColor="warn" matBadgeSize="small"
+                  [matBadgeHidden]="!interactions.newInterestCount()">favorite</mat-icon>
+        My Interests
       </a>
       <a routerLink="/shortlist" (click)="toggleMobileMenu()">
         <mat-icon>bookmark</mat-icon> Shortlist

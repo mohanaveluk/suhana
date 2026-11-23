@@ -347,7 +347,7 @@ export class SearchComponent implements OnInit {
     this.interestSentIds.update(s => new Set([...s, userId])); // optimistic
     try {
       const message = this.interestService.buildDefaultMessage(profile);
-      await this.interestService.sendInterest(userId, message);
+      await this.interestService.sendInterest(userId, message, 'PROFILE_SEARCH');
       this.snackBar.open(`Interest sent to ${profile.firstName}! 💌`, 'Dismiss', {
         duration: 3000,
         panelClass: ['af-snack', 'af-snack--success'],

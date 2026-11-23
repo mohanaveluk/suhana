@@ -95,6 +95,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/shortlist/shortlist').then(m => m.ShortlistComponent),
   },
   {
+    // Who's interested in me — member-only, never indexed or prerendered.
+    path: 'my-interests',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/my-interests/pages/my-interests.page').then(m => m.MyInterestsPage),
+  },
+  {
     path: 'recently-visited',
     canActivate: [authGuard],
     loadComponent: () =>

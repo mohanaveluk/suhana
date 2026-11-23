@@ -11,6 +11,9 @@ import {
   StartAssessmentResponse, SubmitAssessmentRequest,
 } from '../features/personality/models/personality.model';
 import { PublicBlogPost } from '../features/blog/blog.model';
+import {
+  InteractionDashboard, InteractionListResponse, InteractionQuery, InterestSource,
+} from '../features/my-interests/models/member-interaction.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -303,8 +306,9 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/v1/interests/sent`);
   }
 
-  sendInterest(toUserId: string, message?: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/v1/interests/send`, { toUserId, message });
+  /** `source` = where the member found the profile (reporting only; never gates sending). */
+  sendInterest(toUserId: string, message?: string, source?: InterestSource): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/interests/send`, { toUserId, message, ...(source ? { source } : {}) });
   }
 
   acceptInterest(interestId: string): Observable<any> {
@@ -322,6 +326,29 @@ export class ApiService {
 
   declineInterest(interestId: string): Observable<any> {
     return this.http.patch(`${this.baseUrl}/v1/interests/${interestId}/decline`, {});
+  }
+
+  /** Sender retracts a pending interest (kept as history). */
+  withdrawInterest(interestId: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/interests/${interestId}/withdraw`, {});
+  }
+
+  /** Recipient opened a received interest ("New" → "Viewed"). */
+  markInterestRead(interestId: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/v1/interests/${interestId}/read`, {});
+  }
+
+  // My Interests (member interactions) — always scoped to the signed-in member
+  getInteractionDashboard(): Observable<InteractionDashboard> {
+    return this.http.get<InteractionDashboard>(`${this.baseUrl}/v1/member-interactions/dashboard`);
+  }
+
+  getInteractions(query: InteractionQuery): Observable<InteractionListResponse> {
+    let params = new HttpParams();
+    for (const [k, v] of Object.entries(query)) {
+      if (v !== undefined && v !== null && v !== '') params = params.set(k, String(v));
+    }
+    return this.http.get<InteractionListResponse>(`${this.baseUrl}/v1/member-interactions`, { params });
   }
 
   // Calls (premium)
