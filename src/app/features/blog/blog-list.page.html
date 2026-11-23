@@ -1,0 +1,58 @@
+<div class="bl">
+  <header class="bl-hero">
+    <div class="bl-wrap">
+      <nav class="bl-crumbs" aria-label="Breadcrumb">
+        <ol><li><a routerLink="/">Home</a></li><li aria-current="page">Blog</li></ol>
+      </nav>
+      <h1>Matrimony Guides and Articles</h1>
+      <p class="bl-lead">
+        Practical advice for finding the right life partner — from writing a matrimonial profile and
+        understanding horoscope and personality compatibility to involving your family.
+      </p>
+    </div>
+  </header>
+
+  <div class="bl-wrap bl-body">
+    @if (loading()) {
+      <p class="bl-status" role="status">Loading articles…</p>
+    } @else if (error()) {
+      <div class="bl-status" role="alert">
+        <p>We couldn't load the articles right now.</p>
+        <button mat-stroked-button type="button" (click)="load()">Try again</button>
+      </div>
+    } @else if (posts().length) {
+      <ul class="bl-grid">
+        @for (p of posts(); track p.id) {
+          <li class="bl-card">
+            <p class="bl-meta">{{ p.categoryLabel }} · {{ p.readTime }} min read</p>
+            <h2><a [routerLink]="pathOf(p)">{{ p.title }}</a></h2>
+            <p class="bl-excerpt">{{ p.excerpt }}</p>
+            <p class="bl-byline">{{ p.author.name }} · <time [attr.datetime]="p.publishedAt">{{ p.publishedAt | date: 'd MMM y' }}</time></p>
+          </li>
+        }
+      </ul>
+    } @else {
+      <section class="bl-empty">
+        <h2>Our first guides are on their way</h2>
+        <p>In the meantime, these pages explain how Aurora helps you find a compatible partner:</p>
+      </section>
+    }
+
+    <nav class="bl-guides" aria-labelledby="bl-guides-title">
+      <h2 id="bl-guides-title">Popular guides</h2>
+      <ul>
+        @for (g of guides; track g.path) {
+          <li><a [routerLink]="g.path">{{ g.text }}</a></li>
+        }
+      </ul>
+    </nav>
+  </div>
+
+  <section class="bl-cta" aria-labelledby="bl-cta-title">
+    <div class="bl-wrap">
+      <h2 id="bl-cta-title">Begin your journey with Aurora Matrimony</h2>
+      <p>Create your free profile and discover compatible brides and grooms.</p>
+      <a mat-flat-button class="bl-btn" routerLink="/register" (click)="trackCta()">Register free</a>
+    </div>
+  </section>
+</div>

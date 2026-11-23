@@ -67,9 +67,10 @@ svg { display: block; }
 }
 // Background image (not inline <svg>): html2canvas paints these reliably.
 .pp-logo {
-  width: 132px;
-  height: 72px;
+  width: 142px;
+  height: 82px;
   margin: 0 auto;
+  margin-top: 12px;
   background: url("https://storage.googleapis.com/inv-images/matrimony/home/firefly.png") center / contain no-repeat;
   //background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 120'><path d='M78 104 C28 66 14 44 14 30 C14 14 28 6 42 6 C56 6 70 16 78 30 C86 16 100 6 114 6 C128 6 142 14 142 30 C142 44 128 66 78 104 Z' fill='none' stroke='%23f0cf70' stroke-width='9' stroke-linejoin='round'/><path d='M142 104 C92 66 78 44 78 30 C78 14 92 6 106 6 C120 6 134 16 142 30 C150 16 164 6 178 6 C192 6 206 14 206 30 C206 44 192 66 142 104 Z' fill='none' stroke='%23d4a53a' stroke-width='9' stroke-linejoin='round'/></svg>") center / contain no-repeat;
 }
@@ -77,7 +78,7 @@ svg { display: block; }
   margin-top: 6px;
   //font-family: Georgia, 'Times New Roman', serif;
   font-family: 'Segoe UI',Arial,sans-serif;
-  font-size: 35px;
+  font-size: 36px;
   letter-spacing: 3px;
   font-weight: 700;
   color: $gold-light;
@@ -88,7 +89,7 @@ svg { display: block; }
   justify-content: center;
   gap: 14px;
   margin-top: 10px;
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: 3px;
   span { width: 56px; height: 2px; background: $gold; }
 }

@@ -37,7 +37,6 @@ export class MatchFixedFormComponent implements OnDestroy {
   protected readonly sourceOptions   = Object.values(MatchSourceType);
 
   private static readonly SOURCE_ICONS: Record<MatchSourceType, string> = {
-    [MatchSourceType.SUHANA]:          'favorite',
     [MatchSourceType.AURORA]:          'favorite',
     [MatchSourceType.FAMILY]:          'family_restroom',
     [MatchSourceType.RELATIVE]:        'people',
@@ -115,7 +114,7 @@ export class MatchFixedFormComponent implements OnDestroy {
 
   // ── Computed ──────────────────────────────────────────────────────────────
   protected readonly isSuhana = computed(() =>
-    this.matchSourceValues().matchSourceType === MatchSourceType.SUHANA
+    this.matchSourceValues().matchSourceType === MatchSourceType.AURORA
   );
 
   protected readonly partnerStep3Form = computed(() =>
@@ -212,7 +211,7 @@ export class MatchFixedFormComponent implements OnDestroy {
         ...(partnerPhotoUrl    ? { partnerPhotoUrl }    : {}),
         ...(engagementPhotoUrl ? { engagementPhotoUrl } : {}),
         ...(weddingPhotoUrl    ? { weddingPhotoUrl }    : {}),
-        ...(src === MatchSourceType.SUHANA
+        ...(src === MatchSourceType.AURORA
           ? { matchedUserId: sp.matchedUserId || undefined, matchedUserGuid: sp.matchedUserGuid || undefined }
           : {
               partnerName:       ep.partnerName || undefined,

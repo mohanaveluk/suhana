@@ -43,7 +43,8 @@ export class AuthService {
   });
 
   constructor() {
-    const stored = localStorage.getItem('suhana_user');
+    // No storage while pages are prerendered at build time — they always render as a guest.
+    const stored = typeof localStorage === 'undefined' ? null : localStorage.getItem('suhana_user');
     if (stored) {
       try {
         const user = JSON.parse(stored) as User;

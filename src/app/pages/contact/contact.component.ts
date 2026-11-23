@@ -6,6 +6,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
+import { AnalyticsService } from '../../core/analytics/analytics.service';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { ContactService } from './contact.service';
 
@@ -21,6 +22,7 @@ export class ContactComponent {
   private readonly contactService = inject(ContactService);
   private readonly router         = inject(Router);
   private readonly snackBar       = inject(MatSnackBar);
+  private readonly analytics      = inject(AnalyticsService);
 
   protected readonly isSubmitting = signal(false);
   protected readonly isSuccess    = signal(false);
@@ -64,6 +66,7 @@ export class ContactComponent {
         })
       );
       this.isSuccess.set(true);
+      this.analytics.track('generate_lead', { form: 'contact' });
     } catch {
       const ref = this.snackBar.open(
         'Unable to submit your request. Please try again later.',

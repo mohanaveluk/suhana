@@ -9,9 +9,9 @@
 
     <!-- Left: Photos -->
     <div class="ssd-photos">
-      @if (story.profileImageUrl || story.partnerPhotoUrl) {
+      @if (story.engagementPhotoUrl || story.weddingPhotoUrl || story.partnerPhotoUrl) {
         <div class="ssd-couple-photo">
-          <img [src]="story.profileImageUrl || story.partnerPhotoUrl"
+          <img [src]="story.engagementPhotoUrl?.thumbnailUrl || story.weddingPhotoUrl?.thumbnailUrl || story.partnerPhotoUrl?.thumbnailUrl || ''"
                [alt]="story.userName + ' & ' + story.partnerName"
                class="ssd-couple-img" />
           @if (story.isVerified) {

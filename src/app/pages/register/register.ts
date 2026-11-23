@@ -7,7 +7,8 @@ import { MaterialModule } from '../../shared/modules/material.module';
 import { ApiService, AuthService } from '../../services';
 import { ProfileService } from '../../services';
 import { Gender } from '../../models/user.model';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, take } from 'rxjs';
+import { AnalyticsService } from '../../core/analytics/analytics.service';
 import { encryptValue } from '../../shared/utils/crypto.util';
 import { onSelectSearchKeydown } from '../../shared/utils/select-search.util';
 import { SelectSearchDirective } from '../../shared/directives/select-search.directive';
@@ -54,6 +55,7 @@ export class RegisterComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly router        = inject(Router);
   private readonly destroyRef    = inject(DestroyRef);
+  private readonly analytics     = inject(AnalyticsService);
 
   protected readonly hidePassword       = signal(true);
   protected readonly hideConfirmPassword       = signal(true);
@@ -248,6 +250,11 @@ export class RegisterComponent implements OnInit {
     this.accountForm.controls.gender.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.preferencesForm.updateValueAndValidity());
+
+    // Conversion funnel: first interaction with the form (no form values are sent).
+    this.accountForm.valueChanges
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.analytics.track('registration_start'));
 
     await Promise.all([this.loadLookupValues(), this.loadCountries()]);
   }
@@ -538,6 +545,7 @@ export class RegisterComponent implements OnInit {
         tempGuid: this.tempUserGuid() ?? '',
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
+      this.analytics.track('sign_up', { method: 'email' });
       const paramKey = encryptValue(this.accountForm.getRawValue().email ?? '');
       this.router.navigate(['/registration-success', paramKey]);
     } catch (err: any) {

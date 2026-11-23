@@ -13,7 +13,7 @@ RUN npm install --legacy-peer-deps
 # Copy project files
 COPY . .
 
-# Build the application
+# Build the application (prerenders public pages, then validates SEO and writes robots.txt + sitemaps)
 RUN npm run build-prod
 
 # Production stage
@@ -22,8 +22,12 @@ FROM nginx:alpine
 # Copy built assets from builder stage
 COPY --from=builder /app/dist/suhana/browser /usr/share/nginx/html
 
-# Copy nginx configuration
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# nginx config template — variables are substituted by the image's entrypoint at start-up.
+ENV CANONICAL_HOST=www.auroramatrimony.com \
+    APEX_HOST=auroramatrimony.com \
+    API_ORIGIN=https://api.auroramatrimony.com \
+    INDEXNOW_KEY=indexnow-key-not-configured
+COPY ./nginx/default.conf.template /etc/nginx/templates/default.conf.template
 
 # Expose port
 EXPOSE 80

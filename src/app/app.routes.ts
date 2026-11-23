@@ -1,11 +1,19 @@
 import { Routes } from '@angular/router';
 import { VerifyEmailComponent } from './pages/verify/verify-email.component';
 import { authGuard } from './guards/auth.guard';
+import { PAGE_SEO } from './core/seo/page-seo';
+import { LANDING_PAGES } from './features/seo-pages/landing-pages.registry';
+
+/**
+ * SEO: routes without `data.seo` are noindex by default (SeoService). Only public marketing and
+ * content pages carry SEO data — never profile, search, account or admin routes.
+ */
 
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./pages/home/home').then(m => m.HomeComponent),
+    data: { seo: PAGE_SEO.home },
   },
   {
     path: 'home-v2',
@@ -120,6 +128,7 @@ export const routes: Routes = [
   },
   {
     path: 'premium',
+    data: { seo: PAGE_SEO.membership },
     //canActivate: [authGuard],
     loadComponent: () => import('./pages/premium/premium').then(m => m.PremiumComponent),
   },
@@ -162,32 +171,31 @@ export const routes: Routes = [
   {
     path: 'about',
     loadComponent: () => import('./pages/about-us/about-us.component').then(m => m.AboutUsComponent),
+    data: { seo: PAGE_SEO.about },
   },
   {
     path: 'contact',
+    data: { seo: PAGE_SEO.contact },
     loadComponent: () =>
       import('./pages/contact/contact.component').then(m => m.ContactComponent),
   },
   {
     path: 'privacy-policy',
+    data: { seo: PAGE_SEO.privacy },
     loadComponent: () =>
       import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent),
   },
-  {
-    path: 'privacy',
-    loadComponent: () =>
-      import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent),
-  },
+  { path: 'privacy', redirectTo: 'privacy-policy', pathMatch: 'full' },
   {
     path: 'terms-of-service',
+    data: { seo: PAGE_SEO.terms },
     loadComponent: () =>
       import('./pages/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent),
   },
-  {
-    path: 'terms',
-    loadComponent: () =>
-      import('./pages/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent),
-  },
+  { path: 'terms', redirectTo: 'terms-of-service', pathMatch: 'full' },
+  { path: 'about-us', redirectTo: 'about', pathMatch: 'full' },
+  { path: 'contact-us', redirectTo: 'contact', pathMatch: 'full' },
+  { path: 'membership-plans', redirectTo: 'premium', pathMatch: 'full' },
   {
     path: 'notifications',
     canActivate: [authGuard],
@@ -223,6 +231,7 @@ export const routes: Routes = [
   },
   {
     path: 'success-stories',
+    data: { seo: PAGE_SEO.successStories },
     loadComponent: () =>
       import('./features/match-fixed/success-stories/success-stories.component')
         .then(m => m.SuccessStoriesComponent),
@@ -235,6 +244,7 @@ export const routes: Routes = [
   },
   {
     path: 'safety-tips',
+    data: { seo: PAGE_SEO.safetyTips },
     loadComponent: () =>
       import('./pages/safety-tips/safety-tips.component').then(m => m.SafetyTipsComponent),
   },
@@ -247,11 +257,13 @@ export const routes: Routes = [
   },
   {
     path: 'faq',
+    data: { seo: PAGE_SEO.faq },
     loadComponent: () =>
       import('./pages/faq/faq.component').then(m => m.FaqComponent),
   },
   {
     path: 'help',
+    data: { seo: PAGE_SEO.help },
     loadComponent: () =>
       import('./pages/help-center/help-center.component').then(m => m.HelpCenterComponent),
   },
@@ -272,8 +284,33 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/personality/personality.routes').then(m => m.PERSONALITY_ROUTES),
   },
+  // Public SEO landing pages (/ai-matchmaking, /tamil-matrimony, …) — the component sets its own SEO.
+  ...LANDING_PAGES.map(p => ({
+    path: p.slug,
+    data: { landing: p.slug, seoDynamic: true },
+    loadComponent: () =>
+      import('./features/seo-pages/landing-page.component').then(m => m.LandingPageComponent),
+  })),
+  // Blog (public). Index/article pages set their own SEO once the content has loaded.
+  {
+    path: 'matrimony-blog',
+    data: { seoDynamic: true },
+    loadComponent: () => import('./features/blog/blog-list.page').then(m => m.BlogListPage),
+  },
+  {
+    path: 'matrimony-blog/:id/:slug',
+    data: { seoDynamic: true },
+    loadComponent: () => import('./features/blog/blog-article.page').then(m => m.BlogArticlePage),
+  },
+  {
+    // Missing slug → the article page redirects to the canonical /:id/:slug URL.
+    path: 'matrimony-blog/:id',
+    data: { seoDynamic: true },
+    loadComponent: () => import('./features/blog/blog-article.page').then(m => m.BlogArticlePage),
+  },
   {
     path: '**',
+    data: { seo: PAGE_SEO.notFound },
     loadComponent: () =>
       import('./pages/not-found/not-found').then(m => m.NotFoundComponent),
   },

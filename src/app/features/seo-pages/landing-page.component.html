@@ -1,0 +1,77 @@
+<article class="lp">
+  <!-- ═══════════ HERO ═══════════ -->
+  <header class="lp-hero">
+    <div class="lp-wrap lp-hero-grid">
+      <div class="lp-hero-copy">
+        <nav class="lp-crumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a routerLink="/">Home</a></li>
+            <li aria-current="page">{{ page.crumb }}</li>
+          </ol>
+        </nav>
+        <p class="lp-eyebrow">{{ page.eyebrow }}</p>
+        <h1>{{ page.h1 }}</h1>
+        <p class="lp-lead">{{ page.lead }}</p>
+        <div class="lp-cta-row">
+          <a mat-flat-button class="lp-btn-primary" routerLink="/register" (click)="trackCta('hero')">
+            {{ page.cta.button }}
+          </a>
+          <a mat-stroked-button class="lp-btn-ghost" routerLink="/how-it-works">How Aurora works</a>
+        </div>
+        <p class="lp-tagline">Aurora Matrimony — Where Forever Begins</p>
+      </div>
+      <img class="lp-hero-img" [src]="page.hero.src" [alt]="page.hero.alt"
+           width="1600" height="640" fetchpriority="high" loading="eager" decoding="async" />
+    </div>
+  </header>
+
+  <!-- ═══════════ CONTENT ═══════════ -->
+  <div class="lp-wrap lp-body">
+    @for (s of page.sections; track s.heading) {
+      <section class="lp-section">
+        <h2>{{ s.heading }}</h2>
+        @for (para of s.paragraphs; track $index) {
+          <p>{{ para }}</p>
+        }
+        @if (s.bullets?.length) {
+          <ul class="lp-bullets">
+            @for (b of s.bullets; track b) {
+              <li><mat-icon aria-hidden="true">check_circle</mat-icon><span>{{ b }}</span></li>
+            }
+          </ul>
+        }
+      </section>
+    }
+
+    <!-- FAQs: plain <details> so the answers are in the HTML and work without JavaScript -->
+    <section class="lp-section lp-faq" aria-labelledby="lp-faq-title">
+      <h2 id="lp-faq-title">Frequently asked questions</h2>
+      @for (f of page.faqs; track f.q) {
+        <details>
+          <summary><h3>{{ f.q }}</h3></summary>
+          <p>{{ f.a }}</p>
+        </details>
+      }
+    </section>
+
+    <nav class="lp-section lp-related" aria-labelledby="lp-related-title">
+      <h2 id="lp-related-title">Explore more</h2>
+      <ul>
+        @for (r of page.related; track r.path) {
+          <li><a [routerLink]="r.path">{{ r.text }}<mat-icon aria-hidden="true">arrow_forward</mat-icon></a></li>
+        }
+      </ul>
+    </nav>
+  </div>
+
+  <!-- ═══════════ CTA ═══════════ -->
+  <section class="lp-cta" aria-labelledby="lp-cta-title">
+    <div class="lp-wrap">
+      <h2 id="lp-cta-title">{{ page.cta.heading }}</h2>
+      <p>{{ page.cta.text }}</p>
+      <a mat-flat-button class="lp-btn-primary lp-btn-gold" routerLink="/register" (click)="trackCta('footer_band')">
+        {{ page.cta.button }}
+      </a>
+    </div>
+  </section>
+</article>

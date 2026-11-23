@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
+import { PAGE_SEO } from '../../core/seo/page-seo';
 
+/** SEO: only /testimonials/reviews is indexable; '' renders the same page and stays noindex (no duplicate). */
 export const TESTIMONIALS_ROUTES: Routes = [
   {
     path: '',
@@ -8,6 +10,7 @@ export const TESTIMONIALS_ROUTES: Routes = [
   },
   {
     path: 'reviews',
+    data: { seo: PAGE_SEO.reviews },
     loadComponent: () =>
       import('./pages/reviews/reviews.page').then(m => m.ReviewsPage),
   },

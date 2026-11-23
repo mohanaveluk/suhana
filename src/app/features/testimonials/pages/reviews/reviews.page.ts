@@ -73,7 +73,8 @@ export class ReviewsPage implements OnInit {
   protected isAuthenticated = false;
 
   ngOnInit(): void {
-    this.svc.getStats().subscribe(s => this.stats.set(s));
+    // Stats are optional decoration: a failed call (offline, or skipped while prerendering) just hides them.
+    this.svc.getStats().subscribe({ next: s => this.stats.set(s), error: () => this.stats.set(null) });
     this.load();
   }
 

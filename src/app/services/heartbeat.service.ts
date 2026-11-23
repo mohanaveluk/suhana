@@ -1,4 +1,5 @@
-import { Injectable, OnDestroy, inject, effect } from '@angular/core';
+import { Injectable, OnDestroy, PLATFORM_ID, inject, effect } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 
@@ -8,6 +9,8 @@ const INTERVAL_MS = 2.5 * 60 * 1000; // 2.5 minutes
 export class HeartbeatService implements OnDestroy {
   private readonly api  = inject(ApiService);
   private readonly auth = inject(AuthService);
+  /** False while pages are prerendered at build time (no document, no session). */
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -31,12 +34,12 @@ export class HeartbeatService implements OnDestroy {
       }
     });
 
-    document.addEventListener('visibilitychange', this.onVisibilityChange);
+    if (this.isBrowser) document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   ngOnDestroy(): void {
     this.stopInterval();
-    document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    if (this.isBrowser) document.removeEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   private startInterval(): void {

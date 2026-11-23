@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, computed, signal, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, signal, OnInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TitleCasePipe } from '@angular/common';
+import { TitleCasePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { BannerSlide, UserProfile } from '../../models/user.model';
@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly authService = inject(AuthService);
   private readonly profileVisitService = inject(ProfileVisitService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private bannerInterval: ReturnType<typeof setInterval> | null = null;
 
   protected readonly currentSlide = signal(0);
@@ -51,7 +52,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       id: 1,
       //imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&h=600&fit=crop',
-      imageUrl: '/banners/banner4.png',
+      imageUrl: '/banners/banner4.webp',
       title: 'Find Your Perfect Match',
       subtitle: 'AI-powered matchmaking that understands your heart\'s desires',
       ctaText: 'Start Your Journey',
@@ -60,7 +61,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       id: 2,
       //imageUrl: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1600&h=600&fit=crop',
-      imageUrl: '/banners/banner5.png',
+      imageUrl: '/banners/banner5.webp',
       title: 'Where Traditions Meet Modern Love',
       subtitle: 'Trusted by thousands of families since 2024',
       ctaText: 'Browse Profiles',
@@ -69,7 +70,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       id: 3,
       //imageUrl: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1600&h=600&fit=crop',
-      imageUrl: '/banners/banner6.png',
+      imageUrl: '/banners/banner6.webp',
       title: '92% Compatibility Match',
       subtitle: 'Smart insights powered by AI tell you exactly why you\'re meant to be',
       ctaText: 'See Your Matches',
@@ -78,17 +79,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       id: 4,
       //imageUrl: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1600&h=600&fit=crop',
-      imageUrl: '/banners/banner7.png',
+      imageUrl: '/banners/banner7.webp',
       title: 'AI powered horoscope match',
       subtitle: 'Get Kundli matching, compatibility scores, and dosha analysis based on Vedic astrology.',
       ctaText: 'See Your compatibility',
       ctaLink: '/matchmaking',
     },
-    { id: 5, imageUrl: '/banners/banner9.png', title: '16 Personality Match', midTitle: 'ENTJ ♥ INFJ', subtitle: 'Discover how your personalities connect. AI-powered insights reveal your strengths, communication styles, and relationship dynamics.', ctaText: 'Discover Your Type', ctaLink: '/personality' },
+    { id: 5, imageUrl: '/banners/banner9.webp', title: '16 Personality Match', midTitle: 'ENTJ ♥ INFJ', subtitle: 'Discover how your personalities connect. AI-powered insights reveal your strengths, communication styles, and relationship dynamics.', ctaText: 'Discover Your Type', ctaLink: '/personality' },
     {
       id: 6,
       //imageUrl: '',
-      imageUrl: '/banners/banner8.png',
+      imageUrl: '/banners/banner8.webp',
       title: '', //'Voice & Video introduction',
       subtitle: '', //'Upload a 30-60 second video or voice introduction to showcase your personality and build trust before meeting.',
       ctaText: '',
@@ -115,11 +116,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   ];
 
   async ngOnInit(): Promise<void> {
-    await this.profileService.loadProfiles();
-    const allProfiles = this.profileService.allProfiles();
-    const brides = allProfiles.filter((p: UserProfile) => p.gender === 'bride').slice(0, 4);
-    const grooms = allProfiles.filter((p: UserProfile) => p.gender === 'groom').slice(0, 4);
-    this.featuredProfiles.set([...brides, ...grooms].slice(0, 8));
+    // Member profiles are never fetched while the page is prerendered at build time, so no member
+    // names or photos end up in the static HTML; they load in the browser instead.
+    if (!this.isBrowser) return;
+    try {
+      await this.profileService.loadProfiles();
+      const allProfiles = this.profileService.allProfiles();
+      const brides = allProfiles.filter((p: UserProfile) => p.gender === 'bride').slice(0, 4);
+      const grooms = allProfiles.filter((p: UserProfile) => p.gender === 'groom').slice(0, 4);
+      this.featuredProfiles.set([...brides, ...grooms].slice(0, 8));
+    } catch {
+      // Featured profiles are optional on the home page — keep the rest of the page working.
+    }
 
     this.bannerInterval = setInterval(() => {
       this.currentSlide.update(i => (i + 1) % this.bannerSlides.length);

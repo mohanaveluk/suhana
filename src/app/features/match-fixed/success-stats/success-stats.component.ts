@@ -48,6 +48,8 @@ export class SuccessStatsComponent implements OnInit, OnDestroy {
   }
 
   private setupIntersectionObserver(): void {
+    // Not available while pages are prerendered at build time; the counters animate in the browser.
+    if (typeof IntersectionObserver === 'undefined') return;
     this.observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && !this.animationStarted && this.stats()) {

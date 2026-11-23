@@ -14,7 +14,8 @@ RUN npm install --legacy-peer-deps
 # Copy source code
 COPY . .
 
-# Build Angular Production
+# Build Angular Production. Public pages are prerendered to static HTML (angular.json outputMode
+# "static"); the `postbuild` npm script then validates SEO/privacy and writes robots.txt + sitemaps.
 RUN npm run build -- --configuration production
 
 # ==========================================
@@ -25,11 +26,16 @@ FROM nginx:alpine
 # Remove default nginx files
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy Angular build output
+# Copy Angular build output (prerendered pages + index.csr.html app shell)
 COPY --from=build /app/dist/suhana/browser /usr/share/nginx/html
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# nginx config is a template: the image's entrypoint substitutes these variables at start-up.
+# Override them per environment (e.g. `gcloud run deploy --set-env-vars ...`).
+ENV CANONICAL_HOST=www.auroramatrimony.com \
+    APEX_HOST=auroramatrimony.com \
+    API_ORIGIN=https://api.auroramatrimony.com \
+    INDEXNOW_KEY=indexnow-key-not-configured
+COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
 
 # Expose port
 EXPOSE 80

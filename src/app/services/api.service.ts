@@ -10,6 +10,7 @@ import {
   AssessmentResult, PersonalityCompatibility, PersonalityQuestionsResponse,
   StartAssessmentResponse, SubmitAssessmentRequest,
 } from '../features/personality/models/personality.model';
+import { PublicBlogPost } from '../features/blog/blog.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -658,6 +659,16 @@ export class ApiService {
     preview?: boolean;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/profiles/gshare-media`, data);
+  }
+
+  // Blog (public, no auth) — published articles only
+  getPublicBlogPosts(page = 1, pageSize = 12): Observable<{ data: PublicBlogPost[] }> {
+    const params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    return this.http.get<{ data: PublicBlogPost[] }>(`${this.baseUrl}/v1/public/blog/posts`, { params });
+  }
+
+  getPublicBlogPost(id: string): Observable<PublicBlogPost> {
+    return this.http.get<PublicBlogPost>(`${this.baseUrl}/v1/public/blog/posts/${encodeURIComponent(id)}`);
   }
 
   // Contact
