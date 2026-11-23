@@ -21,21 +21,41 @@
         </div>
       </div>
 
+      <!-- Discover: public feature pages (crawlable, no sign-in needed) -->
+      <div class="footer-links">
+        <h4>Discover Aurora</h4>
+        <nav aria-label="Aurora features">
+          @for (p of featurePages; track p.slug) {
+            <a [routerLink]="'/' + p.slug">{{ p.label }}</a>
+          }
+          <a routerLink="/matrimony-blog">Matrimony Blog</a>
+        </nav>
+      </div>
+
+      <!-- Find a partner: community / NRI landing pages -->
+      <div class="footer-links">
+        <h4>Find a Partner</h4>
+        <nav aria-label="Matrimony by community">
+          @for (p of audiencePages; track p.slug) {
+            <a [routerLink]="'/' + p.slug">{{ p.label }}</a>
+          }
+          <a routerLink="/success-stories">Success Stories</a>
+          <a routerLink="/testimonials/reviews">Member Reviews</a>
+        </nav>
+      </div>
+
       <!-- Quick Links -->
       <div class="footer-links">
         <h4>Quick Links</h4>
         <nav aria-label="Footer quick links">
-          <a routerLink="/personality">Personality Assessment</a>
-          <a routerLink="/search">Search Profiles</a>
-          <a routerLink="/matchmaking">AI Matchmaking</a>
-          <a routerLink="/premium">Premium Plans</a>
           <a routerLink="/register">Register Free</a>
-          <a routerLink="/testimonials/reviews">Member Reviews</a>
-          <a routerLink="/testimonials/success-stories">Success Stories</a>
+          <a routerLink="/search">Search Profiles</a>
+          <a routerLink="/premium">Membership Plans</a>
+          <a routerLink="/about">About Us</a>
         </nav>
       </div>
 
-      <!-- Support -->
+      <!-- Support & legal -->
       <div class="footer-links">
         <h4>Support</h4>
         <nav aria-label="Footer support links">
@@ -44,17 +64,8 @@
           <a routerLink="/contact">Contact Us</a>
           <a routerLink="/faq">FAQs</a>
           <a routerLink="/feedback">Feedback</a>
-        </nav>
-      </div>
-
-      <!-- Legal -->
-      <div class="footer-links">
-        <h4>Legal</h4>
-        <nav aria-label="Footer legal links">
           <a routerLink="/privacy-policy">Privacy Policy</a>
           <a routerLink="/terms-of-service">Terms of Service</a>
-          <!-- <a routerLink="/cookies">Cookie Policy</a> -->
-          <!-- <a routerLink="/refund">Refund Policy</a> -->
         </nav>
       </div>
     </div>

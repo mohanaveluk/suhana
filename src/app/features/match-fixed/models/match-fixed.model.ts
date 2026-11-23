@@ -1,5 +1,4 @@
 export enum MatchSourceType {
-  SUHANA        = 'SUHANA',
   AURORA        = 'AURORA',
   FAMILY        = 'FAMILY',
   RELATIVE      = 'RELATIVE',
@@ -70,7 +69,6 @@ export interface PublicStoriesQuery {
 }
 
 export const MATCH_SOURCE_LABELS: Record<MatchSourceType, string> = {
-  [MatchSourceType.SUHANA]:          'Through Suhana Matrimony',
   [MatchSourceType.AURORA]:          'Through Aurora Matrimony',
   [MatchSourceType.FAMILY]:          'Family',
   [MatchSourceType.RELATIVE]:        'Relative',

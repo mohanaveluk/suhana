@@ -75,7 +75,8 @@ export class CallingService {
       }
     });
 
-    window.addEventListener('beforeunload', () => {
+    // Browser only — there is no window while pages are prerendered at build time.
+    if (typeof window !== 'undefined') window.addEventListener('beforeunload', () => {
       const call = this.activeCall();
       if (call?.callId) this.socket?.emit('call:end', { callId: call.callId });
     });

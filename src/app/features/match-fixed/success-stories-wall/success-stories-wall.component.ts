@@ -50,7 +50,7 @@ export class SuccessStoriesWallComponent implements OnInit {
   }
 
   isSuhana(story: SuccessStoryResponse): boolean {
-    return story.matchSource === 'SUHANA' || story.matchSource === 'AURORA';
+    return story.matchSource === 'AURORA';
   }
 
   openStory(story: SuccessStoryResponse): void {

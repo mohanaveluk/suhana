@@ -71,7 +71,8 @@ export class FeaturedSuccessStoriesComponent implements OnInit, OnDestroy {
   }
 
   displayPhoto(story: SuccessStoryResponse): string {
-    return story.profileImageUrl ?? story.partnerPhotoUrl?.thumbnailUrl ?? story.engagementPhotoUrl?.thumbnailUrl ?? '';
+    //return story.profileImageUrl ?? story.partnerPhotoUrl?.thumbnailUrl ?? story.engagementPhotoUrl?.thumbnailUrl ?? '';
+    return story.engagementPhotoUrl?.displayUrl ??  story.partnerPhotoUrl?.displayUrl ?? story.profileImageUrl ?? '';
   }
 
   ngOnDestroy(): void { clearInterval(this.timer); }

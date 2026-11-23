@@ -7,6 +7,7 @@ import { MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipDefaultOptions } from '@angular/
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { httpErrorInterceptor } from './core/interceptors/http-error.interceptor';
+import { prerenderHttpInterceptor } from './core/interceptors/prerender-http.interceptor';
 
 /**
  * Material's tooltip sets inline `touch-action: none` on every element that has matTooltip (its default
@@ -21,7 +22,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideAnimationsAsync(),
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: tooltipDefaults },
-    // httpErrorInterceptor must be outermost so authInterceptor (inner) handles 401 refresh first
-    provideHttpClient(withInterceptors([httpErrorInterceptor, authInterceptor])),
+    // httpErrorInterceptor must be outermost so authInterceptor (inner) handles 401 refresh first.
+    // prerenderHttpInterceptor is innermost: at build time it refuses every non-public API call.
+    // XHR backend on purpose (not withFetch): gallery uploads rely on upload-progress events.
+    // At build time @angular/platform-server supplies its own XHR implementation.
+    provideHttpClient(withInterceptors([httpErrorInterceptor, authInterceptor, prerenderHttpInterceptor])),
   ]
 };

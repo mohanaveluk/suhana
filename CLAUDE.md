@@ -43,6 +43,7 @@ This file gives Claude Code the context it needs to work effectively in this rep
 | `html2canvas` / `jspdf` | — | Client-generated PDF compatibility reports (`pdf-report.service.ts`) |
 | `ngx-image-cropper` | — | Profile photo cropping dialog |
 | `sweetalert2` | — | Used specifically for the session-expiry prompt (`TokenExpiryService`) — not the app's general alert mechanism (that's `MatSnackBar`) |
+| `@angular/ssr`, `@angular/platform-server` | 21.2.x | **Build-time prerendering only** (`outputMode: "static"`, no Node server at runtime) — see §24 |
 
 **Backend**: a separate NestJS repo (sibling directory, e.g. `suhana-api/`) exposing a REST API under `{apiUrl}/v1/...` (see §10). This repo only consumes it via `ApiService` — never assume backend internals without actually opening that repo if a task requires it (several past tasks got the API contract wrong by guessing; see §13).
 
@@ -57,8 +58,9 @@ This file gives Claude Code the context it needs to work effectively in this rep
 | Task | Command | Notes |
 |---|---|---|
 | Start dev server | `npm start` | runs `ng serve` |
-| Production build | `npm run build` | plain `ng build` (no `--configuration production` flag by default — add it explicitly if you need the production config: `npx ng build --configuration production`) |
-| Production build (explicit) | `npm run build-prod` | `ng build --configuration production` |
+| Production build | `npm run build` | plain `ng build` (no `--configuration production` flag by default — add it explicitly if you need the production config: `npx ng build --configuration production`). The npm `postbuild` hook then runs the SEO validator (§24). |
+| Production build (explicit) | `npm run build-prod` | `ng build --configuration production` + SEO validator |
+| SEO validation / sitemaps | `npm run seo:check` | `scripts/seo-postbuild.mjs` on `dist/` — fails on SEO/privacy regressions, writes robots.txt + sitemaps (§24). `npx ng build` alone does **not** run it. |
 | Watch build | `npm run watch` | development config, `--watch` |
 | Run unit tests | `ng test` | Jasmine/Karma |
 | Type-check only (fast) | `npx tsc --noEmit -p tsconfig.app.json` | catches TS errors without a full Angular/AOT build; **does not** catch template binding errors — follow up with a real build before calling a template-touching change verified |
@@ -129,6 +131,8 @@ The only guard in the entire route table is **`authGuard`** (`src/app/guards/aut
 
 ### Admin (no router-level guard — see warning above)
 `admin`, `admin/feedback`, `admin/edit-profile/:id`, `match-fixed/admin`, plus `testimonials/admin*` (nested under the `loadChildren` tree, also unguarded).
+
+**SEO on routes** (§24): a route is `noindex` unless it carries `data: { seo: PAGE_SEO.x }` with `index: true` (or `seoDynamic: true` and the component calls `SeoService.apply()`). Public pages must also be listed in `app.routes.server.ts` as `RenderMode.Prerender`. Never give a profile/search/account/admin route SEO data.
 
 **When you add or move a route**: update `app.routes.ts` first, then cross-check every place that `routerLink`s to it (grep, don't guess) — this app has already accumulated two id-semantics-mismatched routes (`/profile-view` vs `/view`) from exactly this kind of drift.
 
@@ -458,3 +462,19 @@ When making code changes:
 ## Notes for Cross-File Changes
 
 For anything touching routing or lazy-loaded modules, always cross-reference `app.routes.ts` first and list every impacted route/module explicitly before proposing a patch. For anything touching auth, read §11 in full first — it is easy to edit the dead interceptor by mistake.
+
+---
+
+## 24. SEO, Prerendering & Indexing (read before touching routes, public pages or `index.html`)
+
+Full details: `SEO_IMPLEMENTATION.md`. The essentials:
+
+- **Rendering**: `angular.json` → `outputMode: "static"`. Routes marked `RenderMode.Prerender` in `src/app/app.routes.server.ts` are rendered to `dist/suhana/browser/<route>/index.html` at build time; everything else is served from `index.csr.html` (client-only). There is **no Node server** — nginx (`nginx/default.conf.template`) serves the files. No hydration (the browser app re-renders over the static HTML).
+- **Prerender-safe code**: anything that runs on a prerendered page (shell: header/footer/chatbot/root services; and the page itself) must not touch `window`, `document`, `localStorage`, `IntersectionObserver`, etc. at construction or in `ngOnInit` without a guard (`isPlatformBrowser(inject(PLATFORM_ID))` / `typeof X !== 'undefined'`), and must handle HTTP errors — an unhandled error **fails the build**. `main.server.ts` provides an empty Web Storage, so storage reads return null there.
+- **Build-time API policy**: `core/interceptors/prerender-http.interceptor.ts` refuses every API call while prerendering except `/v1/public/blog/`. Pages render their empty/fallback state in static HTML and load data in the browser. Don't widen the allow-list to anything that can return member data.
+- **SEO layer**: `core/seo/seo.service.ts` sets title/description/robots/canonical/OG/Twitter/JSON-LD on every navigation. Route data `seo` (see `core/seo/page-seo.ts`) or `seoDynamic: true` + `SeoService.apply()` in the component. **Default is `noindex`.** Canonical + JSON-LD are only emitted for indexable pages.
+- **Landing pages**: add/remove in `features/seo-pages/landing-pages.registry.ts` (slug) + `landing-pages.content.ts` (copy). Routes, prerender, footer links and sitemap follow automatically. Copy must describe only real features — the AI search understands language/community/location/relocation; classic filters are religion/location/education/occupation only (no mother-tongue filter).
+- **Blog**: public read-only API `GET /v1/public/blog/posts[/:id]`; URLs `/matrimony-blog/:id/:slug` — `blogSlug()` in `features/blog/blog.model.ts` must match `suhana-api/src/modules/seo/seo-url.util.ts`.
+- **Post-build validator** (`scripts/seo-postbuild.mjs`, runs on `npm run build`): fails on missing/duplicate titles, bad descriptions/canonicals, invalid JSON-LD, member photo URLs or profile links in prerendered HTML; writes `sitemap-pages.xml`, `sitemap.xml`, `robots.txt`, `blog.csr.html`, and stamps `index.csr.html` `noindex`.
+- **Privacy**: never add SEO data, prerendering or sitemap entries for profile/search/account/admin routes. `robots.txt` deliberately does not disallow `/view/` or `/profile-view/` (crawlers must see their `noindex`).
+- **Analytics**: `core/analytics/analytics.service.ts` — GA4 only when `environment.ga4MeasurementId` is set *and* the visitor consents. Never pass PII or ids in event params.

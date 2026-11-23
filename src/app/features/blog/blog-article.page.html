@@ -1,0 +1,55 @@
+<div class="bl">
+  @if (loading()) {
+    <div class="bl-wrap bl-body"><p class="bl-status" role="status">Loading article…</p></div>
+  } @else if (notFound()) {
+    <div class="bl-wrap bl-body">
+      <h1>Article not found</h1>
+      <p>This article may have been moved or removed.</p>
+      <a mat-stroked-button routerLink="/matrimony-blog">Browse all articles</a>
+    </div>
+  } @else if (error()) {
+    <div class="bl-wrap bl-body" role="alert">
+      <h1>We couldn't load this article</h1>
+      <button mat-stroked-button type="button" (click)="load()">Try again</button>
+    </div>
+  } @else if (post(); as p) {
+    <article>
+      <header class="bl-hero">
+        <div class="bl-wrap bl-narrow">
+          <nav class="bl-crumbs" aria-label="Breadcrumb">
+            <ol>
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/matrimony-blog">Blog</a></li>
+              <li aria-current="page">{{ p.categoryLabel }}</li>
+            </ol>
+          </nav>
+          <h1>{{ p.title }}</h1>
+          <p class="bl-byline">
+            {{ p.author.name }}@if (p.author.role) {<span>, {{ p.author.role }}</span>} ·
+            <time [attr.datetime]="p.publishedAt">{{ p.publishedAt | date: 'd MMMM y' }}</time> ·
+            {{ p.readTime }} min read
+          </p>
+        </div>
+      </header>
+
+      <div class="bl-wrap bl-narrow bl-body">
+        <!-- Sanitised by Angular; inline styles are dropped on purpose. -->
+        <div class="bl-content" [innerHTML]="p.contentHtml"></div>
+
+        <aside class="bl-inline-cta" aria-label="Register">
+          <p><strong>Looking for a compatible life partner?</strong> Create your free Aurora Matrimony profile today.</p>
+          <a mat-flat-button class="bl-btn" routerLink="/register" (click)="trackCta()">Register free</a>
+        </aside>
+
+        <nav class="bl-guides" aria-labelledby="bl-related-title">
+          <h2 id="bl-related-title">Explore Aurora</h2>
+          <ul>
+            @for (r of related; track r.path) {
+              <li><a [routerLink]="r.path">{{ r.text }}</a></li>
+            }
+          </ul>
+        </nav>
+      </div>
+    </article>
+  }
+</div>

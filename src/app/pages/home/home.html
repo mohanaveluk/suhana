@@ -9,7 +9,12 @@
         [attr.aria-hidden]="currentSlide() !== i">
         <div class="banner-overlay"></div>
         <div class="banner-content">
-          <h1>{{ slide.title }}</h1>
+          <!-- One <h1> per page (SEO/accessibility): only the first slide's title is the heading. -->
+          @if (i === 0) {
+            <h1>{{ slide.title }}</h1>
+          } @else {
+            <div class="slide-title">{{ slide.title }}</div>
+          }
           @if (slide.midTitle) {
             <h2>{{ slide.midTitle }}</h2>
           }          
@@ -51,7 +56,8 @@
 </section>
 
 <!-- ═══════════════ FEATURED PROFILES (FLIP CARDS) ═══════════════ -->
-<section class="suhana-section featured-section" aria-label="Featured profiles">
+<!-- data-nosnippet: member names/photos load in the browser only and must never appear in search snippets -->
+<section class="suhana-section featured-section" aria-label="Featured profiles" data-nosnippet>
   <div class="suhana-container">
     <h2 class="suhana-section-title">Featured Profiles</h2>
     <p class="suhana-section-subtitle">Meet our verified members looking for their perfect match</p>

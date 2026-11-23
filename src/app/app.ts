@@ -7,11 +7,14 @@ import { AiChatbotComponent } from './features/chatbot/chatbot.component';
 import { IncomingCallDialogComponent } from './features/calling/incoming-call-dialog.component';
 import { ActiveCallComponent } from './features/calling/active-call.component';
 import { CallingService } from './services/calling.service';
+import { SeoService } from './core/seo/seo.service';
+import { AnalyticsService } from './core/analytics/analytics.service';
+import { ConsentBannerComponent } from './core/analytics/consent-banner.component';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, AiChatbotComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, AiChatbotComponent, ConsentBannerComponent],
   //imports: [RouterOutlet, HeaderComponent, FooterComponent, AiChatbotComponent, IncomingCallDialogComponent, ActiveCallComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
@@ -21,4 +24,11 @@ export class App {
   // internal effect() starts watching auth state immediately.
   private readonly _heartbeat = inject(HeartbeatService);
   private readonly _calling = inject(CallingService);
+
+  constructor() {
+    // Per-route <title>, description, robots, canonical, Open Graph and JSON-LD.
+    inject(SeoService).init();
+    // Optional GA4 — no-op unless configured and the visitor consents.
+    inject(AnalyticsService).init();
+  }
 }
