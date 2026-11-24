@@ -1,0 +1,190 @@
+<app-admin-layout>
+<div class="ad">
+  <header class="ad__header">
+    <div>
+      <h1><mat-icon aria-hidden="true">storefront</mat-icon> Aurora Discover</h1>
+      <p>Admin-managed directory of local wedding services. Every change is recorded in the audit log.</p>
+    </div>
+    <a mat-flat-button class="suhana-btn-primary" routerLink="/discover/admin/providers/new">
+      <mat-icon>add</mat-icon> New listing
+    </a>
+  </header>
+
+  <mat-tab-group animationDuration="0ms">
+    <!-- ── Listings ───────────────────────────────────────────────────── -->
+    <mat-tab label="Listings">
+      <form class="ad__filters" (ngSubmit)="loadProviders(1)">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Search name, email, phone</mat-label>
+          <input matInput name="q" [(ngModel)]="filters.q" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Status</mat-label>
+          <mat-select name="status" [(ngModel)]="filters.status" (selectionChange)="loadProviders(1)">
+            <mat-option [value]="undefined">All</mat-option>
+            @for (s of statuses; track s) { <mat-option [value]="s">{{ statusLabels[s] }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Country</mat-label>
+          <mat-select name="country" [ngModel]="filters.country ?? ''" (selectionChange)="setCountry($event.value)">
+            <mat-option value="">All</mat-option>
+            <mat-option value="IN">India</mat-option>
+            <mat-option value="US">United States</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-slide-toggle name="del" [(ngModel)]="filters.includeDeleted" (change)="loadProviders(1)">Show deleted</mat-slide-toggle>
+        <button mat-stroked-button type="submit"><mat-icon>search</mat-icon> Search</button>
+      </form>
+
+      @if (providersLoading() && !providers()) {
+        <div class="ad__center"><mat-spinner diameter="36"></mat-spinner></div>
+      } @else if (providersError()) {
+        <div class="ad__error" role="alert">{{ providersError() }} <button mat-button type="button" (click)="loadProviders()">Retry</button></div>
+      } @else if (providers(); as pg) {
+        @if (!pg.items.length) {
+          <div class="ad__empty">
+            <p>No listings match. Discover starts as an admin-managed directory — add the first one.</p>
+            <a mat-stroked-button routerLink="/discover/admin/providers/new">Add a listing</a>
+          </div>
+        } @else {
+          <div class="ad__table-wrap">
+            <table class="ad__table">
+              <thead>
+                <tr><th scope="col">Listing</th><th scope="col">Location</th><th scope="col">Status</th><th scope="col">Rating</th><th scope="col">Updated</th><th scope="col"><span class="cdk-visually-hidden">Actions</span></th></tr>
+              </thead>
+              <tbody>
+                @for (p of pg.items; track p.id) {
+                  <tr [class.ad__row--deleted]="p.deletedAt">
+                    <td>
+                      <a [routerLink]="['/discover/admin/providers', p.id]" class="ad__name">{{ p.displayName }}</a>
+                      @if (p.businessName) { <div class="ad__sub">{{ p.businessName }}</div> }
+                      <div class="ad__sub">{{ p.categorySlugs.join(', ') }}@if (!p.isActive) { · inactive }@if (p.deletedAt) { · deleted }</div>
+                    </td>
+                    <td>
+                      {{ p.primaryPlace ?? '—' }}
+                      @if (p.locationCount > 1) { <div class="ad__sub">{{ p.locationCount }} locations</div> }
+                      @if (p.missingCoordinates) {
+                        <div class="ad__warn" matTooltip="At least one location has no coordinates, so it won't appear in distance searches."><mat-icon aria-hidden="true">warning</mat-icon> No coordinates</div>
+                      }
+                    </td>
+                    <td><span class="ad__status" [attr.data-status]="p.verificationStatus">{{ statusLabels[p.verificationStatus] }}</span></td>
+                    <td>{{ p.ratingAvg !== null ? p.ratingAvg + ' (' + p.ratingCount + ')' : '—' }}</td>
+                    <td>{{ p.updatedAt | date: 'mediumDate' }}</td>
+                    <td class="ad__actions">
+                      <button mat-icon-button type="button" [matMenuTriggerFor]="menu" [disabled]="busyId() === p.id" [attr.aria-label]="'Actions for ' + p.displayName">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <a mat-menu-item [routerLink]="['/discover/admin/providers', p.id]"><mat-icon>edit</mat-icon> Edit</a>
+                        @if (!p.deletedAt) {
+                          @if (p.verificationStatus !== 'VERIFIED') {
+                            <button mat-menu-item type="button" (click)="setVerification(p, 'VERIFIED')"><mat-icon>verified</mat-icon> Mark verified</button>
+                          }
+                          @if (p.verificationStatus !== 'PENDING') {
+                            <button mat-menu-item type="button" (click)="setVerification(p, 'PENDING')"><mat-icon>hourglass_empty</mat-icon> Back to pending</button>
+                          }
+                          @if (p.verificationStatus === 'PENDING') {
+                            <button mat-menu-item type="button" (click)="setVerification(p, 'REJECTED')"><mat-icon>block</mat-icon> Reject</button>
+                          }
+                          @if (p.verificationStatus === 'VERIFIED') {
+                            <button mat-menu-item type="button" (click)="setVerification(p, 'SUSPENDED')"><mat-icon>pause_circle</mat-icon> Suspend</button>
+                          }
+                          <button mat-menu-item type="button" (click)="remove(p)"><mat-icon>delete</mat-icon> Delete</button>
+                        } @else {
+                          <button mat-menu-item type="button" (click)="restore(p)"><mat-icon>restore</mat-icon> Restore</button>
+                        }
+                      </mat-menu>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          @if (pg.totalPages > 1) {
+            <nav class="ad__pager" aria-label="Listing pages">
+              <button mat-button type="button" [disabled]="pg.page <= 1" (click)="loadProviders(pg.page - 1)">Previous</button>
+              <span>Page {{ pg.page }} of {{ pg.totalPages }} · {{ pg.total }} listings</span>
+              <button mat-button type="button" [disabled]="pg.page >= pg.totalPages" (click)="loadProviders(pg.page + 1)">Next</button>
+            </nav>
+          }
+        }
+      }
+    </mat-tab>
+
+    <!-- ── Reviews ────────────────────────────────────────────────────── -->
+    <mat-tab label="Reviews">
+      <div class="ad__filters">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="reviewStatus" (selectionChange)="loadReviews(1)">
+            <mat-option value="">All</mat-option>
+            <mat-option value="PENDING">Pending</mat-option>
+            <mat-option value="APPROVED">Approved</mat-option>
+            <mat-option value="REJECTED">Rejected</mat-option>
+            <mat-option value="HIDDEN">Hidden</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      @if (reviewsLoading() && !reviews()) {
+        <div class="ad__center"><mat-spinner diameter="36"></mat-spinner></div>
+      } @else if (reviewsError()) {
+        <div class="ad__error" role="alert">{{ reviewsError() }} <button mat-button type="button" (click)="loadReviews(1)">Retry</button></div>
+      } @else if (reviews(); as rv) {
+        @if (!rv.items.length) {
+          <p class="ad__empty">No reviews in this state.</p>
+        } @else {
+          <ul class="ad__reviews">
+            @for (r of rv.items; track r.id) {
+              <li>
+                <div class="ad__rv-head">
+                  <strong>{{ r.providerName ?? 'Deleted listing' }}</strong>
+                  <span>{{ r.rating }}★ · {{ r.authorName }} · {{ r.createdAt | date: 'medium' }}</span>
+                  <span class="ad__status" [attr.data-status]="r.status">{{ r.status }}</span>
+                </div>
+                @if (r.title) { <p class="ad__rv-title">{{ r.title }}</p> }
+                <p>{{ r.comment }}</p>
+                @if (r.moderationNote) { <p class="ad__sub">Note: {{ r.moderationNote }}</p> }
+                <div class="ad__rv-actions">
+                  @if (r.status !== 'APPROVED') { <button mat-flat-button type="button" class="suhana-btn-primary" [disabled]="busyId() === r.id" (click)="moderate(r, 'APPROVED')">Approve</button> }
+                  @if (r.status === 'PENDING') { <button mat-stroked-button type="button" [disabled]="busyId() === r.id" (click)="moderate(r, 'REJECTED')">Reject</button> }
+                  @if (r.status === 'APPROVED') { <button mat-stroked-button type="button" [disabled]="busyId() === r.id" (click)="moderate(r, 'HIDDEN')">Hide</button> }
+                </div>
+              </li>
+            }
+          </ul>
+          @if (rv.totalPages > 1) {
+            <nav class="ad__pager" aria-label="Review pages">
+              <button mat-button type="button" [disabled]="rv.page <= 1" (click)="loadReviews(rv.page - 1)">Previous</button>
+              <span>Page {{ rv.page }} of {{ rv.totalPages }}</span>
+              <button mat-button type="button" [disabled]="rv.page >= rv.totalPages" (click)="loadReviews(rv.page + 1)">Next</button>
+            </nav>
+          }
+        }
+      }
+    </mat-tab>
+
+    <!-- ── Categories ─────────────────────────────────────────────────── -->
+    <mat-tab label="Categories">
+      @if (categoriesError()) {
+        <div class="ad__error" role="alert">{{ categoriesError() }} <button mat-button type="button" (click)="loadCategories()">Retry</button></div>
+      }
+      <p class="ad__hint">Every category has a member page. Switch a category to “Live” once it has a few listings — members see “Coming soon” until then.</p>
+      <ul class="ad__cats">
+        @for (c of categories(); track c.id) {
+          <li>
+            <mat-icon aria-hidden="true">{{ c.icon || 'category' }}</mat-icon>
+            <div>
+              <strong>{{ c.name }}</strong> <span class="ad__sub">({{ c.slug }}{{ c.kind === 'PRODUCT' ? ', products' : '' }})</span>
+              @if (c.description) { <div class="ad__sub">{{ c.description }}</div> }
+            </div>
+            <mat-slide-toggle [checked]="c.isActive" (change)="toggleCategory(c, $event.checked)" [attr.aria-label]="c.name + ' live'">
+              {{ c.isActive ? 'Live' : 'Coming soon' }}
+            </mat-slide-toggle>
+          </li>
+        }
+      </ul>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+</app-admin-layout>

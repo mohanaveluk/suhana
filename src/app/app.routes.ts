@@ -297,6 +297,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/personality/personality.routes').then(m => m.PERSONALITY_ROUTES),
   },
+  {
+    // Aurora Discover — local marriage services directory. Member-only, never indexed.
+    path: 'discover',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/discover/discover.routes').then(m => m.DISCOVER_ROUTES),
+  },
   // Public SEO landing pages (/ai-matchmaking, /tamil-matrimony, …) — the component sets its own SEO.
   ...LANDING_PAGES.map(p => ({
     path: p.slug,

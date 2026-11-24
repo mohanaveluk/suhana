@@ -59,6 +59,14 @@ export const ADMIN_MODULES: AdminNavItem[] = [
     keywords: 'ai search analytics trends fallback insights reports',
   },
   {
+    title: 'Aurora Discover',
+    short: 'Discover',
+    description: 'Manage local service listings (astrologers), verification, locations and reviews.',
+    icon: 'storefront',
+    route: '/discover/admin',
+    keywords: 'discover directory astrologer provider listing vendor verification location review moderation',
+  },
+  {
     title: 'Site Settings',
     short: 'Settings',
     description: 'Site-wide switches, such as turning text messages (SMS) on or off.',

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5c0018"/>
+      <stop offset="0.55" stop-color="#800020"/>
+      <stop offset="1" stop-color="#b76e79"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3dc9a"/>
+      <stop offset="0.5" stop-color="#e1b651"/>
+      <stop offset="1" stop-color="#b97002"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect width="800" height="600" fill="url(#glow)"/>
+  <!-- marigold garland arc -->
+  <g fill="#e1b651" opacity="0.85">
+    <circle cx="80" cy="40" r="14"/><circle cx="150" cy="62" r="14"/><circle cx="225" cy="78" r="14"/>
+    <circle cx="300" cy="88" r="14"/><circle cx="400" cy="92" r="14"/><circle cx="500" cy="88" r="14"/>
+    <circle cx="575" cy="78" r="14"/><circle cx="650" cy="62" r="14"/><circle cx="720" cy="40" r="14"/>
+  </g>
+  <g fill="#f0d4d8" opacity="0.6">
+    <circle cx="115" cy="52" r="8"/><circle cx="188" cy="71" r="8"/><circle cx="262" cy="84" r="8"/>
+    <circle cx="350" cy="91" r="8"/><circle cx="450" cy="91" r="8"/><circle cx="538" cy="84" r="8"/>
+    <circle cx="612" cy="71" r="8"/><circle cx="685" cy="52" r="8"/>
+  </g>
+  <!-- two families meeting: interlocking rings -->
+  <g fill="none" stroke="url(#gold)" stroke-width="22">
+    <circle cx="345" cy="330" r="120"/>
+    <circle cx="455" cy="330" r="120"/>
+  </g>
+  <!-- heart in the overlap -->
+  <path d="M400 395 C 360 360, 352 322, 376 304 C 392 292, 400 302, 400 312 C 400 302, 408 292, 424 304 C 448 322, 440 360, 400 395 Z" fill="#fde8e8"/>
+  <!-- sparkles -->
+  <g fill="#fff8e1">
+    <path d="M160 420 l6 16 16 6 -16 6 -6 16 -6 -16 -16 -6 16 -6z" opacity="0.8"/>
+    <path d="M640 200 l5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5z" opacity="0.7"/>
+    <path d="M610 470 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" opacity="0.6"/>
+    <path d="M200 210 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" opacity="0.6"/>
+  </g>
+</svg>

@@ -1,0 +1,303 @@
+@let c = cfg();
+<div class="cs" [style.--cs-a]="c?.accent?.[0]" [style.--cs-b]="c?.accent?.[1]">
+  @if (categoryState() === 'unknown') {
+    <div class="cs__state suhana-container">
+      <mat-icon aria-hidden="true">travel_explore</mat-icon>
+      <h1>We couldn't find that category</h1>
+      <a mat-flat-button class="suhana-btn-primary" routerLink="/discover">Browse Aurora Discover</a>
+    </div>
+  } @else if (c) {
+    <!-- ── Hero ─────────────────────────────────────────────────────── -->
+    <section class="cs__hero">
+      <div class="cs__hero-bg" [style.background-image]="'url(' + c.image + ')'" aria-hidden="true"></div>
+      <div class="cs__hero-tint" aria-hidden="true"></div>
+      <div class="cs__sparkles" aria-hidden="true">
+        @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) { <span [style.--i]="i"></span> }
+      </div>
+
+      <div class="suhana-container cs__hero-inner">
+        <nav class="cs__crumbs" aria-label="Breadcrumb">
+          <a routerLink="/discover">Aurora Discover</a> <span aria-hidden="true">›</span> <span>{{ c.name }}</span>
+        </nav>
+        <div class="cs__title-row">
+          <span class="cs__icon" aria-hidden="true"><mat-icon>{{ c.icon }}</mat-icon></span>
+          <div>
+            <h1>{{ c.heroTitle }}</h1>
+            <p>{{ c.heroSubtitle }}</p>
+          </div>
+        </div>
+
+        @if (liveCategories().length > 1) {
+          <nav class="cs__switch" aria-label="Other Discover categories">
+            @for (lc of liveCategories(); track lc.slug) {
+              <a class="cs__switch-item" [class.cs__switch-item--on]="lc.slug === c.slug"
+                 [routerLink]="['/discover', lc.segment]" [queryParams]="switchQuery()"
+                 [attr.aria-current]="lc.slug === c.slug ? 'page' : null">
+                <mat-icon aria-hidden="true">{{ lc.icon }}</mat-icon>{{ lc.name }}
+              </a>
+            }
+          </nav>
+        }
+
+        @if (categoryState() === 'live') {
+          <form class="cs__search" [formGroup]="form" (ngSubmit)="onSubmit()" role="search" [attr.aria-label]="'Search ' + c.name">
+            <mat-button-toggle-group formControlName="country" aria-label="Country" class="cs__country"
+                                     (change)="onCountryChange($event.value)">
+              @for (ct of countries; track ct[0]) {
+                <mat-button-toggle [value]="ct[0]">{{ ct[1].name }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+
+            <mat-form-field appearance="outline" class="cs__where" subscriptSizing="dynamic">
+              <mat-label>ZIP / PIN code or city</mat-label>
+              <mat-icon matPrefix aria-hidden="true">place</mat-icon>
+              <input matInput formControlName="where" autocomplete="postal-code" [placeholder]="postalHint()" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="cs__state-field" subscriptSizing="dynamic">
+              <mat-label>State (optional)</mat-label>
+              <input matInput formControlName="state" autocomplete="address-level1" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="cs__radius" subscriptSizing="dynamic">
+              <mat-label>Within</mat-label>
+              <mat-select formControlName="radius">
+                @for (r of radiusOptions; track r) {
+                  <mat-option [value]="r">{{ r === 'all' ? 'Any distance' : r + ' ' + form.controls.unit.value }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-button-toggle-group formControlName="unit" aria-label="Distance unit" class="cs__unit">
+              <mat-button-toggle value="mi">mi</mat-button-toggle>
+              <mat-button-toggle value="km">km</mat-button-toggle>
+            </mat-button-toggle-group>
+
+            <button mat-flat-button type="submit" class="suhana-btn-primary cs__go">
+              <mat-icon>search</mat-icon> Search
+            </button>
+          </form>
+
+          <div class="cs__locate">
+            @if (usingDevice()) {
+              <span class="cs__near"><mat-icon aria-hidden="true">my_location</mat-icon> Showing results near your current location</span>
+              <button mat-button type="button" (click)="stopUsingLocation()">Stop using my location</button>
+            } @else if (geoSupported) {
+              <button mat-button type="button" class="cs__locate-btn" (click)="useMyLocation()" [disabled]="locating()">
+                <mat-icon [class.cs__spin]="locating()">my_location</mat-icon> {{ locating() ? 'Finding you…' : 'Use my location' }}
+              </button>
+              <span class="cs__privacy">Optional. Used only for this search, rounded to about 1 km, never saved.</span>
+            }
+            @if (locateError()) { <p class="cs__locate-err" role="status">{{ locateError() }}</p> }
+          </div>
+        }
+      </div>
+    </section>
+
+    @if (categoryState() === 'soon') {
+      <div class="cs__state suhana-container">
+        <mat-icon aria-hidden="true">hourglass_top</mat-icon>
+        <h2>{{ c.name }} is coming soon</h2>
+        <p>We're adding trusted listings. Meanwhile, explore the categories that are live.</p>
+        <a mat-flat-button class="suhana-btn-primary" routerLink="/discover">Browse Aurora Discover</a>
+      </div>
+    } @else if (categoryState() === 'loading') {
+      <div class="suhana-container cs__layout"><div></div><div class="cs__list">
+        @for (i of [1, 2, 3]; track i) { <div class="cs__sk"></div> }
+      </div></div>
+    } @else {
+      <!-- ── Quick specialty chips ───────────────────────────────────── -->
+      <div class="suhana-container cs__quick" role="group" [attr.aria-label]="'Quick filter by ' + c.specialtyLabel.toLowerCase()">
+        @for (s of specialties(); track s[0]; let i = $index) {
+          <button type="button" class="cs__qchip" [class.cs__qchip--on]="selectedSpecs().includes(s[0])"
+                  [style.--d]="(i * 40) + 'ms'" [attr.aria-pressed]="selectedSpecs().includes(s[0])" (click)="toggleChip(s[0])">
+            @if (selectedSpecs().includes(s[0])) { <mat-icon aria-hidden="true">check</mat-icon> }
+            {{ s[1] }}
+          </button>
+        }
+      </div>
+
+      <div class="suhana-container cs__layout">
+        <!-- ── Filters ───────────────────────────────────────────────── -->
+        <aside class="cs__filters" [class.cs__filters--open]="filtersOpen()" aria-label="Filters">
+          <button mat-stroked-button type="button" class="cs__filters-toggle"
+                  [attr.aria-expanded]="filtersOpen()" aria-controls="cs-filter-panel"
+                  (click)="filtersOpen.set(!filtersOpen())">
+            <mat-icon>tune</mat-icon> Filters
+            @if (activeFilterCount()) { <span class="cs__count">{{ activeFilterCount() }}</span> }
+          </button>
+
+          <form id="cs-filter-panel" class="cs__panel" [formGroup]="form" (ngSubmit)="apply(1)">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Name</mat-label>
+              <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+              <input matInput formControlName="q" maxlength="80" />
+            </mat-form-field>
+
+            <fieldset>
+              <legend>{{ c.specialtyLabel }}</legend>
+              @for (s of specialties(); track s[0]) {
+                <mat-checkbox [checked]="selectedSpecs().includes(s[0])" (change)="toggleIn('specialization', s[0])">{{ s[1] }}</mat-checkbox>
+              }
+            </fieldset>
+
+            @if (c.capacityLabel) {
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ c.capacityLabel }} (at least)</mat-label>
+                <mat-select formControlName="minCapacity">
+                  <mat-option [value]="null">Any</mat-option>
+                  @for (g of [100, 250, 500, 1000, 2000]; track g) { <mat-option [value]="g">{{ g.toLocaleString() }}+</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            }
+
+            @if (c.showModes) {
+              <fieldset>
+                <legend>How you can meet</legend>
+                @for (m of modes; track m[0]) {
+                  <mat-checkbox [checked]="form.controls.consultationMode.value.includes(m[0])"
+                                (change)="toggleIn('consultationMode', m[0])">{{ m[1].label }}</mat-checkbox>
+                }
+              </fieldset>
+            }
+
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Languages</mat-label>
+              <mat-select formControlName="language" multiple>
+                @for (l of languages; track l[0]) { <mat-option [value]="l[0]">{{ l[1] }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Minimum rating</mat-label>
+              <mat-select formControlName="minRating">
+                <mat-option [value]="null">Any</mat-option>
+                @for (r of [4.5, 4, 3.5, 3]; track r) { <mat-option [value]="r">{{ r }}★ & up</mat-option> }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Experience</mat-label>
+              <mat-select formControlName="minExperience">
+                <mat-option [value]="null">Any</mat-option>
+                @for (y of [5, 10, 15, 20, 30]; track y) { <mat-option [value]="y">{{ y }}+ years</mat-option> }
+              </mat-select>
+            </mat-form-field>
+
+            <div class="cs__fee">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Min price ({{ form.controls.country.value === 'US' ? 'USD' : 'INR' }})</mat-label>
+                <input matInput type="number" min="0" formControlName="minPrice" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Max price</mat-label>
+                <input matInput type="number" min="0" formControlName="maxPrice" />
+              </mat-form-field>
+            </div>
+
+            <mat-slide-toggle formControlName="verifiedOnly">Verified listings only</mat-slide-toggle>
+
+            <div class="cs__panel-actions">
+              <button mat-flat-button type="submit" class="suhana-btn-primary">Apply filters</button>
+              <button mat-button type="button" (click)="clearFilters()">Clear</button>
+            </div>
+          </form>
+        </aside>
+
+        <!-- ── Results ───────────────────────────────────────────────── -->
+        <section class="cs__results" aria-live="polite" [attr.aria-busy]="discover.loading()">
+          <div class="cs__bar">
+            <p class="cs__summary">
+              @if (results(); as r) {
+                <strong class="cs__total">{{ shownTotal() }}</strong>
+                {{ r.total === 1 ? c.singular : c.name.toLowerCase() }}
+                @if (r.origin.type === 'point') {
+                  {{ r.origin.radius !== null ? 'within ' + r.origin.radius + ' ' + r.origin.unit + ' of' : 'near' }} {{ r.origin.label }}
+                } @else if (r.origin.type === 'area') {
+                  in {{ r.origin.label }}
+                }
+              }
+            </p>
+            <mat-form-field appearance="outline" class="cs__sort" subscriptSizing="dynamic">
+              <mat-label>Sort by</mat-label>
+              <mat-select [formControl]="form.controls.sortBy" (selectionChange)="apply(1)">
+                @for (s of sorts(); track s[0]) { <mat-option [value]="s[0]">{{ s[1] }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          @if (results(); as r) {
+            <mat-expansion-panel class="cs__why">
+              <mat-expansion-panel-header>
+                <mat-panel-title><mat-icon aria-hidden="true">info</mat-icon>&nbsp;How results are ordered</mat-panel-title>
+              </mat-expansion-panel-header>
+              <p>{{ r.ranking.description }}</p>
+              @if (factors().length) {
+                <ul class="cs__factors">
+                  @for (f of factors(); track f.label) {
+                    <li><span>{{ f.label }}</span><span class="cs__bar-track"><span class="cs__bar-fill" [style.width.%]="f.pct * 3"></span></span><strong>{{ f.pct }}%</strong></li>
+                  }
+                </ul>
+              }
+              <p class="cs__muted">Aurora never sells placement in these results.</p>
+            </mat-expansion-panel>
+            @if (r.ranking.notice) { <p class="cs__notice" role="status"><mat-icon aria-hidden="true">info</mat-icon> {{ r.ranking.notice }}</p> }
+          }
+
+          @if (discover.loading() && !results()) {
+            <div class="cs__list" aria-label="Loading results">
+              @for (i of [1, 2, 3]; track i) { <div class="cs__sk"></div> }
+            </div>
+          } @else if (discover.error()) {
+            <div class="cs__error" role="alert">
+              <mat-icon aria-hidden="true">error_outline</mat-icon>
+              <span>{{ discover.error() }}</span>
+              <button mat-stroked-button type="button" (click)="retry()">Try again</button>
+            </div>
+          } @else if (results(); as r) {
+            <div [class.cs__dim]="discover.loading()">
+              @if (!r.items.length) {
+                <div class="cs__empty">
+                  <div class="cs__empty-art" aria-hidden="true"><mat-icon>{{ c.icon }}</mat-icon></div>
+                  <h2>No {{ c.name.toLowerCase() }} found</h2>
+                  <p>{{ c.emptyHint }}</p>
+                  <div class="cs__empty-actions">
+                    @if (form.controls.radius.value !== 'all') {
+                      <button mat-stroked-button type="button" (click)="form.controls.radius.setValue('all'); apply(1)">Search any distance</button>
+                    }
+                    @if (activeFilterCount()) {
+                      <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
+                    }
+                  </div>
+                </div>
+              } @else {
+                <div class="cs__list">
+                  @for (p of r.items; track p.id; let i = $index) {
+                    <app-provider-card [provider]="p" [index]="i" [favoriteBusy]="favBusy() === p.id"
+                                       (favoriteToggled)="toggleFavorite($event)" (contactRequested)="contact($event)" />
+                  }
+                </div>
+
+                @if (r.totalPages > 1) {
+                  <nav class="cs__pager" aria-label="Results pages">
+                    <button mat-icon-button type="button" [disabled]="r.page <= 1" (click)="goToPage(r.page - 1)" aria-label="Previous page">
+                      <mat-icon>chevron_left</mat-icon>
+                    </button>
+                    @for (n of pages(); track n) {
+                      <button mat-button type="button" [class.cs__page--on]="n === r.page" [attr.aria-current]="n === r.page ? 'page' : null"
+                              (click)="goToPage(n)">{{ n }}</button>
+                    }
+                    <button mat-icon-button type="button" [disabled]="r.page >= r.totalPages" (click)="goToPage(r.page + 1)" aria-label="Next page">
+                      <mat-icon>chevron_right</mat-icon>
+                    </button>
+                    <span class="cs__muted">Page {{ r.page }} of {{ r.totalPages }}</span>
+                  </nav>
+                }
+              }
+            </div>
+          }
+        </section>
+      </div>
+    }
+  }
+</div>

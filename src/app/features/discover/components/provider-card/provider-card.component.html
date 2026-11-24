@@ -1,0 +1,102 @@
+@let p = provider();
+<article class="pc" [attr.aria-labelledby]="'pc-name-' + p.id">
+  <a class="pc__media" [class.pc__media--cat]="usingCategoryImage()" [routerLink]="link()" tabindex="-1" aria-hidden="true">
+    <img [src]="photo()" alt="" loading="lazy" (error)="onImgError($event)" />
+    @if (p.isVerified) {
+      <span class="pc__ribbon"><mat-icon aria-hidden="true">verified</mat-icon></span>
+    }
+  </a>
+
+  <div class="pc__body">
+    <header class="pc__head">
+      <div class="pc__titles">
+        <h3 class="pc__name" [id]="'pc-name-' + p.id">
+          <a [routerLink]="link()">{{ p.displayName }}</a>
+        </h3>
+        @if (p.businessName) {
+          <p class="pc__business">{{ p.businessName }}</p>
+        } @else if (p.headline) {
+          <p class="pc__business">{{ p.headline }}</p>
+        }
+      </div>
+      <button mat-icon-button type="button" class="pc__fav" [class.pc__fav--on]="p.isFavorite" [class.pc__fav--pop]="popping()"
+              [disabled]="favoriteBusy()"
+              [attr.aria-pressed]="p.isFavorite"
+              [attr.aria-label]="(p.isFavorite ? 'Remove ' : 'Save ') + p.displayName + (p.isFavorite ? ' from saved' : '')"
+              [matTooltip]="p.isFavorite ? 'Saved' : 'Save'"
+              (click)="toggleFavorite()">
+        <mat-icon>{{ p.isFavorite ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+      </button>
+    </header>
+
+    <div class="pc__badges">
+      @if (p.isVerified) {
+        <span class="pc__badge pc__badge--verified" matTooltip="Aurora has verified this business listing's identity and contact details. This is not a check of qualifications.">
+          <mat-icon aria-hidden="true">verified</mat-icon> Verified listing
+        </span>
+      }
+      @if (!p.acceptingClients) {
+        <span class="pc__badge pc__badge--muted">Not taking new bookings</span>
+      }
+      <app-rating-stars [average]="p.rating.average" [count]="p.rating.count" />
+    </div>
+
+    <ul class="pc__facts">
+      @if (place()) {
+        <li>
+          <mat-icon aria-hidden="true">place</mat-icon>
+          <span>
+            {{ place() }}
+            @if (distance()) { <strong class="pc__dist"> · {{ distance() }} away</strong> }
+            @if (p.locationCount > 1) { <span class="pc__more"> · {{ p.locationCount }} locations</span> }
+          </span>
+        </li>
+      }
+      @if (experience() !== null) {
+        <li><mat-icon aria-hidden="true">workspace_premium</mat-icon><span>{{ experience() }} {{ cfg()?.experienceLabel ?? 'years experience' }}</span></li>
+      }
+      @if (languages()) {
+        <li><mat-icon aria-hidden="true">translate</mat-icon><span>{{ languages() }}</span></li>
+      }
+      <li><mat-icon aria-hidden="true">payments</mat-icon><span class="pc__fee">{{ fee() }}</span></li>
+    </ul>
+
+    @if (highlights().length) {
+      <div class="pc__highlights">
+        @for (h of highlights(); track h.text) {
+          <span class="pc__hl"><mat-icon aria-hidden="true">{{ h.icon }}</mat-icon>{{ h.text }}</span>
+        }
+      </div>
+    }
+
+    @if (specialties().length) {
+      <div class="pc__chips" [attr.aria-label]="cfg()?.specialtyLabel ?? 'Specialties'">
+        @for (s of specialties(); track s) { <span class="pc__chip">{{ s }}</span> }
+        @if (moreSpecs()) { <span class="pc__chip pc__chip--more">+{{ moreSpecs() }}</span> }
+      </div>
+    }
+
+    @if (showModes()) {
+      <div class="pc__modes" aria-label="Ways to meet">
+        @for (m of p.consultationModes; track m) {
+          <span class="pc__mode"><mat-icon aria-hidden="true">{{ modeLabels[m].icon }}</mat-icon>{{ modeLabels[m].label }}</span>
+        }
+      </div>
+    }
+
+    <div class="pc__actions">
+      <a mat-flat-button class="suhana-btn-primary pc__cta" [routerLink]="link()">
+        View details <mat-icon iconPositionEnd aria-hidden="true">arrow_forward</mat-icon>
+      </a>
+      <button mat-stroked-button type="button" (click)="contactRequested.emit(p)">
+        <mat-icon>call</mat-icon> Contact
+      </button>
+      @if (directions(); as url) {
+        <a mat-button [href]="url" target="_blank" rel="noopener noreferrer"
+           [attr.aria-label]="'Directions to ' + p.displayName + ' (opens Google Maps)'">
+          <mat-icon>directions</mat-icon> Directions
+        </a>
+      }
+    </div>
+  </div>
+</article>
