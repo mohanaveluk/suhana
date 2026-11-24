@@ -129,6 +129,12 @@ export const routes: Routes = [
         .then(m => m.AdminAiSearchAnalyticsComponent),
   },
   {
+    path: 'admin/settings',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/admin/settings/admin-settings.component').then(m => m.AdminSettingsComponent),
+  },
+  {
     path: 'admin/edit-profile/:id',
     loadComponent: () =>
       import('./pages/admin-edit-profile/admin-edit-profile').then(m => m.AdminEditProfileComponent),

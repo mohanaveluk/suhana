@@ -11,6 +11,7 @@ import {
   StartAssessmentResponse, SubmitAssessmentRequest,
 } from '../features/personality/models/personality.model';
 import { PublicBlogPost } from '../features/blog/blog.model';
+import { SmsSettings } from '../models/sms-settings.model';
 import {
   InteractionDashboard, InteractionListResponse, InteractionQuery, InterestSource,
 } from '../features/my-interests/models/member-interaction.model';
@@ -432,6 +433,15 @@ export class ApiService {
 
   updateMatchWeights(weights: Record<string, number>): Observable<any> {
     return this.http.patch(`${this.baseUrl}/v1/admin/match-weights`, weights);
+  }
+
+  /** Site-wide SMS switch (admin only). */
+  getSmsSettings(): Observable<SmsSettings> {
+    return this.http.get<SmsSettings>(`${this.baseUrl}/v1/admin/settings/sms`);
+  }
+
+  updateSmsSettings(enabled: boolean): Observable<SmsSettings> {
+    return this.http.patch<SmsSettings>(`${this.baseUrl}/v1/admin/settings/sms`, { enabled });
   }
 
   // Email history / notification center
