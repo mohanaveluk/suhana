@@ -33,6 +33,9 @@
           My Interests
         </a>
         <a mat-button routerLink="/shortlist" routerLinkActive="active-link">Shortlist</a>
+        <a mat-button routerLink="/discover" routerLinkActive="active-link" aria-label="Aurora Discover">
+          <mat-icon aria-hidden="true">explore</mat-icon> Discover
+        </a>
         <a mat-button routerLink="/chat" routerLinkActive="active-link">
           <mat-icon [matBadge]="interactions.newMessageCount() || null" matBadgeColor="warn" matBadgeSize="small"
                     [matBadgeHidden]="!interactions.newMessageCount()" aria-hidden="true">chat</mat-icon>
@@ -110,6 +113,10 @@
             <mat-icon>psychology</mat-icon>
             <span>Personality Assessment</span>
           </a>
+          <a mat-menu-item routerLink="/discover/favorites">
+            <mat-icon>bookmarks</mat-icon>
+            <span>Saved Services (Discover)</span>
+          </a>
           <a mat-menu-item routerLink="/match-fixed/me">
             <mat-icon>favorite</mat-icon>
             <span>My Match Fixed</span>
@@ -180,6 +187,9 @@
       </a>
       <a routerLink="/shortlist" (click)="toggleMobileMenu()">
         <mat-icon>bookmark</mat-icon> Shortlist
+      </a>
+      <a routerLink="/discover" (click)="toggleMobileMenu()">
+        <mat-icon>explore</mat-icon> Aurora Discover
       </a>
       <a routerLink="/chat" (click)="toggleMobileMenu()">
         <mat-icon>chat</mat-icon> Messages

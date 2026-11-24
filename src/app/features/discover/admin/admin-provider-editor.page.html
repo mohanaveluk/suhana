@@ -1,0 +1,330 @@
+<app-admin-layout>
+<div class="pe">
+  <nav class="pe__crumbs" aria-label="Breadcrumb">
+    <a routerLink="/discover/admin">Aurora Discover</a> <span aria-hidden="true">›</span>
+    <span>{{ id() ? 'Edit listing' : 'New listing' }}</span>
+  </nav>
+
+  @if (loading()) {
+    <div class="pe__center"><mat-spinner diameter="36"></mat-spinner></div>
+  } @else if (loadError()) {
+    <div class="pe__error" role="alert">{{ loadError() }}</div>
+  } @else {
+    <header class="pe__header">
+      <h1>{{ id() ? form.controls.displayName.value || 'Listing' : 'New listing' }}</h1>
+      @if (provider(); as p) {
+        <div class="pe__status">
+          <span class="pe__pill" [attr.data-status]="p.verificationStatus">{{ statusLabels[p.verificationStatus] }}</span>
+          @if (p.verifiedAt) { <span class="pe__sub">since {{ p.verifiedAt | date: 'mediumDate' }}</span> }
+          @if (p.verificationNotes) { <span class="pe__sub">Note: {{ p.verificationNotes }}</span> }
+          @if (p.deletedAt) { <span class="pe__pill" data-status="REJECTED">Deleted</span> }
+          <span class="pe__spacer"></span>
+          @if (p.verificationStatus !== 'VERIFIED') { <button mat-stroked-button type="button" (click)="setVerification('VERIFIED')"><mat-icon>verified</mat-icon> Mark verified</button> }
+          @if (p.verificationStatus !== 'PENDING') { <button mat-button type="button" (click)="setVerification('PENDING')">Back to pending</button> }
+          @if (p.verificationStatus === 'PENDING') { <button mat-button type="button" (click)="setVerification('REJECTED')">Reject</button> }
+          @if (p.verificationStatus === 'VERIFIED') { <button mat-button type="button" (click)="setVerification('SUSPENDED')">Suspend</button> }
+        </div>
+      } @else {
+        <p class="pe__sub">New listings start as <strong>Pending review</strong>. Verify them after checking identity and contact details.</p>
+      }
+    </header>
+
+    @if (geocodeNotes().length) {
+      <div class="pe__geo" role="status">
+        @for (n of geocodeNotes(); track n) { <div><mat-icon aria-hidden="true">place</mat-icon> {{ n }}</div> }
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="pe__form">
+      <!-- ── Basics ─────────────────────────────────────────────────── -->
+      <section class="pe__card">
+        <h2>Listing</h2>
+        <div class="pe__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Display name</mat-label>
+            <input matInput formControlName="displayName" required />
+            @if (form.controls.displayName.invalid) { <mat-error>Required (max 150 characters).</mat-error> }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Business name</mat-label>
+            <input matInput formControlName="businessName" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="pe__wide">
+            <mat-label>Headline</mat-label>
+            <input matInput formControlName="headline" maxlength="200" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="pe__wide">
+            <mat-label>About</mat-label>
+            <textarea matInput formControlName="about" rows="5" maxlength="5000"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Categories</mat-label>
+            <mat-select formControlName="categorySlugs" multiple>
+              @for (c of categories(); track c.id) { <mat-option [value]="c.slug">{{ c.name }}{{ c.isActive ? '' : ' (coming soon)' }}</mat-option> }
+            </mat-select>
+            <mat-hint>The first selected is the primary category.</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Languages</mat-label>
+            <mat-select formControlName="languages" multiple>
+              @for (l of languages; track l[0]) { <mat-option [value]="l[0]">{{ l[1] }}</mat-option> }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone" type="tel" />
+            @if (form.controls.phone.invalid) { <mat-error>Enter a valid phone number.</mat-error> }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" />
+            @if (form.controls.email.invalid) { <mat-error>Enter a valid email.</mat-error> }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Website</mat-label>
+            <input matInput formControlName="website" placeholder="https://" />
+            @if (form.controls.website.invalid) { <mat-error>Start with https://</mat-error> }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Photo URL</mat-label>
+            <input matInput formControlName="photoUrl" placeholder="Upload below, or paste https://…" />
+            @if (form.controls.photoUrl.invalid) { <mat-error>Start with https://</mat-error> }
+          </mat-form-field>
+          <mat-slide-toggle formControlName="isActive">Visible to members</mat-slide-toggle>
+          <mat-slide-toggle formControlName="acceptingClients">Accepting new clients</mat-slide-toggle>
+        </div>
+      </section>
+
+      <!-- ── Astrologer details ─────────────────────────────────────── -->
+      @if (isAstrologer()) {
+        <section class="pe__card" formGroupName="astrologer">
+          <h2>Astrologer details</h2>
+          <div class="pe__grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Years of experience</mat-label>
+              <input matInput type="number" min="0" max="80" formControlName="experienceYears" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Specializations</mat-label>
+              <mat-select formControlName="specializations" multiple>
+                @for (s of specializations; track s[0]) { <mat-option [value]="s[0]">{{ s[1] }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="pe__wide">
+              <mat-label>Availability note</mat-label>
+              <input matInput formControlName="availabilityNote" maxlength="255" placeholder="e.g. Video consultations on Sundays by appointment" />
+            </mat-form-field>
+          </div>
+
+          <h3>Business hours <span class="pe__sub">(provider's local time)</span></h3>
+          <div formArrayName="businessHours" class="pe__rows">
+            @for (h of hours.controls; track h; let i = $index) {
+              <div class="pe__row" [formGroupName]="i">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>Day</mat-label>
+                  <mat-select formControlName="day">
+                    @for (d of weekDays; track d.key) { <mat-option [value]="d.key">{{ d.label }}</mat-option> }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Opens</mat-label><input matInput formControlName="open" placeholder="09:00" /></mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Closes</mat-label><input matInput formControlName="close" placeholder="18:00" /></mat-form-field>
+                <button mat-icon-button type="button" (click)="removeHours(i)" aria-label="Remove hours"><mat-icon>delete</mat-icon></button>
+              </div>
+            }
+          </div>
+          <div class="pe__row-actions">
+            <button mat-button type="button" (click)="addHours()"><mat-icon>add</mat-icon> Add hours</button>
+            <button mat-button type="button" (click)="fillWeekHours()">Mon–Sat 09:00–18:00</button>
+          </div>
+
+          <h3>Qualifications</h3>
+          <p class="pe__sub">Tick “Credential checked” only after verifying the certificate itself — members see this separately from listing verification.</p>
+          <div formArrayName="certifications" class="pe__rows">
+            @for (c of certs.controls; track c; let i = $index) {
+              <div class="pe__row" [formGroupName]="i">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Name</mat-label><input matInput formControlName="name" /></mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Issuer</mat-label><input matInput formControlName="issuer" /></mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__narrow"><mat-label>Year</mat-label><input matInput type="number" formControlName="year" /></mat-form-field>
+                <mat-checkbox formControlName="verified">Credential checked</mat-checkbox>
+                <button mat-icon-button type="button" (click)="removeCert(i)" aria-label="Remove qualification"><mat-icon>delete</mat-icon></button>
+              </div>
+            }
+          </div>
+          <button mat-button type="button" (click)="addCert()"><mat-icon>add</mat-icon> Add qualification</button>
+        </section>
+      }
+
+      <!-- ── Category details (non-astrologer categories) ─────────────── -->
+      <div formArrayName="categoryDetails">
+        @for (g of categoryDetails.controls; track g.value.categorySlug; let i = $index) {
+          @let dc = cfgFor(g.value.categorySlug);
+          <section class="pe__card" [formGroupName]="i">
+            <h2>
+              <mat-icon aria-hidden="true">{{ dc?.icon }}</mat-icon> {{ dc?.name }} details
+            </h2>
+            <p class="pe__sub">Shown to members as “As stated by the provider”. Only fill in what the business has told you.</p>
+            <div class="pe__grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Years ({{ dc?.experienceLabel }})</mat-label>
+                <input matInput type="number" min="0" max="80" formControlName="experienceYears" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ dc?.specialtyLabel }}</mat-label>
+                <mat-select formControlName="specialties" multiple>
+                  @for (s of specialtyOptions(g.value.categorySlug); track s[0]) { <mat-option [value]="s[0]">{{ s[1] }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="pe__grid" formGroupName="attributes">
+              @for (a of dc?.attributes ?? []; track a.key) {
+                @switch (a.type) {
+                  @case ('bool') {
+                    <mat-slide-toggle [formControlName]="a.key">{{ a.label }}</mat-slide-toggle>
+                  }
+                  @case ('int') {
+                    <mat-form-field appearance="outline">
+                      <mat-label>{{ a.label }}{{ a.suffix ? ' (' + a.suffix + ')' : '' }}</mat-label>
+                      <input matInput type="number" min="0" [formControlName]="a.key" />
+                    </mat-form-field>
+                  }
+                  @default {
+                    <mat-form-field appearance="outline" class="pe__wide">
+                      <mat-label>{{ a.label }}</mat-label>
+                      <input matInput maxlength="200" [formControlName]="a.key" />
+                    </mat-form-field>
+                  }
+                }
+              }
+            </div>
+          </section>
+        }
+      </div>
+
+      <!-- ── Services ───────────────────────────────────────────────── -->
+      <section class="pe__card">
+        <h2>Services &amp; fees</h2>
+        <p class="pe__sub">Leave the fee empty for “price on request”. Currency defaults to the primary location's country.</p>
+        <div formArrayName="services" class="pe__rows">
+          @for (s of services.controls; track s; let i = $index) {
+            <div class="pe__svc" [formGroupName]="i">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__svc-name"><mat-label>Service</mat-label><input matInput formControlName="name" /></mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Mode</mat-label>
+                <mat-select formControlName="consultationMode">
+                  @for (m of modes; track m[0]) { <mat-option [value]="m[0]">{{ m[1].label }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Specialization</mat-label>
+                <mat-select formControlName="specialization">
+                  <mat-option [value]="null">—</mat-option>
+                  @for (sp of specializations; track sp[0]) { <mat-option [value]="sp[0]">{{ sp[1] }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__narrow"><mat-label>Fee</mat-label><input matInput type="number" min="0" formControlName="price" /></mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__narrow">
+                <mat-label>Currency</mat-label>
+                <mat-select formControlName="currency">
+                  <mat-option [value]="null">Auto</mat-option>
+                  <mat-option value="INR">INR</mat-option>
+                  <mat-option value="USD">USD</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__narrow"><mat-label>Minutes</mat-label><input matInput type="number" min="5" formControlName="durationMinutes" /></mat-form-field>
+              <mat-slide-toggle formControlName="isActive">Active</mat-slide-toggle>
+              <button mat-icon-button type="button" (click)="removeService(i)" aria-label="Remove service"><mat-icon>delete</mat-icon></button>
+            </div>
+          }
+        </div>
+        <button mat-button type="button" (click)="addService()"><mat-icon>add</mat-icon> Add service</button>
+      </section>
+
+      <!-- ── Locations ──────────────────────────────────────────────── -->
+      <section class="pe__card">
+        <h2>Locations</h2>
+        <p class="pe__sub">
+          Coordinates are looked up from the postal code (or city) when left blank.
+          @if (id()) { Each location saves on its own. } @else { Locations are saved with the listing. }
+          Turn off “Show street address” for home-based providers — members then see only the city, with no directions.
+        </p>
+        <div formArrayName="locations" class="pe__rows">
+          @for (l of locations.controls; track l; let i = $index) {
+            <fieldset class="pe__loc" [formGroupName]="i">
+              <legend>{{ l.value.label || 'Location ' + (i + 1) }}{{ l.value.isPrimary ? ' (primary)' : '' }}</legend>
+              <div class="pe__grid">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>Country</mat-label>
+                  <mat-select formControlName="country">
+                    @for (c of countries; track c[0]) { <mat-option [value]="c[0]">{{ c[1].name }}</mat-option> }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Label</mat-label><input matInput formControlName="label" placeholder="Main office" /></mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__wide"><mat-label>Address line 1</mat-label><input matInput formControlName="addressLine1" /></mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__wide"><mat-label>Address line 2</mat-label><input matInput formControlName="addressLine2" /></mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>City</mat-label><input matInput formControlName="city" required /></mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>State</mat-label><input matInput formControlName="state" /></mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>{{ l.value.country === 'US' ? 'ZIP code' : 'PIN code' }}</mat-label><input matInput formControlName="postalCode" /></mat-form-field>
+                <div class="pe__coords">
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Latitude</mat-label><input matInput type="number" step="0.000001" formControlName="latitude" /></mat-form-field>
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Longitude</mat-label><input matInput type="number" step="0.000001" formControlName="longitude" /></mat-form-field>
+                  <button mat-stroked-button type="button" (click)="lookup(i)">Look up</button>
+                </div>
+              </div>
+              <div class="pe__toggles">
+                <mat-slide-toggle formControlName="showStreetAddress">Show street address</mat-slide-toggle>
+                <mat-slide-toggle formControlName="isPrimary">Primary</mat-slide-toggle>
+                <mat-slide-toggle formControlName="isActive">Active</mat-slide-toggle>
+                <span class="pe__spacer"></span>
+                @if (id()) {
+                  <button mat-stroked-button type="button" [disabled]="locBusy() === i" (click)="saveLocation(i)">
+                    {{ l.value.id ? 'Save location' : 'Add location' }}
+                  </button>
+                }
+                <button mat-button type="button" [disabled]="locBusy() === i" (click)="deleteLocation(i)">Remove</button>
+              </div>
+            </fieldset>
+          }
+        </div>
+        <button mat-button type="button" (click)="addLocation()"><mat-icon>add_location_alt</mat-icon> Add location</button>
+      </section>
+
+      <!-- ── Photos ─────────────────────────────────────────────────── -->
+      @if (provider(); as p) {
+        <section class="pe__card">
+          <h2>Photos</h2>
+          <div class="pe__upload">
+            <input #file type="file" accept="image/jpeg,image/png,image/webp" aria-label="Choose a photo" />
+            <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Caption</mat-label><input matInput #cap maxlength="200" /></mat-form-field>
+            <mat-checkbox #asPhoto>Use as listing photo</mat-checkbox>
+            <button mat-stroked-button type="button" [disabled]="uploading()" (click)="upload(file, cap.value, asPhoto.checked)">
+              {{ uploading() ? 'Uploading…' : 'Upload' }}
+            </button>
+          </div>
+          <p class="pe__sub">JPEG, PNG or WebP up to 8 MB. Images are resized and location metadata is removed.</p>
+          @if (p.media.length) {
+            <ul class="pe__media">
+              @for (m of p.media; track m.id) {
+                <li>
+                  <img [src]="m.url" [alt]="m.caption || 'Listing photo'" loading="lazy" />
+                  @if (m.url === p.photoUrl) { <span class="pe__pill" data-status="VERIFIED">Listing photo</span> }
+                  <div class="pe__media-actions">
+                    @if (m.url !== p.photoUrl) { <button mat-button type="button" (click)="useAsPhoto(m.url)">Use as photo</button> }
+                    <button mat-icon-button type="button" (click)="deleteMedia(m.id)" aria-label="Delete photo"><mat-icon>delete</mat-icon></button>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+      }
+
+      <div class="pe__savebar">
+        <a mat-button routerLink="/discover/admin">Back to listings</a>
+        <button mat-flat-button type="submit" class="suhana-btn-primary" (click)="form.markAllAsTouched()">
+          {{ saving() ? 'Saving…' : id() ? 'Save listing' : 'Create listing' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>
+</app-admin-layout>

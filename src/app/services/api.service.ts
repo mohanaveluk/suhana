@@ -15,6 +15,25 @@ import { SmsSettings } from '../models/sms-settings.model';
 import {
   InteractionDashboard, InteractionListResponse, InteractionQuery, InterestSource,
 } from '../features/my-interests/models/member-interaction.model';
+import {
+  AdminProvider, AdminProviderQuery, AdminProviderSummary, AdminReview, CreateReviewRequest, DiscoverCategory,
+  DiscoverReview, DiscoverReviewList, DiscoverSearchQuery, FavoriteResult, GeocodeResult, LocationInput, Paged,
+  ProviderCard, ProviderContact, ProviderDetail, ProviderInput, ProviderSearchResponse, ReviewStatus, VerificationStatus,
+} from '../features/discover/models/discover.model';
+
+/** Query params for Discover: drops empty values, joins arrays with commas. */
+function discoverParams(query: object): HttpParams {
+  let params = new HttpParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value === undefined || value === null || value === '') continue;
+    if (Array.isArray(value)) {
+      if (value.length) params = params.set(key, value.join(','));
+    } else {
+      params = params.set(key, String(value));
+    }
+  }
+  return params;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -848,6 +867,144 @@ export class ApiService {
     return this.http.get<PersonalityCompatibility>(
       `${this.baseUrl}/v1/personality/match/${encodeURIComponent(profileIdA)}/${encodeURIComponent(profileIdB)}`,
     );
+  }
+
+  // Aurora Discover — member (all require a signed-in member)
+  getDiscoverCategories(): Observable<DiscoverCategory[]> {
+    return this.http.get<DiscoverCategory[]>(`${this.baseUrl}/v1/discovery/categories`);
+  }
+
+  /** Any active category (astrologer, marriage-hall, photography, …). */
+  searchDiscoverProviders(category: string, query: DiscoverSearchQuery): Observable<ProviderSearchResponse> {
+    return this.http.get<ProviderSearchResponse>(`${this.baseUrl}/v1/discovery/providers`, {
+      params: discoverParams({ ...query, category }),
+    });
+  }
+
+  /** Listing detail; `category` makes the API return that category's details and 404 if not listed there. */
+  getDiscoverProvider(id: string, category: string, origin: DiscoverSearchQuery = {}): Observable<ProviderDetail> {
+    return this.http.get<ProviderDetail>(`${this.baseUrl}/v1/discovery/providers/${encodeURIComponent(id)}`, {
+      params: discoverParams({ ...origin, category }),
+    });
+  }
+
+  getDiscoverProviderContact(id: string): Observable<ProviderContact> {
+    return this.http.post<ProviderContact>(`${this.baseUrl}/v1/discovery/providers/${encodeURIComponent(id)}/contact`, {});
+  }
+
+  getDiscoverReviews(providerId: string, page = 1, limit = 10): Observable<DiscoverReviewList> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
+    return this.http.get<DiscoverReviewList>(
+      `${this.baseUrl}/v1/discovery/providers/${encodeURIComponent(providerId)}/reviews`, { params },
+    );
+  }
+
+  createDiscoverReview(providerId: string, dto: CreateReviewRequest): Observable<DiscoverReview> {
+    return this.http.post<DiscoverReview>(
+      `${this.baseUrl}/v1/discovery/providers/${encodeURIComponent(providerId)}/reviews`, dto,
+    );
+  }
+
+  getDiscoverFavorites(page = 1, limit = 20): Observable<Paged<ProviderCard>> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
+    return this.http.get<Paged<ProviderCard>>(`${this.baseUrl}/v1/discovery/favorites`, { params });
+  }
+
+  addDiscoverFavorite(providerId: string): Observable<FavoriteResult> {
+    return this.http.post<FavoriteResult>(`${this.baseUrl}/v1/discovery/favorites/${encodeURIComponent(providerId)}`, {});
+  }
+
+  removeDiscoverFavorite(providerId: string): Observable<FavoriteResult> {
+    return this.http.delete<FavoriteResult>(`${this.baseUrl}/v1/discovery/favorites/${encodeURIComponent(providerId)}`);
+  }
+
+  // Aurora Discover — admin
+  getAdminDiscoverCategories(): Observable<DiscoverCategory[]> {
+    return this.http.get<DiscoverCategory[]>(`${this.baseUrl}/v1/admin/discovery/categories`);
+  }
+
+  updateAdminDiscoverCategory(id: number, dto: Partial<Pick<DiscoverCategory, 'name' | 'description' | 'isActive' | 'displayOrder'>>): Observable<DiscoverCategory> {
+    return this.http.patch<DiscoverCategory>(`${this.baseUrl}/v1/admin/discovery/categories/${id}`, dto);
+  }
+
+  getAdminDiscoverProviders(query: AdminProviderQuery): Observable<Paged<AdminProviderSummary>> {
+    return this.http.get<Paged<AdminProviderSummary>>(`${this.baseUrl}/v1/admin/discovery/providers`, {
+      params: discoverParams(query as Record<string, unknown>),
+    });
+  }
+
+  getAdminDiscoverProvider(id: string): Observable<AdminProvider> {
+    return this.http.get<AdminProvider>(`${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}`);
+  }
+
+  createAdminDiscoverProvider(dto: ProviderInput): Observable<AdminProvider> {
+    return this.http.post<AdminProvider>(`${this.baseUrl}/v1/admin/discovery/providers`, dto);
+  }
+
+  updateAdminDiscoverProvider(id: string, dto: Partial<ProviderInput>): Observable<AdminProvider> {
+    return this.http.patch<AdminProvider>(`${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}`, dto);
+  }
+
+  deleteAdminDiscoverProvider(id: string): Observable<{ id: string; deleted: true }> {
+    return this.http.delete<{ id: string; deleted: true }>(`${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}`);
+  }
+
+  restoreAdminDiscoverProvider(id: string): Observable<AdminProvider> {
+    return this.http.post<AdminProvider>(`${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/restore`, {});
+  }
+
+  setAdminDiscoverVerification(id: string, status: VerificationStatus, notes?: string | null): Observable<AdminProvider> {
+    return this.http.patch<AdminProvider>(
+      `${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/verification`, { status, notes: notes ?? null },
+    );
+  }
+
+  addAdminDiscoverLocation(id: string, dto: LocationInput): Observable<AdminProvider> {
+    return this.http.post<AdminProvider>(`${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/locations`, dto);
+  }
+
+  updateAdminDiscoverLocation(id: string, locationId: string, dto: LocationInput): Observable<AdminProvider> {
+    return this.http.patch<AdminProvider>(
+      `${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/locations/${encodeURIComponent(locationId)}`, dto,
+    );
+  }
+
+  deleteAdminDiscoverLocation(id: string, locationId: string): Observable<AdminProvider> {
+    return this.http.delete<AdminProvider>(
+      `${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/locations/${encodeURIComponent(locationId)}`,
+    );
+  }
+
+  uploadAdminDiscoverMedia(id: string, file: File, caption: string | null, setAsPhoto: boolean): Observable<AdminProvider> {
+    const form = new FormData();
+    form.append('file', file);
+    if (caption) form.append('caption', caption);
+    form.append('setAsPhoto', String(setAsPhoto));
+    return this.http.post<AdminProvider>(`${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/media`, form);
+  }
+
+  deleteAdminDiscoverMedia(id: string, mediaId: string): Observable<AdminProvider> {
+    return this.http.delete<AdminProvider>(
+      `${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/media/${encodeURIComponent(mediaId)}`,
+    );
+  }
+
+  getAdminDiscoverReviews(query: { status?: ReviewStatus; providerId?: string; page?: number; limit?: number }): Observable<Paged<AdminReview>> {
+    return this.http.get<Paged<AdminReview>>(`${this.baseUrl}/v1/admin/discovery/reviews`, {
+      params: discoverParams(query as Record<string, unknown>),
+    });
+  }
+
+  moderateAdminDiscoverReview(id: string, status: ReviewStatus, note?: string | null): Observable<{ id: string; status: ReviewStatus }> {
+    return this.http.patch<{ id: string; status: ReviewStatus }>(
+      `${this.baseUrl}/v1/admin/discovery/reviews/${encodeURIComponent(id)}`, { status, note: note ?? null },
+    );
+  }
+
+  geocodeAdminDiscover(country: string, postalCode?: string, city?: string, state?: string): Observable<GeocodeResult> {
+    return this.http.get<GeocodeResult>(`${this.baseUrl}/v1/admin/discovery/geocode`, {
+      params: discoverParams({ country, postalCode, city, state }),
+    });
   }
 
 }

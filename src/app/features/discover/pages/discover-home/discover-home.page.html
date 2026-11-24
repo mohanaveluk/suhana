@@ -1,0 +1,79 @@
+<div class="dh">
+  <header class="dh__hero">
+    <div class="dh__orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="dh__petals" aria-hidden="true">
+      @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) { <span [style.--i]="i"></span> }
+    </div>
+    <div class="suhana-container dh__hero-inner">
+      <p class="dh__eyebrow"><mat-icon aria-hidden="true">explore</mat-icon> Aurora Discover</p>
+      <h1>Everything for your wedding, <span class="dh__shine">near you</span></h1>
+      <p class="dh__lead">
+        Astrologers, venues, planners, photographers, caterers and more — trusted local services in
+        India and the United States, all in one place.
+      </p>
+      <div class="dh__hero-actions">
+        <a mat-stroked-button routerLink="/discover/favorites" class="dh__saved">
+          <mat-icon>bookmarks</mat-icon> Saved services
+        </a>
+        @if (!loading() && liveCount()) {
+          <span class="dh__live"><span class="dh__dot" aria-hidden="true"></span>{{ liveCount() }} categories live</span>
+        }
+      </div>
+    </div>
+  </header>
+
+  <div class="suhana-container dh__body">
+    @if (loading()) {
+      <div class="dh__grid" aria-busy="true" aria-label="Loading categories">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) { <div class="dh__sk"></div> }
+      </div>
+    } @else if (error()) {
+      <div class="dh__error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <span>{{ error() }}</span>
+        <button mat-stroked-button type="button" (click)="load()">Retry</button>
+      </div>
+    } @else if (!tiles().length) {
+      <p class="dh__empty">No categories are available yet. Please check back soon.</p>
+    } @else {
+      <ul class="dh__grid" role="list">
+        @for (t of tiles(); track t.category.id; let i = $index) {
+          <li class="dh__item" [style.--d]="(i * 80) + 'ms'"
+              [style.--a]="t.cfg?.accent?.[0]" [style.--b]="t.cfg?.accent?.[1]">
+            @if (t.route) {
+              <a class="dh__tile dh__tile--live" [routerLink]="t.route" [attr.aria-label]="'Explore ' + t.category.name">
+                <div class="dh__img">
+                  @if (t.image) { <img [src]="t.image" alt="" loading="lazy" width="800" height="600" /> }
+                  <span class="dh__sheen" aria-hidden="true"></span>
+                  <span class="dh__badge-icon" aria-hidden="true"><mat-icon>{{ t.cfg?.icon ?? t.category.icon ?? 'storefront' }}</mat-icon></span>
+                </div>
+                <div class="dh__text">
+                  <h2>{{ t.category.name }}</h2>
+                  @if (t.category.description) { <p>{{ t.category.description }}</p> }
+                  <span class="dh__go">Explore near you <mat-icon aria-hidden="true">arrow_forward</mat-icon></span>
+                </div>
+              </a>
+            } @else {
+              <div class="dh__tile dh__tile--soon" role="group" [attr.aria-label]="t.category.name + ', coming soon'">
+                <div class="dh__img">
+                  @if (t.image) { <img [src]="t.image" alt="" loading="lazy" width="800" height="600" /> }
+                  <span class="dh__soon">Coming soon</span>
+                </div>
+                <div class="dh__text">
+                  <h2>{{ t.category.name }}</h2>
+                  @if (t.category.description) { <p>{{ t.category.description }}</p> }
+                </div>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    <p class="dh__note">
+      Listings are added and reviewed by the Aurora team. A <strong>Verified listing</strong> badge means we've
+      checked the business's identity and contact details — it isn't an endorsement or a check of qualifications.
+      Ordering is never paid for.
+    </p>
+  </div>
+</div>

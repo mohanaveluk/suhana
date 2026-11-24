@@ -1,0 +1,261 @@
+@let c = cfg();
+<div class="pd" [style.--pd-a]="c?.accent?.[0]" [style.--pd-b]="c?.accent?.[1]">
+  <div class="pd__banner" aria-hidden="true">
+    @if (c) { <div class="pd__banner-img" [style.background-image]="'url(' + c.image + ')'"></div> }
+    <div class="pd__banner-tint"></div>
+  </div>
+
+  <div class="suhana-container pd__wrap">
+    <nav class="pd__crumbs" aria-label="Breadcrumb">
+      <a routerLink="/discover">Aurora Discover</a> <span aria-hidden="true">›</span>
+      @if (c) { <a [routerLink]="['/discover', c.segment]">{{ c.name }}</a> }
+      @if (provider(); as p) { <span aria-hidden="true">›</span> <span>{{ p.displayName }}</span> }
+    </nav>
+
+    @if (loading()) {
+      <div class="pd__sk pd__sk--head" aria-busy="true" aria-label="Loading listing"></div>
+      <div class="pd__sk"></div>
+    } @else if (notFound()) {
+      <div class="pd__state">
+        <mat-icon aria-hidden="true">search_off</mat-icon>
+        <h1>This listing isn't available</h1>
+        <p>It may have been removed or is no longer listed here.</p>
+        <a mat-flat-button class="suhana-btn-primary" [routerLink]="['/discover', c?.segment ?? '']">
+          {{ c ? 'Browse ' + c.name : 'Browse Aurora Discover' }}
+        </a>
+      </div>
+    } @else if (error()) {
+      <div class="pd__state" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <p>{{ error() }}</p>
+        <button mat-stroked-button type="button" (click)="load()">Try again</button>
+      </div>
+    } @else if (provider(); as p) {
+      <!-- ── Header ─────────────────────────────────────────────────── -->
+      <header class="pd__head">
+        <div class="pd__photo-wrap">
+          <img class="pd__photo" [src]="photo()" [alt]="'Photo of ' + p.displayName" (error)="onImgError($event)" />
+          @if (c) { <span class="pd__cat"><mat-icon aria-hidden="true">{{ c.icon }}</mat-icon></span> }
+        </div>
+        <div class="pd__intro">
+          <h1>{{ p.displayName }}</h1>
+          @if (p.businessName) { <p class="pd__business">{{ p.businessName }}</p> }
+          @if (p.headline) { <p class="pd__headline">{{ p.headline }}</p> }
+          <div class="pd__badges">
+            @if (p.isVerified) {
+              <span class="pd__badge pd__badge--verified"><mat-icon aria-hidden="true">verified</mat-icon> Verified listing</span>
+            }
+            @if (!p.acceptingClients) { <span class="pd__badge">Not taking new bookings</span> }
+            <app-rating-stars [average]="p.rating.average" [count]="p.rating.count" />
+          </div>
+          <ul class="pd__facts">
+            @if (p.place) {
+              <li><mat-icon aria-hidden="true">place</mat-icon>{{ placeLabel(p.place) }}
+                @if (distance()) { <strong>&nbsp;· {{ distance() }} away</strong> }
+              </li>
+            }
+            @if (detail()?.experienceYears != null) {
+              <li><mat-icon aria-hidden="true">workspace_premium</mat-icon>{{ detail()?.experienceYears }} {{ c?.experienceLabel }}</li>
+            }
+            @if (p.languages.length) {
+              <li><mat-icon aria-hidden="true">translate</mat-icon>
+                @for (l of p.languages; track l; let last = $last) { {{ langLabel(l) }}{{ last ? '' : ', ' }} }
+              </li>
+            }
+            @if (p.startingPrice) {
+              <li><mat-icon aria-hidden="true">payments</mat-icon>From&nbsp;<strong>{{ money(p.startingPrice) }}</strong></li>
+            }
+          </ul>
+          <div class="pd__actions">
+            @if (hasContact()) {
+              <button mat-flat-button type="button" class="suhana-btn-primary pd__contact" (click)="contact()" [disabled]="contactBusy()">
+                <mat-icon>call</mat-icon> {{ contactBusy() ? 'Loading…' : 'Contact' }}
+              </button>
+            }
+            <button mat-stroked-button type="button" class="pd__save" [class.pd__save--pop]="popping()"
+                    (click)="toggleFavorite()" [disabled]="favBusy()" [attr.aria-pressed]="p.isFavorite">
+              <mat-icon>{{ p.isFavorite ? 'bookmark' : 'bookmark_border' }}</mat-icon> {{ p.isFavorite ? 'Saved' : 'Save' }}
+            </button>
+            @if (directionsUrl(p.place?.address ?? null); as url) {
+              <a mat-button [href]="url" target="_blank" rel="noopener noreferrer" aria-label="Directions (opens Google Maps)">
+                <mat-icon>directions</mat-icon> Directions
+              </a>
+            }
+          </div>
+        </div>
+      </header>
+
+      <!-- ── At a glance ───────────────────────────────────────────── -->
+      @if (glance().length) {
+        <section class="pd__glance" aria-label="At a glance">
+          @for (g of glance(); track g.text; let i = $index) {
+            <div class="pd__glance-item" [style.--d]="(i * 70) + 'ms'">
+              <span class="pd__glance-icon"><mat-icon aria-hidden="true">{{ g.icon }}</mat-icon></span>
+              <span>{{ g.text }}</span>
+            </div>
+          }
+          <p class="pd__glance-note">As stated by the provider.</p>
+        </section>
+      }
+
+      <div class="pd__grid">
+        <div class="pd__main">
+          @if (p.about) {
+            <section class="pd__card">
+              <h2>About</h2>
+              <p class="pd__about">{{ p.about }}</p>
+            </section>
+          }
+
+          @if (specialties().length) {
+            <section class="pd__card">
+              <h2>{{ c?.specialtyLabel ?? 'Specialties' }}</h2>
+              <div class="pd__chips">
+                @for (s of specialties(); track s; let i = $index) { <span class="pd__chip" [style.--d]="(i * 50) + 'ms'">{{ s }}</span> }
+              </div>
+            </section>
+          }
+
+          <section class="pd__card">
+            <h2>Services &amp; prices</h2>
+            @if (p.services.length) {
+              <ul class="pd__services">
+                @for (s of p.services; track s.id) {
+                  <li>
+                    <div>
+                      <strong>{{ s.name }}</strong>
+                      <span class="pd__svc-meta">
+                        @if (showModes()) {
+                          <mat-icon aria-hidden="true">{{ modeLabels[s.consultationMode].icon }}</mat-icon>
+                          {{ modeLabels[s.consultationMode].label }}
+                        }
+                        @if (s.durationMinutes) { {{ showModes() ? '·' : '' }} {{ s.durationMinutes }} min }
+                      </span>
+                      @if (s.description) { <p>{{ s.description }}</p> }
+                    </div>
+                    <span class="pd__price">{{ money({ amount: s.price, currency: s.currency }) }}</span>
+                  </li>
+                }
+              </ul>
+              <p class="pd__muted">Prices are set by the provider and paid directly to them. Aurora doesn't take payments.</p>
+            } @else {
+              <p class="pd__muted">No services listed yet — contact the provider for details.</p>
+            }
+          </section>
+
+          @if (p.gallery.length) {
+            <section class="pd__card">
+              <h2>Gallery</h2>
+              <div class="pd__gallery">
+                @for (g of p.gallery; track g.id; let i = $index) {
+                  <button type="button" class="pd__thumb" (click)="openGallery(i)" [attr.aria-label]="'Open photo ' + (i + 1) + (g.caption ? ': ' + g.caption : '')">
+                    <img [src]="g.url" [alt]="g.caption || ''" loading="lazy" />
+                  </button>
+                }
+              </div>
+            </section>
+          }
+
+          <!-- ── Reviews ─────────────────────────────────────────────── -->
+          <section class="pd__card" aria-labelledby="pd-reviews">
+            <div class="pd__card-head">
+              <h2 id="pd-reviews">Member reviews</h2>
+              @if (reviews() && !reviews()!.myReview) {
+                <button mat-stroked-button type="button" (click)="writeReview()"><mat-icon>rate_review</mat-icon> Write a review</button>
+              }
+            </div>
+            @if (reviews()?.myReview; as mine) {
+              @if (mine.status !== 'APPROVED') {
+                <p class="pd__mine">Your review is {{ mine.status === 'PENDING' ? 'awaiting moderation' : 'not published' }}.</p>
+              }
+            }
+            @if (reviewsLoading() && !reviews()) {
+              <div class="pd__sk pd__sk--small" aria-busy="true"></div>
+            } @else if (reviewsError()) {
+              <p role="alert" class="pd__err">{{ reviewsError() }} <button mat-button type="button" (click)="loadReviews(1)">Retry</button></p>
+            } @else if (reviews(); as r) {
+              @if (!r.items.length) {
+                <p class="pd__muted">No published reviews yet. Be the first to share your experience.</p>
+              } @else {
+                <ul class="pd__reviews">
+                  @for (rv of r.items; track rv.id) {
+                    <li>
+                      <app-rating-stars [average]="rv.rating" [count]="1" [showCount]="false" />
+                      @if (rv.title) { <strong class="pd__rv-title">{{ rv.title }}</strong> }
+                      <p>{{ rv.comment }}</p>
+                      <span class="pd__muted">{{ rv.authorName }} · {{ rv.createdAt | date: 'mediumDate' }}</span>
+                    </li>
+                  }
+                </ul>
+                @if (r.totalPages > 1) {
+                  <div class="pd__rv-pager">
+                    <button mat-button type="button" [disabled]="r.page <= 1 || reviewsLoading()" (click)="loadReviews(r.page - 1)">Newer</button>
+                    <span class="pd__muted">{{ r.page }} / {{ r.totalPages }}</span>
+                    <button mat-button type="button" [disabled]="r.page >= r.totalPages || reviewsLoading()" (click)="loadReviews(r.page + 1)">Older</button>
+                  </div>
+                }
+              }
+            }
+          </section>
+        </div>
+
+        <aside class="pd__side">
+          @if (hasHours()) {
+            <section class="pd__card">
+              <h2>Hours</h2>
+              <dl class="pd__hours">
+                @for (h of hours(); track h.day) { <dt>{{ h.day }}</dt><dd [class.pd__closed]="h.text === 'Closed'">{{ h.text }}</dd> }
+              </dl>
+              @if (detail()?.availabilityNote) { <p class="pd__muted">{{ detail()?.availabilityNote }}</p> }
+            </section>
+          }
+
+          @if (p.locations.length) {
+            <section class="pd__card">
+              <h2>{{ p.locations.length > 1 ? 'Locations' : 'Location' }}</h2>
+              <ul class="pd__locs">
+                @for (l of p.locations; track l.id) {
+                  <li>
+                    @if (l.label) { <strong>{{ l.label }}</strong> }
+                    <span>{{ l.address ?? placeLabel(l) }}</span>
+                    @if (locationDirections(l); as url) {
+                      <a [href]="url" target="_blank" rel="noopener noreferrer">Directions <span class="cdk-visually-hidden">(opens Google Maps)</span></a>
+                    }
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+
+          @if (detail()?.certifications?.length) {
+            <section class="pd__card">
+              <h2>Qualifications</h2>
+              <ul class="pd__certs">
+                @for (q of detail()!.certifications; track q.name) {
+                  <li>
+                    <strong>{{ q.name }}</strong>
+                    @if (q.issuer || q.year) { <span>{{ q.issuer }}{{ q.issuer && q.year ? ', ' : '' }}{{ q.year }}</span> }
+                    <span class="pd__cert-state" [class.pd__cert-state--ok]="q.verified">
+                      {{ q.verified ? 'Credential checked by Aurora' : 'As stated by the provider' }}
+                    </span>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+
+          <section class="pd__card pd__trust">
+            <h2>About this listing</h2>
+            @if (p.isVerified) {
+              <p><mat-icon aria-hidden="true">verified</mat-icon> Aurora verified this business's identity and contact details
+                @if (p.verifiedAt) { on {{ p.verifiedAt | date: 'mediumDate' }} }.</p>
+            } @else {
+              <p>This listing hasn't been verified by Aurora yet.</p>
+            }
+            <p class="pd__muted">Listing verification is not an endorsement and doesn't confirm qualifications. Ratings come only from member reviews that our team has checked.</p>
+          </section>
+        </aside>
+      </div>
+    }
+  </div>
+</div>
