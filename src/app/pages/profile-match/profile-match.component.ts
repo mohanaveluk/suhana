@@ -635,7 +635,7 @@ export class ProfileMatchComponent implements OnInit {
 
     this.interestSent.set(true); // optimistic
     try {
-      await this.interestService.sendInterest(toUserId, defaultMessage);
+      await this.interestService.sendInterest(toUserId, defaultMessage, 'AI_MATCH');
       this.snackBar.open(`Interest sent to ${theirProfile.firstName}! 💌`, 'Dismiss', { duration: 3500 });
     } catch {
       this.interestSent.set(false); // roll back on failure

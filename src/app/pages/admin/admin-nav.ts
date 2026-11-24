@@ -58,6 +58,14 @@ export const ADMIN_MODULES: AdminNavItem[] = [
     route: '/admin/search-analytics',
     keywords: 'ai search analytics trends fallback insights reports',
   },
+  {
+    title: 'Site Settings',
+    short: 'Settings',
+    description: 'Site-wide switches, such as turning text messages (SMS) on or off.',
+    icon: 'settings',
+    route: '/admin/settings',
+    keywords: 'settings sms text message otp telnyx switch toggle notifications',
+  },
 ];
 
 /** Sidebar order: Dashboard first, then the modules. */

@@ -2,6 +2,7 @@ import { Injectable, signal, inject, computed } from '@angular/core';
 import { ApiService } from './api.service';
 import { InterestRequest, UserProfile } from '../models/user.model';
 import { firstValueFrom } from 'rxjs';
+import { InterestSource } from '../features/my-interests/models/member-interaction.model';
 
 @Injectable({ providedIn: 'root' })
 export class InterestService {
@@ -35,8 +36,8 @@ export class InterestService {
     } catch { /* keep empty */ }
   }
 
-  async sendInterest(toUserId: string, message?: string): Promise<InterestRequest> {
-    const res = await firstValueFrom(this.api.sendInterest(toUserId, message));
+  async sendInterest(toUserId: string, message?: string, source?: InterestSource): Promise<InterestRequest> {
+    const res = await firstValueFrom(this.api.sendInterest(toUserId, message, source));
     const interest: InterestRequest = res?.data ?? {
       id: `int_${Date.now()}`,
       fromUserId: 'me',

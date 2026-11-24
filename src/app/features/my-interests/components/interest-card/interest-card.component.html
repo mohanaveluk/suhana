@@ -1,0 +1,127 @@
+<article class="ic" [class.ic--new]="isNew()" [attr.aria-label]="typeLabel() + ' — ' + p().name">
+  <!-- Photo -->
+  <a class="ic-photo" [routerLink]="['/profile-view', p().profileId]" (click)="opened.emit()"
+     [attr.aria-label]="'View ' + p().name + '\'s profile'">
+    @if (p().photoUrl) {
+      <img [src]="p().photoUrl" [alt]="p().name" loading="lazy" width="112" height="112" />
+    } @else {
+      <span class="ic-photo-fallback" aria-hidden="true">
+        @if (p().photoHidden) { <mat-icon>lock</mat-icon> } @else { {{ initial() }} }
+      </span>
+    }
+    @if (isNew()) { <span class="ic-new-dot" aria-label="New"></span> }
+  </a>
+
+  <div class="ic-main">
+    <!-- Who -->
+    <header class="ic-head">
+      <div class="ic-name-row">
+        <h3 class="ic-name">{{ p().name }}</h3>
+        @if (p().mobileVerified) {
+          <mat-icon class="ic-verified" matTooltip="Mobile number verified" aria-label="Mobile number verified">verified</mat-icon>
+        }
+        @if (statusLabel()) {
+          <span class="ic-status ic-status--{{ item().status }}">{{ statusLabel() }}</span>
+        }
+      </div>
+      <p class="ic-meta">
+        @if (p().profileCode) { <span class="ic-code">{{ p().profileCode }}</span> }
+        @if (p().age) { <span>{{ p().age }} yrs</span> }
+        @if (location()) { <span>{{ location() }}</span> }
+      </p>
+      <p class="ic-meta ic-meta--work">
+        @if (p().occupation) { <span><mat-icon aria-hidden="true">work_outline</mat-icon>{{ p().occupation }}</span> }
+        @if (p().education) { <span><mat-icon aria-hidden="true">school</mat-icon>{{ p().education }}</span> }
+      </p>
+    </header>
+
+    <!-- What happened -->
+    <p class="ic-activity">
+      <mat-icon aria-hidden="true">{{ typeIcon() }}</mat-icon>
+      <span>{{ typeLabel() }}</span>
+      <time [attr.datetime]="item().occurredAt" [title]="item().occurredAt | date: 'medium'">· {{ timeAgo(item().occurredAt) }}</time>
+    </p>
+
+    @if (item().type === 'INTEREST' && item().message) {
+      <button type="button" class="ic-msg-toggle" (click)="toggleMessage()" [attr.aria-expanded]="showMessage()">
+        <mat-icon aria-hidden="true">{{ showMessage() ? 'expand_less' : 'mail_outline' }}</mat-icon>
+        {{ showMessage() ? 'Hide introduction' : 'Read introduction' }}
+      </button>
+      @if (showMessage()) {
+        <blockquote class="ic-msg">{{ item().message }}</blockquote>
+      }
+    }
+
+    <!-- Compatibility (informational only — never required to connect) -->
+    <ul class="ic-compat" aria-label="Compatibility">
+      <li [class.ic-compat--muted]="c().ai.score === null">
+        <mat-icon aria-hidden="true">psychology</mat-icon>
+        <span class="ic-compat-k">AI match</span>
+        <span class="ic-compat-v">{{ c().ai.score !== null ? c().ai.score + '%' : 'Not available' }}</span>
+      </li>
+      <li [class.ic-compat--muted]="c().horoscope.status !== 'analyzed'">
+        <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+        <span class="ic-compat-k">Horoscope</span>
+        <span class="ic-compat-v">{{ horoscopeText() }}</span>
+      </li>
+      <li [class.ic-compat--muted]="!c().personality.available">
+        <mat-icon aria-hidden="true">diversity_1</mat-icon>
+        <span class="ic-compat-k">Personality</span>
+        <span class="ic-compat-v">
+          @if (c().personality.available) {
+            {{ c().personality.myType }} ↔ {{ c().personality.partnerType }} · {{ c().personality.score }}%
+          } @else {
+            Not available yet
+          }
+        </span>
+      </li>
+    </ul>
+
+    <!-- Actions -->
+    <div class="ic-actions">
+      @if (can().has('accept')) {
+        <button mat-flat-button class="ic-btn-primary" type="button" [disabled]="busy()" (click)="emit('accept')">
+          <mat-icon>check</mat-icon> Accept
+        </button>
+      }
+      @if (can().has('decline')) {
+        <button mat-stroked-button class="ic-btn" type="button" [disabled]="busy()" (click)="emit('decline')">Decline</button>
+      }
+      @if (can().has('message')) {
+        <a mat-flat-button class="ic-btn-primary" [routerLink]="['/chat']" [queryParams]="{ profileId: p().profileId }">
+          <mat-icon>chat</mat-icon> Message
+        </a>
+      }
+      @if (can().has('send_interest')) {
+        <button mat-flat-button class="ic-btn-primary" type="button" [disabled]="busy()" (click)="emit('send_interest')">
+          <mat-icon>favorite</mat-icon> Send interest
+        </button>
+      }
+      @if (can().has('withdraw')) {
+        <button mat-stroked-button class="ic-btn" type="button" [disabled]="busy()" (click)="emit('withdraw')">Withdraw</button>
+      }
+      <a mat-stroked-button class="ic-btn" [routerLink]="['/profile-view', p().profileId]" (click)="opened.emit()">View profile</a>
+
+      <button mat-icon-button type="button" class="ic-more" [matMenuTriggerFor]="more" [attr.aria-label]="'More options for ' + p().name">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #more="matMenu">
+        @if (can().has('ai_insights')) {
+          <a mat-menu-item [routerLink]="['/profile-match', p().profileId]"><mat-icon>insights</mat-icon><span>AI match insights</span></a>
+        }
+        @if (can().has('horoscope')) {
+          <a mat-menu-item [routerLink]="['/horoscope-match', p().userId]"><mat-icon>auto_awesome</mat-icon><span>Horoscope compatibility</span></a>
+        }
+        @if (can().has('personality')) {
+          <a mat-menu-item [routerLink]="['/personality/compatibility', p().profileId]"><mat-icon>diversity_1</mat-icon><span>Personality compatibility</span></a>
+        }
+        @if (can().has('report')) {
+          <button mat-menu-item type="button" (click)="emit('report')"><mat-icon>flag</mat-icon><span>Report profile</span></button>
+        }
+        @if (can().has('block')) {
+          <button mat-menu-item type="button" class="ic-danger" (click)="emit('block')"><mat-icon>block</mat-icon><span>Block profile</span></button>
+        }
+      </mat-menu>
+    </div>
+  </div>
+</article>

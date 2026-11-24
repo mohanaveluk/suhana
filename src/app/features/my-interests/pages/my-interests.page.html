@@ -1,0 +1,144 @@
+<div class="mi">
+  <header class="mi-hero">
+    <div class="mi-wrap">
+      <p class="mi-eyebrow">Your matchmaking activity</p>
+      <h1>My Interests</h1>
+      <p class="mi-lead">Everyone who has shown interest in you, viewed your profile or sent you a message — and how compatible you are.</p>
+    </div>
+  </header>
+
+  <div class="mi-wrap mi-body">
+    <!-- ═══════════ SUMMARY ═══════════ -->
+    <section class="mi-summary" aria-label="Summary">
+      @for (s of summary(); track s.key) {
+        <button type="button" class="mi-stat" [class.mi-stat--hot]="(s.key === 'new' || s.key === 'messages') && (s.value ?? 0) > 0"
+                (click)="applySummary(s.key)" [attr.aria-label]="s.label + ': ' + (s.value ?? 0) + '. Show these'">
+          <mat-icon aria-hidden="true">{{ s.icon }}</mat-icon>
+          <span class="mi-stat-value">{{ s.value ?? '–' }}</span>
+          <span class="mi-stat-label">{{ s.label }}</span>
+        </button>
+      }
+    </section>
+
+    <!-- ═══════════ DIRECTION + FILTERS ═══════════ -->
+    <div class="mi-toolbar">
+      <mat-button-toggle-group class="mi-direction" [value]="q().direction" (change)="setDirection($event.value)" aria-label="Received or sent">
+        <mat-button-toggle value="received">Received</mat-button-toggle>
+        <mat-button-toggle value="sent">
+          Sent
+          @if ((svc.dashboard()?.sentPending ?? 0) > 0) { <span class="mi-chip">{{ svc.dashboard()?.sentPending }} pending</span> }
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <mat-form-field appearance="outline" class="mi-search" subscriptSizing="dynamic">
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <mat-label>Search name or profile ID</mat-label>
+        <input matInput [formControl]="search" autocomplete="off" />
+      </mat-form-field>
+    </div>
+
+    <div class="mi-filters">
+      @if (q().direction === 'received') {
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Activity</mat-label>
+          <mat-select [value]="q().type" (selectionChange)="set('type', $event.value)">
+            @for (o of typeOptions; track o.value) { <mat-option [value]="o.value">{{ o.label }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
+      }
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Status</mat-label>
+        <mat-select [value]="q().status" (selectionChange)="set('status', $event.value)">
+          @for (o of statusOptions; track o.value) { <mat-option [value]="o.value">{{ o.label }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Compatibility</mat-label>
+        <mat-select [value]="q().compatibility" (selectionChange)="set('compatibility', $event.value)">
+          @for (o of compatOptions; track o.value) { <mat-option [value]="o.value">{{ o.label }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Sort by</mat-label>
+        <mat-select [value]="q().sort" (selectionChange)="set('sort', $event.value)">
+          @for (o of sortOptions; track o.value) { <mat-option [value]="o.value">{{ o.label }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      @if (filtersActive()) {
+        <button mat-button type="button" class="mi-clear" (click)="clearFilters()"><mat-icon>filter_alt_off</mat-icon> Clear filters</button>
+      }
+    </div>
+
+    @if (viewsButNoInterests()) {
+      <p class="mi-note" role="status">
+        <mat-icon aria-hidden="true">visibility</mat-icon>
+        No interests yet — but {{ svc.dashboard()?.profileViews }} {{ svc.dashboard()?.profileViews === 1 ? 'member has' : 'members have' }} viewed your profile.
+      </p>
+    }
+
+    <!-- ═══════════ LIST ═══════════ -->
+    <section class="mi-list" aria-live="polite" [attr.aria-busy]="svc.loading()">
+      @if (svc.loading() && !svc.items().length) {
+        @for (n of [1, 2, 3]; track n) { <div class="mi-skeleton" aria-hidden="true"></div> }
+      } @else if (svc.error()) {
+        <div class="mi-state" role="alert">
+          <mat-icon aria-hidden="true">cloud_off</mat-icon>
+          <p>{{ svc.error() }}</p>
+          <button mat-stroked-button type="button" (click)="svc.load()">Try again</button>
+        </div>
+      } @else if (nothingYet()) {
+        <div class="mi-state mi-empty">
+          <mat-icon aria-hidden="true">favorite_border</mat-icon>
+          @if (q().direction === 'received') {
+            <h2>No interests yet</h2>
+            <p>Your journey to finding the right life partner starts here. Explore compatible profiles and let others discover you.</p>
+            <nav class="mi-empty-links" aria-label="Get started">
+              <a mat-flat-button class="mi-btn-primary" routerLink="/search"><mat-icon>search</mat-icon> Discover profiles</a>
+              <a mat-stroked-button class="mi-btn" routerLink="/matchmaking"><mat-icon>psychology</mat-icon> Explore AI matches</a>
+              <a mat-stroked-button class="mi-btn" routerLink="/profile/edit"><mat-icon>person</mat-icon> Complete my profile</a>
+              <a mat-stroked-button class="mi-btn" routerLink="/personality"><mat-icon>diversity_1</mat-icon> Personality assessment</a>
+            </nav>
+          } @else {
+            <h2>You haven't sent any interests yet</h2>
+            <p>When you find someone you'd like to know better, send them an interest — you'll be able to follow it here.</p>
+            <nav class="mi-empty-links" aria-label="Find profiles">
+              <a mat-flat-button class="mi-btn-primary" routerLink="/matchmaking"><mat-icon>psychology</mat-icon> See your matches</a>
+              <a mat-stroked-button class="mi-btn" routerLink="/search"><mat-icon>search</mat-icon> Search profiles</a>
+            </nav>
+          }
+        </div>
+      } @else if (!svc.items().length) {
+        <div class="mi-state">
+          <mat-icon aria-hidden="true">filter_alt</mat-icon>
+          <p>No one matches these filters.</p>
+          <button mat-stroked-button type="button" (click)="clearFilters()">Clear filters</button>
+        </div>
+      } @else {
+        <p class="mi-count">{{ svc.total() }} {{ svc.total() === 1 ? 'person' : 'people' }}</p>
+        @for (item of svc.items(); track item.key) {
+          <app-interest-card
+            [item]="item"
+            [busy]="svc.busy().has(item.key)"
+            (opened)="svc.markRead(item)"
+            (action)="onAction(item, $event)" />
+        }
+
+        @if (svc.totalPages() > 1) {
+          <nav class="mi-pager" aria-label="Pages">
+            <button mat-stroked-button type="button" [disabled]="q().page <= 1 || svc.loading()" (click)="goToPage(q().page - 1)">
+              <mat-icon>chevron_left</mat-icon> Previous
+            </button>
+            <span>Page {{ q().page }} of {{ svc.totalPages() }}</span>
+            <button mat-stroked-button type="button" [disabled]="q().page >= svc.totalPages() || svc.loading()" (click)="goToPage(q().page + 1)">
+              Next <mat-icon iconPositionEnd>chevron_right</mat-icon>
+            </button>
+          </nav>
+        }
+      }
+    </section>
+
+    <p class="mi-footnote">
+      Compatibility is a guide to help you decide — you can always express interest or reply, whatever the scores say.
+    </p>
+  </div>
+</div>

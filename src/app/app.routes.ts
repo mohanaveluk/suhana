@@ -95,6 +95,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/shortlist/shortlist').then(m => m.ShortlistComponent),
   },
   {
+    // Who's interested in me — member-only, never indexed or prerendered.
+    path: 'my-interests',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/my-interests/pages/my-interests.page').then(m => m.MyInterestsPage),
+  },
+  {
     path: 'recently-visited',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -120,6 +127,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/admin/ai-search-analytics/admin-ai-search-analytics.component')
         .then(m => m.AdminAiSearchAnalyticsComponent),
+  },
+  {
+    path: 'admin/settings',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/admin/settings/admin-settings.component').then(m => m.AdminSettingsComponent),
   },
   {
     path: 'admin/edit-profile/:id',

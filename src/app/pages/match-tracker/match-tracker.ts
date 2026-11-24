@@ -74,7 +74,7 @@ export class MatchTrackerComponent implements OnInit {
     this.setProcessing(match.id, true);
     try {
       const message = this.interestService.buildDefaultMessage(match.profile, match.matchPercentage);
-      await this.interestService.sendInterest(userId, message);
+      await this.interestService.sendInterest(userId, message, 'AI_MATCH');
       this.advanceStep(match.id, 2);
       this.snackBar.open(`Interest sent to ${match.profile.firstName}! 💌`, 'Dismiss', { duration: 3000 });
     } catch {

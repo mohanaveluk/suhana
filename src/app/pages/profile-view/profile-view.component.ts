@@ -326,7 +326,7 @@ export class ProfileViewComponent implements OnInit {
 
     this.interestSent.set(true); // optimistic
     try {
-      await this.interestService.sendInterest(toUserId, defaultMessage);
+      await this.interestService.sendInterest(toUserId, defaultMessage, 'PROFILE_VIEW');
       this.snackBar.open(
         `Interest sent to ${profile.firstName}! 💌`,
         'Dismiss',
