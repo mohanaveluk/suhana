@@ -177,6 +177,24 @@ export const CATEGORY_CONFIGS: CategoryConfig[] = [
     ],
     emptyHint: 'Try a nearby city or a larger distance.',
   },
+  {
+    slug: 'mehndi-artist', segment: 'mehndi-artists', name: 'Mehndi Artists', singular: 'artist', icon: 'brush',
+    image: '/discover/mehndi-artist.webp',
+    heroTitle: 'Beautiful mehndi, every time',
+    heroSubtitle: 'Traditional and contemporary mehndi artists for weddings and celebrations.',
+    accent: ['#800020', '#c9a84c'],
+    specialtyLabel: 'Style',
+    specialties: {
+      traditional: 'Traditional', contemporary: 'Contemporary', bridal: 'Bridal', party: 'Party',
+      henna: 'Henna', glitter: 'Glitter', floral: 'Floral', arabic: 'Arabic',
+    },
+    experienceLabel: 'years in business', showModes: true,
+    attributes: [
+      { key: 'teamSize', label: 'Team of', type: 'int', icon: 'groups', suffix: 'people', onCard: true },
+      { ...yes('Travels for events', 'flight_takeoff', true), key: 'travelsForEvents' },
+    ],
+    emptyHint: 'Try a larger distance or a nearby city.',
+  },
 ];
 
 export const configBySlug = (slug: string | null | undefined): CategoryConfig | undefined =>

@@ -7,7 +7,7 @@ import { Routes } from '@angular/router';
  *
  * Category pages are generic: `:category` is a segment from CATEGORY_CONFIGS
  * (astrologers, marriage-halls, wedding-planners, matrimonial-consultants,
- * photographers, catering-decoration, wedding-shopping). Static paths are
+ * photographers, catering-decoration, wedding-shopping, mehndi-artist). Static paths are
  * listed first so they win over the parameter.
  */
 export const DISCOVER_ROUTES: Routes = [
