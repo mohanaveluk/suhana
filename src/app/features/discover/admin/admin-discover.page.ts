@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, firstValueFrom } from 'rxjs';
@@ -14,6 +14,9 @@ import {
   VerificationStatus,
 } from '../models/discover.model';
 import { VERIFICATION_LABELS, apiErrorMessage } from '../utils/discover.utils';
+import {
+  CLAIM_STATUS_LABELS, ClaimStatus, LISTING_STATUS_LABELS, ListingClaim,
+} from '../../provider-portal/models/provider-portal.model';
 
 export interface NoteDialogData {
   title: string;
@@ -69,8 +72,25 @@ export class AdminDiscoverPage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly dialog = inject(MatDialog);
   private readonly snack = inject(MatSnackBar);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly statusLabels = VERIFICATION_LABELS;
+  protected readonly listingStatusLabels = LISTING_STATUS_LABELS;
+  protected readonly claimStatusLabels = CLAIM_STATUS_LABELS;
+  protected readonly claimStatuses: ClaimStatus[] = ['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'];
+
+  /** Tab order: Listings, Submissions, Claims, Reviews, Categories. ?tab=claims|submissions deep-links. */
+  protected readonly tabIndex = signal(0);
+
+  // Provider submissions (listing_status = SUBMITTED)
+  protected readonly submissions = signal<Paged<AdminProviderSummary> | null>(null);
+  protected readonly submissionsError = signal<string | null>(null);
+
+  // Ownership claims
+  protected claimStatus: ClaimStatus | '' = 'PENDING';
+  protected readonly claims = signal<Paged<ListingClaim> | null>(null);
+  protected readonly claimsLoading = signal(false);
+  protected readonly claimsError = signal<string | null>(null);
   protected readonly statuses = Object.keys(VERIFICATION_LABELS) as VerificationStatus[];
 
   // Listings
@@ -94,7 +114,11 @@ export class AdminDiscoverPage implements OnInit {
     // <app-admin-layout> renders the denied state; don't fire admin calls for non-admins.
     await this.auth.loadRole();
     if (!this.auth.isAdmin()) return;
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    this.tabIndex.set(tab === 'submissions' ? 1 : tab === 'claims' ? 2 : 0);
     void this.loadProviders();
+    void this.loadSubmissions();
+    void this.loadClaims(1);
     void this.loadReviews(1);
     void this.loadCategories();
   }
@@ -174,6 +198,57 @@ export class AdminDiscoverPage implements OnInit {
       await this.loadProviders();
     } catch (err) {
       this.snack.open(apiErrorMessage(err, 'Action failed.'), 'OK', { duration: 5000 });
+    } finally {
+      this.busyId.set(null);
+    }
+  }
+
+  // ── Provider submissions ────────────────────────────────────────────────
+
+  protected async loadSubmissions(): Promise<void> {
+    this.submissionsError.set(null);
+    try {
+      this.submissions.set(await firstValueFrom(this.api.getAdminDiscoverProviders({ listingStatus: 'SUBMITTED', page: 1, limit: 50 })));
+    } catch (err) {
+      this.submissionsError.set(apiErrorMessage(err, 'Could not load submissions.'));
+    }
+  }
+
+  // ── Ownership claims ────────────────────────────────────────────────────
+
+  protected async loadClaims(page: number): Promise<void> {
+    this.claimsLoading.set(true);
+    this.claimsError.set(null);
+    try {
+      this.claims.set(await firstValueFrom(this.api.getAdminDiscoverClaims({ status: this.claimStatus || undefined, page, limit: 20 })));
+    } catch (err) {
+      this.claimsError.set(apiErrorMessage(err, 'Could not load claims.'));
+    } finally {
+      this.claimsLoading.set(false);
+    }
+  }
+
+  protected async decideClaim(c: ListingClaim, status: 'APPROVED' | 'REJECTED'): Promise<void> {
+    const res = await firstValueFrom(this.dialog.open(NoteDialogComponent, {
+      width: '480px', maxWidth: '95vw',
+      data: {
+        title: status === 'APPROVED' ? `Approve claim for ${c.providerName}?` : 'Reject claim',
+        message: status === 'APPROVED'
+          ? `${c.claimant?.name ?? 'The claimant'} (${c.claimant?.email ?? ''}) will manage this listing. Confirm you verified they represent the business (e.g. by calling the listing's phone number).`
+          : 'The claimant sees this note. The listing does not change.',
+        confirm: status === 'APPROVED' ? 'Approve & hand over' : 'Reject claim',
+        noteRequired: status === 'REJECTED',
+        warn: status === 'REJECTED',
+      } satisfies NoteDialogData,
+    }).afterClosed());
+    if (!res) return;
+    this.busyId.set(c.id);
+    try {
+      await firstValueFrom(this.api.decideAdminDiscoverClaim(c.id, status, res.note || null));
+      this.snack.open(status === 'APPROVED' ? 'Claim approved — the provider can now manage the listing' : 'Claim rejected', 'OK', { duration: 4000 });
+      await Promise.all([this.loadClaims(this.claims()?.page ?? 1), this.loadProviders()]);
+    } catch (err) {
+      this.snack.open(apiErrorMessage(err, 'Could not save the decision.'), 'OK', { duration: 6000 });
     } finally {
       this.busyId.set(null);
     }

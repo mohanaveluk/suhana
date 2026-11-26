@@ -1,0 +1,93 @@
+<div class="pl">
+  <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+  <section class="pl__hero">
+    <div class="pl__hero-img" aria-hidden="true"></div>
+    <div class="pl__hero-tint" aria-hidden="true"></div>
+    <div class="suhana-container pl__hero-inner">
+      <p class="pl__eyebrow"><mat-icon aria-hidden="true">storefront</mat-icon> For Providers · Aurora Discover</p>
+      <h1>Grow your wedding business <span class="pl__shine">with Aurora</span></h1>
+      <p class="pl__lead">
+        Connect with families and couples planning their marriage. Showcase your services to Aurora members
+        searching for astrologers, venues, planners, photographers and more — near them.
+      </p>
+      <div class="pl__ctas">
+        @if (auth.authenticated()) {
+          <a mat-flat-button class="pl__cta" routerLink="/providers/dashboard"><mat-icon>dashboard</mat-icon> Go to your dashboard</a>
+        } @else {
+          <a mat-flat-button class="pl__cta" routerLink="/providers/register"><mat-icon>add_business</mat-icon> List your business — free</a>
+          <a mat-stroked-button class="pl__ghost" routerLink="/providers/login">Provider login</a>
+        }
+      </div>
+      <ul class="pl__proof" aria-label="Highlights">
+        <li><mat-icon aria-hidden="true">public</mat-icon> India &amp; United States</li>
+        <li><mat-icon aria-hidden="true">balance</mat-icon> No paid ranking</li>
+        <li><mat-icon aria-hidden="true">fact_check</mat-icon> Every listing reviewed</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Who can list ────────────────────────────────────────────────── -->
+  <section class="suhana-container pl__section">
+    <h2 class="pl__h2">Made for wedding professionals</h2>
+    <p class="pl__sub">One dashboard for every kind of wedding service — and more categories are joining.</p>
+    <ul class="pl__aud" role="list">
+      @for (a of audiences; track a.title; let i = $index) {
+        <li class="pl__aud-card" [style.--d]="(i * 90) + 'ms'">
+          <div class="pl__aud-img"><img [src]="a.image" alt="" loading="lazy" width="900" height="600" /></div>
+          <div class="pl__aud-body">
+            <span class="pl__aud-icon" aria-hidden="true"><mat-icon>{{ a.icon }}</mat-icon></span>
+            <h3>{{ a.title }}</h3>
+            <p>{{ a.text }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- ── How it works ────────────────────────────────────────────────── -->
+  <section class="pl__how">
+    <div class="suhana-container">
+      <h2 class="pl__h2">How it works</h2>
+      <ol class="pl__steps">
+        @for (s of steps; track s.title; let i = $index) {
+          <li class="pl__step" [style.--d]="(i * 110) + 'ms'">
+            <span class="pl__step-num" aria-hidden="true">{{ i + 1 }}</span>
+            <mat-icon class="pl__step-icon" aria-hidden="true">{{ s.icon }}</mat-icon>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.text }}</p>
+          </li>
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ── Benefits ─────────────────────────────────────────────────────── -->
+  <section class="suhana-container pl__section pl__benefits">
+    <div class="pl__benefit-img" aria-hidden="true">
+      <img src="/providers/consultation.webp" alt="" loading="lazy" width="1400" height="800" />
+    </div>
+    <div>
+      <h2 class="pl__h2 pl__left">Why list on Aurora Discover</h2>
+      <ul class="pl__ben-list">
+        @for (b of benefits; track b.title) {
+          <li><span class="pl__ben-icon" aria-hidden="true"><mat-icon>{{ b.icon }}</mat-icon></span>
+            <div><h3>{{ b.title }}</h3><p>{{ b.text }}</p></div></li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Claim ────────────────────────────────────────────────────────── -->
+  <section class="suhana-container pl__claim">
+    <div>
+      <h2><mat-icon aria-hidden="true">how_to_reg</mat-icon> Already listed on Aurora?</h2>
+      <p>
+        Our team may have added your business for you. Create a provider account, find your listing and request
+        to manage it. We'll verify you're the owner before handing it over — your listing stays live meanwhile.
+      </p>
+    </div>
+    <a mat-flat-button class="suhana-btn-primary" [routerLink]="auth.authenticated() ? '/providers/claim' : '/providers/register'">
+      Claim your business
+    </a>
+  </section>
+</div>

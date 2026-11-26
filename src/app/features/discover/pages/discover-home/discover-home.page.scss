@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6 {
   mat-icon { font-size: 18px; width: 18px; height: 18px; animation: dh-spin 12s linear infinite; }
 }
 @keyframes dh-spin { to { transform: rotate(360deg); } }
-.dh__hero h1 { margin: 10px 0; font-size: clamp(28px, 4.6vw, 46px); line-height: 1.15; text-shadow: 0 2px 16px rgba(0, 0, 0, .2); }
+.dh__hero h1 { margin: 10px 0; font-size: clamp(28px, 4.6vw, 46px); line-height: 1.15; text-shadow: 0 2px 16px rgba(0, 0, 0, .2); color: #fff; }
 .dh__shine {
   background: linear-gradient(90deg, #fff8e1 0%, #e1b651 30%, #fff 50%, #e1b651 70%, #fff8e1 100%);
   background-size: 200% auto;

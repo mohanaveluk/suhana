@@ -10,7 +10,7 @@
     </a>
   </header>
 
-  <mat-tab-group animationDuration="0ms">
+  <mat-tab-group animationDuration="0ms" [selectedIndex]="tabIndex()" (selectedIndexChange)="tabIndex.set($event)">
     <!-- ── Listings ───────────────────────────────────────────────────── -->
     <mat-tab label="Listings">
       <form class="ad__filters" (ngSubmit)="loadProviders(1)">
@@ -68,7 +68,16 @@
                         <div class="ad__warn" matTooltip="At least one location has no coordinates, so it won't appear in distance searches."><mat-icon aria-hidden="true">warning</mat-icon> No coordinates</div>
                       }
                     </td>
-                    <td><span class="ad__status" [attr.data-status]="p.verificationStatus">{{ statusLabels[p.verificationStatus] }}</span></td>
+                    <td>
+                      <span class="ad__status" [attr.data-status]="p.verificationStatus">{{ statusLabels[p.verificationStatus] }}</span>
+                      @if (p.listingStatus && p.listingStatus !== 'PUBLISHED') {
+                        <div><span class="ad__status" [attr.data-status]="p.listingStatus === 'SUBMITTED' ? 'PENDING' : 'REJECTED'">{{ listingStatusLabels[p.listingStatus] }}</span></div>
+                      }
+                      <div class="ad__sub">
+                        {{ p.managementType === 'PROVIDER_MANAGED' ? 'Provider-managed' : 'Admin-managed' }}
+                        @if (p.pendingClaims) { · <strong>{{ p.pendingClaims }} claim{{ p.pendingClaims === 1 ? '' : 's' }}</strong> }
+                      </div>
+                    </td>
                     <td>{{ p.ratingAvg !== null ? p.ratingAvg + ' (' + p.ratingCount + ')' : '—' }}</td>
                     <td>{{ p.updatedAt | date: 'mediumDate' }}</td>
                     <td class="ad__actions">
@@ -106,6 +115,95 @@
               <button mat-button type="button" [disabled]="pg.page <= 1" (click)="loadProviders(pg.page - 1)">Previous</button>
               <span>Page {{ pg.page }} of {{ pg.totalPages }} · {{ pg.total }} listings</span>
               <button mat-button type="button" [disabled]="pg.page >= pg.totalPages" (click)="loadProviders(pg.page + 1)">Next</button>
+            </nav>
+          }
+        }
+      }
+    </mat-tab>
+
+    <!-- ── Provider submissions ───────────────────────────────────────── -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        Submissions
+        @if (submissions()?.total) { <span class="ad__badge">{{ submissions()!.total }}</span> }
+      </ng-template>
+      <p class="ad__hint">Listings providers built themselves and submitted for review. Open one to publish it or send it back with a note.</p>
+      @if (submissionsError()) {
+        <div class="ad__error" role="alert">{{ submissionsError() }} <button mat-button type="button" (click)="loadSubmissions()">Retry</button></div>
+      } @else if (submissions(); as sub) {
+        @if (!sub.items.length) {
+          <p class="ad__empty">Nothing waiting for review.</p>
+        } @else {
+          <ul class="ad__reviews">
+            @for (p of sub.items; track p.id) {
+              <li>
+                <div class="ad__rv-head">
+                  <strong>{{ p.displayName }}</strong>
+                  <span>{{ p.categorySlugs.join(', ') }} · {{ p.primaryPlace ?? 'no location' }} · updated {{ p.updatedAt | date: 'medium' }}</span>
+                </div>
+                <div class="ad__rv-actions">
+                  <a mat-flat-button class="suhana-btn-primary" [routerLink]="['/discover/admin/providers', p.id]">Review listing</a>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      }
+    </mat-tab>
+
+    <!-- ── Ownership claims ───────────────────────────────────────────── -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        Claims
+        @if (claimStatus === 'PENDING' && claims()?.total) { <span class="ad__badge">{{ claims()!.total }}</span> }
+      </ng-template>
+      <div class="ad__filters">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="claimStatus" (selectionChange)="loadClaims(1)">
+            <mat-option value="">All</mat-option>
+            @for (s of claimStatuses; track s) { <mat-option [value]="s">{{ claimStatusLabels[s] }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      @if (claimsLoading() && !claims()) {
+        <div class="ad__center"><mat-spinner diameter="36"></mat-spinner></div>
+      } @else if (claimsError()) {
+        <div class="ad__error" role="alert">{{ claimsError() }} <button mat-button type="button" (click)="loadClaims(1)">Retry</button></div>
+      } @else if (claims(); as cl) {
+        @if (!cl.items.length) {
+          <p class="ad__empty">No claims in this state.</p>
+        } @else {
+          <ul class="ad__reviews">
+            @for (c of cl.items; track c.id) {
+              <li>
+                <div class="ad__rv-head">
+                  <a [routerLink]="['/discover/admin/providers', c.providerId]"><strong>{{ c.providerName ?? 'Deleted listing' }}</strong></a>
+                  <span>by {{ c.claimant?.name }} · {{ c.claimant?.email }} · {{ c.createdAt | date: 'medium' }}</span>
+                  <span class="ad__status" [attr.data-status]="c.status === 'APPROVED' ? 'APPROVED' : c.status === 'PENDING' ? 'PENDING' : 'REJECTED'">{{ claimStatusLabels[c.status] }}</span>
+                </div>
+                <p>{{ c.message }}</p>
+                <div class="ad__claim-grid">
+                  <div><span class="ad__sub">Claimant says</span>
+                    <div>{{ c.contactName || '—' }} · {{ c.contactPhone || 'no phone' }} · {{ c.businessEmail || 'no business email' }}</div></div>
+                  <div><span class="ad__sub">Listing on file (verify against this)</span>
+                    <div>{{ c.listingContact?.phone || 'no phone' }} · {{ c.listingContact?.email || 'no email' }} · {{ c.listingContact?.website || 'no website' }}</div></div>
+                </div>
+                @if (c.adminNote) { <p class="ad__sub">Note: {{ c.adminNote }}</p> }
+                @if (c.status === 'PENDING') {
+                  <div class="ad__rv-actions">
+                    <button mat-flat-button type="button" class="suhana-btn-primary" [disabled]="busyId() === c.id" (click)="decideClaim(c, 'APPROVED')">Approve</button>
+                    <button mat-stroked-button type="button" [disabled]="busyId() === c.id" (click)="decideClaim(c, 'REJECTED')">Reject</button>
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+          @if (cl.totalPages > 1) {
+            <nav class="ad__pager" aria-label="Claim pages">
+              <button mat-button type="button" [disabled]="cl.page <= 1" (click)="loadClaims(cl.page - 1)">Previous</button>
+              <span>Page {{ cl.page }} of {{ cl.totalPages }}</span>
+              <button mat-button type="button" [disabled]="cl.page >= cl.totalPages" (click)="loadClaims(cl.page + 1)">Next</button>
             </nav>
           }
         }

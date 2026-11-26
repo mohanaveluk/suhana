@@ -164,6 +164,12 @@
 .pd__cert-state { font-size: 12px; color: var(--suhana-text-secondary); }
 .pd__cert-state--ok { color: #1b5e20; font-weight: 600; }
 .pd__trust p { display: flex; gap: 6px; align-items: flex-start; mat-icon { color: #1b5e20; flex-shrink: 0; } }
+.pd__claim {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 14px; font-weight: 600;
+  color: var(--suhana-maroon-bright); text-decoration: none;
+  &:hover, &:focus-visible { text-decoration: underline; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
 
 .pd__state {
   text-align: center; padding: 48px 16px; background: #fff; border-radius: 18px; margin-top: 40px;

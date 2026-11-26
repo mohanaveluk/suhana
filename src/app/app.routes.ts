@@ -298,6 +298,12 @@ export const routes: Routes = [
       import('./features/personality/personality.routes').then(m => m.PERSONALITY_ROUTES),
   },
   {
+    // Aurora Discover "For Providers" portal: public landing/register/login, guarded dashboard.
+    path: 'providers',
+    loadChildren: () =>
+      import('./features/provider-portal/provider-portal.routes').then(m => m.PROVIDER_PORTAL_ROUTES),
+  },
+  {
     // Aurora Discover — local marriage services directory. Member-only, never indexed.
     path: 'discover',
     canActivate: [authGuard],

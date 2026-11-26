@@ -1,19 +1,21 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { MaterialModule } from '../../../shared/modules/material.module';
 import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { AdminLayoutComponent } from '../../../pages/admin/layout/admin-layout.component';
 import {
-  AdminLocation, AdminProvider, ConsultationMode, CountryCode, DiscoverCategory, GeocodeSource, LocationInput,
-  ProviderInput, VerificationStatus,
+  AdminLocation, AdminProvider, ConsultationMode, CountryCode, DiscoverCategory, GeocodeResult, GeocodeSource,
+  LocationInput, ProviderInput, VerificationStatus,
 } from '../models/discover.model';
+import { ProviderShellComponent } from '../../provider-portal/components/provider-shell/provider-shell.component';
+import { LISTING_STATUS_LABELS, ListingChecklist, ProviderListing, ReviewDecision } from '../../provider-portal/models/provider-portal.model';
 import {
   DISCOVER_COUNTRIES, LANGUAGE_LABELS, MODE_LABELS, SPECIALIZATION_LABELS, VERIFICATION_LABELS, WEEK_DAYS,
   apiErrorMessage,
@@ -31,10 +33,65 @@ const GEOCODE_TEXT: Record<GeocodeSource, string> = {
 
 const optionalUrl = Validators.pattern(/^https?:\/\/\S+$/i);
 
+/**
+ * The editor serves two audiences with one form:
+ *  - admin (default; /discover/admin/providers/...) — the existing admin endpoints, unchanged;
+ *  - provider (route data mode: 'provider'; /providers/dashboard/listings/...) —
+ *    provider-portal endpoints (ownership enforced by the API), admin-only controls hidden.
+ */
+interface EditorApi {
+  categories(): Observable<DiscoverCategory[]>;
+  get(id: string): Observable<AdminProvider>;
+  create(dto: ProviderInput): Observable<AdminProvider>;
+  update(id: string, dto: Partial<ProviderInput>): Observable<AdminProvider>;
+  addLocation(id: string, dto: LocationInput): Observable<AdminProvider>;
+  updateLocation(id: string, locationId: string, dto: LocationInput): Observable<AdminProvider>;
+  deleteLocation(id: string, locationId: string): Observable<AdminProvider>;
+  uploadMedia(id: string, file: File, caption: string | null, setAsPhoto: boolean): Observable<AdminProvider>;
+  deleteMedia(id: string, mediaId: string): Observable<AdminProvider>;
+  geocode(country: string, postalCode?: string, city?: string, state?: string): Observable<GeocodeResult>;
+  editRoute(id: string): string[];
+  backRoute: string;
+}
+
+const adminEditorApi = (api: ApiService): EditorApi => ({
+  categories: () => api.getAdminDiscoverCategories(),
+  get: (id) => api.getAdminDiscoverProvider(id),
+  create: (dto) => api.createAdminDiscoverProvider(dto),
+  update: (id, dto) => api.updateAdminDiscoverProvider(id, dto),
+  addLocation: (id, dto) => api.addAdminDiscoverLocation(id, dto),
+  updateLocation: (id, l, dto) => api.updateAdminDiscoverLocation(id, l, dto),
+  deleteLocation: (id, l) => api.deleteAdminDiscoverLocation(id, l),
+  uploadMedia: (id, f, c, st) => api.uploadAdminDiscoverMedia(id, f, c, st),
+  deleteMedia: (id, m) => api.deleteAdminDiscoverMedia(id, m),
+  geocode: (c, pc, ci, st) => api.geocodeAdminDiscover(c, pc, ci, st),
+  editRoute: (id) => ['/discover/admin/providers', id],
+  backRoute: '/discover/admin',
+});
+
+/** Provider views omit admin-internal notes; the editor reads them as null. */
+const asEditor = (o: Observable<ProviderListing>): Observable<AdminProvider> =>
+  o.pipe(map((l) => ({ ...l, verificationNotes: null }) as AdminProvider));
+
+const providerEditorApi = (api: ApiService): EditorApi => ({
+  categories: () => api.getProviderPortalCategories(),
+  get: (id) => asEditor(api.getProviderListing(id)),
+  create: (dto) => asEditor(api.createProviderListing(dto)),
+  update: (id, dto) => asEditor(api.updateProviderListing(id, dto)),
+  addLocation: (id, dto) => asEditor(api.addProviderLocation(id, dto)),
+  updateLocation: (id, l, dto) => asEditor(api.updateProviderLocation(id, l, dto)),
+  deleteLocation: (id, l) => asEditor(api.deleteProviderLocation(id, l)),
+  uploadMedia: (id, f, c, st) => asEditor(api.uploadProviderMedia(id, f, c, st)),
+  deleteMedia: (id, m) => asEditor(api.deleteProviderMedia(id, m)),
+  geocode: (c, pc, ci, st) => api.geocodeProviderPortal(c, pc, ci, st),
+  editRoute: (id) => ['/providers/dashboard/listings', id],
+  backRoute: '/providers/dashboard',
+});
+
 @Component({
   selector: 'app-admin-provider-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MaterialModule, ReactiveFormsModule, RouterLink, DatePipe, AdminLayoutComponent],
+  imports: [MaterialModule, ReactiveFormsModule, RouterLink, DatePipe, NgTemplateOutlet, AdminLayoutComponent, ProviderShellComponent],
   templateUrl: './admin-provider-editor.page.html',
   styleUrl: './admin-provider-editor.page.scss',
 })
@@ -53,6 +110,14 @@ export class AdminProviderEditorPage implements OnInit {
   protected readonly countries = Object.entries(DISCOVER_COUNTRIES) as [CountryCode, { name: string; postalLabel: string }][];
   protected readonly weekDays = WEEK_DAYS;
   protected readonly statusLabels = VERIFICATION_LABELS;
+
+  /** 'provider' when mounted under /providers (route data). */
+  protected readonly mode: 'admin' | 'provider' = this.route.snapshot.data['mode'] === 'provider' ? 'provider' : 'admin';
+  protected readonly isProvider = this.mode === 'provider';
+  private readonly editorApi: EditorApi = this.isProvider ? providerEditorApi(this.api) : adminEditorApi(this.api);
+  protected readonly backRoute = this.editorApi.backRoute;
+  protected readonly submitting = signal(false);
+  protected readonly ownerEmail = signal('');
 
   protected readonly id = signal<string | null>(null);
   protected readonly provider = signal<AdminProvider | null>(null);
@@ -130,14 +195,17 @@ export class AdminProviderEditorPage implements OnInit {
   protected get certs(): FormArray<FormGroup> { return this.form.controls.astrologer.controls.certifications; }
 
   async ngOnInit(): Promise<void> {
-    await this.auth.loadRole();
-    if (!this.auth.isAdmin()) return;
+    if (!this.isProvider) {
+      // Admin mode: <app-admin-layout> renders the denied state; skip admin calls for non-admins.
+      await this.auth.loadRole();
+      if (!this.auth.isAdmin()) return;
+    }
     const id = this.route.snapshot.paramMap.get('id');
     this.id.set(id);
     try {
-      this.categories.set(await firstValueFrom(this.api.getAdminDiscoverCategories()));
+      this.categories.set(await firstValueFrom(this.editorApi.categories()));
       if (id) {
-        this.patch(await firstValueFrom(this.api.getAdminDiscoverProvider(id)));
+        this.patch(await firstValueFrom(this.editorApi.get(id)));
       } else {
         this.addLocation();
       }
@@ -313,16 +381,16 @@ export class AdminProviderEditorPage implements OnInit {
     try {
       const id = this.id();
       if (!id) {
-        const created = await firstValueFrom(this.api.createAdminDiscoverProvider({
+        const created = await firstValueFrom(this.editorApi.create({
           ...this.payload(),
           locations: this.locations.controls.map((_, i) => this.locationPayload(i)),
         }));
         this.snack.open('Listing created (pending verification)', 'OK', { duration: 3000 });
-        await this.router.navigate(['/discover/admin/providers', created.id], { replaceUrl: true });
+        await this.router.navigate(this.editorApi.editRoute(created.id), { replaceUrl: true });
         this.id.set(created.id);
         this.patch(created);
       } else {
-        this.patch(await firstValueFrom(this.api.updateAdminDiscoverProvider(id, this.payload())));
+        this.patch(await firstValueFrom(this.editorApi.update(id, this.payload())));
         this.snack.open('Listing saved', 'OK', { duration: 2500 });
       }
     } catch (err) {
@@ -343,8 +411,8 @@ export class AdminProviderEditorPage implements OnInit {
       const locId = group.value.id as string | null;
       const body = this.locationPayload(i);
       const p = await firstValueFrom(locId
-        ? this.api.updateAdminDiscoverLocation(id, locId, body)
-        : this.api.addAdminDiscoverLocation(id, body));
+        ? this.editorApi.updateLocation(id, locId, body)
+        : this.editorApi.addLocation(id, body));
       this.patchKeepingDraft(p);
       this.snack.open('Location saved', 'OK', { duration: 2500 });
     } catch (err) {
@@ -360,7 +428,7 @@ export class AdminProviderEditorPage implements OnInit {
     if (!id || !locId) { this.locations.removeAt(i); return; }
     this.locBusy.set(i);
     try {
-      this.patchKeepingDraft(await firstValueFrom(this.api.deleteAdminDiscoverLocation(id, locId)));
+      this.patchKeepingDraft(await firstValueFrom(this.editorApi.deleteLocation(id, locId)));
     } catch (err) {
       this.snack.open(apiErrorMessage(err, 'Could not delete the location.'), 'OK', { duration: 6000 });
     } finally {
@@ -383,7 +451,7 @@ export class AdminProviderEditorPage implements OnInit {
   protected async lookup(i: number): Promise<void> {
     const l = this.locationPayload(i);
     try {
-      const r = await firstValueFrom(this.api.geocodeAdminDiscover(l.country, l.postalCode ?? undefined, l.postalCode ? undefined : l.city, l.state ?? undefined));
+      const r = await firstValueFrom(this.editorApi.geocode(l.country, l.postalCode ?? undefined, l.postalCode ? undefined : l.city, l.state ?? undefined));
       this.locations.at(i).patchValue({ latitude: Number(r.lat.toFixed(6)), longitude: Number(r.lng.toFixed(6)) });
       this.snack.open(`Found: ${r.label}`, 'OK', { duration: 3000 });
     } catch (err) {
@@ -399,7 +467,7 @@ export class AdminProviderEditorPage implements OnInit {
     if (!id || !file) return;
     this.uploading.set(true);
     try {
-      this.patchKeepingDraft(await firstValueFrom(this.api.uploadAdminDiscoverMedia(id, file, caption.trim() || null, setAsPhoto)));
+      this.patchKeepingDraft(await firstValueFrom(this.editorApi.uploadMedia(id, file, caption.trim() || null, setAsPhoto)));
       input.value = '';
       this.snack.open('Photo uploaded', 'OK', { duration: 2500 });
     } catch (err) {
@@ -413,7 +481,7 @@ export class AdminProviderEditorPage implements OnInit {
     const id = this.id();
     if (!id) return;
     try {
-      this.patchKeepingDraft(await firstValueFrom(this.api.deleteAdminDiscoverMedia(id, mediaId)));
+      this.patchKeepingDraft(await firstValueFrom(this.editorApi.deleteMedia(id, mediaId)));
     } catch (err) {
       this.snack.open(apiErrorMessage(err, 'Could not delete the photo.'), 'OK', { duration: 5000 });
     }
@@ -423,7 +491,7 @@ export class AdminProviderEditorPage implements OnInit {
     const id = this.id();
     if (!id) return;
     try {
-      const p = await firstValueFrom(this.api.updateAdminDiscoverProvider(id, { photoUrl: url }));
+      const p = await firstValueFrom(this.editorApi.update(id, { photoUrl: url }));
       this.form.controls.photoUrl.setValue(p.photoUrl);
       this.provider.set(p);
       this.snack.open('Listing photo updated', 'OK', { duration: 2500 });
@@ -454,6 +522,95 @@ export class AdminProviderEditorPage implements OnInit {
       this.snack.open('Verification updated', 'OK', { duration: 2500 });
     } catch (err) {
       this.snack.open(apiErrorMessage(err, 'Could not update verification.'), 'OK', { duration: 5000 });
+    }
+  }
+
+  // ── Provider self-service ───────────────────────────────────────────────
+
+  protected readonly listingStatusLabels = LISTING_STATUS_LABELS;
+
+  /** Provider view carries a completeness checklist (API ProviderListingDto). */
+  protected checklist(): ListingChecklist | null {
+    return (this.provider() as (AdminProvider & { checklist?: ListingChecklist }) | null)?.checklist ?? null;
+  }
+
+  protected canProviderSubmit(): boolean {
+    const s = this.provider()?.listingStatus;
+    return this.isProvider && (s === 'DRAFT' || s === 'CHANGES_REQUESTED');
+  }
+
+  /** Provider: save pending edits first, then submit for admin review. */
+  protected async submitForReview(): Promise<void> {
+    const id = this.id();
+    if (!id || this.submitting()) return;
+    if (this.form.dirty) await this.save();
+    this.submitting.set(true);
+    try {
+      this.patchKeepingDraft(await firstValueFrom(asEditor(this.api.submitProviderListing(id))));
+      this.snack.open('Submitted! Our team will review your listing.', 'OK', { duration: 4000 });
+      await this.router.navigate([this.backRoute]);
+    } catch (err) {
+      this.snack.open(apiErrorMessage(err, 'Could not submit for review.'), 'OK', { duration: 6000 });
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
+  // ── Admin: submissions & ownership ──────────────────────────────────────
+
+  protected async reviewSubmission(decision: ReviewDecision): Promise<void> {
+    const p = this.provider();
+    if (!p) return;
+    let note: string | null = null;
+    if (decision !== 'PUBLISH') {
+      const res = await firstValueFrom(this.dialog.open(NoteDialogComponent, {
+        width: '460px', maxWidth: '95vw',
+        data: {
+          title: decision === 'REJECT' ? 'Reject submission' : 'Request changes',
+          message: 'The provider sees this note on their dashboard.',
+          confirm: decision === 'REJECT' ? 'Reject' : 'Send to provider', noteRequired: true, warn: decision === 'REJECT',
+        } satisfies NoteDialogData,
+      }).afterClosed());
+      if (!res) return;
+      note = res.note;
+    }
+    try {
+      this.patchKeepingDraft(await firstValueFrom(this.api.reviewAdminDiscoverSubmission(p.id, decision, note)));
+      this.snack.open(decision === 'PUBLISH' ? 'Listing published' : 'Sent back to the provider', 'OK', { duration: 3000 });
+    } catch (err) {
+      this.snack.open(apiErrorMessage(err, 'Could not save the decision.'), 'OK', { duration: 6000 });
+    }
+  }
+
+  protected async takeOver(): Promise<void> {
+    const p = this.provider();
+    if (!p) return;
+    const res = await firstValueFrom(this.dialog.open(NoteDialogComponent, {
+      width: '460px', maxWidth: '95vw',
+      data: {
+        title: 'Take over this listing?', message: 'All provider access is removed; Aurora admins manage the listing again.',
+        confirm: 'Take over', noteRequired: false, warn: true,
+      } satisfies NoteDialogData,
+    }).afterClosed());
+    if (!res) return;
+    try {
+      this.patchKeepingDraft(await firstValueFrom(this.api.setAdminDiscoverManagement(p.id, 'ADMIN_MANAGED')));
+      this.snack.open('Listing is admin-managed again', 'OK', { duration: 3000 });
+    } catch (err) {
+      this.snack.open(apiErrorMessage(err, 'Could not change management.'), 'OK', { duration: 6000 });
+    }
+  }
+
+  protected async assignOwner(): Promise<void> {
+    const p = this.provider();
+    const email = this.ownerEmail().trim();
+    if (!p || !email) return;
+    try {
+      this.patchKeepingDraft(await firstValueFrom(this.api.setAdminDiscoverManagement(p.id, 'PROVIDER_MANAGED', email)));
+      this.ownerEmail.set('');
+      this.snack.open(`${email} can now manage this listing`, 'OK', { duration: 3500 });
+    } catch (err) {
+      this.snack.open(apiErrorMessage(err, 'Could not assign the owner.'), 'OK', { duration: 6000 });
     }
   }
 

@@ -20,6 +20,10 @@ import {
   DiscoverReview, DiscoverReviewList, DiscoverSearchQuery, FavoriteResult, GeocodeResult, LocationInput, Paged,
   ProviderCard, ProviderContact, ProviderDetail, ProviderInput, ProviderSearchResponse, ReviewStatus, VerificationStatus,
 } from '../features/discover/models/discover.model';
+import {
+  ClaimableListing, ClaimStatus, CreateClaimRequest, ListingClaim, ManagementType, ProviderDashboard, ProviderListing,
+  ProviderRegisterRequest, ReviewDecision,
+} from '../features/provider-portal/models/provider-portal.model';
 
 /** Query params for Discover: drops empty values, joins arrays with commas. */
 function discoverParams(query: object): HttpParams {
@@ -999,6 +1003,110 @@ export class ApiService {
     return this.http.patch<{ id: string; status: ReviewStatus }>(
       `${this.baseUrl}/v1/admin/discovery/reviews/${encodeURIComponent(id)}`, { status, note: note ?? null },
     );
+  }
+
+  // Aurora Discover — admin: provider submissions, claims, management
+  reviewAdminDiscoverSubmission(id: string, decision: ReviewDecision, note?: string | null): Observable<AdminProvider> {
+    return this.http.post<AdminProvider>(
+      `${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/review`, { decision, note: note ?? null },
+    );
+  }
+
+  setAdminDiscoverManagement(id: string, managementType: ManagementType, ownerEmail?: string): Observable<AdminProvider> {
+    return this.http.post<AdminProvider>(
+      `${this.baseUrl}/v1/admin/discovery/providers/${encodeURIComponent(id)}/management`, { managementType, ownerEmail },
+    );
+  }
+
+  getAdminDiscoverClaims(query: { status?: ClaimStatus; page?: number; limit?: number }): Observable<Paged<ListingClaim>> {
+    return this.http.get<Paged<ListingClaim>>(`${this.baseUrl}/v1/admin/discovery/claims`, {
+      params: discoverParams(query),
+    });
+  }
+
+  decideAdminDiscoverClaim(id: string, status: 'APPROVED' | 'REJECTED', note?: string | null): Observable<ListingClaim> {
+    return this.http.patch<ListingClaim>(
+      `${this.baseUrl}/v1/admin/discovery/claims/${encodeURIComponent(id)}`, { status, note: note ?? null },
+    );
+  }
+
+  // Aurora Discover — Provider Portal ("For Providers"); same login/JWT as members
+  registerDiscoverProvider(dto: ProviderRegisterRequest): Observable<{ message: string; email: string }> {
+    return this.http.post<{ message: string; email: string }>(`${this.baseUrl}/v1/provider-portal/register`, dto);
+  }
+
+  getProviderPortalCategories(): Observable<DiscoverCategory[]> {
+    return this.http.get<DiscoverCategory[]>(`${this.baseUrl}/v1/provider-portal/categories`);
+  }
+
+  getProviderDashboard(): Observable<ProviderDashboard> {
+    return this.http.get<ProviderDashboard>(`${this.baseUrl}/v1/provider-portal/me`);
+  }
+
+  createProviderListing(dto: ProviderInput): Observable<ProviderListing> {
+    return this.http.post<ProviderListing>(`${this.baseUrl}/v1/provider-portal/listings`, dto);
+  }
+
+  getProviderListing(id: string): Observable<ProviderListing> {
+    return this.http.get<ProviderListing>(`${this.baseUrl}/v1/provider-portal/listings/${encodeURIComponent(id)}`);
+  }
+
+  updateProviderListing(id: string, dto: Partial<ProviderInput>): Observable<ProviderListing> {
+    return this.http.patch<ProviderListing>(`${this.baseUrl}/v1/provider-portal/listings/${encodeURIComponent(id)}`, dto);
+  }
+
+  submitProviderListing(id: string): Observable<ProviderListing> {
+    return this.http.post<ProviderListing>(`${this.baseUrl}/v1/provider-portal/listings/${encodeURIComponent(id)}/submit`, {});
+  }
+
+  addProviderLocation(id: string, dto: LocationInput): Observable<ProviderListing> {
+    return this.http.post<ProviderListing>(`${this.baseUrl}/v1/provider-portal/listings/${encodeURIComponent(id)}/locations`, dto);
+  }
+
+  updateProviderLocation(id: string, locationId: string, dto: LocationInput): Observable<ProviderListing> {
+    return this.http.patch<ProviderListing>(
+      `${this.baseUrl}/v1/provider-portal/listings/${encodeURIComponent(id)}/locations/${encodeURIComponent(locationId)}`, dto,
+    );
+  }
+
+  deleteProviderLocation(id: string, locationId: string): Observable<ProviderListing> {
+    return this.http.delete<ProviderListing>(
+      `${this.baseUrl}/v1/provider-portal/listings/${encodeURIComponent(id)}/locations/${encodeURIComponent(locationId)}`,
+    );
+  }
+
+  uploadProviderMedia(id: string, file: File, caption: string | null, setAsPhoto: boolean): Observable<ProviderListing> {
+    const form = new FormData();
+    form.append('file', file);
+    if (caption) form.append('caption', caption);
+    form.append('setAsPhoto', String(setAsPhoto));
+    return this.http.post<ProviderListing>(`${this.baseUrl}/v1/provider-portal/listings/${encodeURIComponent(id)}/media`, form);
+  }
+
+  deleteProviderMedia(id: string, mediaId: string): Observable<ProviderListing> {
+    return this.http.delete<ProviderListing>(
+      `${this.baseUrl}/v1/provider-portal/listings/${encodeURIComponent(id)}/media/${encodeURIComponent(mediaId)}`,
+    );
+  }
+
+  geocodeProviderPortal(country: string, postalCode?: string, city?: string, state?: string): Observable<GeocodeResult> {
+    return this.http.get<GeocodeResult>(`${this.baseUrl}/v1/provider-portal/geocode`, {
+      params: discoverParams({ country, postalCode, city, state }),
+    });
+  }
+
+  searchClaimableListings(q: string, category?: string): Observable<ClaimableListing[]> {
+    return this.http.get<ClaimableListing[]>(`${this.baseUrl}/v1/provider-portal/claimable`, {
+      params: discoverParams({ q, category }),
+    });
+  }
+
+  createListingClaim(dto: CreateClaimRequest): Observable<ListingClaim> {
+    return this.http.post<ListingClaim>(`${this.baseUrl}/v1/provider-portal/claims`, dto);
+  }
+
+  cancelListingClaim(id: string): Observable<ListingClaim> {
+    return this.http.delete<ListingClaim>(`${this.baseUrl}/v1/provider-portal/claims/${encodeURIComponent(id)}`);
   }
 
   geocodeAdminDiscover(country: string, postalCode?: string, city?: string, state?: string): Observable<GeocodeResult> {

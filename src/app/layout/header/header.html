@@ -42,16 +42,19 @@
           Messages
         </a>
       }
-      <a mat-button routerLink="/safety-tips" routerLinkActive="active-link">
+      <!-- <a mat-button routerLink="/safety-tips" routerLinkActive="active-link">
         <mat-icon>verified_user</mat-icon> Safety
       </a>
-      <a mat-button routerLink="/contact" routerLinkActive="active-link">Contact</a>
-      @if (auth.isAdmin() || auth.isTester()) {
+      <a mat-button routerLink="/contact" routerLinkActive="active-link">Contact</a> -->
+      <a mat-button routerLink="/providers" routerLinkActive="active-link" aria-label="For Providers: list or manage your wedding business">
+        <mat-icon aria-hidden="true">storefront</mat-icon> For Providers
+      </a>
+      <!-- @if (auth.isAdmin() || auth.isTester()) {
         <a mat-button routerLink="/admin" routerLinkActive="active-link">
           <mat-icon>admin_panel_settings</mat-icon>
           Admin
         </a>
-      }
+      } -->
     </nav>
 
     <!-- Auth Buttons & Notification Bell -->
@@ -221,6 +224,9 @@
     </a>
     <a routerLink="/contact" (click)="toggleMobileMenu()">
       <mat-icon>contact_support</mat-icon> Contact
+    </a>
+    <a routerLink="/providers" (click)="toggleMobileMenu()">
+      <mat-icon>storefront</mat-icon> For Providers
     </a>
     @if (auth.isAdmin() || auth.isTester()) {
       <a routerLink="/admin" (click)="toggleMobileMenu()">
