@@ -1,0 +1,11 @@
+<div class="handoff">
+  @if (!failed()) {
+    <mat-spinner diameter="44"></mat-spinner>
+    <p>Opening Aurora Matrimony…</p>
+  } @else {
+    <mat-icon class="handoff__icon" aria-hidden="true">link_off</mat-icon>
+    <h1>This sign-in link has expired</h1>
+    <p>Links for switching between Aurora experiences work once and only for a minute. Please log in.</p>
+    <a mat-flat-button class="suhana-btn-primary" routerLink="/login">Log in</a>
+  }
+</div>

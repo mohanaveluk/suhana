@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { UserProfile, RefreshTokenResponse, MobileVerificationStatus, ProfileTrustIndicator } from '../models/user.model';
+import { AppRole, UserProfile, RefreshTokenResponse, MobileVerificationStatus, ProfileTrustIndicator } from '../models/user.model';
 import { AiSearchRequest, AiSearchResponse, SearchSuggestionsResponse } from '../models/ai-search.model';
 import { FacetCount, FailedSearch, FallbackRate, TrendFacet } from '../models/admin-search-analytics.model';
 import { PaginatedProfileVisits, ProfileVisitMutationResult, VisitStats } from '../models/profile-visit.model';
@@ -107,6 +107,21 @@ export class ApiService {
 
   resendVerificationMail(userGuid: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/v1/auth/resend-verification`, { userGuid });
+  }
+
+  /** Existing signed-in account (e.g. Aurora for Providers only) joins Aurora Matrimony — grants MEMBER, no new user. */
+  joinAsMember(data: { gender: string; firstName?: string; lastName?: string }): Observable<{ roles: AppRole[]; tempGuid: string | null }> {
+    return this.http.post<{ roles: AppRole[]; tempGuid: string | null }>(`${this.baseUrl}/v1/auth/join-as-member`, data);
+  }
+
+  /** "Switch Aurora experience": 60-second single-use code for the other web app. */
+  createHandoff(target: 'matrimony' | 'providers'): Observable<{ code: string; expiresInSeconds: number }> {
+    return this.http.post<{ code: string; expiresInSeconds: number }>(`${this.baseUrl}/v1/auth/handoff`, { target });
+  }
+
+  /** Burns a handoff code from Aurora for Providers and returns a session for this app (same shape as login). */
+  exchangeHandoff(code: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/v1/auth/handoff/exchange`, { code, target: 'matrimony' });
   }
 
   // Token

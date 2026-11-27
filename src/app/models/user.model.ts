@@ -11,6 +11,14 @@ export type AttachmentType = 'image' | 'video' | 'audio' | 'document';
 export type CallType = 'audio' | 'video';
 export type CallStatus = 'pending' | 'ringing' | 'accepted' | 'declined' | 'missed' | 'completed' | 'failed';
 export type InterestStatus = 'pending' | 'accepted' | 'declined' | 'expired';
+/**
+ * Application roles of the one shared Aurora identity (suhana-api account-roles) —
+ * separate from `UserRole` (the legacy admin/registered/guest/tester tier, unchanged).
+ * Aurora Matrimony needs MEMBER (or ADMIN); Aurora for Providers needs PROVIDER / PROVIDER_STAFF.
+ */
+export type AppRole = 'MEMBER' | 'PROVIDER' | 'PROVIDER_STAFF' | 'ADMIN' | 'SUPER_ADMIN';
+export const MEMBER_APP_ROLES: readonly AppRole[] = ['MEMBER', 'ADMIN', 'SUPER_ADMIN'];
+export const PROVIDER_APP_ROLES: readonly AppRole[] = ['PROVIDER', 'PROVIDER_STAFF'];
 
 export interface User {
   id: string;
@@ -28,6 +36,8 @@ export interface User {
   isMobileVerified?: boolean;
   profile?: UserProfile;
   tempGuid?: string;
+  /** Application roles from /auth/login. Absent on sessions cached before roles existed (= member). */
+  appRoles?: AppRole[];
 }
 
 export interface UserProfile {

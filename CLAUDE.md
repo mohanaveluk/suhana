@@ -279,7 +279,22 @@ When adding a method: find the matching section header and add it there, in the 
   - `core/interceptors/http-error.interceptor.ts` → functional `httpErrorInterceptor`, also registered. Redirects to `/service-unavailable` on network-down/503/504, logs other errors, and always re-throws so `authInterceptor` still gets to inspect 401s.
 - **`core/error-handling/global-error-handler.ts`** (`GlobalErrorHandler`) is the app-wide `ErrorHandler` — shows a snackbar for uncaught errors, suppressing `ExpressionChangedAfterItHasBeenCheckedError` noise and recursive-error loops.
 
-**Guards**: `authGuard` (`src/app/guards/auth.guard.ts`) plus `providerAuthGuard` (`features/provider-portal/provider-auth.guard.ts` — same check, redirects to `/providers/login`). There is no role/admin guard anywhere in the codebase — see the warning in §5.
+**Guards**: `authGuard` (`src/app/guards/auth.guard.ts`) and `providersRedirectGuard` (`guards/providers-redirect.guard.ts`). There is no role/admin guard anywhere in the codebase — see the warning in §5.
+
+**One Aurora identity, several app roles** (full notes: `suhana-api/docs/aurora-identity.md`):
+- **Two separate web apps.** "For Providers" is its own app: `aurora-providers-web`, sibling folder `aurora-providers/`, at `environment.providersUrl`.
+  - `/providers/**` here redirects there, keeping the sub-path.
+  - The old in-app `features/provider-portal/` is no longer routed. Its files remain, but only because the Discover admin editor still imports from them.
+- **App roles vs. the legacy tier.** The login response carries `user.roles` (`MEMBER | PROVIDER | PROVIDER_STAFF | ADMIN | SUPER_ADMIN`). `AuthService` stores them as `User.appRoles`. This is separate from `UserRole`, the legacy admin/registered/guest/tester tier, which is unchanged.
+  - `hasMemberAccess()` is true when there is no `appRoles` (sessions cached before roles existed) or it includes MEMBER/ADMIN.
+  - `hasProviderAccess()` is true when it includes PROVIDER/PROVIDER_STAFF.
+  - The API enforces both (403 `MEMBER_ROLE_REQUIRED` / `PROVIDER_ROLE_REQUIRED`).
+- **Business-only accounts.** Login drops the session of an account without member access and offers "Create my matrimony profile".
+  - The register wizard then runs in *join mode*: `joiningExistingAccount`. The password is re-checked, then `POST /auth/join-as-member` and `PATCH /profiles/me` run. No new user is created.
+- **Switch Aurora experience** (header user menu, dual-role accounts only):
+  - `POST /auth/handoff` returns a 60-second, single-use code.
+  - The browser goes to `{providersUrl}/auth/handoff?code=`. The reverse direction lands on `/auth/handoff` here.
+  - `interceptors/auth.interceptor.ts` sends the token to `join-as-member` and `handoff` even though they sit under `/v1/auth/`.
 
 ---
 

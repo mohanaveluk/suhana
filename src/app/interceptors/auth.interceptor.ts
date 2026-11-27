@@ -18,10 +18,18 @@ function addAuthHeader(req: HttpRequest<unknown>, token: string | null): HttpReq
   return token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 }
 
+/** /v1/auth/* endpoints that DO need the signed-in user's token (everything else under /v1/auth/ is public). */
+const AUTHENTICATED_AUTH_ROUTES = [
+  '/v1/auth/update-password-legacy',
+  '/v1/auth/join-as-member',   // existing account joins Aurora Matrimony
+  '/v1/auth/handoff',          // "Switch Aurora experience" (the /exchange step below stays public)
+];
+
 function isPublicRoute(url: string): boolean {
+  if (url.includes('/v1/auth/handoff/exchange')) return true;
   return (
     (url.includes('/v1/auth/') || url.includes('/v1/token/refresh') || url.includes('/v1/health')) &&
-    !url.includes('/v1/auth/update-password-legacy')
+    !AUTHENTICATED_AUTH_ROUTES.some((r) => url.includes(r))
   );
 }
 

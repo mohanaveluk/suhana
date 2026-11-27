@@ -3,6 +3,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { AuthService } from '../../services';
+import { environment } from '../../../environments/environment';
+import { rememberJoinEmail } from '../../shared/utils/join-member.util';
 
 type LoginMode = 'password' | 'otc';
 type OtcStep = 'email' | 'code';
@@ -61,6 +63,24 @@ export class LoginComponent implements OnDestroy {
     this.stopResendCountdown();
   }
 
+  // ── One Aurora identity, several apps ─────────────────────────────────────
+  protected readonly providersUrl = environment.providersUrl;
+  /** Set when the credentials are valid but the account has no Aurora Matrimony (MEMBER) role. */
+  protected readonly businessOnlyEmail = signal<string | null>(null);
+
+  /**
+   * A business-only account (registered on Aurora for Providers) must not get a
+   * member session here. Drop the session and offer to create a matrimony profile
+   * with the same email + password (the register page re-verifies the password).
+   */
+  private refuseBusinessOnlyAccount(email: string): boolean {
+    if (this.auth.hasMemberAccess()) return false;
+    this.auth.clearSession();
+    this.businessOnlyEmail.set(email.trim().toLowerCase());
+    rememberJoinEmail(email);
+    return true;
+  }
+
   // ── Mode switching ──────────────────────────────────────────────────────────
   protected switchMode(mode: LoginMode): void {
     if (this.loginMode() === mode) return;
@@ -93,6 +113,7 @@ export class LoginComponent implements OnDestroy {
     const { email, password } = this.loginForm.getRawValue();
     try {
       await this.auth.login(email ?? '', password ?? '');
+      if (this.refuseBusinessOnlyAccount(email ?? '')) return;
       this.router.navigateByUrl(this.returnUrl);
     } catch (err: any) {
       const msg: string = err?.error?.message ?? err?.message ?? 'Login failed. Please try again.';
@@ -150,6 +171,7 @@ export class LoginComponent implements OnDestroy {
     const code = this.otcForm.controls.code.getRawValue() ?? '';
     try {
       await this.auth.loginWithOtc(email, code);
+      if (this.refuseBusinessOnlyAccount(email)) return;
       this.router.navigateByUrl(this.returnUrl);
     } catch (err: any) {
       this.errorMessage.set(err?.error?.message ?? 'Invalid or expired code. Please try again or resend a new code.');

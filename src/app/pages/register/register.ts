@@ -12,6 +12,7 @@ import { AnalyticsService } from '../../core/analytics/analytics.service';
 import { encryptValue } from '../../shared/utils/crypto.util';
 import { onSelectSearchKeydown } from '../../shared/utils/select-search.util';
 import { SelectSearchDirective } from '../../shared/directives/select-search.directive';
+import { takeJoinEmail } from '../../shared/utils/join-member.util';
 
 interface CountryLookup {
   id: string;
@@ -64,7 +65,15 @@ export class RegisterComponent implements OnInit {
   protected readonly profileError       = signal<string | null>(null);
   protected readonly registeredUserId   = signal<string | null>(null);
   protected readonly prefillNotice      = signal<string | null>(null);
-  
+  /**
+   * One Aurora identity: the email belongs to a verified account that has no MEMBER role yet
+   * (registered on Aurora for Providers). The typed password proved ownership, so the wizard
+   * completes a matrimony profile for that same account (POST /auth/join-as-member) — no new user.
+   */
+  protected readonly joiningExistingAccount = signal(false);
+  /** Arrived from the login page's "Create my matrimony profile". */
+  protected readonly joinIntro          = signal(false);
+
   private readonly _availableCities       = signal<string[]>([]);
   private readonly _availableOccupations  = signal<string[]>([]);
   private readonly _availableEducation    = signal<string[]>([]);
@@ -256,6 +265,12 @@ export class RegisterComponent implements OnInit {
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.analytics.track('registration_start'));
 
+    const joinEmail = takeJoinEmail();
+    if (joinEmail) {
+      this.accountForm.patchValue({ email: joinEmail });
+      this.joinIntro.set(true);
+    }
+
     await Promise.all([this.loadLookupValues(), this.loadCountries()]);
   }
 
@@ -397,6 +412,17 @@ export class RegisterComponent implements OnInit {
           // is there but unverified; fetch the profile and pre-fill all steps.
           await this.auth.login(email ?? '', password ?? '');
           const user = this.auth.user();
+          if (user?.is_email_verified && !this.auth.hasMemberAccess()) {
+            // Verified Aurora for Providers account → complete a matrimony profile for the SAME account.
+            this.joiningExistingAccount.set(true);
+            this.registeredUserId.set(user.id ?? '');
+            this.prefillNotice.set(
+              'Welcome! You’re creating your matrimony profile with your existing Aurora account — same email and password. ' +
+              'Complete the remaining steps to join Aurora Matrimony.',
+            );
+            this.stepper.next();
+            return;
+          }
           if (user?.is_email_verified) {
             throw new Error('Email already verified. Please login instead, or use "Forgot Password" if you\'ve forgotten your credentials.');
           }
@@ -502,7 +528,7 @@ export class RegisterComponent implements OnInit {
       : 25;
 
     try {
-      await this.profileService.updateNewProfile({
+      const profilePayload: Parameters<ProfileService['updateNewProfile']>[0] = {
         userId:       this.registeredUserId() ?? this.auth.user()?.id ?? '',
         firstName:    personal.firstName  || '',
         lastName:     personal.lastName   || '',
@@ -544,7 +570,22 @@ export class RegisterComponent implements OnInit {
         profileCompleteness: 75,
         tempGuid: this.tempUserGuid() ?? '',
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
+      };
+
+      if (this.joiningExistingAccount()) {
+        // Same Aurora identity: grant MEMBER + create the profile shell, then save the details
+        // through the signed-in profile endpoint. The account is already verified — no email step.
+        const joined = await firstValueFrom(this.api.joinAsMember({
+          gender: this.accountForm.getRawValue().gender as string, firstName: profilePayload.firstName, lastName: profilePayload.lastName,
+        }));
+        this.auth.setAppRoles(joined.roles);
+        await this.profileService.updateProfile({ ...profilePayload, tempGuid: joined.tempGuid ?? undefined } as any);
+        this.analytics.track('sign_up', { method: 'existing_aurora_account' });
+        this.router.navigate(['/profile']);
+        return;
+      }
+
+      await this.profileService.updateNewProfile(profilePayload);
       this.analytics.track('sign_up', { method: 'email' });
       const paramKey = encryptValue(this.accountForm.getRawValue().email ?? '');
       this.router.navigate(['/registration-success', paramKey]);

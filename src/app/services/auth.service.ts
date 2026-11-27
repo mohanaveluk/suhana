@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { User, UserRole, MembershipTier } from '../models/user.model';
+import { AppRole, MEMBER_APP_ROLES, PROVIDER_APP_ROLES, User, UserRole, MembershipTier } from '../models/user.model';
 import { ApiService } from './api.service';
 import { firstValueFrom, Observable } from 'rxjs';
 import { Router } from '@angular/router';
@@ -41,6 +41,16 @@ export class AuthService {
     const tier = this.currentUser()?.membership;
     return tier === 'gold' || tier === 'platinum';
   });
+
+  // ── One Aurora identity, several apps ─────────────────────────────────────
+  /** May use Aurora Matrimony (MEMBER / ADMIN). Sessions cached before roles existed count as members. */
+  readonly hasMemberAccess = computed(() => {
+    const roles = this.currentUser()?.appRoles;
+    return !roles || roles.some((r) => MEMBER_APP_ROLES.includes(r));
+  });
+  /** Also has an Aurora for Providers business account → offer "Switch Aurora experience". */
+  readonly hasProviderAccess = computed(() =>
+    !!this.currentUser()?.appRoles?.some((r) => PROVIDER_APP_ROLES.includes(r)));
 
   constructor() {
     // No storage while pages are prerendered at build time — they always render as a guest.
@@ -122,6 +132,12 @@ export class AuthService {
   }
 
   logout(): void {
+    this.clearSession();
+    this.router.navigate(['/']);
+  }
+
+  /** Drops the local session without navigating (e.g. a business-only account signed in here). */
+  clearSession(): void {
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     this.fetchedRole.set(null);
@@ -130,7 +146,16 @@ export class AuthService {
     localStorage.removeItem('suhana_token');
     localStorage.removeItem('suhana_user');
     localStorage.removeItem('refresh_token');
-    this.router.navigate(['/']);
+  }
+
+  /** Stores a session from /auth/handoff/exchange ("Switch Aurora experience" from Aurora for Providers). */
+  adoptSession(data: { access_token: string; refresh_token: string; user: Record<string, unknown> }): void {
+    this.setSession(data);
+  }
+
+  /** Application roles changed on the server (e.g. joined Aurora Matrimony). */
+  setAppRoles(roles: AppRole[] | undefined): void {
+    if (roles) this.patchUser({ appRoles: roles });
   }
 
   updateMembership(tier: MembershipTier): void {
@@ -252,6 +277,7 @@ export class AuthService {
       isVerified: u['is_verified'] as boolean,
       is_email_verified: u['is_email_verified'] as boolean,
       createdAt: u['created_at'] ? new Date(u['created_at'] as string) : new Date(),
+      appRoles: Array.isArray(u['roles']) ? (u['roles'] as AppRole[]) : undefined,
     };
     localStorage.setItem('suhana_user', JSON.stringify(user));
     this.currentUser.set(user);

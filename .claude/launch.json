@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["start"],
       "port": 4200
+    },
+    {
+      "name": "aurora-providers-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "D:/projects/matrimony/aurora-providers", "start"],
+      "port": 57844
     }
   ]
 }
