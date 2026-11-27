@@ -1,0 +1,36 @@
+@keyframes pc-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.pc-head {
+  margin-bottom: 18px; animation: pc-up .5s ease both;
+  h1 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; color: var(--suhana-maroon); }
+  p { margin: 0; color: var(--suhana-text-secondary); max-width: 760px; line-height: 1.6; }
+}
+.pc-error { display: flex; gap: 8px; align-items: center; padding: 12px 14px; border-radius: 12px; background: #fdecea; color: #b3261e; margin-bottom: 14px; }
+.pc-search {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 4px 16px var(--suhana-shadow);
+}
+.pc-search__field { flex: 1 1 260px; }
+.pc-empty { text-align: center; padding: 24px; color: var(--suhana-text-secondary); }
+.pc-results { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+.pc-result {
+  display: flex; align-items: center; gap: 14px; background: #fff; border-radius: 14px; padding: 10px 14px;
+  border: 1px solid var(--suhana-rose-gold-lighter);
+  animation: pc-up .4s ease both; animation-delay: var(--d, 0ms);
+  img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; }
+}
+.pc-result__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; strong { color: var(--suhana-maroon); } }
+.pc-muted { color: var(--suhana-text-secondary); font-size: 13px; }
+.pc-pending { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: #fff8e1; color: #6d4c00; }
+.pc-card { background: #fff; border-radius: 20px; padding: 20px; border: 1px solid var(--suhana-rose-gold-lighter); animation: pc-up .45s ease both; }
+.pc-chosen {
+  display: flex; align-items: center; gap: 14px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--suhana-rose-gold-lighter);
+  img { width: 72px; height: 72px; border-radius: 14px; object-fit: cover; }
+  div { flex: 1; display: flex; flex-direction: column; strong { color: var(--suhana-maroon); font-size: 18px; } }
+}
+.pc-form { display: flex; flex-direction: column; gap: 6px; }
+.pc-full { width: 100%; }
+.pc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.pc-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+@media (max-width: 640px) { .pc-row { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .pc-head, .pc-result, .pc-card { animation: none; } }

@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
 import { LANDING_PAGES } from '../../features/seo-pages/landing-pages.registry';
+import { AuthService } from '../../services';
 
 @Component({
   selector: 'app-footer',
@@ -11,6 +12,7 @@ import { LANDING_PAGES } from '../../features/seo-pages/landing-pages.registry';
   styleUrl: './footer.scss',
 })
 export class FooterComponent {
+  protected readonly auth               = inject(AuthService);
   /** Crawlable links to every public landing page, so none of them is an orphan. */
   protected readonly featurePages = LANDING_PAGES.filter(p => p.kind === 'feature');
   protected readonly audiencePages = LANDING_PAGES.filter(p => p.kind === 'audience');

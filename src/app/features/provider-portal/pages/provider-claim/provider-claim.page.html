@@ -1,0 +1,97 @@
+<app-provider-shell>
+  <header class="pc-head">
+    <h1><mat-icon aria-hidden="true">how_to_reg</mat-icon> Claim your business</h1>
+    <p>If Aurora already lists your business, request to manage it. We'll check that you represent the business — usually by
+      calling the phone number on the listing — before giving you access. The listing stays live while we review.</p>
+  </header>
+
+  @if (error()) { <div class="pc-error" role="alert"><mat-icon aria-hidden="true">error_outline</mat-icon><span>{{ error() }}</span></div> }
+
+  @if (!selected()) {
+    <form class="pc-search" (ngSubmit)="search()" role="search" aria-label="Find your listing">
+      <mat-form-field appearance="outline" class="pc-search__field" subscriptSizing="dynamic">
+        <mat-label>Business name</mat-label>
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <input matInput name="q" [value]="query()" (input)="query.set($any($event.target).value)" minlength="2" maxlength="80" />
+      </mat-form-field>
+      <button mat-flat-button type="submit" class="suhana-btn-primary" [disabled]="searching() || query().trim().length < 2">
+        {{ searching() ? 'Searching…' : 'Find listing' }}
+      </button>
+    </form>
+
+    @if (results(); as rs) {
+      @if (!rs.length) {
+        <div class="pc-empty">
+          <p>No unclaimed listings match “{{ query() }}”.</p>
+          <a mat-stroked-button routerLink="/providers/dashboard/listings/new">Add your business instead</a>
+        </div>
+      } @else {
+        <ul class="pc-results" role="list">
+          @for (r of rs; track r.id; let i = $index) {
+            <li class="pc-result" [style.--d]="(i * 60) + 'ms'">
+              <img [src]="r.photoUrl || categoryImage(r.categorySlugs[0])" alt="" loading="lazy" />
+              <div class="pc-result__body">
+                <strong>{{ r.displayName }}</strong>
+                @if (r.businessName && r.businessName !== r.displayName) { <span>{{ r.businessName }}</span> }
+                <span class="pc-muted">
+                  @for (s of r.categorySlugs; track s; let last = $last) { {{ categoryName(s) }}{{ last ? '' : ', ' }} }
+                  @if (r.place) { · {{ r.place }} }
+                </span>
+              </div>
+              @if (r.myPendingClaim) {
+                <span class="pc-pending">Claim pending</span>
+              } @else {
+                <button mat-stroked-button type="button" (click)="choose(r)">This is my business</button>
+              }
+            </li>
+          }
+        </ul>
+      }
+    }
+  } @else {
+    @let l = selected()!;
+    <section class="pc-card">
+      <div class="pc-chosen">
+        <img [src]="l.photoUrl || categoryImage(l.categorySlugs[0])" alt="" />
+        <div>
+          <strong>{{ l.displayName }}</strong>
+          <span class="pc-muted">@if (l.place) { {{ l.place }} }</span>
+        </div>
+        <button mat-button type="button" (click)="selected.set(null)">Change</button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="pc-form" novalidate>
+        <mat-form-field appearance="outline" class="pc-full">
+          <mat-label>How are you connected to this business?</mat-label>
+          <textarea matInput rows="4" formControlName="message" maxlength="1000"
+                    placeholder="e.g. I am the owner and have run this studio since 2012. You can reach me on the studio phone."></textarea>
+          <mat-hint align="end">{{ form.controls.message.value.length }} / 1000</mat-hint>
+          @if (form.controls.message.invalid) { <mat-error>Please write at least 20 characters.</mat-error> }
+        </mat-form-field>
+        <div class="pc-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Your name at the business</mat-label>
+            <input matInput formControlName="contactName" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Phone we can call</mat-label>
+            <input matInput type="tel" formControlName="contactPhone" />
+            @if (form.controls.contactPhone.invalid) { <mat-error>Enter a valid phone number.</mat-error> }
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="pc-full">
+          <mat-label>Business email (optional)</mat-label>
+          <input matInput type="email" formControlName="businessEmail" />
+          <mat-hint>An email at your business's own domain speeds up verification.</mat-hint>
+          @if (form.controls.businessEmail.invalid) { <mat-error>Enter a valid email.</mat-error> }
+        </mat-form-field>
+        <div class="pc-actions">
+          <a mat-button routerLink="/providers/dashboard">Cancel</a>
+          <button mat-flat-button type="submit" class="suhana-btn-primary" (click)="form.markAllAsTouched()">
+            {{ saving() ? 'Submitting…' : 'Submit claim' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+</app-provider-shell>

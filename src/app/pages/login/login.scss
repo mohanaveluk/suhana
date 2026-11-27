@@ -266,3 +266,13 @@ mat-divider { margin: 24px 0; }
     }
   }
 }
+
+// Signed in with a business-only (Aurora for Providers) account: offer to create a matrimony profile.
+.business-only {
+  display: flex; gap: 12px; align-items: flex-start; padding: 16px; margin-bottom: 16px; border-radius: 14px; text-align: left;
+  background: var(--suhana-blush); border: 1px solid var(--suhana-rose-gold-light);
+  > mat-icon { color: var(--suhana-maroon); flex-shrink: 0; }
+  strong { display: block; color: var(--suhana-maroon); word-break: break-word; }
+  p { margin: 6px 0 10px; font-size: 14px; line-height: 1.5; color: var(--suhana-text-secondary); }
+}
+.business-only__actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }

@@ -291,6 +291,14 @@
   &:hover { color: var(--suhana-maroon); }
 }
 
+// Help Center icon (left of the notification bell) — same look as the bell.
+.help-btn {
+  color: var(--suhana-text-secondary);
+  transition: color 0.2s;
+
+  &:hover, &.help-btn--active { color: var(--suhana-maroon); }
+}
+
 // ─── Notification Panel (mat-menu override) ──────────────────────────────────
 ::ng-deep .notif-panel-menu {
   .mat-mdc-menu-panel {

@@ -52,6 +52,9 @@
           <a routerLink="/search">Search Profiles</a>
           <a routerLink="/premium">Membership Plans</a>
           <a routerLink="/about">About Us</a>
+          @if (auth.isAdmin() || auth.isTester()) {
+            <a routerLink="/admin">Admin</a>
+          }
         </nav>
       </div>
 

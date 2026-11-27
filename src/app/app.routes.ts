@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { VerifyEmailComponent } from './pages/verify/verify-email.component';
 import { authGuard } from './guards/auth.guard';
+import { providersRedirectGuard } from './guards/providers-redirect.guard';
 import { PAGE_SEO } from './core/seo/page-seo';
 import { LANDING_PAGES } from './features/seo-pages/landing-pages.registry';
 
@@ -297,6 +298,16 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/personality/personality.routes').then(m => m.PERSONALITY_ROUTES),
   },
+  {
+    // "For Providers" now lives in its own web app (aurora-providers-web, environment.providersUrl).
+    // Old /providers/** links (e.g. /providers/claim/:id, verification links) are forwarded there,
+    // keeping the sub-path. Same Aurora identity; separate login and session.
+    matcher: (segments) => (segments[0]?.path === 'providers' ? { consumed: segments } : null),
+    canActivate: [providersRedirectGuard],
+    children: [],
+  },
+  // "Switch Aurora experience" from Aurora for Providers (one-time code → member session). Not indexed.
+  { path: 'auth/handoff', loadComponent: () => import('./pages/auth-handoff/auth-handoff.component').then(m => m.AuthHandoffComponent) },
   {
     // Aurora Discover — local marriage services directory. Member-only, never indexed.
     path: 'discover',

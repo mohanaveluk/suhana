@@ -12,6 +12,14 @@
       <mat-step [stepControl]="accountForm" label="Account">
         <form [formGroup]="accountForm">
           <div class="step-content">
+            @if (joinIntro()) {
+              <!-- Came from login with an Aurora for Providers (business-only) account. -->
+              <div class="prefill-notice" role="status">
+                <mat-icon>storefront</mat-icon>
+                <span>Create your matrimony profile with your existing Aurora account: enter the <strong>same password</strong> you
+                  use on Aurora for Providers, choose bride or groom, and continue. No new account is created.</span>
+              </div>
+            }
             @if (registrationError()) {
               <div class="registration-error" role="alert">
                 <mat-icon class="registration-error__icon">error_outline</mat-icon>

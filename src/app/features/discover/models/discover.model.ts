@@ -204,6 +204,8 @@ export interface ProviderDetail extends ProviderCard {
   gallery: ProviderMedia[];
   astrologerDetail: AstrologerDetail | null;
   serviceDetail: ServiceDetail | null;
+  /** Admin-managed with no owner: the business may claim it ("For Providers"). */
+  claimable?: boolean;
   contactChannels: { phone: boolean; email: boolean; website: boolean };
 }
 
@@ -354,6 +356,14 @@ export interface AdminProvider {
   media: { id: string; url: string; caption: string | null; displayOrder: number }[];
   astrologer?: AstrologerDetailInput;
   categoryDetails?: CategoryDetailInput[];
+  // Ownership (provider self-service) — see suhana-api ListingOwnershipDto.
+  managementType?: 'ADMIN_MANAGED' | 'PROVIDER_MANAGED';
+  listingStatus?: 'DRAFT' | 'SUBMITTED' | 'CHANGES_REQUESTED' | 'PUBLISHED';
+  reviewNote?: string | null;
+  submittedAt?: string | null;
+  owners?: { userId: string; name: string; email: string; role: string }[];
+  claimStatus?: 'NOT_CLAIMED' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+  pendingClaims?: number;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -374,6 +384,9 @@ export interface AdminProviderSummary {
   ratingCount: number;
   updatedAt: string;
   deletedAt: string | null;
+  managementType?: 'ADMIN_MANAGED' | 'PROVIDER_MANAGED';
+  listingStatus?: 'DRAFT' | 'SUBMITTED' | 'CHANGES_REQUESTED' | 'PUBLISHED';
+  pendingClaims?: number;
 }
 
 export interface AdminProviderQuery {
@@ -382,6 +395,8 @@ export interface AdminProviderQuery {
   status?: VerificationStatus;
   country?: CountryCode;
   includeDeleted?: boolean;
+  listingStatus?: 'DRAFT' | 'SUBMITTED' | 'CHANGES_REQUESTED' | 'PUBLISHED';
+  managementType?: 'ADMIN_MANAGED' | 'PROVIDER_MANAGED';
   page?: number;
   limit?: number;
 }

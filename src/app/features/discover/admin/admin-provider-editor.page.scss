@@ -53,6 +53,42 @@
 }
 .pe__media-actions { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
 
+// ── Provider mode: status + completeness ─────────────────────────────────
+.pe__pstatus {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px 16px; border-radius: 14px; background: #fff8e1; color: #6d4c00;
+  > mat-icon { font-size: 28px; width: 28px; height: 28px; }
+  div { flex: 1; display: flex; flex-direction: column; min-width: 200px; }
+  &[data-status='PUBLISHED'] { background: #e8f5e9; color: #1b5e20; }
+  &[data-status='SUBMITTED'] { background: #e3f2fd; color: #0d47a1; }
+  &[data-status='CHANGES_REQUESTED'] { background: #fdecea; color: #b3261e; }
+}
+.pe__progress {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 12px; font-size: 13px;
+  > span:nth-child(2) { font-weight: 700; color: var(--suhana-maroon); }
+}
+.pe__progress-bar {
+  flex: 1 1 100%; height: 8px; border-radius: 999px; background: var(--suhana-blush); overflow: hidden;
+  span { display: block; height: 100%; background: linear-gradient(90deg, var(--suhana-maroon), var(--suhana-gold)); transition: width .6s ease; }
+}
+.pe__check {
+  display: inline-flex; align-items: center; gap: 4px; color: var(--suhana-text-secondary);
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+.pe__check--done { color: #1b5e20; }
+
+// ── Admin mode: ownership ────────────────────────────────────────────────
+.pe__owner { margin-bottom: 16px; }
+.pe__owner-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pe__owners { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px;
+  li { display: flex; align-items: center; gap: 6px; } mat-icon { color: var(--suhana-rose-gold); } }
+.pe__review {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; border-radius: 12px;
+  background: #e3f2fd; color: #0d47a1;
+}
+.pe__owner-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.pe__owner-email { flex: 1 1 260px; }
+
 .pe__savebar {
   position: sticky; bottom: 0; z-index: 2;
   display: flex; justify-content: flex-end; gap: 8px;

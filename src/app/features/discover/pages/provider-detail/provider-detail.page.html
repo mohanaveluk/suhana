@@ -253,6 +253,11 @@
               <p>This listing hasn't been verified by Aurora yet.</p>
             }
             <p class="pd__muted">Listing verification is not an endorsement and doesn't confirm qualifications. Ratings come only from member reviews that our team has checked.</p>
+            @if (p.claimable) {
+              <a class="pd__claim" [routerLink]="['/providers/claim', p.id]">
+                <mat-icon aria-hidden="true">how_to_reg</mat-icon> Is this your business? Claim this listing
+              </a>
+            }
           </section>
         </aside>
       </div>

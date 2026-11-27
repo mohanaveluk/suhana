@@ -42,20 +42,33 @@
           Messages
         </a>
       }
-      <a mat-button routerLink="/safety-tips" routerLinkActive="active-link">
+      <!-- <a mat-button routerLink="/safety-tips" routerLinkActive="active-link">
         <mat-icon>verified_user</mat-icon> Safety
       </a>
-      <a mat-button routerLink="/contact" routerLinkActive="active-link">Contact</a>
-      @if (auth.isAdmin() || auth.isTester()) {
+      <a mat-button routerLink="/contact" routerLinkActive="active-link">Contact</a> -->
+      <a mat-button [href]="providersUrl" rel="noopener" aria-label="For Providers: list or manage your wedding business on Aurora for Providers">
+        <mat-icon aria-hidden="true">storefront</mat-icon> For Providers
+      </a>
+      <!-- @if (auth.isAdmin() || auth.isTester()) {
         <a mat-button routerLink="/admin" routerLinkActive="active-link">
           <mat-icon>admin_panel_settings</mat-icon>
           Admin
         </a>
-      }
+      } -->
     </nav>
 
     <!-- Auth Buttons & Notification Bell -->
     <div class="auth-actions">
+      <!-- ── Help Center (public page — shown to guests and members) ── -->
+      <a mat-icon-button
+         routerLink="/help"
+         routerLinkActive="help-btn--active"
+         aria-label="Help Center"
+         matTooltip="Help Center"
+         class="help-btn">
+        <mat-icon>help_outline</mat-icon>
+      </a>
+
       @if (!auth.authenticated()) {
         <a mat-button routerLink="/login" class="login-btn">Login</a>
         <a mat-raised-button routerLink="/register" class="register-btn suhana-btn-primary">Register Free</a>
@@ -89,6 +102,20 @@
             <span>{{ displayName() }}</span>
           </a>
           <mat-divider></mat-divider>
+          @if (auth.hasProviderAccess() && auth.hasMemberAccess()) {
+            <!-- Only for accounts with both roles; Aurora for Providers re-checks authorisation on arrival. -->
+            <p class="switch-title">Switch Aurora experience</p>
+            <button mat-menu-item type="button" disabled class="switch-current">
+              <mat-icon>favorite</mat-icon>
+              <span class="switch-exp"><span>Aurora Matrimony</span><small>Member dashboard · Member</small></span>
+              <mat-icon class="switch-check" aria-label="Current">check</mat-icon>
+            </button>
+            <button mat-menu-item type="button" (click)="switchToProviders()" [disabled]="switching()">
+              <mat-icon>storefront</mat-icon>
+              <span class="switch-exp"><span>Aurora for Providers</span><small>Business dashboard · Provider</small></span>
+            </button>
+            <mat-divider></mat-divider>
+          }
           <a mat-menu-item routerLink="/profile">
             <mat-icon>person</mat-icon>
             <span>My Profile</span>
@@ -216,11 +243,17 @@
     <a routerLink="/safety-tips" (click)="toggleMobileMenu()">
       <mat-icon>verified_user</mat-icon> Safety Tips
     </a>
+    <a routerLink="/help" (click)="toggleMobileMenu()">
+      <mat-icon>support_agent</mat-icon> Help Center
+    </a>
     <a routerLink="/faq" (click)="toggleMobileMenu()">
       <mat-icon>help_outline</mat-icon> FAQs
     </a>
     <a routerLink="/contact" (click)="toggleMobileMenu()">
       <mat-icon>contact_support</mat-icon> Contact
+    </a>
+    <a [href]="providersUrl" rel="noopener" (click)="toggleMobileMenu()">
+      <mat-icon>storefront</mat-icon> For Providers
     </a>
     @if (auth.isAdmin() || auth.isTester()) {
       <a routerLink="/admin" (click)="toggleMobileMenu()">

@@ -1,0 +1,137 @@
+<app-provider-shell>
+  @if (loading() && !data()) {
+    <div class="pd-sk" aria-busy="true" aria-label="Loading dashboard"></div>
+    <div class="pd-sk pd-sk--tall"></div>
+  } @else if (error()) {
+    <div class="pd-error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon><span>{{ error() }}</span>
+      <button mat-stroked-button type="button" (click)="load()">Try again</button>
+    </div>
+  } @else if (data(); as d) {
+    <!-- ── Welcome ───────────────────────────────────────────────────── -->
+    <section class="pd-hello">
+      <div>
+        <p class="pd-hello__eyebrow">{{ greeting() }}, {{ d.user.firstName || 'there' }}</p>
+        <h1>Your business on Aurora</h1>
+        <p class="pd-hello__sub">Manage your listings, finish your profile and track reviews from here.</p>
+      </div>
+      <div class="pd-stats">
+        <div class="pd-stat"><strong>{{ d.listings.length }}</strong><span>business{{ d.listings.length === 1 ? '' : 'es' }}</span></div>
+        <div class="pd-stat"><strong>{{ liveCount() }}</strong><span>live</span></div>
+        <div class="pd-stat"><strong>{{ pendingClaims() }}</strong><span>pending claim{{ pendingClaims() === 1 ? '' : 's' }}</span></div>
+      </div>
+    </section>
+
+    <!-- ── Listings ──────────────────────────────────────────────────── -->
+    <div class="pd-head">
+      <h2>Your listings</h2>
+      <div class="pd-head__actions">
+        <a mat-stroked-button routerLink="/providers/claim"><mat-icon>how_to_reg</mat-icon> Claim an existing listing</a>
+        <a mat-flat-button class="suhana-btn-primary" routerLink="/providers/dashboard/listings/new"><mat-icon>add_business</mat-icon> Add a business</a>
+      </div>
+    </div>
+
+    @if (!d.listings.length) {
+      <div class="pd-empty">
+        <mat-icon aria-hidden="true">storefront</mat-icon>
+        <h3>No businesses yet</h3>
+        <p>Add your business, or claim it if Aurora already lists it.</p>
+      </div>
+    } @else {
+      <ul class="pd-listings" role="list">
+        @for (l of d.listings; track l.id; let i = $index) {
+          <li class="pd-card" [style.--d]="(i * 80) + 'ms'" [attr.data-status]="l.listingStatus">
+            <div class="pd-card__media">
+              <img [src]="l.photoUrl || categoryImage(l.categorySlugs[0])" alt="" loading="lazy" />
+              <span class="pd-status" [attr.data-status]="l.listingStatus">{{ statusLabels[l.listingStatus] }}</span>
+            </div>
+            <div class="pd-card__body">
+              <div class="pd-card__title">
+                <h3>{{ l.displayName }}</h3>
+                @if (l.verificationStatus === 'VERIFIED') {
+                  <span class="pd-verified"><mat-icon aria-hidden="true">verified</mat-icon> Verified</span>
+                }
+              </div>
+              <p class="pd-card__meta">
+                @for (s of l.categorySlugs; track s; let last = $last) {
+                  <span><mat-icon aria-hidden="true">{{ categoryIcon(s) }}</mat-icon>{{ categoryName(s) }}</span>
+                }
+                @if (l.primaryPlace) { <span><mat-icon aria-hidden="true">place</mat-icon>{{ l.primaryPlace }}</span> }
+                <span class="pd-role">{{ l.myRole === 'OWNER' ? 'Owner' : 'Staff' }}</span>
+              </p>
+
+              @if (l.listingStatus === 'CHANGES_REQUESTED' && l.reviewNote) {
+                <div class="pd-note pd-note--warn" role="status"><mat-icon aria-hidden="true">feedback</mat-icon>
+                  <div><strong>Changes requested:</strong> {{ l.reviewNote }}</div></div>
+              } @else if (l.listingStatus === 'SUBMITTED') {
+                <div class="pd-note" role="status"><mat-icon aria-hidden="true">hourglass_top</mat-icon>
+                  <div>Our team is reviewing your listing. You'll be able to edit again once it's reviewed.</div></div>
+              } @else if (l.listingStatus === 'PUBLISHED') {
+                <div class="pd-note pd-note--ok"><mat-icon aria-hidden="true">celebration</mat-icon>
+                  <div>Your listing is live in Aurora Discover. Changes you save appear right away.</div></div>
+              }
+
+              <div class="pd-progress" [attr.aria-label]="'Profile ' + l.checklist.percent + '% complete'">
+                <div class="pd-progress__bar"><span [style.width.%]="l.checklist.percent"></span></div>
+                <span class="pd-progress__pct">{{ l.checklist.percent }}%</span>
+              </div>
+              <ul class="pd-check">
+                @for (c of checklistItems(l); track c.label) {
+                  <li [class.pd-check--done]="c.done">
+                    <mat-icon aria-hidden="true">{{ c.done ? 'check_circle' : (c.required ? 'radio_button_unchecked' : 'add_circle_outline') }}</mat-icon>
+                    {{ c.label }}@if (!c.required) { <small>&nbsp;(recommended)</small> }
+                  </li>
+                }
+              </ul>
+
+              <div class="pd-card__actions">
+                @if (canEdit(l)) {
+                  <a mat-flat-button class="suhana-btn-primary" [routerLink]="['/providers/dashboard/listings', l.id]">
+                    <mat-icon>edit</mat-icon> {{ l.listingStatus === 'PUBLISHED' ? 'Edit listing' : 'Complete profile' }}
+                  </a>
+                }
+                @if (l.listingStatus === 'DRAFT' || l.listingStatus === 'CHANGES_REQUESTED') {
+                  <button mat-stroked-button type="button" [disabled]="busy() === l.id || !l.checklist.readyToSubmit" (click)="submit(l)"
+                          [matTooltip]="l.checklist.readyToSubmit ? '' : 'Complete the required items first'">
+                    <mat-icon>send</mat-icon> {{ busy() === l.id ? 'Submitting…' : 'Submit for review' }}
+                  </button>
+                }
+                @if (l.listingStatus === 'PUBLISHED') {
+                  <a mat-button [routerLink]="publicLink(l)"><mat-icon>visibility</mat-icon> View as members see it</a>
+                  @if (l.ratingCount) { <span class="pd-rating"><mat-icon aria-hidden="true">star</mat-icon>{{ l.ratingAvg }} ({{ l.ratingCount }})</span> }
+                }
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+
+    <!-- ── Claims ────────────────────────────────────────────────────── -->
+    @if (d.claims.length) {
+      <h2 class="pd-h2">Ownership claims</h2>
+      <ul class="pd-claims">
+        @for (c of d.claims; track c.id) {
+          <li>
+            <div>
+              <strong>{{ c.providerName ?? 'Listing' }}</strong>
+              <span class="pd-claim-status" [attr.data-status]="c.status">{{ claimLabels[c.status] }}</span>
+              <div class="pd-muted">Requested {{ c.createdAt | date: 'mediumDate' }}@if (c.adminNote) { · {{ c.adminNote }} }</div>
+            </div>
+            @if (c.status === 'PENDING') {
+              <button mat-button type="button" [disabled]="busy() === c.id" (click)="withdraw(c)">Withdraw</button>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    <!-- ── Coming soon ───────────────────────────────────────────────── -->
+    <h2 class="pd-h2">More tools</h2>
+    <div class="pd-soon">
+      @for (t of tools; track t.title) {
+        <div class="pd-soon__card"><mat-icon aria-hidden="true">{{ t.icon }}</mat-icon><h3>{{ t.title }}</h3><p>{{ t.text }}</p><span>Coming soon</span></div>
+      }
+    </div>
+  }
+</app-provider-shell>

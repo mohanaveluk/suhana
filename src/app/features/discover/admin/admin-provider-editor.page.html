@@ -1,7 +1,13 @@
-<app-admin-layout>
+@if (isProvider) {
+  <app-provider-shell><ng-container *ngTemplateOutlet="editor" /></app-provider-shell>
+} @else {
+  <app-admin-layout><ng-container *ngTemplateOutlet="editor" /></app-admin-layout>
+}
+
+<ng-template #editor>
 <div class="pe">
   <nav class="pe__crumbs" aria-label="Breadcrumb">
-    <a routerLink="/discover/admin">Aurora Discover</a> <span aria-hidden="true">›</span>
+    <a [routerLink]="backRoute">{{ isProvider ? 'Dashboard' : 'Aurora Discover' }}</a> <span aria-hidden="true">›</span>
     <span>{{ id() ? 'Edit listing' : 'New listing' }}</span>
   </nav>
 
@@ -12,7 +18,34 @@
   } @else {
     <header class="pe__header">
       <h1>{{ id() ? form.controls.displayName.value || 'Listing' : 'New listing' }}</h1>
-      @if (provider(); as p) {
+      @if (isProvider) {
+        @if (provider(); as p) {
+          <div class="pe__pstatus" [attr.data-status]="p.listingStatus">
+            <mat-icon aria-hidden="true">{{ p.listingStatus === 'PUBLISHED' ? 'celebration' : p.listingStatus === 'SUBMITTED' ? 'hourglass_top' : p.listingStatus === 'CHANGES_REQUESTED' ? 'feedback' : 'edit_note' }}</mat-icon>
+            <div>
+              <strong>{{ listingStatusLabels[p.listingStatus ?? 'DRAFT'] }}</strong>
+              @switch (p.listingStatus) {
+                @case ('DRAFT') { <span>Finish the required items, then submit your listing for review.</span> }
+                @case ('SUBMITTED') { <span>Our team is reviewing your listing. You can edit again after the review.</span> }
+                @case ('CHANGES_REQUESTED') { <span>{{ p.reviewNote || 'Please update your listing and submit it again.' }}</span> }
+                @default { <span>Your listing is live. Changes you save appear right away.</span> }
+              }
+            </div>
+            @if (p.verificationStatus === 'VERIFIED') { <span class="pe__pill" data-status="VERIFIED">Verified listing</span> }
+          </div>
+          @if (checklist(); as c) {
+            <div class="pe__progress" [attr.aria-label]="'Profile ' + c.percent + '% complete'">
+              <div class="pe__progress-bar"><span [style.width.%]="c.percent"></span></div>
+              <span>{{ c.percent }}% complete</span>
+              @for (item of [['Category', c.category], ['Location', c.location], ['Description (40+ chars)', c.about], ['Contact', c.contact], ['Services', c.service], ['Photos', c.photo]]; track item[0]) {
+                <span class="pe__check" [class.pe__check--done]="item[1]"><mat-icon aria-hidden="true">{{ item[1] ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>{{ item[0] }}</span>
+              }
+            </div>
+          }
+        } @else {
+          <p class="pe__sub">Add your business details. You can save and come back any time; submit for review when you're ready.</p>
+        }
+      } @else if (provider(); as p) {
         <div class="pe__status">
           <span class="pe__pill" [attr.data-status]="p.verificationStatus">{{ statusLabels[p.verificationStatus] }}</span>
           @if (p.verifiedAt) { <span class="pe__sub">since {{ p.verifiedAt | date: 'mediumDate' }}</span> }
@@ -33,6 +66,53 @@
       <div class="pe__geo" role="status">
         @for (n of geocodeNotes(); track n) { <div><mat-icon aria-hidden="true">place</mat-icon> {{ n }}</div> }
       </div>
+    }
+
+    @if (!isProvider && provider(); as p) {
+      <section class="pe__card pe__owner">
+        <h2><mat-icon aria-hidden="true">manage_accounts</mat-icon> Management &amp; ownership</h2>
+        <div class="pe__owner-row">
+          <span class="pe__pill" [attr.data-status]="p.managementType === 'PROVIDER_MANAGED' ? 'VERIFIED' : 'PENDING'">
+            {{ p.managementType === 'PROVIDER_MANAGED' ? 'Provider-managed' : 'Admin-managed' }}
+          </span>
+          <span class="pe__pill" [attr.data-status]="p.listingStatus === 'PUBLISHED' ? 'VERIFIED' : p.listingStatus === 'CHANGES_REQUESTED' ? 'REJECTED' : 'PENDING'">
+            {{ listingStatusLabels[p.listingStatus ?? 'PUBLISHED'] }}
+          </span>
+          @if (p.pendingClaims) { <a class="pe__sub" routerLink="/discover/admin" [queryParams]="{ tab: 'claims' }">{{ p.pendingClaims }} pending claim(s)</a> }
+        </div>
+        @if (p.owners?.length) {
+          <ul class="pe__owners">
+            @for (o of p.owners; track o.userId) { <li><mat-icon aria-hidden="true">person</mat-icon> {{ o.name }} · {{ o.email }} <span class="pe__sub">({{ o.role === 'OWNER' ? 'owner' : 'staff' }})</span></li> }
+          </ul>
+        } @else {
+          <p class="pe__sub">No provider account manages this listing. Admins maintain it; the business can claim it from the provider portal.</p>
+        }
+        @if (p.listingStatus === 'SUBMITTED') {
+          <div class="pe__review">
+            <strong>Provider submission waiting for review</strong>
+            <span class="pe__spacer"></span>
+            <button mat-flat-button type="button" class="suhana-btn-primary" (click)="reviewSubmission('PUBLISH')"><mat-icon>publish</mat-icon> Publish</button>
+            <button mat-stroked-button type="button" (click)="reviewSubmission('REQUEST_CHANGES')">Request changes</button>
+            <button mat-button type="button" (click)="reviewSubmission('REJECT')">Reject</button>
+          </div>
+        } @else if (p.listingStatus === 'DRAFT' || p.listingStatus === 'CHANGES_REQUESTED') {
+          <div class="pe__review">
+            <span class="pe__sub">The provider hasn't submitted this listing yet{{ p.reviewNote ? ' · last note: ' + p.reviewNote : '' }}.</span>
+            <span class="pe__spacer"></span>
+            <button mat-stroked-button type="button" (click)="reviewSubmission('PUBLISH')">Publish anyway</button>
+          </div>
+        }
+        <div class="pe__owner-actions">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__owner-email">
+            <mat-label>Assign to account (email)</mat-label>
+            <input matInput type="email" [value]="ownerEmail()" (input)="ownerEmail.set($any($event.target).value)" />
+          </mat-form-field>
+          <button mat-stroked-button type="button" [disabled]="!ownerEmail().trim()" (click)="assignOwner()"><mat-icon>person_add</mat-icon> Assign owner</button>
+          @if (p.managementType === 'PROVIDER_MANAGED') {
+            <button mat-button type="button" (click)="takeOver()"><mat-icon>admin_panel_settings</mat-icon> Take over (admin-managed)</button>
+          }
+        </div>
+      </section>
     }
 
     <form [formGroup]="form" (ngSubmit)="save()" class="pe__form">
@@ -90,7 +170,7 @@
             <input matInput formControlName="photoUrl" placeholder="Upload below, or paste https://…" />
             @if (form.controls.photoUrl.invalid) { <mat-error>Start with https://</mat-error> }
           </mat-form-field>
-          <mat-slide-toggle formControlName="isActive">Visible to members</mat-slide-toggle>
+          @if (!isProvider) { <mat-slide-toggle formControlName="isActive">Visible to members</mat-slide-toggle> }
           <mat-slide-toggle formControlName="acceptingClients">Accepting new clients</mat-slide-toggle>
         </div>
       </section>
@@ -138,14 +218,22 @@
           </div>
 
           <h3>Qualifications</h3>
-          <p class="pe__sub">Tick “Credential checked” only after verifying the certificate itself — members see this separately from listing verification.</p>
+          @if (isProvider) {
+            <p class="pe__sub">List your qualifications. Aurora's team may check them and mark them as “Credential checked”.</p>
+          } @else {
+            <p class="pe__sub">Tick “Credential checked” only after verifying the certificate itself — members see this separately from listing verification.</p>
+          }
           <div formArrayName="certifications" class="pe__rows">
             @for (c of certs.controls; track c; let i = $index) {
               <div class="pe__row" [formGroupName]="i">
                 <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Name</mat-label><input matInput formControlName="name" /></mat-form-field>
                 <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Issuer</mat-label><input matInput formControlName="issuer" /></mat-form-field>
                 <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pe__narrow"><mat-label>Year</mat-label><input matInput type="number" formControlName="year" /></mat-form-field>
-                <mat-checkbox formControlName="verified">Credential checked</mat-checkbox>
+                @if (!isProvider) {
+                  <mat-checkbox formControlName="verified">Credential checked</mat-checkbox>
+                } @else if (c.value.verified) {
+                  <span class="pe__pill" data-status="VERIFIED">Checked by Aurora</span>
+                }
                 <button mat-icon-button type="button" (click)="removeCert(i)" aria-label="Remove qualification"><mat-icon>delete</mat-icon></button>
               </div>
             }
@@ -319,7 +407,13 @@
       }
 
       <div class="pe__savebar">
-        <a mat-button routerLink="/discover/admin">Back to listings</a>
+        <a mat-button [routerLink]="backRoute">{{ isProvider ? 'Back to dashboard' : 'Back to listings' }}</a>
+        @if (canProviderSubmit()) {
+          <button mat-stroked-button type="button" [disabled]="submitting() || !(checklist()?.readyToSubmit)" (click)="submitForReview()"
+                  [matTooltip]="checklist()?.readyToSubmit ? 'Save and send to Aurora for review' : 'Complete the required items first'">
+            <mat-icon>send</mat-icon> {{ submitting() ? 'Submitting…' : 'Submit for review' }}
+          </button>
+        }
         <button mat-flat-button type="submit" class="suhana-btn-primary" (click)="form.markAllAsTouched()">
           {{ saving() ? 'Saving…' : id() ? 'Save listing' : 'Create listing' }}
         </button>
@@ -327,4 +421,4 @@
     </form>
   }
 </div>
-</app-admin-layout>
+</ng-template>

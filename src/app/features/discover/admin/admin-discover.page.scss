@@ -47,3 +47,13 @@
     > mat-icon { color: var(--suhana-rose-gold); }
   }
 }
+
+.ad__badge {
+  margin-left: 6px; min-width: 20px; padding: 0 6px; border-radius: 999px; font-size: 12px; line-height: 20px; text-align: center;
+  background: var(--suhana-maroon); color: #fff;
+}
+.ad__claim-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0; padding: 10px 12px; border-radius: 10px;
+  background: var(--suhana-ivory-warm); font-size: 14px;
+}
+@media (max-width: 700px) { .ad__claim-grid { grid-template-columns: 1fr; } }

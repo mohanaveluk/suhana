@@ -7,7 +7,22 @@
       <p>Login to your Aurora account</p>
     </div>
 
-    @if (verificationSent()) {
+    @if (businessOnlyEmail(); as be) {
+      <!-- Valid Aurora account without the MEMBER role (registered on Aurora for Providers). -->
+      <div class="business-only" role="status">
+        <mat-icon aria-hidden="true">storefront</mat-icon>
+        <div>
+          <strong>{{ be }} is an Aurora for Providers business account</strong>
+          <p>To use Aurora Matrimony, create your matrimony profile — you'll keep the same email and password. No new account is needed.</p>
+          <div class="business-only__actions">
+            <a mat-flat-button class="suhana-btn-primary" routerLink="/register" [queryParams]="{ join: 1 }">
+              <mat-icon>person_add</mat-icon> Create my matrimony profile
+            </a>
+            <a mat-button [href]="providersUrl + '/login'" rel="noopener">Go to Aurora for Providers</a>
+          </div>
+        </div>
+      </div>
+    } @else if (verificationSent()) {
       <div class="verify-sent" role="status">
         <mat-icon>mark_email_read</mat-icon>
         <span>Verification email sent! Please check your inbox.</span>

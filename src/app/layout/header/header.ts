@@ -1,7 +1,9 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, effect } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MaterialModule } from '../../shared/modules/material.module';
-import { AuthService } from '../../services';
+import { ApiService, AuthService } from '../../services';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { ProfileService } from '../../services/profile.service';
 import { EmailHistoryService } from '../../pages/notifications/notification.service';
 import { MemberInteractionsService } from '../../features/my-interests/services/member-interactions.service';
@@ -20,6 +22,7 @@ export class HeaderComponent {
   protected readonly interactions = inject(MemberInteractionsService);
   private   readonly profileSvc         = inject(ProfileService);
   private   readonly router             = inject(Router);
+  private   readonly api                = inject(ApiService);
   protected readonly mobileMenuOpen     = signal(false);
   protected readonly avatarError        = signal(false);
 
@@ -61,5 +64,27 @@ export class HeaderComponent {
 
   openNotifications(): void {
     this.router.navigate(['/notifications']);
+  }
+
+  // ── One Aurora identity, several apps ─────────────────────────────────────
+  /** Aurora for Providers (separate web app). */
+  protected readonly providersUrl = environment.providersUrl;
+  protected readonly switching = signal(false);
+
+  /**
+   * "Switch Aurora experience" → Aurora for Providers without logging in again. The API
+   * issues a 60-second single-use code only to accounts with a provider role; the
+   * provider app exchanges it for its own session. No tokens travel in the URL.
+   */
+  protected async switchToProviders(): Promise<void> {
+    if (this.switching()) return;
+    this.switching.set(true);
+    try {
+      const { code } = await firstValueFrom(this.api.createHandoff('providers'));
+      window.location.assign(`${this.providersUrl}/auth/handoff?code=${encodeURIComponent(code)}`);
+    } catch {
+      this.switching.set(false);
+      window.location.assign(`${this.providersUrl}/login`); // fall back to a normal sign-in there
+    }
   }
 }
